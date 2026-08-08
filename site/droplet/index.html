@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphometer Droplet: an independent compatibility kit for Liquid LFMs</title>
+<meta name="description" content="Graphometer Droplet is an independent compatibility kit for Liquid LFMs. The harness can break the model. Droplet checks the fit.">
+<style>
+  :root {
+    --bg: #0b0c0e;
+    --bg-raised: #101216;
+    --bg-term: #0e1013;
+    --ink: #e7eaef;
+    --ink-dim: #b0b7c1;
+    --ink-faint: #8d95a3;
+    --gold: #c9a45c;
+    --gold-dim: #8a7648;
+    --rule: #23262c;
+    --ok: #8fce9a;
+    --fail: #e08a8a;
+    --warn: #d8b96a;
+    --info: #7fa8c9;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--gold);
+    color: #0b0c0e;
+    padding: .5rem 1rem;
+    font-weight: 600;
+    z-index: 10;
+  }
+  .skip:focus { left: 0; }
+  .wrap {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  a {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+  a:hover, a:focus-visible { border-bottom-color: var(--gold); }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 6.5rem 0 4.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .eyebrow {
+    font-size: .8125rem;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 1.25rem;
+  }
+  h1 {
+    font-size: clamp(2.9rem, 8vw, 5rem);
+    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -.025em;
+    margin: 0 0 1.25rem;
+  }
+  .descriptor {
+    color: var(--ink);
+    font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -.01em;
+    margin: 0 0 .85rem;
+  }
+  .tagline {
+    color: var(--ink-dim);
+    font-size: 1.3rem;
+    margin: 0 0 .75rem;
+  }
+  .repairline {
+    color: var(--ink-dim);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    max-width: 42rem;
+    margin: 0 0 2rem;
+  }
+  .nonaff {
+    display: inline-block;
+    font-size: .875rem;
+    color: var(--ink-dim);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: .35rem 1rem;
+    margin: 0 0 2.5rem;
+  }
+  .installrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  .installcmd {
+    font-family: var(--mono);
+    font-size: 1rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: .5rem;
+    padding: .7rem 1.1rem;
+    color: var(--ink);
+  }
+  .installcmd .prompt { color: var(--gold); user-select: none; }
+
+  /* ---------- sections ---------- */
+  section { padding: 4.5rem 0; border-bottom: 1px solid var(--rule); }
+  .secnum {
+    font-family: var(--mono);
+    font-size: .8125rem;
+    color: var(--gold);
+    letter-spacing: .18em;
+    margin: 0 0 .6rem;
+  }
+  h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -.015em;
+    margin: 0 0 1.25rem;
+  }
+  .lede { color: var(--ink-dim); max-width: 46rem; margin: 0 0 2.5rem; }
+
+  /* ---------- terminal windows ---------- */
+  .term {
+    background: var(--bg-term);
+    border: 1px solid var(--rule);
+    border-radius: .65rem;
+    overflow: hidden;
+    margin: 0;
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .6rem .9rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-raised);
+  }
+  .dot { width: .65rem; height: .65rem; border-radius: 50%; background: #3a3f47; }
+  .term-title {
+    margin-left: .5rem;
+    font-family: var(--mono);
+    font-size: .8125rem;
+    color: var(--ink-faint);
+  }
+  .term pre {
+    margin: 0;
+    padding: 1.1rem 1.2rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: .9375rem;
+    line-height: 1.6;
+    color: #d7dce4;
+  }
+  .t-ok { color: var(--ok); }
+  .t-fail { color: var(--fail); }
+  .t-warn { color: var(--warn); }
+  .t-info { color: var(--info); }
+  .t-dim { color: var(--ink-faint); }
+  .t-cmd { color: var(--ink); }
+
+  /* ---------- split screen ---------- */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 60rem) {
+    .split { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  }
+  /* grid items must be allowed to shrink below their content width;
+     without this the wide <pre> transcripts blow the page out sideways */
+  .split > *, .doctor-verdicts > *, .cmds > *, .cmd, .fixes li > *, .term { min-width: 0; }
+  .pane-label {
+    font-family: var(--mono);
+    font-size: .8125rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin: 0 0 .6rem;
+  }
+  .pane-label.direct { color: var(--fail); }
+  .pane-label.bridged { color: var(--ok); }
+  /* partial result: order restored, strict check still fails. Never success green.
+     Sentence case because this label is a full sentence, not a two-word tag. */
+  .pane-label.partial {
+    color: var(--warn);
+    text-transform: none;
+    letter-spacing: .02em;
+    font-size: .875rem;
+  }
+  .expect {
+    max-width: 52rem;
+    margin: 0 0 2rem;
+    padding: .85rem 0 .85rem 1.1rem;
+    border-left: 2px solid var(--warn);
+    color: var(--ink);
+    font-size: 1.0625rem;
+  }
+  .expect strong { color: var(--warn); font-weight: 600; }
+  .demo-caption {
+    margin: 2.25rem 0 0;
+    color: var(--ink-dim);
+    font-size: 1.0625rem;
+    max-width: 52rem;
+  }
+
+  /* ---------- three commands ---------- */
+  .cmds { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  .cmd h3 {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 .4rem;
+    color: var(--ink);
+  }
+  .cmd h3 .dollar { color: var(--gold); }
+  .cmd p { color: var(--ink-dim); margin: 0 0 1.25rem; max-width: 46rem; }
+  .doctor-verdicts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 60rem) {
+    .doctor-verdicts { grid-template-columns: 1fr 1fr; }
+  }
+  .verdict-note {
+    color: var(--ink-dim);
+    font-size: 1rem;
+    margin: 1.25rem 0 0;
+    max-width: 46rem;
+  }
+
+  /* ---------- numbers ---------- */
+  .nums { width: 100%; border-collapse: collapse; font-size: 1rem; }
+  .nums caption {
+    text-align: left;
+    color: var(--ink-faint);
+    font-size: .875rem;
+    padding-bottom: .75rem;
+  }
+  .nums th, .nums td {
+    text-align: left;
+    padding: .85rem 1rem .85rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .nums thead th {
+    color: var(--ink-faint);
+    font-weight: 500;
+    font-size: .875rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .nums .n { font-family: var(--mono); white-space: nowrap; }
+  .nums .before { color: var(--fail); }
+  .nums .after { color: var(--ok); }
+  /* partial or unimproved score: amber, never the success color */
+  .nums .partial { color: var(--warn); }
+  .limits {
+    margin: 2.25rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--gold-dim);
+    max-width: 52rem;
+  }
+  .limits p {
+    font-size: 1.125rem;
+    color: var(--ink);
+    margin: 0 0 .9rem;
+  }
+  .limits p:last-child { margin-bottom: 0; }
+  .limits .lim-label {
+    font-family: var(--mono);
+    font-size: .8125rem;
+    color: var(--gold);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: .9rem;
+  }
+
+  /* ---------- root fix ---------- */
+  .fixes { list-style: none; margin: 0 0 2rem; padding: 0; }
+  .fixes li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .25rem;
+  }
+  @media (min-width: 48rem) {
+    .fixes li { grid-template-columns: 16rem 1fr 14rem; gap: 1.5rem; align-items: baseline; }
+  }
+  .fixes .fix-name { font-family: var(--mono); font-size: .9375rem; color: var(--ink); }
+  .fixes .fix-what { color: var(--ink-dim); }
+  .fixes .fix-status { font-family: var(--mono); font-size: .8125rem; color: var(--gold); }
+  .retire { color: var(--ink); font-size: 1.125rem; max-width: 46rem; margin: 0; }
+
+  /* ---------- footer ---------- */
+  footer { padding: 3.5rem 0 4rem; }
+  footer p { color: var(--ink-dim); font-size: 1rem; margin: 0 0 .6rem; max-width: 52rem; }
+  footer .fine { color: var(--ink-faint); font-size: .875rem; }
+  footer .nonaff-f { color: var(--ink-dim); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition: none !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Graphometer Droplet</h1>
+    <p class="descriptor">An independent compatibility kit for Liquid LFMs.</p>
+    <p class="tagline">The harness can break the model. Droplet checks the fit.</p>
+    <p class="repairline">When it doesn't fit, Droplet names the failing layer and applies
+    the smallest proven repair, then gets out of the way.</p>
+    <p class="nonaff">Not affiliated with, endorsed by, or connected to Liquid AI.</p>
+    <div class="installrow">
+      <code class="installcmd"><span class="prompt">$</span> pip install ./cli</code>
+      <a href="https://github.com/graphometer/droplet">Source on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- 1 · the split-screen -->
+<section aria-labelledby="demo-h">
+  <div class="wrap">
+    <p class="secnum">01</p>
+    <h2 id="demo-h">Same model. Same task. Same seeds.</h2>
+    <p class="lede">One LFM2.5-1.2B-Instruct route, served by llama.cpp with the shipped chat
+    template. The left terminal talks to it directly; the right terminal talks to it through
+    <code>droplet bridge</code>. These are real recorded transcripts.</p>
+
+    <p class="expect">What to expect: the bridged side still ends in <strong>suite FAILED</strong>.
+    Order is restored, and the strict check still catches the extra call the model makes on its
+    own. That honesty is the point.</p>
+
+    <div class="split">
+      <div>
+        <p class="pane-label direct">Direct: the chain dies</p>
+        <figure class="term">
+          <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">terminal · direct</span></div>
+          <pre><code><span class="t-cmd">$ droplet doctor --base http://127.0.0.1:8402</span>
+<span class="t-info">[INFO]</span> backend: llama.cpp server, build b1-5f55650
+<span class="t-info">[INFO]</span> model: LFM2.5-1.2B-Instruct-Q4_K_M.gguf
+<span class="t-ok">[OK  ]</span> liquid model detected: profile lfm-1.2b
+<span class="t-ok">[OK  ]</span> native tool template: template declares LFM tool format
+<span class="t-ok">[OK  ]</span> reasoning extraction: non-reasoning model
+<span class="t-fail">[FAIL]</span> assistant tool_calls history: template renders past assistant tool calls as an EMPTY turn — measured effect: 1.2B chains collapse at 2 steps; 24B loses steps 5-6
+<span class="t-dim">       remedy: route through `droplet bridge` (history_carry), or fix the chat template upstream (add tool_calls rendering)</span>
+<span class="t-dim">       evidence: per-run A/B: 1.2B ordered 0/6 -&gt; 6/6 (exact 0/6 -&gt; 0/6); 24B exact 0/3 -&gt; 3/3</span>
+<span class="t-warn">[WARN]</span> tool_choice modes: string 'none' works; 'required' cannot force a call (grammar permits unbounded pre-call content; burns max_tokens, finish=length); OBJECT form (named tool) is silently ignored with only a server-side log
+<span class="t-dim">       remedy: avoid named tool_choice, or use droplet bridge named_choice filtering; treat 'required' as advisory</span>
+<span class="t-dim">       evidence: session-2 wire runs (0/6 required; conflict probe 6/6 wrong tool)</span>
+<span class="t-info">[INFO]</span> raw /completion users: special tokens are stripped by default; pass "special": true or markers never appear
+<span class="t-dim">       evidence: session-1, 27/27</span>
+
+verdict: <span class="t-fail">1 FAIL (assistant tool_calls history), 1 warn</span> — droplet bridge or an upstream template fix is needed on this route
+<span class="t-dim">[exit 1]</span>
+
+<span class="t-cmd">$ droplet verify --base http://127.0.0.1:8402 --out report_direct</span>
+[droplet] verify: wrote report_direct/droplet-report.json and report_direct/droplet-report.md
+[droplet]   plain: compat=True ordered=None exact=None grounded=None correct=None failure_layer=None
+[droplet]   one_tool: compat=True ordered=True exact=True grounded=True correct=True failure_layer=None
+[droplet]   chain4: compat=True <span class="t-fail">ordered=False exact=False</span> grounded=True correct=False <span class="t-fail">failure_layer=template</span>
+[droplet] verify: <span class="t-fail">suite FAILED</span>
+<span class="t-dim">[exit 1]</span></code></pre>
+        </figure>
+      </div>
+
+      <div>
+        <p class="pane-label partial">Through droplet bridge: order restored, the strict check still catches the model's extra call</p>
+        <figure class="term">
+          <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">terminal · bridged</span></div>
+          <pre><code><span class="t-cmd">$ droplet bridge --listen 127.0.0.1:8420 --target http://127.0.0.1:8402 --log bridge.jsonl &amp;</span>
+[droplet] bridge listening on 127.0.0.1:8420 -&gt; http://127.0.0.1:8402 profile=auto interventions=['history_carry', 'named_choice', 'required_guard']
+[droplet] target identified: llamacpp b1-5f55650 model=/tmp/graphometer-demo/models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf template_drops_history=True
+
+<span class="t-cmd">$ droplet verify --base http://127.0.0.1:8420 --out report_bridged</span>
+[droplet] GET /props 200
+[droplet] POST /apply-template 200
+[droplet] POST /v1/chat/completions 200
+[droplet] POST /v1/chat/completions 200
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] POST /v1/chat/completions 200
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span>
+[droplet] verify: wrote report_bridged/droplet-report.json and report_bridged/droplet-report.md
+[droplet]   plain: compat=True ordered=None exact=None grounded=None correct=None failure_layer=None
+[droplet]   one_tool: compat=True ordered=True exact=True grounded=True correct=True failure_layer=None
+[droplet]   chain4: compat=True <span class="t-ok">ordered=True</span> <span class="t-warn">exact=False</span> grounded=False correct=False <span class="t-warn">failure_layer=model</span>
+[droplet] verify: <span class="t-warn">suite FAILED</span>
+<span class="t-dim">[exit 1]</span>
+
+<span class="t-cmd">$ kill 1274559</span>
+[droplet] shutting down (in-flight streams closing)</code></pre>
+        </figure>
+      </div>
+    </div>
+
+    <p class="demo-caption">The only difference between the two sides is whether the model gets
+    to see the record of its own past actions. Direct, the chain dies at step two, and the
+    report blames the template, which is plumbing we can fix. Bridged, every requested call
+    runs in order, and the report blames the model instead, because this small model adds one
+    call nobody asked for. That is the <code>failure_layer</code> line in both terminals, the
+    one that says whose fault it is, flipping from <code>template</code> to <code>model</code>.
+    The strict check still fails, and it should. Droplet gives the model its memory back. It
+    does not make the model obedient, and it says so.</p>
+  </div>
+</section>
+
+<!-- 2 · three commands -->
+<section aria-labelledby="cmds-h">
+  <div class="wrap">
+    <p class="secnum">02</p>
+    <h2 id="cmds-h">Three commands</h2>
+
+    <div class="cmds">
+      <div class="cmd">
+        <h3><span class="dollar">$</span> droplet doctor</h3>
+        <p>Read-only diagnosis of a serving route: what is healthy, what is broken, whose
+        fault it is (the plumbing or the model), and the exact remedy. It never installs,
+        mutates, or silently repairs anything.</p>
+        <div class="doctor-verdicts">
+          <div>
+            <p class="pane-label direct">When something is wrong</p>
+            <figure class="term">
+              <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">droplet doctor · 1.2B route, shipped template</span></div>
+              <pre><code><span class="t-cmd">$ droplet doctor --base http://127.0.0.1:8402</span>
+<span class="t-fail">[FAIL]</span> assistant tool_calls history: template renders past assistant tool calls as an EMPTY turn — measured effect: 1.2B chains collapse at 2 steps; 24B loses steps 5-6
+<span class="t-dim">       remedy: route through `droplet bridge` (history_carry), or fix the chat template upstream (add tool_calls rendering)</span>
+
+verdict: <span class="t-fail">1 FAIL (assistant tool_calls history), 1 warn</span> — droplet bridge or an upstream template fix is needed on this route</code></pre>
+            </figure>
+          </div>
+          <div>
+            <p class="pane-label bridged">When nothing is</p>
+            <figure class="term">
+              <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">droplet doctor · 8B route, correct template</span></div>
+              <pre><code><span class="t-cmd">$ droplet doctor --base http://127.0.0.1:8402 --live</span>
+<span class="t-ok">[OK  ]</span> assistant tool_calls history: template renders past tool calls — multi-step chains safe
+
+verdict: <span class="t-ok">healthy — no intervention needed</span> (1 advisory warn). Direct use is fine; you don't need droplet bridge here.</code></pre>
+            </figure>
+          </div>
+        </div>
+        <p class="verdict-note">Both verdicts are first-class results. The 8B's template is
+        correct, so the 8B gets the green one. A tool that tells you when you don't need it is
+        a tool you can trust when it says you do.</p>
+      </div>
+
+      <div class="cmd">
+        <h3><span class="dollar">$</span> droplet bridge</h3>
+        <p>A loopback-only pass-through with one history repair, plus two small guards around
+        <code>tool_choice</code>, the setting a client uses to ask for a particular tool. The
+        history repair gives the model back the record of its own past tool calls. Every
+        modification is disclosed on the wire, and everything else relays byte-identical. It
+        never executes tools, never retries, never repairs malformed model output.</p>
+        <figure class="term">
+          <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">droplet bridge</span></div>
+          <pre><code><span class="t-cmd">$ droplet bridge --listen 127.0.0.1:8420 --target http://127.0.0.1:8402 --log bridge.jsonl &amp;</span>
+[droplet] bridge listening on 127.0.0.1:8420 -&gt; http://127.0.0.1:8402 profile=auto interventions=['history_carry', 'named_choice', 'required_guard']
+[droplet] POST /v1/chat/completions 200 <span class="t-ok">applied=history_carry</span></code></pre>
+        </figure>
+      </div>
+
+      <div class="cmd">
+        <h3><span class="dollar">$</span> droplet verify</h3>
+        <p>A reproducible compatibility suite that writes an honest report. It scores the
+        things that can go wrong one at a time: did the protocol work, did every requested
+        call happen in order, did only the requested calls happen, was the answer grounded,
+        was it correct, and whose fault any miss was. None of that gets squashed into a single
+        ambiguous "pass." The suite only passes when the strict check passes, the one that
+        wants the requested calls and nothing else.</p>
+        <figure class="term">
+          <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">droplet verify</span></div>
+          <pre><code><span class="t-cmd">$ droplet verify --base http://127.0.0.1:8420 --out report_bridged</span>
+[droplet]   plain: compat=True ordered=None exact=None grounded=None correct=None failure_layer=None
+[droplet]   one_tool: compat=True ordered=True exact=True grounded=True correct=True failure_layer=None
+[droplet]   chain4: compat=True <span class="t-ok">ordered=True</span> <span class="t-warn">exact=False</span> grounded=False correct=False <span class="t-warn">failure_layer=model</span>
+[droplet] verify: <span class="t-warn">suite FAILED</span></code></pre>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · the numbers -->
+<section aria-labelledby="nums-h">
+  <div class="wrap">
+    <p class="secnum">03</p>
+    <h2 id="nums-h">The numbers</h2>
+    <p class="lede">Every figure below is from recorded runs; nothing is extrapolated. These
+    are small seeded A/B reproductions, so the number of runs behind each cell is the
+    denominator you can see, not a large-n leaderboard. Full per-run ledgers ship in
+    <a href="https://github.com/graphometer/droplet/tree/main/public/evidence">the evidence pack</a>.</p>
+
+    <table class="nums">
+      <caption>Measured on the official Q4_K_M GGUFs at pinned revisions, llama.cpp b1-5f55650,
+      seeded runs. Two scores are always reported. <strong>Ordered</strong> means every
+      requested call happened, in the requested order, with extra calls tolerated.
+      <strong>Exact</strong> means the requested calls and nothing else. Per-run ledgers ship
+      with the evidence.</caption>
+      <thead>
+        <tr><th scope="col">Measurement</th><th scope="col">Direct (shipped template)</th><th scope="col">Repaired (ordered · exact)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1.2B multi-step tool chains, seeded A/B</td>
+          <td class="before"><span class="n">0/6</span> on both scores</td>
+          <td><span class="n after">ordered 6/6</span> · <span class="n partial">exact 0/6</span> through <code>droplet bridge</code>. The model adds one call nobody asked for on every run, and the report says so.</td>
+        </tr>
+        <tr>
+          <td>The same repair in a live coding assistant (OpenCode)</td>
+          <td class="before"><span class="n">0/3</span> on both scores</td>
+          <td><span class="n after">ordered 3/3</span> · <span class="n partial">exact 2/3</span> through the bridge. One run repeated a calculator call.</td>
+        </tr>
+        <tr>
+          <td>24B six-step chains</td>
+          <td class="before"><span class="n">0/3</span> on both scores</td>
+          <td><span class="n after">ordered 3/3 · exact 3/3</span> through the bridge, and <span class="n after">ordered 3/3 · exact 3/3</span> with the template fix alone, no bridge</td>
+        </tr>
+        <tr>
+          <td>8B healthy route through the bridge (it needs nothing)</td>
+          <td>not applicable</td>
+          <td><span class="n after">18/18</span> task and protocol probes unchanged. Byte-parity is separately proven by hash comparison. No regression, and no need.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="limits">
+      <span class="lim-label">Honest limits</span>
+      <p>Droplet restores the model's memory of its own actions. It does not make the model
+      smarter or more obedient. Final-answer correctness is largely unchanged, and under the
+      strict exact score the repaired 1.2B still adds a call nobody asked for. The report
+      names that as the model's own behavior instead of hiding it.</p>
+      <p>The 8B is a strong tool-caller and needs nothing here, and Ollama users typically
+      don't need the bridge, because Ollama's own renderer already preserves tool
+      history.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · fixed at the root -->
+<section aria-labelledby="root-h">
+  <div class="wrap">
+    <p class="secnum">04</p>
+    <h2 id="root-h">Fixed at the root</h2>
+    <p class="lede">The permanent fix is a few corrected lines in the chat templates
+    themselves. All three fixes exist, are proven live, and are being submitted upstream.</p>
+
+    <ul class="fixes">
+      <li>
+        <span class="fix-name">LFM2.5-1.2B-Instruct template</span>
+        <span class="fix-what">renders past assistant tool calls, so the model keeps its memory of its own actions; the model's own extra call can still fail the strict check</span>
+        <span class="fix-status">Fix prepared and reproduced</span>
+      </li>
+      <li>
+        <span class="fix-name">LFM2-24B-A2B template</span>
+        <span class="fix-what">the same history repair, and six-step chains complete ordered 3/3 · exact 3/3 direct, with no bridge</span>
+        <span class="fix-status">Fix prepared and reproduced</span>
+      </li>
+      <li>
+        <span class="fix-name">LFM2.5-1.2B-Thinking template</span>
+        <span class="fix-what">the model's thinking arrives separated in its own reasoning_content field, and the leak is gone</span>
+        <span class="fix-status">Fix prepared and reproduced</span>
+      </li>
+    </ul>
+
+    <p class="retire">With a fixed template in place, the doctor verdict flips to healthy for
+    all three models. On the 24B, the verify suite then passes directly, exact on both scores.
+    On the 1.2B, the chains run in order and the template is no longer at fault (ordered 3/3,
+    exact 0/3 in our runs), but the strict check can still fail because the model adds a call
+    of its own, the same leftover you see through the bridge. If these fixes merge, the
+    bridge's history repair retires, and that is the plan.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Droplet is Graphometer's line of free, open tools for Liquid's models. This
+    compatibility kit is the first.</p>
+    <p>Apache-2.0 (original code) · CC BY 4.0 (evidence data) · LFM Open License v1.0 (Liquid-derived templates)</p>
+    <p>Built by a human steward with heavy AI assistance; every public claim was checked against recorded runs.</p>
+    <p class="nonaff-f">Not affiliated with, endorsed by, or connected to Liquid AI.</p>
+    <p class="fine">No telemetry, no accounts, loopback only.</p>
+    <p class="fine">Copyright 2026 Grant Williams</p>
+  </div>
+</footer>
+
+</body>
+</html>
