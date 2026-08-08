@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field card: Kimi K3</title>
+<meta name="description" content="A measured field card for Moonshot AI's Kimi K3: the complete model topology under a 1-bit expert quant, generating on one desktop at about 0.2 tokens per second. Placement arithmetic, phase telemetry, honest speeds. Every number from recorded runs or the model files themselves.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Field card · runs 2026-08-01 to 2026-08-05 · files re-read 2026-08-08</div>
+      <h1>Field card: <em>Kimi K3</em></h1>
+      <p class="lead">Moonshot AI released Kimi K3 in late July. This page is
+      the recorded story of running it on one desktop computer with a single
+      32 GB graphics card: complete in topology, all 93 blocks and all 896
+      experts present, under a compressed build whose experts are 1-bit. The
+      honest headline first: it generates at about 0.2 tokens per second, a
+      real answer takes hours, and the point is one careful question answered
+      overnight from hardware you own. This is not a claim that the model
+      fits on the card, and it is not a first; section 09 links others who
+      have run K3 small. What this page adds is the measurement: exact
+      artifact identity, byte-level placement arithmetic worked out before
+      loading, phase telemetry from the instrumented runs, and end-to-end
+      speeds. Every number traces to a dated record or to the model files
+      themselves, and where a fact is a vendor's claim rather than our
+      measurement, we say so.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to Moonshot AI or Unsloth.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>Kimi K3 is Moonshot AI's open-weight flagship, introduced 2026-07-16
+      with full weights published 2026-07-27. It is a mixture-of-experts
+      model: enormous in total, comparatively small per token. Most facts in
+      this table were read directly out of the model files on our disk, which
+      makes them properties of the artifact rather than quotes from a press
+      release; rows that rest on the maker's card say so.</p>
+      <table class="facts">
+        <tr><th scope="row">Maker</th><td>Moonshot AI</td></tr>
+        <tr><th scope="row">Total parameters</th><td>2.78 trillion. We summed the shapes of all 2,573 tensors across the file set: <span class="n">2,779,483,135,584</span>. Moonshot's card says 2.8T; our arithmetic agrees.</td></tr>
+        <tr><th scope="row">Active per token</th><td>About 104 billion: 16 routed experts chosen from 896 (about 1.8 percent of the expert pool), plus 2 shared experts and the dense spine, the shared non-expert core every token passes through. Together that is roughly 4 percent of the total parameters working on any given token. Matches the card's 104B.</td></tr>
+        <tr><th scope="row">Layout</th><td>93 blocks: 1 leading dense block, then 92 mixture-of-experts blocks, each holding all 896 experts. Read from the file's own metadata.</td></tr>
+        <tr><th scope="row">Attention</th><td>Hybrid, and unusual: only 24 of the 93 blocks carry full attention with a key-value cache (the card's term: Gated MLA). The other 69 are linear-attention blocks (the card's term: Kimi Delta Attention), which carry a compact running summary of the context forward instead of storing every past token for lookup. The file's metadata confirms the split: the key-value head count is zero in 69 of 93 blocks.</td></tr>
+        <tr><th scope="row">Context window</th><td><span class="asstated">The file declares 1,048,576 tokens.</span> We ran 8,192, deliberately; section 06 explains why, and nothing here tests the architecture's ceiling.</td></tr>
+        <tr><th scope="row">Vocabulary</th><td>163,840 tokens</td></tr>
+        <tr><th scope="row">Modality</th><td>The base model is multimodal per the card. Our file set is text-only: it contains no vision component, and no image work appears anywhere on this page.</td></tr>
+        <tr><th scope="row">License</th><td>The Kimi K3 License, Moonshot's own text. It is broad about local and private use but it is not one of the commonly used open-source licenses, and it attaches conditions to large commercial deployments, so read its terms for your intended use.</td></tr>
+      </table>
+      <p class="fineprint">File-derived rows were read from the pinned GGUF
+      set on 2026-08-08 by parsing the shard headers only; no model data was
+      loaded to produce them. Card-derived rows are the maker's claims, and
+      the amber row is a maker's stated value we did not measure.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>A quant is a compressed build of a model's weights: lower bit
+      counts shrink the file, at some cost to fidelity that we do not
+      attempt to score here. The artifact we ran is Unsloth's
+      <strong>UD-IQ1_S</strong> build of K3 from their
+      <code>Kimi-K3-GGUF</code> repository: 14 files totalling
+      <strong>594.00 GB</strong> (553.20 GiB; the two units count the same
+      bytes by thousands and by 1,024s). Every file's size was re-checked
+      against the repository's published manifest, 14 of 14, on 2026-08-08;
+      the SHA-256 checksums were verified at download against the
+      repository's records. Despite the 1-bit name, only the routed experts
+      are 1-bit: a census of every tensor in the set counts 276 IQ1_S
+      tensors (the experts, 495.26 GiB of them) against 1,116 eight-bit and
+      1,181 full-precision tensors for everything else. The build is
+      calibration-quantized (an importance matrix guided which precision
+      goes where); Unsloth publishes its own quality analysis for it, which
+      we have not reproduced and do not restate as fact.</p>
+      <p>This is the second quant generation this machine has run, and the
+      two must not be mixed. Numbers on this page are labeled where the
+      generation matters.</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Generation</th><th>Build</th><th>Size</th><th>Files</th><th>Ran here</th></tr></thead>
+          <tbody>
+            <tr><td class="t">Previous</td><td class="t">GrEarl IQ1_S, no calibration, 4-bit spine</td><td>528.03 GiB</td><td>94</td><td class="t">2026-08-01 to 08-05</td></tr>
+            <tr><td class="t">Current</td><td class="t">Unsloth UD-IQ1_S, calibrated, 8-bit spine</td><td>553.20 GiB</td><td>14</td><td class="t">since 2026-08-05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The machine: one NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM, an
+      Intel Core Ultra 9 285K (24 cores), 188 GiB of system RAM plus 79 GiB
+      of swap, and the weights on a consumer 4 TB NVMe SSD. The runtime:
+      llama.cpp built from the open Kimi K3 support branch (as of 2026-08-08
+      no released llama.cpp supports K3; support lives in open pull request
+      <a href="https://github.com/ggml-org/llama.cpp/pull/26185">#26185</a>),
+      at commit <span class="n">7b990cf5</span>, CUDA 12.8. The full serving
+      flags appear in section 07, because half of them are traps.</p>
+      <div class="note">
+        <span class="label">Could your machine run this</span>
+        Roughly 600 GB of free disk for the weights, and as much RAM as you
+        can get: we ran 188 GiB, and with less, more of every token streams
+        from disk, which should be slower and which we did not measure. A
+        recent GPU helps but is not the gate; section 09 includes GPU-less
+        runs. Download the UD-IQ1_S folder with your preferred Hugging Face
+        tool, then count the files against the repository listing before
+        trusting the download (section 07 explains why). Building llama.cpp
+        from the pull request means checking out that branch and compiling
+        with CUDA support; the request page carries instructions.
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The fitting problem, solved on paper first</h2>
+      <p>The expert pool never goes near the graphics card: 495 GiB of 1-bit
+      experts plus 12 GiB of shared experts live on the CPU side and stream
+      from disk on demand. What has to fit on the card is the dense spine:
+      attention, embeddings, norms, the output head. And here the calibrated
+      build created a problem the old one never had. The previous build's
+      4-bit spine fit on the card. The current build upcasts the spine to
+      8-bit, and that spine is <strong>45.91 GiB, larger than the entire
+      card</strong>. The build gained calibration and an 8-bit spine, and
+      stopped fitting on the same day.</p>
+      <p>The fix was decided arithmetically before anything loaded. A GGUF
+      file's headers state every tensor's type, shape, and size, so the whole
+      placement problem can be read off the file in seconds: the spine
+      averages 0.469 GiB per block, and the arithmetic says the card can hold
+      the first 50 blocks plus the embeddings and output head, 26.24 GiB.
+      So blocks 50 through 92 joined the experts on the CPU side, expressed
+      as one tensor-override pattern:</p>
+      <pre class="log">-ot "exps=CPU,shexp=CPU,blk\.(5[0-9]|[6-8][0-9]|9[0-2])\.=CPU"</pre>
+      <p>The first attempt with this placement loaded healthy: no crash, and
+      about 29.9 GiB of VRAM in use as the load session recorded it
+      (29,884 MiB; no telemetry capture survives for that run), leaving
+      about 2.7 GiB of headroom. Two details make
+      the placement less obvious than it looks. First, the cut had to come
+      from the tail: moving the FIRST block to the CPU trips a fused
+      operation in the linear-attention path and aborts the load outright,
+      so offloading is by explicit tensor name, never by lowering the GPU
+      layer count. Second, the placement guarantees that <strong>no 1-bit
+      tensor is ever on the GPU</strong>: the card holds 453 eight-bit and
+      639 full-precision tensors and nothing else, which matters because of
+      the first trap in section 07.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>What actually limits it</h2>
+      <p>On the previous quant generation, two fully instrumented runs
+      showed the graphics card nearly asleep during generation: GPU
+      utilization held a <strong>median of 1 to 3 percent</strong>, never
+      passed 7 percent, and the card never warmed past 52 degrees. What was
+      busy was the SSD: a median of 463 to 490 MiB/s of sustained reads,
+      hour after hour, with peaks near 2 GB/s, while the CPU spent a median
+      12 percent of its time waiting on I/O. System RAM never came close to
+      running out; the model simply flows through the page cache (the part
+      of RAM the operating system uses to hold recently read file data),
+      about 167 GiB of it, and the rest streams from disk every token. On
+      this machine, with 188 GiB of RAM against 553 GiB of weights,
+      generation is storage-bound: <strong>a storage benchmark wearing a
+      language model's clothes</strong>.</p>
+      <p>Two honest boundaries on that finding. The current build has not
+      been re-instrumented; it shows the same speed band, which is
+      consistent with the same bottleneck, and no more than that. And the
+      conclusion is about this class of machine, not a law of nature: with
+      enough RAM to hold the whole expert pool, reports elsewhere (section
+      09) show several times this speed, because the bottleneck moves.</p>
+      <p>A practical corollary worth stating: the desktop stayed fully usable
+      the whole time. The model consumes disk bandwidth and page cache, not
+      cores and not the GPU, so the machine does not feel occupied while K3
+      grinds away in the background.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The speed, with nothing softened</h2>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>What</th><th>Measured</th><th>Generation</th></tr></thead>
+          <tbody>
+            <tr><td class="t">Decode speed</td><td class="t">0.18 to 0.28 tokens per second</td><td class="t">current (previous: 0.19 to 0.27)</td></tr>
+            <tr><td class="t">Prompt processing</td><td class="t">0.21 to 0.30 tokens per second, no faster than decode</td><td class="t">both</td></tr>
+            <tr><td class="t">First token, ~100-token prompt</td><td class="t">7.0 to 8.3 minutes</td><td class="t">both (8.3 is the current number)</td></tr>
+            <tr><td class="t">A real answer (1,315 tokens)</td><td class="t">124.5 minutes end to end</td><td class="t">previous</td></tr>
+            <tr><td class="t">Load, to actually answering</td><td class="t">14 minutes</td><td class="t">current (previous: 11 to 13)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">Sources: per-token timings from the server's own
+      logs for both generations; the four recorded probe files; one
+      instrumented 1,315-token coding answer. Speeds are end to end as a
+      user would experience them. The recorded completions number under ten
+      across both generations; this is a field measurement of one
+      configuration, not a benchmark of the model.</p>
+      <p>Three things the table understates. Prompt processing running at
+      decode speed is the quiet killer: on ordinary local models the prompt
+      side runs hundreds of tokens per second, and here it does not, so a
+      long prompt costs minutes per hundred tokens before the first output
+      token appears. That is why section 06's usage advice exists and why we
+      cap context at 8,192. Longer answers drift toward the slow end of the
+      band: the two-hour answer averaged 0.19 where short answers touch
+      0.28. And the swap to the calibrated quant cost <strong>nothing
+      measurable in speed</strong>: on a storage-bound machine, a bigger,
+      calibration-quantized artifact came at no speed price. What that
+      calibration buys in answer quality we did not measure and do not
+      claim.</p>
+      <p>One more timing that fools monitoring: the server process reports
+      itself started within about two seconds, and the model becomes able to
+      answer fourteen minutes later. Anything that trusts "started" will
+      spend a quarter of an hour talking to a wall.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>How you actually use a 0.2 token-per-second model</h2>
+      <p>You do not chat with it. On this architecture, reusing a cached
+      conversation prefix can corrupt the linear-attention state (a
+      documented upstream caution we chose not to test), so every request
+      here is sent as a fresh, self-contained, single prompt. That constraint
+      turns out to be the right mental model anyway: using K3 at this speed
+      is closer to posting a letter than to typing in a box. You write one
+      complete, careful prompt, you submit it, and you come back later. The
+      right interface is a job queue and patience, not a blinking cursor.</p>
+      <p>Two settings follow directly from measurement. First, <strong>every
+      recorded completion produced a reasoning block before its
+      answer</strong>, and the embedded chat template carries reasoning
+      scaffolding, so treat thinking-first as the working default. That
+      reasoning is paid from the same output budget the client sets, so a
+      small budget is consumed entirely by thinking and the visible answer
+      comes back empty. Give real jobs 2,000 to 4,096 output tokens; across
+      the measured band the 4,096 ceiling is about four to six hours, which
+      is the honest cost of asking this model for a long answer. Second, keep the
+      context modest: we run 8,192, because prompt processing at 0.2 tokens
+      per second makes large contexts cost hours before the first token, and
+      because nothing larger has been tested on this architecture's hybrid
+      attention here.</p>
+      <p>What is it for, at that price? One bounded question where you want
+      what a full-topology K3 can give you from hardware you own, and you
+      can afford to sleep on it. In recorded probes on the previous quant
+      generation it followed a byte-exact instruction, reasoned a classic
+      riddle to the correct answer with a correct explanation, and wrote a
+      small function with tests that pass when executed; the current build's
+      own recorded successes are shorter (section 08 draws that boundary).
+      Not iteration, not agents, not a code-review loop. The plain
+      conclusion: running a model of this scale at home is gated less by
+      owning a datacenter than by disk capacity, RAM, and patience.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>The traps, so you lose hours instead of days</h2>
+      <p>Everything below was measured here or designed around from a
+      documented report, and each one costs real time if met unprepared.</p>
+      <ul class="plain">
+        <li><strong>On this GPU generation, 1-bit tensors must never touch
+        the card.</strong> The 1-bit CUDA kernels are reported broken on this
+        card generation (silent wrong numbers, no error). We never place
+        them on the GPU, and the current build's design helps by accident:
+        everything it routes to the card is 8-bit or full precision, so the
+        broken kernels are never reached.</li>
+        <li><strong><code>--no-repack</code> is mandatory.</strong> Without
+        it, the loader tries to build a RAM copy of the 495 GiB expert pool
+        and dies. </li>
+        <li><strong>Offload by tensor name, never by layer count.</strong>
+        Letting the first block land on the CPU aborts the load against a
+        fused linear-attention operation; trailing blocks move freely (43 of
+        them, in our placement). Auto-fit can quietly lower the layer count
+        into the same abort, so we pin <code>-ngl 99 --fit off</code> and
+        control placement entirely with the override pattern in section
+        03.</li>
+        <li><strong>Do not raise the prompt batch size.</strong> A batch of
+        8192 asked for 9,715 MiB of extra VRAM and failed with out-of-memory
+        twelve minutes into the load (measured on the previous generation;
+        today's placement has only about 2.7 GiB free, far short of that
+        buffer, so the same failure is expected and has not been re-run).
+        The failure is at least loud.</li>
+        <li><strong>Ignore the loader's advice to turn off memory
+        mapping.</strong> Every load prints a suggestion to use
+        <code>--no-mmap</code> for better performance. On a machine where
+        the model is three times the RAM, following it would mean asking for
+        594 GB of memory. Streaming from disk is not a compromise here; it
+        is the entire method.</li>
+        <li><strong>"Started" is not "loaded".</strong> Wait on the health
+        endpoint, not the process. The gap is about fourteen minutes.</li>
+        <li><strong>Verify downloads by count and checksum, not by exit
+        status.</strong> One of our fourteen-shard downloads reported
+        success with a shard silently missing after a transient
+        authentication hiccup. Count files against the repository's
+        manifest before a fifteen-minute load tells you the hard way.</li>
+        <li><strong>Read the headers before you load.</strong> Every
+        tensor's size and type is in the GGUF headers, readable in seconds
+        without touching the tensor data. The whole 45.91 GiB spine figure
+        and the block-50 cut point came from header arithmetic, not from
+        failed load attempts.</li>
+        <li><strong>One warning is noise.</strong> Every load prints an
+        end-of-sequence token warning (<code>special_eos_id is not in
+        special_eog_ids</code>); every recorded completion nonetheless
+        terminated cleanly with <code>finish_reason: stop</code>.</li>
+      </ul>
+      <p>The full serving flag set for the current placement, for anyone
+      reproducing this class of run:</p>
+      <pre class="log">llama-server -ngl 99 --fit off -fa on --jinja --no-repack --no-warmup \
+  -ot "exps=CPU,shexp=CPU,blk\.(5[0-9]|[6-8][0-9]|9[0-2])\.=CPU" \
+  --ctx-size 8192 --parallel 1 --cache-reuse 0 --temp 1.0 --top-p 0.95</pre>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What we ran, and what we have not</h2>
+      <p>The recorded evidence behind this page: two instrumented
+      load-and-generate sessions with five-second telemetry (memory, VRAM,
+      GPU utilization, disk throughput, temperatures); the completions
+      across the two quant generations with full request, response, and
+      server timings kept; one end-to-end job record with its server
+      timings; the out-of-memory refutation above; and a header-level scan of
+      all fourteen shards that re-derived the parameter counts, tensor
+      census, and placement arithmetic on 2026-08-08.</p>
+      <p>Still not verified, stated plainly:</p>
+      <ul class="plain">
+        <li><strong>Tool calling: never attempted.</strong> The embedded
+        chat template carries extensive tool scaffolding, so the machinery
+        exists, but there is not one recorded tool call from this machine.</li>
+        <li><strong>Vision: not possible here.</strong> Our file set is
+        text-only; the multimodal claim belongs to Moonshot's card, not to
+        anything we ran.</li>
+        <li><strong>Multi-turn conversation: deliberately avoided</strong>
+        for the state-corruption caution in section 06. We have no evidence
+        it breaks and none that it works.</li>
+        <li><strong>Context above 8,192: untested.</strong> The file
+        declares a million-token window; nothing here speaks to it, for or
+        against.</li>
+        <li><strong>No benchmarks and no quality verdict.</strong> The
+        probes establish that the model generated coherent, task-correct
+        text in those recorded cases. They do not validate the quantizer's
+        quality claims, do not compare the two quant generations on
+        quality, and do not rank K3 against anything.</li>
+        <li><strong>One backend, one machine, one request at a time.</strong>
+        llama.cpp on the branch commit named above, a single desktop, and a
+        single serving slot. No other runtime, no concurrency, and no
+        power-draw measurement.</li>
+        <li><strong>Several previous-generation results are assumed, not
+        re-run, on the current build:</strong> the batch-size refutation,
+        context 4,096, the executed-code probe, and the two-hour sustained
+        answer. The current build's own record is three completions, the
+        longest 120 tokens, plus its healthy instrumented-free load.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Elsewhere in the field</h2>
+      <p>Running K3 on modest hardware is a small genre now, and honesty
+      about it makes our numbers more useful, not less. Public
+      complete-topology runs we know of: a pure-C reader streaming the
+      official weights on a GPU-less workstation
+      (<a href="https://github.com/FareedKhan-dev/kimi-k3-in-c">kimi-k3-in-c</a>),
+      expert-streaming runs on 64 GB MacBooks
+      (<a href="https://github.com/gavamedia/deltafin/blob/main/docs/PERFORMANCE.md">Deltafin</a>,
+      <a href="https://huggingface.co/moonshotai/Kimi-K3/discussions/148">WASTE</a>),
+      a Ryzen desktop with an expert cache
+      (<a href="https://github.com/JustVugg/colibri/blob/main/docs/kimi_k3.md">Colibri</a>),
+      a DGX Spark streaming this same Unsloth quant family
+      (<a href="https://dev.classmethod.jp/en/articles/dgx-spark-pulsar-ssd-expert-streaming/">Pulsar</a>),
+      and notably an RTX 5090 run of the official weights in late July
+      (<a href="https://github.com/gavamedia/deltafin/issues/6">Deltafin issue 6</a>),
+      which is why this page makes no first-on-a-32-GB-GPU claim. Each
+      project reports its own speeds, on setups too different for the
+      numbers to be comparable; follow the links for theirs.</p>
+      <p>What this page contributes to that genre is not the feat but the
+      measurement: a pinned, checksum-verified artifact; placement decided
+      from file-header arithmetic and published as one reproducible
+      override pattern; phase-separated telemetry that locates the
+      bottleneck; and speeds reported end to end with their failure modes.
+      If you run one of the setups above, their numbers are theirs and ours
+      are ours; none of them transfer across configurations, which is
+      rather the point of measuring.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>Sources</h2>
+      <ul class="plain">
+        <li>The model:
+        <a href="https://huggingface.co/moonshotai/Kimi-K3">huggingface.co/moonshotai/Kimi-K3</a>
+        (card, weights, and the Kimi K3 License), with the
+        <a href="https://github.com/MoonshotAI/Kimi-K3">technical repository</a>
+        alongside. Introduced 2026-07-16; weights published 2026-07-27.</li>
+        <li>The artifact we ran:
+        <a href="https://huggingface.co/unsloth/Kimi-K3-GGUF">unsloth/Kimi-K3-GGUF</a>,
+        the <code>UD-IQ1_S</code> build, 14 files, 594.00 GB (553.20 GiB).
+        Each file's size was re-checked, 14 of 14, against the saved
+        repository manifest on 2026-08-08; the SHA-256 checksums were
+        verified at download against the repository's records. Unsloth's own
+        <a href="https://unsloth.ai/docs/models/kimi-k3.md">guide and
+        quantization analysis</a> are the source for any quality claim about
+        the build; none is restated here as ours.</li>
+        <li>The runtime: llama.cpp with Kimi K3 text support from open pull
+        request
+        <a href="https://github.com/ggml-org/llama.cpp/pull/26185">#26185</a>,
+        built at commit <span class="n">7b990cf5</span> with CUDA 12.8.</li>
+        <li>Every measured number stands on dated project records: two
+        telemetry captures at five-second resolution, the four probe
+        response files, the end-to-end job record, the server logs
+        for both quant generations, the saved shard
+        manifest, and the 2026-08-08 header-scan results. These are project
+        records rather than public files today; they are named here so that
+        every number on this page has a dated, recorded home that can be
+        produced if questioned.</li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="../">Graphometer</a> ·
+      <a href="https://grantwilliams.ai">About</a> ·
+      hello@graphometer.ai ·
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Kimi and Kimi K3 are
+    referenced for identification only; not affiliated with, endorsed by, or
+    sponsored by Beijing Moonshot Technology Co., Ltd., Moonshot AI PTE. LTD.,
+    Unsloth, or their affiliates. This site is static. No scripts, no
+    tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>
