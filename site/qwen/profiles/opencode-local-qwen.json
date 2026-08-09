@@ -1,0 +1,22 @@
+{
+  "_comment": "Known-good OpenCode provider block for a local Qwen served by llama.cpp or Ollama. Graphometer, 2026-08-09. MERGE ONLY the 'provider' object below into your opencode.json (do not paste this whole file). The npm line is the standard OpenAI-compatible adapter. The model key must match what your server reports at /v1/models (for Ollama, the tag from 'ollama list'; for llama-server, usually the model file's name). limit.output is set high on purpose: thinking Qwens return empty answers on starved budgets. For Ollama, change baseURL to http://127.0.0.1:11434/v1.",
+  "provider": {
+    "local-qwen": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Qwen (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:8080/v1",
+        "apiKey": "local"
+      },
+      "models": {
+        "qwen-local": {
+          "name": "Local Qwen",
+          "limit": {
+            "context": 65536,
+            "output": 8192
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+# Known-good Ollama parameters for thinking-family Qwen models
+# (qwen3.6:27b, qwen3.6:35b, qwen3:32b and similar). Graphometer, 2026-08-09.
+# Why these values: the thinking pass bills against the same output budget as
+# the visible answer. Starve it and you get an empty reply with a "length"
+# stop reason. These are the settings we run daily on our own machine.
+
+# In a chat client that exposes Ollama options, set:
+#   num_ctx      32768     (or higher if your VRAM allows; 65536 verified on 27B/35B here)
+#   num_predict  4096      (the floor for thinking models; never below 2000)
+#   temperature  0.6
+#   top_k        20
+#   top_p        0.95
+
+# Or as a one-off from the terminal:
+#   ollama run qwen3.6:27b --verbose
+# then in the session:  /set parameter num_predict 4096
+
+# Non-thinking instruct models (Qwen2.5 class) use temperature 0.8, top_p 0.9,
+# and are fine with num_predict 2048.

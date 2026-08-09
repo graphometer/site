@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Qwen should I run?</title>
+<meta name="description" content="A hardware-honest guide to the Qwen model family: which generations are actually open, what runs on your GPU and RAM from a laptop to a 32 GB workstation running 122B and 397B mixture-of-experts models, how to install your first Qwen without being an infrastructure person, known-good serving profiles, and when a hosted API beats local. Measured rows are labeled measured; vendor rows are labeled vendor.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Family guide · measured rows dated · vendor rows labeled</div>
+      <h1>Which <em>Qwen</em> should I run?</h1>
+      <p class="lead">Qwen is an unusually wide open model family: real
+      Apache-licensed weights from under one billion parameters to a 397B
+      mixture-of-experts, plus API-only frontier tiers above that. That
+      width is the point of this page. We run the family for real on one
+      desktop, from the small daily drivers to the 122B and 397B, so the
+      guidance here is what we measured, labeled as measured, next to what
+      the vendor claims, labeled as claims. Find your hardware in the
+      chooser, install your first one with two commands once Ollama is on
+      your machine, take the serving profiles we actually run, and know
+      when the honest answer is "use the API instead."</p>
+      <div class="nonaff">Independent guidance. Not affiliated with,
+      endorsed by, or connected to the Qwen team or Alibaba Group.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>The family on one screen</h2>
+      <p>Four generations matter today. The one-line version: <strong>3.5
+      and 3.6 are the open ones you can run; 3.7 is API-only; 3.8 is
+      API-only today with open weights promised imminently.</strong></p>
+      <table class="facts">
+        <tr><th scope="row">Qwen3.5 (open)</th><td>The current big open generation: mixture-of-experts models topping out at the 397B and the 122B we serve here, Apache 2.0, with built-in speculative-decoding heads. Our measured deep-dive is the <a href="../qwen35/">Qwen3.5 pair field card</a>.</td></tr>
+        <tr><th scope="row">Qwen3.6 (open)</th><td>The newest open weights: a 27B and a 35B mixture-of-experts, Apache 2.0, files verified on the official organization. Our daily drivers below come from this generation and its predecessors.</td></tr>
+        <tr><th scope="row">Qwen3.7 (API only)</th><td><span class="asstated">Max, Plus and Flash tiers on the official API and aggregators; the vendor states they are proprietary. No 3.7 weights have ever shipped.</span></td></tr>
+        <tr><th scope="row">Qwen3.8 (API today, weights promised)</th><td>The Max is live as an API. Open weights for it and a new 27B were promised for the week of 2026-08-10; as of 2026-08-09 nothing has shipped. Verified status, first API measurements, and the fake-repository warning live on our <a href="../qwen38-readiness/">Qwen3.8 release watch</a> page.</td></tr>
+      </table>
+      <p class="fineprint">Generation status checked 2026-08-09. The
+      release-watch page carries the dated table and updates as things
+      actually ship.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>The chooser: what your machine can actually run</h2>
+      <p>Rows marked <strong>measured</strong> come from recorded runs on
+      our machine (a single RTX 5090 with 32 GB of VRAM and 188 GiB of
+      system RAM; dates given). Rows marked <strong>arithmetic</strong> are
+      file-size reasoning we consider sound but have not run. Rows marked
+      <strong>vendor</strong> are the maker's sizing. Speeds are warm
+      generation, one configuration each, not benchmarks.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Your hardware</th><th class="t" style="text-align:left">What we would run</th><th>Speed seen</th><th class="t" style="text-align:left">Basis</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Laptop or desktop, no real GPU</td><td class="t">The sub-1B and 2B-class tags as utilities and pipeline testers; anything bigger belongs to the API</td><td>see basis</td><td class="t">transferred: the 0.6B measured 857 t/s on our 32 GB GPU (July 2026); CPU-only speed untested here, but this size class runs acceptably on CPUs generally (vendor and community consensus, labeled as such)</td></tr>
+          <tr><td class="t">8 to 12 GB VRAM</td><td class="t">The 4B and 9B-class tags at 4-bit</td><td>untested here</td><td class="t">vendor sizing; we have not run these sizes and say so</td></tr>
+          <tr><td class="t">16 GB VRAM</td><td class="t">A 14B-class at 4-bit comfortably; the 27B at 4-bit with partial CPU offload</td><td>untested here</td><td class="t">arithmetic from file sizes</td></tr>
+          <tr><td class="t">24 GB VRAM</td><td class="t">The Qwen3.6 27B at 4-bit (a 17 GB download)</td><td>see basis</td><td class="t">arithmetic; measured only on our 32 GB card (72 tokens per second, July 2026), where it never had to squeeze</td></tr>
+          <tr><td class="t">32 GB VRAM</td><td class="t">The sweet spot we live on: the 35B mixture-of-experts as the fast generalist, the 27B, and a 30B-class vision model, all fully on GPU</td><td>227 / 72 / 291 t/s</td><td class="t">measured, July 2026, Ollama serving (qwen3.6:35b / qwen3.6:27b / the 30B-class vision tag, in that order)</td></tr>
+          <tr><td class="t">32 GB VRAM + roughly 96 GB or more RAM</td><td class="t">The Qwen3.5 122B: every layer on GPU, expert blocks walked to CPU, gated speculation on</td><td>26 to 38 t/s</td><td class="t">measured, 2026-08-05/06, llama.cpp serving on a 188 GiB machine; full story on the <a href="../qwen35/">field card</a></td></tr>
+          <tr><td class="t">32 GB VRAM + roughly 176 GB or more RAM</td><td class="t">The Qwen3.5 397B, same technique, more patience</td><td>14 to 20 t/s</td><td class="t">measured, 2026-08-05/06, same 188 GiB machine; low end is thinking replies</td></tr>
+          <tr><td class="t">None of the above fits</td><td class="t">Hosted Qwen: the same open weights served by API providers, or the official frontier tiers</td><td>n/a</td><td class="t">section 06</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">The RAM rule behind those floors: at the
+      quantizations we run, the 122B's weights are a 73 GB file and the
+      397B's are 150 GB, and the technique copies weights into RAM, so the
+      weights plus operating-system headroom must fit. We measured both
+      models only on a 188 GiB machine. With less RAM than the weights,
+      the model streams from disk instead, which we did not measure here
+      and which is dramatically slower. Quantization tier changes
+      everything; ours are named on the field card.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Your first Qwen, without being an infrastructure person</h2>
+      <p>The short path is Ollama. One hardware gate first: the model
+      below is a 17 GB download that wants roughly 20 GB or more of VRAM
+      to run fully on GPU. If your card is smaller, pick a smaller tag
+      from the chooser above, or read section 06. Then install Ollama
+      from the official installer for your platform, and:</p>
+      <pre class="log">ollama pull qwen3.6:27b
+ollama run qwen3.6:27b</pre>
+      <p>Two commands, and that is genuinely it for a first conversation. Two things will
+      save you the hours they cost us:</p>
+      <p><strong>First, the empty-answer trap.</strong> Modern Qwens think
+      before answering, and the thinking spends the same output budget as
+      the visible reply. If your client caps output around 500 or 1,000
+      tokens, a hard question can consume the whole cap thinking and hand
+      back nothing, which looks exactly like a broken install. It is not
+      broken. Set the output limit to 4,096. We measured this same
+      behavior all the way up at the API frontier (the
+      <a href="../qwen38-readiness/">release watch</a> has the table).</p>
+      <p><strong>Second, sampling.</strong> For thinking-family Qwens use
+      temperature 0.6, top-k 20, top-p 0.95. The values are in the first
+      profile below so you do not have to remember them.</p>
+      <p>You graduate from Ollama to llama.cpp's <code>llama-server</code>
+      when you want a model bigger than your VRAM: the technique that puts
+      a 122B on a 32 GB card is a llama.cpp flag set, and the second
+      profile below is its shape.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Known-good profiles, downloadable</h2>
+      <p>Three small plain-text files, the settings we actually run,
+      commented so you know why each value is what it is.</p>
+      <ul class="plain">
+        <li><a href="profiles/ollama-qwen-thinking.txt">ollama-qwen-thinking.txt</a>:
+        the parameter set for thinking-family Qwens under Ollama, including
+        the output-budget floor that avoids the empty-answer trap.</li>
+        <li><a href="profiles/llamacpp-qwen35-moe.txt">llamacpp-qwen35-moe.txt</a>:
+        the llama-server shape for big Qwen3.5 mixture-of-experts models on
+        one GPU, including the expert-offload knob and the speculation
+        confidence gate our field card measured (ungated speculation ran
+        slower than none on creative text, measured on the 122B; we keep
+        the same gate on the 397B on that evidence; the gate is one flag,
+        off by default in the builds we used).</li>
+        <li><a href="profiles/opencode-local-qwen.json">opencode-local-qwen.json</a>:
+        a provider block that points the OpenCode coding agent at your
+        local Qwen, either serving route.</li>
+      </ul>
+      <p class="fineprint">The profiles encode our recorded configurations
+      generalized to standard ports and paths. They are starting points,
+      not guarantees; your quantization, context size, and card will move
+      the numbers.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The big ones, on one desktop</h2>
+      <p>The reason this page can speak about 122B and 397B models in the
+      first person: both serve on the single 32 GB card described above,
+      using expert offload and the models' built-in speculation heads with
+      the confidence gate set. The 122B runs at 26 to 38 tokens per
+      second depending on prompt shape, the 397B at 14 to 20, and the
+      complete measured story, artifact hashes to placement arithmetic to
+      the gate trap, is the <a href="../qwen35/">Qwen3.5 pair field
+      card</a>. When the promised Qwen3.8 weights land, the same technique
+      is the first thing we will test, and the
+      <a href="../qwen38-readiness/">release watch</a> page says exactly
+      how.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Local or hosted, honestly</h2>
+      <p>Hosted Qwen is startlingly cheap. As of 2026-08-09, aggregator
+      pricing put the same 397B we run locally at roughly fifty to sixty
+      cents per million input tokens and about three and a half dollars
+      per million output; a heavy personal month costs single-digit
+      dollars. The official API's flash tier is cheaper still, with a
+      million-token context. Local never wins that arithmetic.</p>
+      <p>What local buys instead: your prompts and documents never leave
+      the machine; it works with the network down; nobody deprecates,
+      throttles, or silently revises your model; and you learn more about
+      how these systems actually behave than any API will teach you. Our
+      rule of thumb: privacy-sensitive or high-volume-and-predictable
+      work runs local; frontier-quality one-offs and anything needing a
+      million-token context run hosted. A same-task local-versus-hosted
+      study on identical weights is in progress and will get its own
+      page.</p>
+      <p class="fineprint">Prices observed 2026-08-09 and they change;
+      check the provider's live page before planning around them.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>What this page does not know</h2>
+      <ul class="plain">
+        <li>We have not run the 4B-to-14B-class sizes on small GPUs; those
+        rows are sizing arithmetic and vendor claims, labeled as such.</li>
+        <li>Our speed figures are one machine, one quantization tier, one
+        serving configuration each, at the dates given. They are honest
+        samples, not benchmarks.</li>
+        <li>The July 2026 daily-driver numbers predate our current
+        llama.cpp serving work; a fresh measured pass on the 27B and 35B
+        is planned and this page will update with dated entries.</li>
+        <li>Vision, audio, and long-context behavior are not covered here;
+        the field card states exactly what long-context ground the big
+        pair has actually been tested on.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Updates and sources</h2>
+      <table class="facts">
+        <tr><th scope="row">2026-08-09</th><td>Page created. Generation status, pricing, and tag names checked that day; chooser speeds carry their own dates.</td></tr>
+      </table>
+      <p class="fineprint">If today is later than the newest row above,
+      treat the generation-status and pricing lines as unverified since
+      that date; the <a href="../qwen38-readiness/">release watch</a>
+      carries the living Qwen3.8 record.</p>
+      <ul class="plain">
+        <li>The <a href="../qwen35/">Qwen3.5 pair field card</a>: dated
+        recorded runs behind every 122B/397B number here.</li>
+        <li>The <a href="../qwen38-readiness/">Qwen3.8 release watch</a>:
+        verified generation status and the API measurements.</li>
+        <li>July 2026 daily-driver speeds: our recorded Ollama benchmark
+        pass (project records that can be produced if questioned).</li>
+        <li>Official Qwen organization pages for licenses and file sizes,
+        checked 2026-08-09; aggregator pricing pages for section 06,
+        observed 2026-08-09.</li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="../">Graphometer</a> ·
+      <a href="https://grantwilliams.ai">About</a> ·
+      hello@graphometer.ai ·
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Qwen, Qwen3.5,
+    Qwen3.6, Qwen3.7, Qwen3.8, and Tongyi are marks of Alibaba Group Holding
+    Limited, referenced for identification only; not affiliated with,
+    endorsed by, or sponsored by the Qwen team, Alibaba Group Holding
+    Limited, Alibaba Cloud, Ollama, OpenCode's maintainers, or their
+    affiliates. Product names and marks belong to their respective owners.
+    This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

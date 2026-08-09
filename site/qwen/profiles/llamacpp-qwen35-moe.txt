@@ -1,0 +1,48 @@
+# Known-good llama.cpp serving shape for big Qwen3.5 MoE models on one GPU
+# (122B-class shown; the 397B-class uses the same shape with MORE expert
+# blocks on CPU). Graphometer, 2026-08-09. Measured details and the full
+# story: graphometer.ai/qwen35/
+
+# The four ideas:
+# 1. -ngl 99 asks for every layer on the GPU (any number >= the layer count
+#    means "all"), then --n-cpu-moe N walks expert blocks back to the CPU
+#    until the model fits your VRAM.
+# 2. TUNE N FOR YOUR CARD BEFORE TRUSTING ANY NUMBER HERE: start with N high
+#    (most expert blocks on CPU), confirm it loads, then lower N step by
+#    step watching nvidia-smi until you are near your VRAM ceiling. The 38
+#    below is OUR starting point for the 122B on a 32 GB card; it is not
+#    universal, and the 397B wants a higher N on the same card.
+# 3. The MTP guessing head ships inside the GGUF. Turned on WITH its
+#    confidence gate it was a large speed win on our machine. Without the
+#    gate, creative-text decode measured SLOWER than no speculation at all
+#    (measured on the 122B; we keep the same gate on the 397B on that
+#    evidence). The gate flag is --spec-draft-p-min and it defaults to 0
+#    (off) in the builds we used.
+# 4. --no-mmap copies the weights into RAM instead of memory-mapping them.
+#    On our 397B runs, leaving mmap on cost 82 percent of prompt-reading
+#    speed. If the weights fit in your RAM, copy them in. This also means
+#    the weights MUST fit in RAM: for multi-file quants below, that is the
+#    sum of all shards.
+
+# Note the file name: big quants ship as multiple shards. Point -m at the
+# FIRST shard and llama.cpp finds the rest.
+
+llama-server \
+  -m Qwen3.5-122B-A10B-UD-Q4_K_S-00001-of-00003.gguf \
+  -ngl 99 \
+  --n-cpu-moe 38 \
+  -c 65536 \
+  --no-mmap \
+  --spec-type draft-mtp \
+  --spec-draft-n-max 6 \
+  --spec-draft-p-min 0.75 \
+  --host 127.0.0.1 --port 8080
+
+# Request-side settings that matter as much as the server flags:
+# - Thinking bills inside the output budget. Give requests thousands of
+#   tokens of headroom (we use 4096 as the floor).
+# - Sampling for thinking-family Qwens: temperature 0.6, top-k 20,
+#   top-p 0.95.
+# - Warm speeds only: never judge the first answer after a cold start.
+# All figures behind this file are one machine, one configuration, dated
+# recorded runs; the field card names the exact quants and numbers.
