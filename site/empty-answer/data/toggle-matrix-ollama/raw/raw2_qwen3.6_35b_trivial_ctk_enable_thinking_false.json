@@ -1,0 +1,39 @@
+{
+ "request": {
+  "model": "qwen3.6:35b",
+  "messages": [
+   {
+    "role": "user",
+    "content": "What is 17 * 23? Answer with just the number."
+   }
+  ],
+  "max_tokens": 2500,
+  "temperature": 0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "response": {
+  "id": "chatcmpl-143",
+  "object": "chat.completion",
+  "created": 1786321895,
+  "model": "qwen3.6:35b",
+  "system_fingerprint": "fp_ollama",
+  "choices": [
+   {
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "391",
+     "reasoning": "Thinking Process:\n\n1.  **Identify the user's request:** The user wants to calculate $17 \\times 23$ and wants the answer as *just* the number.\n2.  **Perform the calculation:**\n    *   $17 \\times 23$\n    *   Break it down: $17 \\times (20 + 3)$\n    *   $17 \\times 20 = 340$\n    *   $17 \\times 3 = 51$\n    *   $340 + 51 = 391$\n    *   Alternatively:\n        *   $10 \\times 23 = 230$\n        *   $7 \\times 23 = 7 \\times (20 + 3) = 140 + 21 = 161$\n        *   $230 + 161 = 391$\n3.  **Format the output:** The user explicitly requested \"Answer with just the number.\"\n4.  **Final Output Generation:** 391.\n\nDouble check:\n$17 \\times 23$\n$(20 - 3)(20 + 3) = 20^2 - 3^2 = 400 - 9 = 391$.\nCalculation is correct.\n\nConstraint check: \"Answer with just the number.\" -> Do not include text like \"The answer is\" or explanations. Just \"391\".\n\nFinal Answer: 391."
+    },
+    "finish_reason": "stop"
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 26,
+   "completion_tokens": 355,
+   "total_tokens": 381
+  }
+ }
+}

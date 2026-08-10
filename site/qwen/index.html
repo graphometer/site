@@ -186,6 +186,105 @@
       the model streams from disk instead, which we did not measure here
       and which is dramatically slower. Quantization tier changes
       everything; ours are named on the field card.</p>
+      <p>Behind that table are three questions, and they are worth asking
+      in order, because a yes to one does not imply a yes to the next.
+      <strong>Does it load?</strong> <strong>Does it generate at a speed
+      you can work at?</strong> <strong>Does it still do that with enough
+      context to be useful for your actual task?</strong> Most sizing
+      advice answers only the first and lets the reader assume the rest.
+      The 397B on this machine loads at the placements we use, generates
+      comfortably, and has never been fed a prompt longer than 4,367
+      tokens: three different answers about one model.</p>
+      <div class="note">
+        <span class="label">Total parameters and active parameters are different numbers</span>
+        Every name in this family carries two: the 122B is a
+        <strong>122.1 billion</strong>-parameter model of which
+        <strong>9.8 billion</strong> compute for any given token, and the
+        397B is <strong>396.3 billion</strong> of which
+        <strong>17.4 billion</strong> do. Those are header sums, read out
+        of the files on our disk on 2026-08-08 by adding up tensor shapes
+        (899 tensor headers in one file and 1,118 in the other) rather
+        than figures quoted from a model card, and they are the served
+        text stacks: each file also carries a built-in guessing head, 2.5
+        and 6.6 billion parameters, which the field card counts
+        separately. The architecture is why: the smaller model holds 256
+        routed experts and fires 8 of them per token plus one always-on
+        shared expert; the larger holds 512 and fires 10, plus its shared
+        expert. Under five percent of the big model works on any one
+        token. <strong>The total decides what you must store; with the weights
+        in memory, the active count is what decides how fast a token
+        is.</strong> That is the single
+        most useful thing to know before buying hardware, and getting it
+        backwards is the most common sizing mistake we see: an
+        "A17B" label does not mean the model needs 17 billion parameters'
+        worth of memory. At the quantizations we run, what has to fit is
+        <strong>73 GB for the 122B and 150 GB for the 397B</strong>, and
+        our method copies those bytes into system RAM rather than reading
+        them from disk. The active count is why a 397-billion-parameter
+        model answers at conversational speed at all.
+      </div>
+      <p>One more distinction the chooser above compresses. <strong>Loads,
+      generates, worth studying, and worth recommending are four different
+      findings</strong>, and a page that reports only the first is telling
+      you a quarter of the story. Here is where we actually got to on each
+      model we have run, and where we deliberately stopped. "Not
+      established" means we did not do the work, not that the answer is
+      no.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model, as we ran it</th><th class="t" style="text-align:left">Loads</th><th class="t" style="text-align:left">Generates</th><th class="t" style="text-align:left">Worth studying</th><th class="t" style="text-align:left">Worth recommending</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="t">Qwen3.5-122B, 4-bit, 38 expert blocks on CPU</td>
+            <td class="t">Yes: 24.6 GiB of a 32 GB card, 20 to 24 seconds warm</td>
+            <td class="t">Yes: 26 to 29 t/s prose, about 38 structured</td>
+            <td class="t">Yes: a full recorded battery, 2026-08-06</td>
+            <td class="t">Yes, with an output-token floor in the thousands: our recorded 700-token caps came back empty</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3.5-397B, 3-bit tier, 57 expert blocks on CPU</td>
+            <td class="t">Yes: 23.5 GiB of the same card, 160 to 215 seconds</td>
+            <td class="t">Yes: 19.5 t/s structured, 14 to 17 on real thinking replies</td>
+            <td class="t">Yes: the same recorded battery</td>
+            <td class="t">Yes for depth, if you can wait; the hard puzzle we ran failed at a 4,096-token cap and completed in 7,608 tokens under an 8,192-token cap</td>
+          </tr>
+          <tr>
+            <td class="t">The same 397B, one placement step further onto the GPU (53 blocks on CPU)</td>
+            <td class="t"><strong>No</strong>: every weight loaded, then it died minutes in, unable to allocate a 1,862 MiB working buffer</td>
+            <td class="t">n/a</td>
+            <td class="t">n/a</td>
+            <td class="t">No, and this is why "it fits" is not the same question as "it loads"</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3.6-27B, 4-bit, fully on GPU (Ollama, July 2026)</td>
+            <td class="t">Yes</td>
+            <td class="t">Yes: 72 t/s</td>
+            <td class="t">Not established: a battery of ours ran on it, then the thinking-budget trap invalidated most of the card it produced</td>
+            <td class="t">Yes, as a first Qwen (section 03)</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3.6-35B mixture-of-experts, fully on GPU (Ollama, July 2026)</td>
+            <td class="t">Yes</td>
+            <td class="t">Yes: 227 t/s</td>
+            <td class="t">Not established</td>
+            <td class="t">Yes, as the fast generalist at this card size</td>
+          </tr>
+          <tr>
+            <td class="t">A 397B-class model on a machine with less RAM than its weights</td>
+            <td class="t">Not attempted, predicted yes: the weights can be read from disk instead of copied into memory</td>
+            <td class="t"><strong>Predicted no</strong> at a usable speed: the profile copies 150 GB of weights into RAM, and with less RAM than that the model streams from the drive on every token. The nearest thing we have measured is a different 744B model on this machine whose weights exceed its RAM: 4 to 6 tokens per second</td>
+            <td class="t">Not established</td>
+            <td class="t">No, on that arithmetic, and we say predicted because we did not run it</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Rows one to three are recorded runs on this
+      machine, 2026-08-05 to 08-06. Rows four and five are July 2026
+      Ollama-era measurements at a different serving stack and carry that
+      date. The last row is arithmetic and is labeled as a prediction
+      throughout; the 744B comparison it leans on is a recorded run of a
+      different model family, quoted for the memory regime only.</p>
     </section>
 
     <section>

@@ -1,0 +1,82 @@
+{
+  "elapsed_seconds": 4.063153435999993,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 400,
+    "messages": [
+      {
+        "content": "Generate a single fictional weather field-station status report as one JSON object. It must validate against this JSON Schema exactly: every required key present, correct types, and no keys beyond the ones listed.\n\nSchema:\n{\"type\":\"object\",\"properties\":{\"station_id\":{\"type\":\"string\"},\"observed_temperature_c\":{\"type\":\"number\"},\"conditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"operational\":{\"type\":\"boolean\"}},\"required\":[\"station_id\",\"observed_temperature_c\",\"conditions\",\"operational\"],\"additionalProperties\":false}\n\nRespond with ONLY the JSON object. No prose, no markdown code fences, no explanation.",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.6:27b",
+    "response_format": {
+      "json_schema": {
+        "name": "field_station_report",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "conditions": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "observed_temperature_c": {
+              "type": "number"
+            },
+            "operational": {
+              "type": "boolean"
+            },
+            "station_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "station_id",
+            "observed_temperature_c",
+            "conditions",
+            "operational"
+          ],
+          "type": "object"
+        },
+        "strict": true
+      },
+      "type": "json_schema"
+    },
+    "seed": 42
+  },
+  "response_headers": {
+    "Content-Length": "1361",
+    "Content-Type": "application/json",
+    "Date": "Mon, 10 Aug 2026 00:15:57 GMT"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\"station_id\":\"WF-734\",\"observed_temperature_c\":-12.5,\"conditions\":[\"blizzard\",\"high winds\",\"whiteout\"],\"operational\":true}",
+          "reasoning": "Thinking Process:\nThe user wants a single fictional weather field-station status report as a JSON object.\nMust validate against the provided JSON Schema.\nSchema properties:\n- station_id (string)\n- observed_temperature_c (number)\n- conditions (array of strings)\n- operational (boolean)\nRequired: all four.\nadditionalProperties: false.\n\nI will generate a simple JSON object matching these constraints exactly.\nNo prose, no markdown code fences, just the raw JSON string.\n\nExample:\n{\"station_id\":\"WF-734\",\"observed_temperature_c\":-12.5,\"conditions\":[\"blizzard\",\"high winds\",\"whiteout\"],\"operational\":true}\n\nChecks:\n- station_id: string? Yes.\n- observed_temperature_c: number? Yes.\n- conditions: array of strings? Yes.\n- operational: boolean? Yes.\n- No additional properties? Yes.\n- Matches schema exactly? Yes.\n\nReady to output. All constraints met. Output only the JSON string.\u2705",
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1786320957,
+    "id": "chatcmpl-297",
+    "model": "qwen3.6:27b",
+    "object": "chat.completion",
+    "system_fingerprint": "fp_ollama",
+    "usage": {
+      "completion_tokens": 37,
+      "prompt_tokens": 355,
+      "total_tokens": 392
+    }
+  },
+  "response_text": "{\"id\":\"chatcmpl-297\",\"object\":\"chat.completion\",\"created\":1786320957,\"model\":\"qwen3.6:27b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"station_id\\\":\\\"WF-734\\\",\\\"observed_temperature_c\\\":-12.5,\\\"conditions\\\":[\\\"blizzard\\\",\\\"high winds\\\",\\\"whiteout\\\"],\\\"operational\\\":true}\",\"reasoning\":\"Thinking Process:\\nThe user wants a single fictional weather field-station status report as a JSON object.\\nMust validate against the provided JSON Schema.\\nSchema properties:\\n- station_id (string)\\n- observed_temperature_c (number)\\n- conditions (array of strings)\\n- operational (boolean)\\nRequired: all four.\\nadditionalProperties: false.\\n\\nI will generate a simple JSON object matching these constraints exactly.\\nNo prose, no markdown code fences, just the raw JSON string.\\n\\nExample:\\n{\\\"station_id\\\":\\\"WF-734\\\",\\\"observed_temperature_c\\\":-12.5,\\\"conditions\\\":[\\\"blizzard\\\",\\\"high winds\\\",\\\"whiteout\\\"],\\\"operational\\\":true}\\n\\nChecks:\\n- station_id: string? Yes.\\n- observed_temperature_c: number? Yes.\\n- conditions: array of strings? Yes.\\n- operational: boolean? Yes.\\n- No additional properties? Yes.\\n- Matches schema exactly? Yes.\\n\\nReady to output. All constraints met. Output only the JSON string.\u2705\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":355,\"completion_tokens\":37,\"total_tokens\":392}}\n",
+  "status_code": 200,
+  "url": "http://127.0.0.1:11434/v1/chat/completions"
+}

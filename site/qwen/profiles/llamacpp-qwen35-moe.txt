@@ -1,7 +1,7 @@
 # Known-good llama.cpp serving shape for big Qwen3.5 MoE models on one GPU
 # (122B-class shown; the 397B-class uses the same shape with MORE expert
-# blocks on CPU). Graphometer, 2026-08-09. Measured details and the full
-# story: graphometer.ai/qwen35/
+# blocks on CPU). Graphometer, 2026-08-09; prior-art credit added
+# 2026-08-10. Measured details and the full story: graphometer.ai/qwen35/
 
 # The four ideas:
 # 1. -ngl 99 asks for every layer on the GPU (any number >= the layer count
@@ -16,8 +16,23 @@
 #    confidence gate it was a large speed win on our machine. Without the
 #    gate, creative-text decode measured SLOWER than no speculation at all
 #    (measured on the 122B; we keep the same gate on the 397B on that
-#    evidence). The gate flag is --spec-draft-p-min and it defaults to 0
-#    (off) in the builds we used.
+#    evidence). The gate flag is --spec-draft-p-min and the CLI flag
+#    defaults to 0.00 (off) in the builds we used.
+#    THE 0.75 IS NOT OUR NUMBER. It already circulates as a recommended
+#    acceptance "sweet spot": llama.cpp discussion #25198 uses it as a
+#    throughput lever, a Chinese-language tuning writeup dated 2026-05-18
+#    calls >= 0.75 the sweet spot and gives guidance across 0.6 to 0.9,
+#    and it appears in the reproduction command of an existing llama.cpp
+#    issue. What we measured is not the value but the REVERSAL on this
+#    size class: the gate turning a measured negative into a result above
+#    the no-speculation baseline on creative text. NEITHER EFFECT IS NEW:
+#    the creative slowdown was published on 2026-05-12 on a dense
+#    Qwen3.6-27B, and the gated reversal on 2026-05-22 on a 27B (29.0 t/s
+#    with no speculation, 48.9 with this gate). Ours is the independent
+#    confirmation on a much larger mixture-of-experts model with most of
+#    its expert blocks on the CPU; the field card carries both citations.
+#    Tune it yourself; the knee for your model and quantization is not
+#    something we located.
 # 4. --no-mmap copies the weights into RAM instead of memory-mapping them.
 #    On our 397B runs, leaving mmap on cost 82 percent of prompt-reading
 #    speed. If the weights fit in your RAM, copy them in. This also means

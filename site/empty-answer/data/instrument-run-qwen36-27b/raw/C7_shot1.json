@@ -1,0 +1,88 @@
+{
+  "elapsed_seconds": 1.8504164990008576,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 300,
+    "messages": [
+      {
+        "content": "What is the weather like in Reykjavik right now? Use the weather tool to check, and give the answer in Celsius.",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.6:27b",
+    "seed": 42,
+    "tool_choice": "auto",
+    "tools": [
+      {
+        "function": {
+          "description": "Get the current weather conditions for a specific city.",
+          "name": "get_current_weather",
+          "parameters": {
+            "properties": {
+              "city": {
+                "description": "City name, e.g. 'Portland, OR' or 'Reykjavik'.",
+                "type": "string"
+              },
+              "unit": {
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "city"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response_headers": {
+    "Content-Length": "702",
+    "Content-Type": "application/json",
+    "Date": "Mon, 10 Aug 2026 00:15:47 GMT"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "message": {
+          "content": "",
+          "reasoning": "The user wants to know the current weather in Reykjavik.\nI need to use the `get_current_weather` function.\nParameters:\n- city: \"Reykjavik\"\n- unit: \"celsius\" (as requested by the user)\n\nLet's construct the tool call.",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"city\":\"Reykjavik\",\"unit\":\"celsius\"}",
+                "name": "get_current_weather"
+              },
+              "id": "call_ch0st8y3",
+              "index": 0,
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786320947,
+    "id": "chatcmpl-16",
+    "model": "qwen3.6:27b",
+    "object": "chat.completion",
+    "system_fingerprint": "fp_ollama",
+    "usage": {
+      "completion_tokens": 109,
+      "prompt_tokens": 343,
+      "total_tokens": 452
+    }
+  },
+  "response_text": "{\"id\":\"chatcmpl-16\",\"object\":\"chat.completion\",\"created\":1786320947,\"model\":\"qwen3.6:27b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The user wants to know the current weather in Reykjavik.\\nI need to use the `get_current_weather` function.\\nParameters:\\n- city: \\\"Reykjavik\\\"\\n- unit: \\\"celsius\\\" (as requested by the user)\\n\\nLet's construct the tool call.\",\"tool_calls\":[{\"id\":\"call_ch0st8y3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"get_current_weather\",\"arguments\":\"{\\\"city\\\":\\\"Reykjavik\\\",\\\"unit\\\":\\\"celsius\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":343,\"completion_tokens\":109,\"total_tokens\":452}}\n",
+  "status_code": 200,
+  "url": "http://127.0.0.1:11434/v1/chat/completions"
+}

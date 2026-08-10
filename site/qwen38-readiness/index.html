@@ -182,6 +182,33 @@
       releases. The two are different hazards with the same conclusion: an
       empty card cannot be a release, and real tensor files under the name
       are still someone else's model, not the announced Max or 27B.</p>
+      <p>The general rule is worth more than any list of today's fakes,
+      because next week's will have different names. Three questions
+      settle almost every case, and none of them requires downloading
+      anything:</p>
+      <ul class="plain">
+        <li><strong>Who owns the repository?</strong> A release comes from
+        the maker's own organization account. A model published under any
+        other account is that account's artifact, whatever the name says
+        and however carefully the card is worded. This is a question about
+        the owner, not about the quality of the page.</li>
+        <li><strong>Is there anything in it?</strong> Open the file list
+        before the description. Weights are large and they come in shards:
+        a 27B at four bits is tens of gigabytes, a 2.4-trillion-parameter
+        model is hundreds. A repository whose entire contents are a
+        readme and a small configuration file contains no model at all,
+        and a card describing planned quantizations is a plan, not a
+        release.</li>
+        <li><strong>Was this size ever announced?</strong> The 2026-08-03
+        announcement named exactly two open models: a 27B and the
+        2.4-trillion-parameter Max. A repository using the 3.8 name at any
+        other size is, by arithmetic, not one of the announced models,
+        whatever else it may be.</li>
+      </ul>
+      <p>We are describing shapes rather than naming accounts on purpose.
+      A rule generalizes to next week's uploads; a list of names is out of
+      date the day after it is written, and it accuses people we have not
+      contacted on evidence we have not asked them to answer.</p>
       <p>When the drop happens, the safe path is boring: take the
       repository link from the Qwen team's own announcement channels, or
       the official organization page directly, confirm the license file is
@@ -215,10 +242,14 @@
       <p>The finding that will matter to anyone building on it:
       <strong>the model thinks by default, its thinking bills as output
       tokens inside your token cap, and it will happily spend your entire
-      cap thinking and hand back an empty answer.</strong> This is a
-      family trait we know well from serving two Qwen3.5 models locally
-      (their field card is linked below), and it is fully present on this
-      frontier API route:</p>
+      cap thinking and hand back an empty answer.</strong> We know the
+      behavior well from serving two Qwen3.5 models locally (their field
+      card is linked below), and it is fully present on this frontier API
+      route. It is not a Qwen trait: a model from a different vendor,
+      swept on the same prompt at the same caps on 2026-08-09, was slower
+      than this one to produce a first visible answer (section 06, and the
+      full study on <a href="../empty-answer/">The empty answer</a>). The
+      Qwen battery:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Request</th><th>Token cap</th><th>Thinking spent</th><th>Visible answer</th></tr></thead>
@@ -307,6 +338,7 @@
       <h2>Updates</h2>
       <table class="facts">
         <tr><th scope="row">2026-08-09</th><td>Page created. Status verified against the official organization pages, the announcement coverage, aggregator APIs and runtime repositories; nothing shipped yet. API battery run and recorded (section 03).</td></tr>
+        <tr><th scope="row">2026-08-10</th><td><strong>The empty-answer behavior in section 03 is not a Qwen fault, and we can now show that rather than assert it.</strong> On 2026-08-09 we swept one fixed reasoning prompt across the same token caps on two models from different vendors: Qwen3.8-Max on this aggregator route, and a comparable hidden-reasoning model from another family as a control. Both spend the whole cap thinking and return an empty answer when the cap is small. On this prompt <strong>Qwen was the better-behaved of the two</strong>: it produced its first visible words at a 256-token cap, where the control still returned nothing at 256 and did not finish until 1,024. This is a property of models that think invisibly and bill that thinking against one visible output budget, not a property of any one vendor. The whole comparison cost under three cents and it changed our conclusion: a page showing the Qwen curve alone would have implied a Qwen-specific defect and would have been wrong. The full study follows on its own page, <a href="../empty-answer/">The empty answer</a>: three lanes including this machine's local Qwen3.5, the cross-vendor control, and the method for finding your own floor instead of trusting a number.</td></tr>
       </table>
       <p class="fineprint">Every existence claim on this page is dated. If
       today is later than the newest row above, treat the status table as
