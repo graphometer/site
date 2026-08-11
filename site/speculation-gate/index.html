@@ -1,0 +1,1106 @@
+<!doctype html>
+<!-- STAGED 2026-08-11. TITLE APPLIED 2026-08-11: Grant picked option A (the May-2026
+     default-flip extended subject); the <h1> stays short per the house pattern. Data package assembled under data/
+     (see data/README.md); every figure is mapped to its file in data/NUMBERS.md. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slower by default: how llama.cpp's speculative-decoding gate turned off in May 2026, and what 160 paired measurements on a CPU-offloaded 397B MoE say it costs</title>
+<meta name="description" content="A measured study of llama.cpp's speculative-decoding confidence gate, the --spec-draft-p-min CLI flag, which defaults to 0.00. On one CPU-offloaded 397B mixture-of-experts deployment, 160 paired measurements on 2026-08-10 show the shipped default making prose 19.8% slower than no speculation at all while making structured output 22.5% faster; every tested gate at or above 0.50 (0.50, 0.75, 0.90) reverses the prose loss, and a 96-measurement follow-up run the next night measured gates of 0.10 and 0.25 as prose regressions against their own baseline, bracketing the crossover between 0.25 and 0.50. Includes the provenance of the widely recommended 0.75 (llama.cpp's own shipped default for roughly fifteen months, replaced by 0.00 in May 2026), the maintainer's stated tradeoff, three contradictory public two-point comparisons, and a data package containing the raw records.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; main run 2026-08-10: five speculation settings, 160 paired measurements, recomputed from the raw records 2026-08-11 &middot; lower-gate follow-up run 2026-08-11: gates 0.10 and 0.25, 96 measurements &middot; one CPU-offloaded 397B MoE, one machine</div>
+      <h1>Slower <em>by default</em></h1>
+      <p class="lead">Speculative decoding is sold as a free lunch: a draft
+      mechanism proposes tokens, the big model verifies them, and you get
+      the same output faster. llama.cpp's implementation carries a
+      confidence gate on the draft, the <code>--spec-draft-p-min</code> CLI
+      flag, and that flag defaults to 0.00, a setting at which no draft is
+      ever cut short for low confidence: every draft runs to its full
+      length and is submitted for verification, however unconfident the
+      draft was (section 02 cites the code). On the deployment measured
+      here, Qwen3.5-397B-A17B, a mixture-of-experts model served with
+      roughly 127&nbsp;GB of weights resident in CPU RAM behind a single
+      RTX&nbsp;5090, that default made prose generation
+      <strong>19.8% slower than running with no speculation at all</strong>,
+      in the same run in which it made structured output 22.5% faster.
+      Every gate value we tested at or above 0.50 reversed the prose loss
+      into a gain: +18.6% at 0.50, +21.9% at 0.75, +22.8% at 0.90,
+      while gates of 0.10 and 0.25, measured in a follow-up run the next
+      night against that run's own fresh baseline, did not reverse it:
+      both were prose regressions in their own right (section 07). And the 0.75 that
+      circulates in mid-2026 write-ups as a recommended value turns out not
+      to be a community-tuned number: it was llama.cpp's own shipped
+      default for roughly fifteen months, set by a pull request whose
+      entire body reads &ldquo;Better defaults for speculative
+      decoding.&rdquo;, and replaced by 0.00 in May 2026. On this
+      deployment's prose prompts, today's default selects the treatment we
+      measured as slower than no speculation, and the mid-2026
+      &ldquo;magic flag&rdquo; posts recommending 0.75 are, functionally,
+      re-supplying by hand the value that had been the shipped default for
+      the previous fifteen months. Everything below is one model, one
+      quantization, one placement, on one machine; the public record
+      contains a credible measurement with the opposite sign on the same
+      GPU model (running a small model fully resident in VRAM, the
+      opposite placement regime), and this page cites it.</p>
+      <div class="nonaff">Independent measurements; no affiliation with the
+      llama.cpp project, ggml-org, the Qwen models' provider (Alibaba), or
+      Unsloth.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Summary</h2>
+      <p>Speculative decoding in llama.cpp can be tuned with a
+      draft-confidence gate, the <code>--spec-draft-p-min</code> CLI flag.
+      Since 2026-05-19 that flag has defaulted to 0.00: no draft is ever
+      cut short for low confidence. Before that it defaulted to 0.75 for
+      about fifteen months, and to 0.9 for the three months before that.
+      Enabling speculation without setting the flag selects the build's
+      shipped default: 0.00 on a current build, 0.75 on a build from
+      February 2025 through May 2026.</p>
+      <p>On 2026-08-10 we measured what the gate does on one specific
+      deployment: Qwen3.5-397B-A17B in Unsloth's <code>UD-IQ3_XXS</code>
+      quantization, served by llama.cpp with 57 of its MoE layers' experts
+      held in CPU RAM, on one RTX&nbsp;5090. Five treatments (no
+      speculation, the 0.00 default, and gates of 0.50, 0.75 and 0.90)
+      on llama.cpp's <code>draft-mtp</code> self-speculation path
+      (section 02 explains it), in two counterbalanced cycles over sixteen
+      fixed prompts, half prose and half structured output. 160
+      measurements, every one paired against the no-speculation baseline
+      within the same prompt and cycle.</p>
+      <p>Five results:</p>
+      <ol class="plain">
+        <li><strong>The shipped default is a prose regression on this
+        deployment.</strong> Ungated speculation made prose 19.8% slower
+        than no speculation at all [95% CI &minus;24.7 to &minus;17.9]
+        while making structured output 22.5% faster [+7.6 to +41.9]. Same
+        run, same baseline, opposite signs.</li>
+        <li><strong>Every tested gate at or above 0.50 reverses it.</strong> Prose at +18.6% /
+        +21.9% / +22.8% for gates 0.50 / 0.75 / 0.90; structured at +38.4%
+        / +47.0% / +47.7%. Against the shipped default, setting any of
+        those three gates was worth roughly +50% on prose, with every
+        interval clear of zero. On structured output that same contrast is smaller, and at
+        0.50 it is not resolved from zero.</li>
+        <li><strong>A single pooled number represents neither
+        workload.</strong> Pooled across both output shapes, the default
+        reads &minus;4.45% with a 95% interval of [&minus;19.6, +19.6],
+        while its two components sit at &minus;19.8% and +22.5%,
+        both nominal intervals excluding zero. Reporting a single pooled
+        number for a workload that mixes prose and structured output does
+        not represent either one.</li>
+        <li><strong>Speculation is not output-preserving at temperature 0,
+        gated or not.</strong> Prose came back byte-identical to the
+        baseline 0 times out of 16 under every speculative setting. The
+        baseline itself is byte-reproducible across restarts (16/16), so
+        the divergence belongs to speculation. Most of the divergent pairs
+        compare two answers that both ran to completion; section 08
+        separates truncation from wording.</li>
+        <li><strong>Below 0.50, the reversal is absent.</strong> Gates of
+        0.10 and 0.25, measured the following night against their own
+        same-night baseline, were prose regressions of &minus;32.0%
+        [95% CI &minus;38.6 to &minus;27.4] and &minus;23.7% [&minus;27.9
+        to &minus;20.1]; neither low gate's structured contrast was
+        resolved from zero in that run. The crossover from prose
+        regression to gain is therefore bracketed between 0.25 and 0.50,
+        a bracket that spans the two runs' two nights, with the
+        between-night axis uncontrolled (section 07).</li>
+      </ol>
+      <p>All intervals on this page are per-contrast cluster-bootstrap
+      intervals with no multiplicity correction, and calibration drift is
+      visible across the evening; sections 03 and 11 state those
+      limits.</p>
+      <p>None of this is a bug report. The maintainer changed the default
+      deliberately, documented a real tradeoff when he did (section 06),
+      and the code behaves as designed. What this page adds is a measured
+      curve with stated uncertainty (five arms in the main run, two
+      more in a next-night follow-up) on a regime absent from the
+      public comparisons we could retrieve, a CPU-offloaded ~400B MoE,
+      together with the provenance of the number everyone
+      recommends.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>Environment</h2>
+      <p>Everything below is a property of one model file, one runtime
+      build, one placement and one request shape, on 2026-08-10, on one
+      workstation. Nothing here measures any model's intelligence or
+      benchmark standing, and no such claim appears on this page.</p>
+      <table class="facts">
+        <tr><th scope="row">Model</th><td>Qwen3.5-397B-A17B, the Unsloth <code>UD-IQ3_XXS</code> build, four GGUF shards, ~150&nbsp;GB on disk.</td></tr>
+        <tr><th scope="row">Runtime</th><td>llama.cpp mainline at commit <span class="n">c8e03ce</span>, verified two ways: <code>llama-server --version</code> printed <span class="n">version: 1 (c8e03ce)</span> before the first row, and every streamed chunk carries <code>system_fingerprint: "b1-c8e03ce"</code> into the records. One caveat: <code>llama-server</code> is a 17.9&nbsp;KB thin launcher whose SHA-256 does not pin the build; the real code lives in sibling shared objects.</td></tr>
+        <tr><th scope="row">Hardware</th><td>One NVIDIA GeForce RTX&nbsp;5090. VRAM in use: ~20.3&nbsp;GB for the no-speculation baseline, 24.0&ndash;24.1&nbsp;GB with speculation loaded. Server resident set ~126.8&nbsp;GB of system RAM.</td></tr>
+        <tr><th scope="row">Placement</th><td><code>--n-gpu-layers 999 --n-cpu-moe 57</code>: attention and shared weights on the GPU, 57 MoE layers' experts in CPU RAM (~126.8&nbsp;GB resident). We read decode in this placement as bound by CPU memory bandwidth; that is an inference from the placement, not an instrumented measurement.</td></tr>
+        <tr><th scope="row">Speculation</th><td><code>--spec-type draft-mtp --spec-draft-n-max 6</code>, with <code>--spec-draft-p-min</code> as the only varied flag: absent (<code>none</code>), 0.00, 0.50, 0.75, 0.90.</td></tr>
+        <tr><th scope="row">Server config</th><td><code>--ctx-size 65536 --parallel 1 --no-mmap --flash-attn on --threads 24</code>, loopback port 8197, a scratch instance; the production service for this model was never started and never edited.</td></tr>
+        <tr><th scope="row">Requests</th><td>Temperature 0, seed 42, <code>max_tokens</code> 256, streaming with per-chunk usage. Sixteen canonical prompts: 8 prose, 8 structured (JSON against a strict validator).</td></tr>
+      </table>
+      <p><strong>What the flag does, in the code we ran.</strong> The
+      <code>draft-mtp</code> speculation type drafts from the model's own
+      multi-token-prediction (MTP) head; there is no separate draft model.
+      The gate is a draft-stop threshold, not a per-token filter: while a
+      draft is being extended, if the draft's top-token probability falls
+      below <code>p_min</code>, drafting stops for that sequence
+      (<code>common/speculative.cpp:316-321</code> at our build, whose
+      comment reads &ldquo;only collect very high-confidence draft
+      tokens&rdquo;; the flag's help text at
+      <code>common/arg.cpp:3588-3589</code> reads &ldquo;minimum
+      speculative decoding probability (greedy)&rdquo;). At 0.00 drafting
+      never stops early, so every draft extends to <code>n_max</code> and
+      is submitted for verification, which is what the lede means
+      by every draft being submitted in full. We measured only the
+      <code>draft-mtp</code> path: the stop-check lives in
+      llama.cpp's common speculative module, but we did not measure the
+      classic separate-draft-model path (<code>--model-draft</code>), and
+      none of this page's numbers should be assumed to transfer to it.</p>
+      <p class="fineprint">The full command line for every one of the ten
+      server loads is preserved in the data package, and the running
+      process's real argv was read back from
+      <code>/proc/&lt;pid&gt;/cmdline</code> on every row, so the treatment
+      each session measured is the treatment its label claims. The VRAM
+      step between baseline and speculative loads is a third, independent
+      witness that speculation was actually loaded.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The experiment</h2>
+      <p>Ten server loads: five treatments &times; two cycles, cycle 2 in
+      exact reverse order, one fresh process per session. Sixteen
+      measurement prompts per session (plus a warmup and calibration
+      probes, excluded from analysis), 160 measurements in all, zero
+      excluded, every session returning 16/16 usable with exit 0.</p>
+      <p>A follow-up run the next night (2026-08-11) extended the design
+      below 0.50 with its own census (six server loads: a fresh
+      no-speculation baseline plus gates 0.10 and 0.25, two
+      counterbalanced cycles, 96 measurements, zero excluded) on
+      the same instrument, the same sixteen prompts, the same build and
+      placement; section 07 reports it, and its 96 measurements are never
+      pooled with this run's 160.</p>
+      <p>The analysis was pre-registered in the run log before row 1
+      existed, written in the same session, immediately before the
+      first measurement; a run-log entry, not a third-party registry: the
+      primary endpoint is decode rate in tokens per second, paired within
+      (prompt, cycle); prose and structured are reported separately and
+      never pooled first; the primary contrast is each treatment against no
+      speculation; adjacent-gate contrasts are secondary and exploratory.
+      Intervals are 95% cluster-bootstrap intervals (2,000 resamples,
+      percentile method, no BCa correction), and no multiplicity correction
+      is applied: each interval describes one contrast's uncertainty, and
+      the collection does not have 95% simultaneous coverage.</p>
+      <p>Decode rate is client-observed from the stream: visible token
+      events divided by the time from the first to the last visible token,
+      a window that excludes prompt processing and
+      time-to-first-token. That estimator is biased high by N/(N&minus;1),
+      so an unbiased interval-basis variant was recorded alongside it with
+      a pre-registered tiebreak; the two never diverged by more than 0.02
+      percentage points on any headline cell.</p>
+      <p>A decision rule for &ldquo;the knee&rdquo; was also written down
+      in advance, before any data: the lowest gate whose prose contrast
+      against no speculation is positive with a 95% interval excluding
+      zero, and whose contrast against the next higher gate has an interval
+      containing zero. Section 07 reports what that rule did and, just as
+      carefully, what it cannot show.</p>
+      <div class="note">
+        <span class="label">A confound we checked</span>
+        llama.cpp issue #26100 (2026-07-24) reports that the speculative
+        draft-cache replay path bypasses the gate entirely when prompts are
+        reused, inflating throughput 9.5&ndash;16.9&times; and compressing
+        the differences between gate settings. Our protocol avoids it on
+        four grounds: <code>--cache-prompt</code> never passed (verified in
+        all ten argvs), no prompt repeated within a session, a fresh
+        process per session (ten distinct PIDs), and a fastest observation
+        of ~1.9&times; baseline, nowhere near the replay signature.
+        The fresh-process rule was written into the plan for an unrelated
+        reason; it happens to immunise the study against a confound we did
+        not know existed.
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Observed: the default is a prose regression, and any gate reverses it</h2>
+      <p>Median decode rates and paired median % change against the
+      no-speculation baseline (n = 16 pairs per cell; brackets are 95%
+      cluster-bootstrap intervals).</p>
+      <h3>Prose: baseline median 10.20 tokens/s</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Median t/s</th><th>vs no speculation</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td class="t"><code>--spec-draft-p-min 0.00</code> (the shipped default)</td><td>8.12</td><td class="neg"><strong>&minus;19.79%</strong></td><td>[&minus;24.67, &minus;17.90]</td></tr>
+          <tr><td class="t">gate 0.50</td><td>12.06</td><td>+18.58%</td><td>[+12.55, +26.45]</td></tr>
+          <tr><td class="t">gate 0.75</td><td>12.35</td><td>+21.87%</td><td>[+18.51, +27.01]</td></tr>
+          <tr><td class="t">gate 0.90</td><td>12.43</td><td>+22.78%</td><td>[+19.14, +25.10]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>Structured: baseline median 10.25 tokens/s</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Median t/s</th><th>vs no speculation</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td class="t"><code>--spec-draft-p-min 0.00</code> (the shipped default)</td><td>12.69</td><td>+22.53%</td><td>[+7.57, +41.94]</td></tr>
+          <tr><td class="t">gate 0.50</td><td>14.17</td><td>+38.41%</td><td>[+32.40, +51.76]</td></tr>
+          <tr><td class="t">gate 0.75</td><td>15.04</td><td>+47.02%</td><td>[+27.09, +59.32]</td></tr>
+          <tr><td class="t">gate 0.90</td><td>15.25</td><td>+47.72%</td><td>[+40.27, +72.42]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">All figures from the recorded analysis output
+      (<code>data/analysis/analysis.md</code>); reproduced to the last
+      digit by a recompute from the raw records on 2026-08-11 (same
+      project, fresh analysis pass).</p>
+      <p><strong>The same speculation that speeds structured output up by a
+      fifth slows prose down by a fifth</strong>, in the same run, against
+      the same baseline. That is the finding this page exists to publish,
+      and it is why no single number can summarise this flag.</p>
+      <p>The contrast a deployer actually faces is not against no
+      speculation. It is against what the flag does out of the box:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Subset</th><th>0.50 vs default</th><th>0.75 vs default</th><th>0.90 vs default</th></tr></thead>
+        <tbody>
+          <tr><td class="t">prose</td><td><strong>+49.82%</strong> [+38.86, +60.94]</td><td>+53.12% [+49.28, +62.26]</td><td>+52.65% [+47.08, +63.58]</td></tr>
+          <tr><td class="t">structured</td><td>+15.07% [&minus;0.75, +26.36]</td><td>+18.03% [+4.35, +25.82]</td><td>+21.92% [+7.29, +36.13]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>On prose, each of the main run's three gates was worth roughly
+      +50% against the shipped default, with all three intervals clear of
+      zero.
+      Do not carry that sentence over to structured output: the structured
+      0.50-vs-default interval contains zero, and the structured gains
+      against the default are several times smaller.</p>
+      <p>The two tables in this section share the same underlying
+      measurements and differ only in baseline. The ~+50% figures against
+      the shipped default and the +19&ndash;23% figures against no
+      speculation are two views of one effect; they do not stack.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Observed: one pooled number represents neither workload</h2>
+      <p>If the two subsets are pooled, the default treatment reads:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Pooled median</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td class="t"><code>--spec-draft-p-min 0.00</code> (the shipped default)</td><td>&minus;4.45%</td><td>[&minus;19.56, +19.62]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>That interval does not resolve the direction of the pooled effect,
+      and the point estimate is small. Split, the components are
+      &minus;19.8% on prose and +22.5% on structured, with both nominal
+      intervals excluding zero. The pooled figure is a different estimand:
+      a wide interval around it is uninformative about either subgroup, and
+      a narrow one would still describe only the mix it was computed
+      on. <strong>Reporting a single pooled number for a workload that
+      mixes prose and structured output does not represent either
+      one.</strong></p>
+      <p class="fineprint">The previous evening's exploratory run on the
+      same machine (a different prompt set, with 0.75 as its only gated
+      arm) recorded a pooled &minus;6.5% for the ungated default,
+      close to this run's &minus;4.45%, a mild reproducibility note, though
+      the different prompt sets license no strict comparison in either
+      direction.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Observed: the mechanism, in the server's own counters</h2>
+      <p>Every record carries the server's draft counters (the
+      <code>draft_n</code> / <code>draft_n_accepted</code> timing fields on
+      the streamed response), so acceptance (the fraction of drafted
+      tokens the model kept) is available per observation (n = 32
+      per treatment, 16 per subset). Ranges observed:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>All (n=32)</th><th>Prose (n=16)</th><th>Structured (n=16)</th></tr></thead>
+        <tbody>
+          <tr><td class="t">default 0.00</td><td>0.21 &ndash; 0.89</td><td><strong>0.21 &ndash; 0.33</strong></td><td>0.37 &ndash; 0.89</td></tr>
+          <tr><td class="t">gate 0.50</td><td>0.51 &ndash; 1.00</td><td><strong>0.52 &ndash; 0.72</strong></td><td>0.51 &ndash; 1.00</td></tr>
+          <tr><td class="t">gate 0.75</td><td>0.71 &ndash; 1.00</td><td><strong>0.82 &ndash; 0.92</strong></td><td>0.71 &ndash; 1.00</td></tr>
+          <tr><td class="t">gate 0.90</td><td>0.72 &ndash; 1.00</td><td><strong>0.89 &ndash; 0.98</strong></td><td>0.72 &ndash; 1.00</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Computed from the per-observation counters in
+      every record (<code>server_diagnostic.timings.draft_n</code> /
+      <code>draft_n_accepted</code>), not from log-line samples; this is
+      the corrected computation from the 2026-08-11 verification pass.</p>
+      <p>On prose the ranges do not even overlap between adjacent
+      treatments: ungated speculation got only a fifth to a third of its
+      drafted prose tokens accepted, and acceptance climbs monotonically
+      with the gate. Our reading of the split (an interpretation
+      consistent with the placement, not an instrumented result) is
+      that every rejected draft wastes verification work this CPU-bound
+      deployment can least afford, and prose is where the drafts fail.
+      Structured ranges are wide and overlap heavily (several
+      structured prompts reach 1.00 at every gated setting, and the
+      structured minimum is ~0.72 at both 0.75 and 0.90), which is
+      consistent with structured output speeding up even ungated: its
+      drafts are good.</p>
+      <p>The follow-up run (section 07) carries the same per-observation
+      counters, exposed on all 32 observations in each gated arm, and its
+      rows are tabulated separately because its baseline and process
+      cohort are its own:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Treatment (follow-up run, 2026-08-11)</th><th>Prose (n=16) min / median / max</th><th>Structured (n=16) min / median / max</th></tr></thead>
+        <tbody>
+          <tr><td class="t">gate 0.10</td><td>0.207 / 0.254 / 0.327</td><td>0.367 / 0.481 / 0.889</td></tr>
+          <tr><td class="t">gate 0.25</td><td>0.273 / 0.299 / 0.399</td><td>0.430 / 0.519 / 0.889</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>The split is stark at the low end too: prose acceptance sits in a
+      ~0.21&ndash;0.40 band at these gates while structured reaches 0.89,
+      consistent with the acceptance-monotone story continuing
+      downward, and with low-probability drafts being generated and mostly
+      rejected on prose: wasted draft work. Consistent-with is the ceiling
+      here as above: these counters establish correlation between gate,
+      acceptance and output shape, not a causal decomposition of the
+      per-token cost.</p>
+      <p><strong>The maintainer's stated tradeoff, and what this study can
+      and cannot say about it.</strong> In the pull request that dropped
+      the default to 0.00 (llama.cpp #23269, 2026-05-19), ggerganov states
+      that a positive gate produces differently-sized drafts, which
+      prevents CUDA-graph reuse, and advises using the gate &ldquo;with
+      caution&rdquo;. That cost should weigh most where graph launch
+      overhead is a large share of each step (small models running
+      fully on GPU) and least in a regime like ours, where decode
+      waits on CPU memory. But this study did not instrument that
+      mechanism: we measured no graph-reuse statistics, no
+      memory-bandwidth counters, and no draft-versus-verify time split,
+      any of which is what confirming it would take. What we can say is
+      that the two published signs are consistent with the two sides of
+      the tradeoff the maintainer described: consistency, not
+      confirmation.</p>
+      <p><strong>When might the sign flip? An interpretation, not a
+      measurement.</strong> The record anchors exactly two points on the
+      same GPU model: our CPU-offloaded 397B MoE, where every gate at or
+      above 0.50 helped prose, and cmp-nct's fully-VRAM-resident 27B (section 10),
+      where the gate cost 14%. Read through the maintainer's stated
+      tradeoff, the dividing line would run somewhere between those
+      regimes: as more of the model leaves VRAM and decode slows
+      toward CPU memory speed, wasted draft verification costs more and
+      graph reuse matters less. Where that line sits, and whether a single
+      line describes it, is unmeasured; if your deployment sits between
+      those poles, the only reliable answer is your own A/B (section
+      12).</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>The gate ladder, read carefully</h2>
+      <p>A decision rule written before any data existed (the lowest
+      gate whose prose contrast against no speculation is positive with an
+      interval excluding zero, and whose contrast against the next higher
+      gate has an interval containing zero) was first satisfied at
+      0.50, the lowest gate in the main run:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Clause</th><th>Contrast</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="t">gate 0.50 vs none, prose</td><td class="t">+18.58% [+12.55, +26.45]: positive, excludes zero</td></tr>
+          <tr><td>2</td><td class="t">gate 0.75 vs gate 0.50, prose</td><td class="t">+2.17% [&minus;1.31, +5.58]: contains zero</td></tr>
+          <tr><td>n/a</td><td class="t">gate 0.90 vs gate 0.75, prose</td><td class="t">+0.51% [&minus;2.40, +3.03]: also contains zero</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Here is what that does and does not mean, stated as carefully as
+      we can:</p>
+      <ul class="plain">
+        <li>At 0.50, prose was 18.6% faster than no speculation. The 0.75
+        and 0.90 settings measured +21.9% and +22.8%, but neither adjacent
+        increase above 0.50 had a 95% interval excluding zero,
+        although those intervals permit additional gains of roughly 5.6%
+        and 3.0%. <strong>This experiment does not resolve whether raising
+        the gate above 0.50 helps.</strong> An interval containing zero is
+        a statement about our resolution, not evidence of equivalence.</li>
+        <li>0.50 is the lowest gate in the main run, so that run's data
+        alone cannot distinguish a threshold at 0.50 from one below it.
+        Whether 0.10 or 0.25 would do as well was the open edge the
+        follow-up run below was run to measure.</li>
+        <li>The structured adjacent contrasts are even less separable (0.75
+        vs 0.50: +4.64% [&minus;3.42, +12.25]; 0.90 vs 0.75: +6.19%
+        [&minus;2.27, +8.65]): wider intervals, and the +4.64% point
+        estimate is a reminder that &ldquo;contains zero&rdquo; describes
+        our design's power, not the model.</li>
+        <li>What is solid and does not depend on any of this: on prose,
+        each of the main run's gates (0.50, 0.75 and 0.90)
+        beats the ungated default by +49.8% to +53.1%
+        with all corresponding intervals excluding zero, and the ungated
+        default is a genuine prose regression against no speculation at
+        all. That is the finding. The ladder's shape above 0.50 is the
+        secondary, weaker result.</li>
+      </ul>
+      <h3>Below 0.50: measured the following night</h3>
+      <p>A second run on the same machine the following night
+      (2026-08-11, 00:09&ndash;01:05 EDT) measured that open edge
+      directly: same build, same placement, same sixteen prompts, same
+      instrument, with the same per-row treatment witnesses (a
+      per-treatment server alias, the argv read back from
+      <code>/proc/&lt;pid&gt;/cmdline</code>, the VRAM step). Six server
+      loads: a fresh no-speculation baseline plus gates 0.10 and 0.25,
+      two counterbalanced cycles, 96 measurements, zero excluded. Each
+      low gate is paired against that run's own baseline, never against
+      the first night's.</p>
+      <h3>Prose: follow-up baseline median 11.04 tokens/s</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Median t/s</th><th>vs no speculation</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td class="t">gate 0.10</td><td>7.56</td><td class="neg"><strong>&minus;32.04%</strong></td><td>[&minus;38.58, &minus;27.37]</td></tr>
+          <tr><td class="t">gate 0.25</td><td>8.47</td><td class="neg"><strong>&minus;23.73%</strong></td><td>[&minus;27.92, &minus;20.09]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>Structured: follow-up baseline median 11.40 tokens/s</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Median t/s</th><th>vs no speculation</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td class="t">gate 0.10</td><td>11.63</td><td>+1.22%</td><td>[&minus;9.84, +24.71]</td></tr>
+          <tr><td class="t">gate 0.25</td><td>12.41</td><td>+5.61%</td><td>[&minus;4.43, +25.03]</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Both low gates are prose regressions against no speculation at
+      all, with both intervals well clear of zero: the reversal measured
+      at 0.50 and above is absent at 0.25 and below, and the measured
+      prose gain had not yet appeared at 0.25. Within the regression
+      region the curve does rise: 0.25 against 0.10 on prose is
+      +13.67% [+7.74, +21.40], less bad, still below baseline. Neither
+      low gate's structured contrast was resolved from zero in this run;
+      that is a statement about resolution, not a null result: the
+      0.10 structured interval permits anything from &minus;9.8% to
+      +24.7%.</p>
+      <p>The six gate values now tested sit on two sides of a divide:
+      0.10 and 0.25 on the regression side (measured in the follow-up,
+      internally controlled), 0.50 and above on the gain side (measured
+      in the main run, internally controlled). The crossover from
+      regression to gain is therefore bracketed between 0.25 and 0.50,
+      and that bracket is a cross-run statement. Each half is
+      internally controlled against its own same-night baseline, but the
+      interpolation between the halves spans two runs on two nights, and
+      the follow-up's baseline decoded roughly 5&ndash;10% faster than
+      the main run's on identical configuration, a between-night
+      shift of unknown origin that nothing in either design controls, and
+      that is itself larger than several of the contrasts in play. Where
+      the crossover falls within (0.25, 0.50), and the curve's shape
+      inside that interval, is unmeasured; locating it would take a
+      same-night run holding arms on both sides of it.</p>
+      <p>Taken at face value the low end reads non-monotone: the
+      ungated 0.00 arm (&minus;19.8%, main run) against gate 0.10
+      (&minus;32.0%, follow-up). A recompute from the raw records
+      resolves that pair: the 0.10 arm's outputs are byte-identical to
+      the main run's ungated outputs on 32 of 32 (prompt, cycle) pairs,
+      across the two nights and different server processes, and its
+      draft counters match on 22 of 32 pairs, the rest differing by at
+      most a dozen drafted tokens. The 0.10 stop threshold fired
+      rarely and changed nothing visible: on this model and prompt set,
+      gate 0.10 was operationally near-identical to running ungated, so
+      the face-value gap is measurement variance on an effectively
+      unchanged treatment, not a treatment effect. Between the nights
+      the baseline route sped up (prose median 10.20 &rarr; 11.04 t/s,
+      +8.2%) while the effectively unchanged speculative route slowed
+      (8.12 &rarr; 7.56, &minus;6.9%), opposite drifts that
+      compound in any relative contrast. Two consequences. The
+      effectively distinct arms tested below 0.50 are two, not three
+      (the ungated-equivalent 0.10 and the genuinely gating 0.25,
+      whose outputs differ from the main run's ungated on 18 of 32
+      pairs), and the (0.25, 0.50) bracket above is unchanged. And the
+      pair is a direct caliper on between-night variance, larger than
+      the baseline-only shift, which strengthens the between-night
+      caveat on that bracket.</p>
+      <p>The follow-up settles nothing at or above 0.50: the adjacent
+      contrasts there remain exactly as unresolved as the bullets above
+      state. Its acceptance counters are in section 06 and its
+      output-equivalence results in section 08, labelled by run.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Observed: speculation is not output-preserving at temperature 0</h2>
+      <p>The textbook account of speculative decoding is that verification
+      makes it exact: the target model checks every drafted token, so you
+      get the target's own output, just faster. At temperature 0 that
+      account predicts byte-identical text with and without speculation.
+      On this build and route, that is not what happened. Prose
+      diverged under every setting we tested:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Treatment</th><th>Prose byte-identical to baseline</th><th>Structured byte-identical</th></tr></thead>
+        <tbody>
+          <tr><td class="t">default 0.00</td><td class="neg"><strong>0 / 16</strong></td><td>10 / 16</td></tr>
+          <tr><td class="t">gate 0.50</td><td class="neg"><strong>0 / 16</strong></td><td>10 / 16</td></tr>
+          <tr><td class="t">gate 0.75</td><td class="neg"><strong>0 / 16</strong></td><td>14 / 16</td></tr>
+          <tr><td class="t">gate 0.90</td><td class="neg"><strong>0 / 16</strong></td><td>14 / 16</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>The attribution holds because we ran the control this claim
+      requires: the two independent no-speculation sessions (separate
+      processes, about 85 minutes apart, same seed, temperature 0)
+      reproduced each other <strong>16/16 byte-identical</strong>. The
+      serving route is byte-reproducible across restarts; the divergence
+      appears when speculation is enabled, and gating does not restore it.
+      The gate is a throughput control, not a determinism control.</p>
+      <p>Truncation does not carry this result. Counting from the
+      truncation census below, the prose pairs in which either member hit
+      the 256-token cap number 6 (default 0.00), 5 (gate 0.50), 4 (0.75)
+      and 6 (0.90) out of 16; the remaining 10, 11, 12 and 10 pairs
+      compare two answers that both ran to completion, and every
+      one of them still differs. All structured mismatches are between
+      complete answers; no structured output reached the cap.</p>
+      <p>We did not identify the mechanism, and this page does not claim
+      one. Exact verification at temperature 0 leaves a short list of
+      candidates: batched verification changes floating-point
+      evaluation order, and an implementation path can depart from the
+      textbook scheme, but nothing in this run distinguishes among
+      them. The control pins down only where the divergence enters: with
+      speculation, on this build (<span class="n">c8e03ce</span>), on this
+      route.</p>
+      <p>Three fence-posts around that result:</p>
+      <ul class="plain">
+        <li>All 160 structured outputs passed the strict JSON validator in
+        every treatment, including baseline, with zero fenced outputs. That
+        establishes validator-validity, not semantic correctness: we did
+        not assess whether the differing texts say the same thing.</li>
+        <li>The run used a 256-token cap, reached on a minority of prose
+        prompts: 12 of 160 observations (baseline: <code>prose_05</code>
+        and <code>prose_07</code> in both cycles; default 0.00:
+        <code>prose_01</code> and <code>prose_07</code> in both cycles;
+        gate 0.50: <code>prose_03</code> and <code>prose_07</code>, cycle
+        2; gate 0.90: <code>prose_03</code> in both cycles; gate 0.75:
+        none). The equivalence check therefore compares complete answers on
+        most prompts and truncated answers on that minority, and byte
+        differences on <code>prose_01</code>, <code>prose_03</code>,
+        <code>prose_05</code> and <code>prose_07</code> can arise from
+        truncation as well as wording in the treatments where they
+        truncate.</li>
+        <li>None of the truncated rows shows the empty-answer signature
+        (near-zero visible characters against a spent budget):
+        characters-per-token sits mid-band, and the run logged zero
+        hidden-reasoning events in 160 measurements.</li>
+      </ul>
+      <p>The follow-up run (section 07) extends this result downward. At
+      gates 0.10 and 0.25, prose again reproduced the baseline 0 times
+      out of 16, while that run's two baseline sessions reproduced each
+      other 16/16 byte-identical, so no tested gate value, 0.10
+      through 0.90, preserves prose output at temperature 0 on this
+      route. The recompute in section 07 also gives the speculative
+      route a stronger reproducibility datum than the within-night
+      restart control (the 0.10 arm reproduced the main run's
+      ungated outputs byte-identically on 32 of 32 pairs, across two
+      nights and different server processes), reinforcing that
+      control, not replacing it. The follow-up's truncation census
+      (9 of 96 measurements, all
+      prose) shows the truncation set itself differing by
+      treatment: the gated arms truncate <code>prose_01</code>, which the
+      baseline completes, while the baseline truncates
+      <code>prose_05</code> and <code>prose_07</code> exactly as it did
+      in the main run. Truncating different prompts under different
+      treatments is direct evidence that speculation changes what is
+      generated, not just how fast; the follow-up's content-equivalence
+      statements exclude the truncated prompts by name, as above.</p>
+      <p>One observation from that run, labelled as an observation
+      because no mechanism is established: gate 0.25 reproduced its own
+      prose output across its two fresh processes on only 1 of 8 prompts,
+      while gate 0.10, the baseline, and every structured cell reproduced
+      themselves 8/8. The main run's gated arms were never checked this
+      way, so we cannot say whether 0.25 is special. As stated, it means
+      this much and no more: under speculation, the generated prose was
+      not a stable function of the configuration across process restarts
+      in that run, and any equivalence claim conditioned on &ldquo;same
+      configuration, same seed&rdquo; now carries that asterisk.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Where the famous 0.75 actually came from</h2>
+      <p>If you search for this flag today you will find mid-2026 posts
+      recommending <code>--spec-draft-p-min 0.75</code> as the setting that
+      &ldquo;fixes&rdquo; speculative decoding. We found no published sweep
+      establishing 0.75 as a tuned setting; its documented provenance is a
+      changelog. (The nearest thing to a public sweep, section 10's
+      pastebin artifact, swept below 0.75 on a different regime and
+      landed on 0.5.) Three commits in llama.cpp's own history, verified
+      directly against a local clone of the repository:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Date</th><th>Commit</th><th class="t" style="text-align:left">What changed</th></tr></thead>
+        <tbody>
+          <tr><td>2024-11-25</td><td><span class="n">d9d54e498</span></td><td class="t" style="text-align:left">the gate is introduced with a default of 0.9 (PR #10362)</td></tr>
+          <tr><td>2025-02-19</td><td><span class="n">abd4d0bc4</span></td><td class="t" style="text-align:left">default drops to 0.75 (PR #11954, Georgi Gerganov)</td></tr>
+          <tr><td>2026-05-19</td><td><span class="n">d14ce3dab</span></td><td class="t" style="text-align:left">default drops to 0.00 (PR #23269): the line it replaced carried a <code>// TODO: change default to 0.0f</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>So 0.75 was llama.cpp's own shipped default for roughly fifteen
+      months. The pull request that set it (#11954) carries no benchmark
+      and no sweep: its entire body reads &ldquo;Better defaults for
+      speculative decoding.&rdquo;, and it was opened and merged the same
+      day with no recorded discussion, unremarkable for a small
+      default-only change by the project's maintainer, and noted here for
+      one reason only: no measurement is attached to the value. The same
+      commit also moved the minimum draft length from 5 to 0.</p>
+      <p>This reframes the whole story:</p>
+      <ol class="plain">
+        <li><strong>On this deployment's prose, the current default
+        selects the slower treatment we measured.</strong> On 2026-05-19
+        the gate's default went from 0.75 to 0.00. The gate did not stop
+        working; it stopped being on, and section 04's ungated row
+        is what 0.00 measured here.</li>
+        <li><strong>The mid-2026 &ldquo;magic flag&rdquo; posts recommend
+        the value that was the default.</strong> A build between February
+        2025 and May 2026 shipped 0.75 without the user asking; a build
+        after May 2026 ships 0.00, with the change recorded in the
+        project's history rather than surfaced at runtime. Whatever each
+        author knew, a post recommending 0.75 after the flip functionally
+        re-supplies the prior shipped default by hand. One dated exception
+        cuts against any tidy story: the earliest task-split measurement
+        we cite (2026-05-12, section 10) predates the flip by a week. Its
+        author reached a gated setting while 0.75 was still
+        the default, not by losing it. The earliest gated-reversal
+        write-up we cite is dated three days after the flip.</li>
+        <li><strong>0.75 should be described as an inherited project
+        default, not a tuned value.</strong> Residue inside llama.cpp's
+        own tree: the server README still ships example payloads with
+        <code>"speculative.p_min": 0.75</code>, and the speculative-simple
+        example README still shows the original 0.9. Outside the tree
+        (a separate project, not llama.cpp residue), the
+        ik_llama.cpp fork still defaults to 0.75.</li>
+      </ol>
+      <p>Two dated negatives belong here. First, current Unsloth artifacts
+      contain no <code>p_min</code> recommendation at all: we checked the
+      raw READMEs of three MTP GGUF repositories and the Unsloth MTP
+      documentation page on 2026-08-11 and found zero occurrences, so the
+      &ldquo;Unsloth recommends 0.75&rdquo; framing that circulates is not
+      supported by Unsloth's current docs. Second, nothing in this section
+      is a criticism of the maintainer's change: the tradeoff he
+      documented (section 06) is real, the TODO was in the code, and a
+      project is entitled to change its defaults. The gap is that a silent
+      default flip inverted the sign of prose-shaped decode on at least
+      one class of deployment, and no measurement we could retrieve
+      separated the classes before the folklore formed.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>The public record: prior art, and three results that disagree</h2>
+      <p>We claim no firstness on the gated reversal. The record we could
+      retrieve:</p>
+      <ul class="plain">
+        <li><strong>neoteric.no (2026-05-22)</strong> published the gated
+        reversal on a Qwen3.6-27B Q4 on a 3090&nbsp;Ti: autoregressive 29.0
+        t/s, gate 0.75 &rarr; 48.9 t/s (+68%). Their statement that ungated
+        speculation is slower is qualitative (the blog's text says
+        it collapses throughput, but their table has no ungated column),
+        so we cite it as a qualitative claim, not a number.</li>
+        <li><strong>The earliest split-by-task result we found is a
+        Chinese-language post on 掘金 (juejin), 2026-05-12: &ldquo;MTP
+        加速不是玄学&rdquo;</strong>: &ldquo;MTP speedup is not
+        black magic&rdquo; (玄学: literally &ldquo;metaphysics&rdquo;,
+        idiomatically &ldquo;voodoo&rdquo;). The title itself is on this
+        page's side of the argument: the post's thesis is that MTP gains
+        are tunable and measurable, not superstition. On a dense 27B it
+        reported creative writing at &minus;9%/&minus;4% against +171% on
+        coding, with acceptance 39&ndash;48% vs 79&ndash;89%, ten
+        days before the earliest English-language post we found, and a
+        week before the default flip. The scrutiny we apply to the
+        pastebin artifact applies here too: it is a single post reporting
+        point numbers, with no stated intervals or repeat counts,
+        but unlike the pastebin sweep it did split by task, the split this
+        page argues is the load-bearing one. URL:
+        <span class="n">juejin.cn/post/7638806086187057178</span>
+        (resolving as of 2026-08-11, when we confirmed the title and
+        headline figures on the live page; whether it also appeared on
+        other platforms is not something we established).</li>
+        <li><strong>A sub-0.75 sweep exists and concluded 0.5.</strong> A
+        launch-config artifact from an r/LocalLLM post (~2026-07-01,
+        preserved at <span class="n">pastebin.com/raw/P57Uk6rz</span>)
+        carries the inline comment that a gate of 0.5 was best across
+        2k/15k/64k context depths at 6 drafts (119/122/118 t/s against a
+        106&ndash;126 range for the others). The artifact itself names
+        Qwen3.6-27B-MTP-Q6_K and a draft maximum of 10; the claims that the
+        hardware was an RTX&nbsp;5090 and the build
+        <span class="n">86b9470</span> come only from a secondary
+        newsletter (smol.ai, 2026-07-02), not from the artifact, and we
+        attribute them accordingly. Their sweep grid is unpublished:
+        only the winner's three numbers and an aggregate range survive,
+        whether 0.75 was even in the grid is unstated, and there is no
+        interval and no prose/structured split. But it is a sub-0.75 result
+        that landed on 0.5 before we did, and pretending otherwise would be
+        the exact failure our prior-art gate exists to prevent.</li>
+      </ul>
+      <p>And the reason a curve is worth publishing at all: the public
+      two-point comparisons disagree about the sign.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Source</th><th class="t" style="text-align:left">Setup</th><th class="t" style="text-align:left">Result</th></tr></thead>
+        <tbody>
+          <tr><td class="t">koboldcpp #2271 (2026-06-14)</td><td class="t">not stated in our retrieval: an uncharacterized point, listed for completeness and weighed accordingly</td><td class="t">gate 0.1 &rarr; 19.95 t/s, gate 0.75 &rarr; 22.74 t/s: higher gate better</td></tr>
+          <tr><td class="t">cmp-nct on llama.cpp PR #23269 (2026-05-19)</td><td class="t">RTX 5090, Qwen3.6-27B Q4</td><td class="t">gate 0.75 &rarr; 77 t/s, 0.00 &rarr; 87 t/s: <strong>a 14.1% penalty from the gate</strong>: the opposite sign to ours, on the same GPU model</td></tr>
+          <tr><td class="t">llama.cpp #25908 (2026-07-19)</td><td class="t">RDNA4/Vulkan, Qwen3-4B</td><td class="t">0.00: acceptance 0.070, 32.6 t/s &rarr; 0.75: acceptance 0.898, 164.3 t/s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Three public comparisons, three configurations, no agreement about
+      which direction the flag moves throughput, and one of the
+      three arrives without a stated setup, so it weighs less than the
+      other two. Every one of them is two points. That is folklore's
+      natural habitat, and it is the strongest
+      argument for publishing a measured curve with intervals: not
+      because our number is the right one, but because a curve with stated
+      uncertainty on a stated regime is the format the argument has been
+      missing. The cmp-nct row also matters for a second reason: it shows
+      the opposite sign is real, on the same GPU we used, when the model is
+      small and fully resident. Nothing on this page generalizes beyond the
+      regime in section 02, and that row is the proof.</p>
+      <div class="note">
+        <span class="label">A retrieval gap we owe you</span>
+        Reddit and X/Twitter were not directly retrievable by our tooling
+        (Reddit refuses our requests on search, fetch, the JSON API and
+        three mirrors; X returns HTTP 402). The Reddit-originated evidence
+        above rests on a primary pastebin artifact plus a secondary
+        newsletter, not on the threads themselves. If the threads say more
+        than their artifacts, we have not read it.
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>One regime, one quant, one placement, one speculation
+        path.</strong> 397B-A17B, <code>UD-IQ3_XXS</code>,
+        <code>--n-cpu-moe 57</code>, ctx 65536, <code>--no-mmap</code>,
+        flash-attn on, one request at a time, the <code>draft-mtp</code>
+        path only. Nothing here generalizes to a different placement, and
+        section 10's cmp-nct row measures the opposite sign on a small
+        fully-GPU model. Measure your own lane.</li>
+        <li><strong>The ladder's shape above 0.50 is unresolved.</strong>
+        The adjacent contrasts contain zero, which is a statement about
+        this design's power (two cycles, sixteen prompts), not a
+        demonstration that the settings match. The intervals permit real
+        gains of up to ~5.6% (0.75 over 0.50) and ~3.0% (0.90 over
+        0.75).</li>
+        <li><strong>Below 0.50, the crossover is bracketed, not
+        located.</strong> The follow-up run measured gates 0.10 and 0.25
+        against its own fresh baseline and found both to be prose
+        regressions, so the crossover from regression to gain lies
+        between 0.25 and 0.50. That bracket is a cross-run statement: its
+        two halves come from different nights' runs, the follow-up's
+        baseline decoded roughly 5&ndash;10% faster than the main run's
+        on identical configuration (on prose the baseline sped up
+        between nights, median 10.20 &rarr; 11.04 t/s, +8.2%, while the
+        operationally unchanged speculative route slowed, 8.12 &rarr;
+        7.56, &minus;6.9%: opposite drifts that compound in the relative
+        contrasts; section 07), and the between-night axis is
+        uncontrolled in both designs. The crossover's location within
+        (0.25, 0.50), and the curve's shape inside that interval, is
+        unmeasured. The follow-up's intervals are per-contrast with no
+        multiplicity correction, like every other interval on this page.
+        The pastebin sweep in section 10 landed on 0.5 on a different
+        model and hardware.</li>
+        <li><strong>Counterbalancing buys monotone drift only.</strong> Two
+        cycles in reverse order balance first-order position effects;
+        restart-correlated effects remain, and two cycle clusters carry
+        little information about restart variability.</li>
+        <li><strong>Calibration drift is visible and asymmetric.</strong>
+        The largest drift is the default treatment's cycle 2 at +9.98%; the
+        no-speculation baseline itself drifted +6.35% in cycle 1, the
+        night's first cold process. That the baseline drifts materially is
+        an argument for the counterbalanced design and against any
+        single-cycle reading.</li>
+        <li><strong>No multiplicity correction.</strong> Five treatments
+        &times; two subsets &times; two contrast families; each interval
+        describes one contrast, and the collection does not have 95%
+        simultaneous coverage.</li>
+        <li><strong>Output equivalence is byte-level only</strong>, on a
+        256-token cap reached by a minority of prose prompts (12/160), and
+        establishes nothing about meaning.</li>
+        <li><strong>Treatment labels are client-side unverifiable by the
+        instrument</strong>, mitigated three ways (a per-treatment server
+        alias, the argv read from <code>/proc/&lt;pid&gt;/cmdline</code>,
+        and the VRAM step); and the build identity rests on
+        <code>--version</code> plus the streamed fingerprint, not on a
+        binary hash, because the server binary is a thin launcher.</li>
+        <li><strong>Other inference stacks were not surveyed.</strong>
+        This page did not examine whether vLLM, text-generation-inference
+        or TensorRT-LLM expose an analogous draft-confidence control, nor
+        how their speculative paths behave; nothing here speaks to any
+        stack but llama.cpp at the stated build.</li>
+        <li><strong>This is not a model evaluation.</strong> Nothing here
+        ranks Qwen against anything, and the speed effects belong to a
+        runtime flag, not to the model's quality.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>If you run llama.cpp speculation</h2>
+      <p>Five narrow things, each scoped to a stated regime; none is a
+      universal number:</p>
+      <ol class="plain">
+        <li><strong>Know which default you are inheriting.</strong> Since
+        2026-05-19, the <code>--spec-draft-p-min</code> CLI flag defaults
+        to 0.00. If you enabled speculative decoding without setting it,
+        you are running ungated. If your config predates May 2026 and never
+        set it, your effective setting changed when you rebuilt.</li>
+        <li><strong>Measure your own workload, split by output
+        shape.</strong> On our deployment the same default was
+        &minus;19.8% on prose and +22.5% on structured output. A pooled
+        number from a mixed test set would have left the direction of the
+        pooled effect unresolved and would have represented neither half
+        of what we actually run (section 05).</li>
+        <li><strong>Do not assume speculation is output-preserving</strong>,
+        even at temperature 0, even gated. If byte-stable output matters to
+        your pipeline, test it on your own route: ours diverged on every
+        prose prompt.</li>
+        <li><strong>Expect the sign to depend on your regime.</strong> A
+        CPU-offloaded MoE (ours) gained from gating at 0.50 and above; a
+        small fully-GPU model on the same GPU (cmp-nct, section 10) lost. The maintainer's
+        stated CUDA-graph tradeoff is consistent with that split, but this
+        study did not instrument the mechanism (section 06). There is no
+        universal setting to copy, including ours.</li>
+        <li><strong>If your regime resembles ours, set the gate explicitly,
+        and not low. Here is the minimal honest A/B.</strong> On
+        this large CPU-offloaded MoE, every tested gate at or above 0.50
+        reversed the prose regression: 0.50 reversed it at +18.6%;
+        0.75 and 0.90 measured +21.9% and +22.8%, adjacent differences
+        our design could not resolve from zero (section 07). A low gate
+        is not a safe fallback on this regime: gates of 0.10 and 0.25,
+        measured the following night against their own baseline, were
+        worse on prose than no speculation at all: &minus;32.0%
+        and &minus;23.7%, and 0.10 proved operationally
+        near-identical to running ungated, byte-identical in output
+        (section 07). On a small fully-GPU model the public record shows
+        the opposite sign (section 10), so no value, including ours,
+        travels without a measurement. The measurement is cheap:
+        your real prompts, split prose versus structured; the same prompts
+        on both arms; a fresh server process per arm; no prompt repeated
+        within a session (llama.cpp #26100: reused prompts can
+        bypass the gate); temperature and seed pinned; compare paired
+        per-prompt decode rates.</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>Artifacts</h2>
+      <p>The complete evidence for this page ships as a data package: the
+      files the two runs actually produced, not a summary. If a number on
+      this page disagrees with a file in the package, the file is right
+      and the page is wrong; tell us and we will fix the page. The
+      follow-up run's records (its own run log with pre-registration,
+      flags, load witnesses, analysis outputs and per-observation
+      records) are in the package under <code>data/lowerarm/</code>,
+      kept as their own census under the same rules.</p>
+      <!-- Package assembled at staging, 2026-08-11. Layout and redaction notes:
+      data/README.md; the lower-arm run ships under data/lowerarm/ as its own
+      census, never pooled with the main run's. -->
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: what is in each
+        folder, the record schema, and the provenance of every file.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure
+        printed on this page, with the file and the field it came
+        from.</li>
+        <li><strong>The pre-registration and run log</strong>
+        (<a href="data/RUN_LOG.md">data/RUN_LOG.md</a>): the knee decision
+        rule and the analysis plan, written before row 1 existed, with
+        the preflight record.</li>
+        <li><strong>The analysis outputs</strong> every table above is read
+        from: primary and contrast analyses, the paired table, and the
+        per-measurement CSV, under <a href="data/analysis/analysis.md">data/analysis/</a>.</li>
+        <li><strong>The exact server command line for all ten loads</strong>
+        (<code>data/flags/</code>) and the per-load witness JSONs
+        (<code>data/loads/</code>): PID, load time, VRAM after load,
+        resident set, and the speculation flags.</li>
+        <li><strong>The per-observation measurement records</strong>, one
+        JSONL per session, carrying every request, every response, the
+        server's timing and draft counters, and the streamed build
+        fingerprint.</li>
+        <li><strong>The follow-up run's package</strong>
+        (<a href="data/lowerarm/RUN_LOG.md">data/lowerarm/RUN_LOG.md</a>,
+        <a href="data/lowerarm/analysis/analysis.md">data/lowerarm/analysis/</a>):
+        the same layout for the 2026-08-11 run, kept as its own
+        census.</li>
+        <li><strong>The preserved third-party artifact</strong> behind
+        section 10's pastebin citation
+        (<a href="data/third-party/pastebin_P57Uk6rz_fetched-2026-08-10.txt">data/third-party/</a>),
+        fetched 2026-08-10, because pastebin links rot.</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-08-10</th><td>All 160 measurements taken and recorded: ten server loads, 18:16&ndash;19:43 EDT, zero failures, zero exclusions, GPU released clean.</td></tr>
+        <tr><th scope="row">2026-08-11</th><td>A recompute from the raw records (same project, fresh analysis pass) reproduced every median and interval on this page to the last printed digit. Four defects in the first internal write-up were found and corrected before anything was published; the acceptance table in section 06 is the corrected computation.</td></tr>
+        <tr><th scope="row">2026-08-11</th><td>Lower-gate follow-up run on the same machine, 00:09&ndash;01:05 EDT: six server loads (a fresh no-speculation baseline plus gates 0.10 and 0.25, two counterbalanced cycles), 96 measurements, zero excluded. Both low gates measured as prose regressions against that run's own baseline (section 07). A recompute direct from its records, by a separate code path in the same project, reproduced its headline medians to the second decimal.</td></tr>
+      </table>
+      <p class="fineprint">Every claim on this page is dated. If today is
+      much later than the rows above, treat version-specific findings as
+      unverified since that date: the flag's default has already changed
+      twice in the project's history, and may change again.</p>
+    </section>
+
+    <section>
+      <div class="secnum">14</div>
+      <h2>Related pages on this site</h2>
+      <p><a href="../empty-answer/">Empty Answer</a> is the same
+      editorial thesis (an aggregate number that represents no real
+      workload) in the thinking-budget domain, on the same
+      workstation. The <a href="../qwen35/">Qwen3.5 pair field card</a> is
+      the local models' measured record on this machine. The
+      <a href="../qwen/">Qwen hub page</a> carries downloadable serving
+      profiles for these models.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="../">Graphometer</a> &middot;
+      <a href="https://grantwilliams.ai">About</a> &middot;
+      hello@graphometer.ai &middot;
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; Qwen, Qwen3.5, and Qwen3.6 are marks of Alibaba
+    Group Holding Limited; Unsloth, koboldcpp, and ik_llama.cpp are projects or marks
+    of their respective owners. All are referenced for identification only. Not
+    affiliated with, endorsed by, or sponsored by any of them or their affiliates.
+    Product names and marks belong to their respective owners. This site is static.
+    No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

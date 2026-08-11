@@ -122,7 +122,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · runs 2026-08-05 to 08-06 · files re-read 2026-08-08 · prior art corrected 2026-08-10</div>
+      <div class="eyebrow">Field card · runs 2026-08-05 to 08-06 · files re-read 2026-08-08 · prior art corrected 2026-08-10 · budget advice revised 2026-08-11</div>
       <h1>Field card: <em>Qwen3.5</em> (122B and 397B)</h1>
       <p class="lead">Qwen3.5 is a family of mixture-of-experts models (huge
       in total, small per token: only a few of the many expert sub-networks
@@ -374,11 +374,20 @@
       reasoning, and returned an empty answer, hours after the budget rule
       had been written into the deployment notes by the same people. The
       retry at 8,192 answered cleanly.</p>
-      <p>The working rule that came out of it: give thinking replies 2,000
-      to 4,096 output tokens as a floor, and expect hard problems to need
-      far more (section 07 puts numbers on "far more"). Short factual
-      replies with thinking toggled off are fine small. The failure mode
-      to design for is silence, not an error code.</p>
+      <p>The working rule that came out of it: 2,000 to 4,096 output
+      tokens is a starting range that worked for our jobs on these two
+      models, and hard problems need far more (section 07 puts numbers on
+      "far more"). It is a starting range, not a safe number, because the
+      floor depends on the task. In a later recorded measurement, one
+      hosted model answered a short prompt from a 256-token budget and
+      had produced nothing visible at 12,000 tokens on a harder prompt
+      the same day: a spread of more than 46 times between two prompts to
+      the same model, and a lower bound, because the second floor was
+      never located. No universal safe number exists; measure the floor
+      for your own task (<a href="../empty-answer/">Empty Answer</a>
+      carries the method). Short factual replies with thinking toggled
+      off are fine small. The failure mode to design for is silence, not
+      an error code.</p>
     </section>
 
     <section>
@@ -579,7 +588,7 @@
 
     <section lang="zh-Hans"> <div class="secnum">11</div>
       <h2>中文摘要：Qwen3.5 现场记录卡（122B 与 397B）</h2>
-      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10）。<strong>本摘要同步日期：2026-08-10。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。</p>
+      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10，预算建议修订于 2026-08-11）。<strong>本摘要同步日期：2026-08-11。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。</p>
       <p><strong>这是什么。</strong>Qwen3.5 是一组混合专家（MoE）模型：总参数量很大，但每个 token 只激活其中一小部分。我们在同一台工作站、同一张 32 GB 显卡上，用同一套方法，在两天里把其中两个模型分别投入使用：122B（26 到 38 tokens/秒）与 397B（14 到 20 tokens/秒）。本页的核心发现是速度旁边的那个陷阱（见下）。页面上的每个数字都可追溯到一份有日期的记录或模型文件本身；凡属厂商说法而非我们的测量，文中均已注明。</p>
       <p><strong>规格（读自文件头，而非引自模型卡）。</strong>参数总量由张量形状求和得出：122B 为 122,111,526,912，397B 为 396,346,350,336。每 token 激活量：122B 在 256 个专家中路由 8 个，另加 1 个常驻共享专家，约 9.8B；397B 在 512 中路由 10 个，另加 1 个共享专家，约 17.4B，与厂商 A10B / A17B 标签是同一套算术。架构在两个文件中一致：每第四个块为带 KV cache 的完整注意力块，其间为线性注意力块（122B 为 48 块中的 12 块，397B 为 60 块中的 15 块）。上下文：两个文件都声明 262,144，我们默认以 65,536 提供服务；厂商另称经扩展可达 1M，此项不在文件中，我们也从未测试。词表 248,320。两者默认都会先思考再回答。权重开放，许可证 Apache 2.0。</p>
       <p><strong>我们实际运行的东西。</strong>Unsloth 的 MTP-enabled GGUF 构建，版本已固定：unsloth/Qwen3.5-122B-A10B-MTP-GGUF 的 UD-Q4_K_S，pinned revision 907becb3，3 个文件，73.43 GB（68.38 GiB）；unsloth/Qwen3.5-397B-A17B-MTP-GGUF 的 UD-IQ3_XXS，4 个文件，149.84 GB（139.54 GiB）。一处诚实的标签说明：名为 IQ3_XXS 的构建中并不包含该类型的任何张量，这是量化档位标签，不是逐张量的描述。机器：一张 NVIDIA GeForce RTX 5090（32,607 MiB VRAM）、Intel Core Ultra 9 285K（24 核）、188 GiB 系统内存，权重存放在 4 TB NVMe SSD 上。本页最关键的一条事实：两个模型的权重都能完整装进系统内存（73 和 150 GB 对 188 GiB）。运行时：mainline llama.cpp，commit c8e03ce8，为这一对模型所需的架构修复而重新构建。</p>
@@ -588,13 +597,13 @@
       <p>修复只是一个参数：把门限设为 0.75，接受率在所测的每种形状上都回到 88% 到 95%。需要说明的不对称：创作型文本的崩塌只在 122B 上测过，397B 的门限沿用同族证据，它自己不设门限时的创作型表现从未测量。</p>
       <p><strong>关于既有研究（2026-08-10 更正）。</strong>发表之后的中文检索找到了更早的公开测量：2026-05-12 的一篇中文评测在<em>稠密</em>的 Qwen3.6-27B 上先测得了这一效应；另有一篇 2026-05-22 的文章在 27B 上公布了加上 0.75 门限之后反超无推测基线的结果。我们不是最早的；我们的结果是在另一种部署条件下的独立复现：大型 MoE，且大部分专家块放在 CPU 上。英文页第 10 节列出全部出处与更正日期。</p>
       <p><strong>这不是模型家族的属性，而是字节所在位置的属性。</strong>同一套参数在 GLM-5.2（744B MoE，同一台机器，但 CPU 侧权重超出内存）上被测得更慢（1.5 到 3.7 tokens/秒，对不开推测时的 4.0 到 6.0），因而弃用。权重部分留在 SSD 上时，批量验证放大的是磁盘读取，而不是摊薄内存读取。</p>
-      <p><strong>思考的代价，以及静默失败。</strong>思考过程与可见答案共用客户端设定的同一个输出 token 上限。超出上限不会报错：请求成功，可见答案为空。工作规则：给会思考的回复 2,000 到 4,096 个输出 token 作为下限，难题需要远高于此。一次记录在案的对照（15 分钟沙漏难题，7 分钟与 11 分钟两个沙漏、47 token 的提示）：397B 在 4,096 上限下失败，在 8,192 上限下用 7,608 tokens 完成；122B 在 8,192 下失败，在 16,384 下用 9,719 tokens 完成（比值 0.78，不是干净的一半）。但按 wall-clock，成功的那两次运行是 122B 更快（28.8 对 15.1 tokens/秒，5.6 分钟对 8.4 分钟）。两个模型运行在不同的压缩档位上，因此这是两套部署的比较，不是两个模型在同等精度下的比较。一道题，每个上限每个模型各跑一次：一个生动的记录点，不是缩放定律。</p>
+      <p><strong>思考的代价，以及静默失败。</strong>思考过程与可见答案共用客户端设定的同一个输出 token 上限。超出上限不会报错：请求成功，可见答案为空。工作规则：2,000 到 4,096 个输出 token 是在我们的任务上行之有效的起始范围，不是安全值，因为下限取决于任务本身；难题需要远高于此。在其后一次记录在案的测量中，同一个托管模型、同一天，对一个简短提示在 256 token 的预算内给出了可见回答，对另一个更难的提示在 12,000 token 时仍无任何可见输出：两个提示之间相差超过 46 倍，且这只是下界（第二个下限从未找到，我们在 12,000 处停止了测量）。不存在普适的安全数字；请为你自己的任务实测下限（方法见英文页 graphometer.ai/empty-answer/）。一次记录在案的对照（15 分钟沙漏难题，7 分钟与 11 分钟两个沙漏、47 token 的提示）：397B 在 4,096 上限下失败，在 8,192 上限下用 7,608 tokens 完成；122B 在 8,192 下失败，在 16,384 下用 9,719 tokens 完成（比值 0.78，不是干净的一半）。但按 wall-clock，成功的那两次运行是 122B 更快（28.8 对 15.1 tokens/秒，5.6 分钟对 8.4 分钟）。两个模型运行在不同的压缩档位上，因此这是两套部署的比较，不是两个模型在同等精度下的比较。一道题，每个上限每个模型各跑一次：一个生动的记录点，不是缩放定律。</p>
       <p><strong>其他要点。</strong>不要对能完整装进内存的模型使用 memory mapping：在 397B 上，开启后 prompt reading 损失 82%（从 396 降到 69.5 tokens/秒），解码损失 29%。VRAM 读数为整卡读数，含约 0.7 到 1.0 GiB 的桌面占用；我们的配置使用 32 GB 显卡中的 23 到 28 GiB。多放一个块不会立即报错，而是数分钟后才失败：权重全部载入之后数分钟才因计算缓冲区分配失败而退出，请在权重算术之外留出余量。</p>
       <p><strong>可复现的完整参数。</strong>两个模型的命令形状相同，差异值另注：</p> <pre class="log">llama-server --jinja --ctx-size 65536 --parallel 1 --n-gpu-layers 999 \
   --no-mmap --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 \
   --threads 24 --threads-batch 24 --flash-attn on --min-p 0.0 --top-p 0.95 --top-k 20 \
   --n-cpu-moe 38 --temp 0.6</pre> <p>以上是 122B 的启动命令。397B 只有两处不同：<code>--n-cpu-moe 57</code> 与 <code>--temp 1.0</code>。放置参数 <code>--n-cpu-moe N</code> 的作用是把前 N 个块的路由专家留在 CPU 上。</p>
-      <p class="fineprint">独立测量。与 Qwen 团队、阿里巴巴集团（Alibaba Group）或 Unsloth 无任何隶属、认可或关联关系。Qwen、Qwen3.5 与通义为阿里巴巴集团控股有限公司的商标，此处仅用于识别。<strong>再次说明：本文为英文记录的摘要，英文版为准。英文记录日期 2026-08-08，本摘要同步日期 2026-08-10。</strong></p> </section>
+      <p class="fineprint">独立测量。与 Qwen 团队、阿里巴巴集团（Alibaba Group）或 Unsloth 无任何隶属、认可或关联关系。Qwen、Qwen3.5 与通义为阿里巴巴集团控股有限公司的商标，此处仅用于识别。<strong>再次说明：本文为英文记录的摘要，英文版为准。英文记录日期 2026-08-08，本摘要同步日期 2026-08-11。</strong></p> </section>
 
     <section>
       <div class="secnum">12</div>

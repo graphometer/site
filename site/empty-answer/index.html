@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The empty answer: when a reasoning model spends your whole budget thinking</title>
+<title>Empty Answer: how a reasoning model spends your whole budget thinking</title>
 <meta name="description" content="A measured incident report on the thinking-budget trap: a reasoning model spends the output budget on hidden reasoning and returns an empty answer with HTTP 200 and no error. One fixed prompt across three serving lanes on 2026-08-09: first visible answer at 256 output tokens on a hosted frontier model, 512 on a different vendor's model as a control, and 2,048 on a 397B model served locally. Includes the run where our own measuring instrument was defeated by the behavior it was built to measure, a case where the floor moved by more than 46 times between two prompts to the same model, one request where capping the reasoning produced a complete answer for less money, with its confounds stated, and the raw request and response bodies as a download.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
@@ -125,7 +125,7 @@
 
     <div class="hero">
       <div class="eyebrow">Incident report &middot; measured 2026-08-09 &middot; one prompt, three serving lanes</div>
-      <h1>The <em>empty answer</em></h1>
+      <h1>Empty <em>Answer</em>: how a reasoning model spends your whole budget thinking</h1>
       <p class="lead">A reasoning model can spend your entire output budget
       thinking and hand back nothing at all. The call succeeds. You get
       HTTP 200, no error, a stop reason of <code>length</code>, an empty
@@ -1021,7 +1021,12 @@ if finish == "length" and text:
       profiles that encode the budget floor as a default. The
       <a href="../qwen38-readiness/">Qwen3.8 release watch</a> holds the
       dated status of that generation, and the first measurements of the
-      hosted model that section 05 extends.</p>
+      hosted model that section 05 extends. And the
+      <a href="../speculation-gate/">speculation-gate study</a> carries the
+      same editorial thesis, a single number that represents no real
+      workload, into the decode-speed domain: llama.cpp's draft-confidence
+      gate measured on the 397B that serves as section 05's local
+      lane.</p>
     </section>
 
   </div>
