@@ -1,0 +1,21 @@
+=== diff <VAULT>/models/gguf/Mistral-Large-3/start_server.sh -> run_arm_a.sh
+22c22
+< HOST="${L3_HOST:-<BRIDGE-IP>}"; PORT="${L3_PORT:-8104}"
+---
+> HOST="127.0.0.1"; PORT="${L3_PORT:-8104}"  # AB-RUN: loopback scratch (arm a)
+=== diff <VAULT>/models/gguf/Mistral-Large-3/start_server.sh -> run_arm_b.sh
+22c22
+< HOST="${L3_HOST:-<BRIDGE-IP>}"; PORT="${L3_PORT:-8104}"
+---
+> HOST="127.0.0.1"; PORT="${L3_PORT:-8104}"  # AB-RUN: loopback scratch (arm b)
+83a84
+>   --no-warmup \
+=== diff <VAULT>/models/gguf/Mistral-Large-3/start_server.sh -> run_arm_c.sh
+22c22
+< HOST="${L3_HOST:-<BRIDGE-IP>}"; PORT="${L3_PORT:-8104}"
+---
+> HOST="127.0.0.1"; PORT="${L3_PORT:-8104}"  # AB-RUN: loopback scratch (arm c)
+82d81
+<   --threads 24 --threads-batch 24 \
+83a83
+>   --no-warmup \

@@ -1,0 +1,54 @@
+# arm_exec_blocks.txt — the llama-server invocation each arm ran
+#
+# Extracted verbatim from the three scratch launcher scripts run_arm_{a,b,c}.sh
+# (the final `export LD_LIBRARY_PATH` + `exec .../llama-server ...` block of each),
+# with absolute paths on our machine rewritten to <VAULT>. The full scratch scripts
+# are project records and are not in this package: they are copies of the canonical
+# serving script, whose preflight guard block names internal sibling services
+# (see data/README.md). arm_scripts.diff proves each scratch copy differs from the
+# canonical script only in its declared flags, and arm_scripts.sha256 records the
+# digests of the unmodified originals; because of the path rewrite below, this
+# excerpt will not hash to any recorded digest.
+#
+# Environment resolved at run time (from the env file the script sources):
+# CTX=32768, NCMOE=59, HOST=127.0.0.1 (forced loopback), PORT=8104.
+
+## arm (a) — from run_arm_a.sh
+
+export LD_LIBRARY_PATH="<VAULT>/models/cuda-12.8/lib64:${LD_LIBRARY_PATH:-}"
+exec <VAULT>/models/llamacpp-kimi/build/bin/llama-server \
+  --model <VAULT>/models/gguf/Mistral-Large-3/UD-IQ1_S/Mistral-Large-3-675B-Instruct-2512-UD-IQ1_S-00001-of-00004.gguf \
+  --host "${HOST}" --port "${PORT}" --alias mistral-large-3 \
+  --jinja --ctx-size "${CTX}" --parallel 1 \
+  --n-gpu-layers 999 --n-cpu-moe "${NCMOE}" --no-repack \
+  --batch-size 4096 --ubatch-size 2048 \
+  --threads 24 --threads-batch 24 \
+  --flash-attn on --cors-origins localhost --timeout 3600 \
+  --temp 0.15 --top-p 1.0 --top-k 0
+
+## arm (b) — from run_arm_b.sh
+
+export LD_LIBRARY_PATH="<VAULT>/models/cuda-12.8/lib64:${LD_LIBRARY_PATH:-}"
+exec <VAULT>/models/llamacpp-kimi/build/bin/llama-server \
+  --model <VAULT>/models/gguf/Mistral-Large-3/UD-IQ1_S/Mistral-Large-3-675B-Instruct-2512-UD-IQ1_S-00001-of-00004.gguf \
+  --host "${HOST}" --port "${PORT}" --alias mistral-large-3 \
+  --jinja --ctx-size "${CTX}" --parallel 1 \
+  --n-gpu-layers 999 --n-cpu-moe "${NCMOE}" --no-repack \
+  --batch-size 4096 --ubatch-size 2048 \
+  --threads 24 --threads-batch 24 \
+  --flash-attn on --cors-origins localhost --timeout 3600 \
+  --no-warmup \
+  --temp 0.15 --top-p 1.0 --top-k 0
+
+## arm (c) — from run_arm_c.sh
+
+export LD_LIBRARY_PATH="<VAULT>/models/cuda-12.8/lib64:${LD_LIBRARY_PATH:-}"
+exec <VAULT>/models/llamacpp-kimi/build/bin/llama-server \
+  --model <VAULT>/models/gguf/Mistral-Large-3/UD-IQ1_S/Mistral-Large-3-675B-Instruct-2512-UD-IQ1_S-00001-of-00004.gguf \
+  --host "${HOST}" --port "${PORT}" --alias mistral-large-3 \
+  --jinja --ctx-size "${CTX}" --parallel 1 \
+  --n-gpu-layers 999 --n-cpu-moe "${NCMOE}" --no-repack \
+  --batch-size 4096 --ubatch-size 2048 \
+  --flash-attn on --cors-origins localhost --timeout 3600 \
+  --no-warmup \
+  --temp 0.15 --top-p 1.0 --top-k 0

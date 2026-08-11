@@ -1,0 +1,9 @@
+rung	config	vram_mib	decode_tps	prefill_tps	notes
+R1_ncmoe58_c8k	-c 8192 -b 2048 -ub 512 --n-cpu-moe 58	25958	3.23	3.1	ok
+R3_ncmoe58_c32k	-c 32768 -b 2048 -ub 512 --n-cpu-moe 58	27624	3.66	4.7	ok
+R4_nommap_c32k	-c 32768 -b 2048 -ub 512 --n-cpu-moe 58 --no-mmap	27916	3.67	4.8	ok
+R5_ub512_c32k	-c 32768 -b 2048 -ub 512 --n-cpu-moe 58	27583	2.65	1.5	ok
+R5_longprompt_ub512	long-prompt prefill	-	3.68	49.6	prefill on ~2.4k-tok prompt
+R6_ub2048_c32k	-c 32768 -b 4096 -ub 2048 --n-cpu-moe 58	28105	1.37	0.9	ok
+R6_longprompt_ub2048	long-prompt prefill	-	3.60	69.4	prefill on ~2.4k-tok prompt
+R7_ncmoe59_c32k_ub2048	-c 32768 -b 4096 -ub 2048 --n-cpu-moe 59	24627	3.58-3.61	116.4 (2.4k-tok warm)	WINNER — 7.8 GiB free, meets 6-GiB ask
