@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Release watch: Qwen3.8</title>
-<meta name="description" content="A verified status page for the Qwen3.8 generation, updated on release day 2026-08-13: the Max-class open weights shipped and we verified both official repositories at pinned revisions (213 shards each, 4,892.4 GB BF16 and 2,496.2 GB FP8); the license is a custom Qwen3.8-Max License, not Apache 2.0, quoted at its operative clause; the promised 27B has still not shipped and the fake-repository hazard persists; plus what the shipped config says, which community quantizations are real, and an honest account of what a desktop can do with files this size.">
+<meta name="description" content="A verified status page for the Qwen3.8 generation, updated on release day 2026-08-13: the Max-class open weights shipped and we verified both official repositories at pinned revisions (213 shards each, 4,892.4 GB BF16 and 2,496.2 GB FP8); the license is a custom Qwen3.8-Max License, not Apache 2.0, quoted at its operative clause; the promised 27B has still not shipped and the fake-repository hazard persists; plus what the shipped config says, which community quantizations are real, and an honest account of what a desktop can do with files this size; updated the same day with the release-day measurements: the hosted open weights measured across two named providers, and a 397 GB local download verified bit-perfect that no public runtime can load yet.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -117,7 +117,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Release watch · weights verified 2026-08-13 · API measured 2026-08-09</div>
+      <div class="eyebrow">Release watch · weights verified 2026-08-13 · measured 2026-08-09 and 2026-08-13</div>
       <h1>Release watch: <em>Qwen3.8</em></h1>
       <p class="lead">On 2026-08-03 the Qwen team announced Qwen3.8 and
       promised open weights for a Max-class model alongside a new 27B,
@@ -161,7 +161,7 @@
         <tbody>
           <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen3.8-2.4T-A95B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">On the official Qwen organization. Its own timestamps say created 2026-08-08 and last modified 10:24 UTC on 2026-08-12, the day an aggregator listed the model at 16:21 UTC. Verified 2026-08-13 at revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>: 213 weight shards plus an index file, 4,892.4 GB in BF16, license file present (section 02). The 95-billion-active-parameter figure that was press-only before the release now appears in the official repository name itself.</td></tr>
           <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B-FP8">Qwen3.8-2.4T-A95B-FP8</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Verified 2026-08-13 at revision <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>: 213 shards, 2,496.2 GB, fp8 dynamic quantization with 128 by 128 blocks, license file byte-identical to the BF16 repository. The organization's own Qwen3.8 collection contains exactly these two repositories and nothing else.</td></tr>
-          <tr><td>GGUF conversions</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists.</td></tr>
+          <tr><td>GGUF conversions</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists. On release day we downloaded the smallest tier and verified it bit-perfect against the repository's own checksums, and no public runtime can load it yet: its expert tensors use a quantization type that exists in no public build (sections 04 and 07).</td></tr>
           <tr><td>Qwen3.8-27B</td><td>Announced</td><td class="t" style="text-align:left">Still zero official artifacts, checked 2026-08-13: the official organization's search returns no 27B, the other named release venue returns an empty listing for the name, and the release README and collection never mention a 27B. The vendor's release-day silence leaves even the final name unconfirmed. The watch continues.</td></tr>
           <tr><td>Qwen3.8-Max</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators. We measured it (section 06). Per the released model card, checked 2026-08-13, vision input, the non-thinking mode, and the million-token default context are Max API extras: none of them ship in the open weights (section 03).</td></tr>
           <tr><td>Third-party "Qwen3.8" repos</td><td>Not official</td><td class="t" style="text-align:left">Re-screened 2026-08-13: every third-party 27B repository we had previously catalogued under the name still contains zero weight tensors, and a fresh wave of mirrors and placeholders using the Max name appeared around the release. Section 05.</td></tr>
@@ -271,9 +271,11 @@
       without it.</p>
       <p><strong>We state this as an expectation with evidence, not as a
       tested result: existing Qwen3.5 llama.cpp and vLLM paths should
-      load these weights unchanged. We have not load-tested it here. If
-      a load test lands, its measurements replace this
-      sentence.</strong></p>
+      load these weights unchanged. The one load attempt here so far
+      does not test it either way: the community file we tried was
+      refused for its quantization type at the header parse, before any
+      architecture code ran (section 07). For weights in mainline
+      formats the expectation stands, still untested here.</strong></p>
     </section>
 
     <section>
@@ -304,8 +306,11 @@
       </table>
       </div>
       <p class="tablenote">Sizes as listed in the repository manifest on
-      2026-08-13. We verified the file listing, not the files: nothing
-      in this table has been downloaded or run here. The other quantizer
+      2026-08-13. One row has since been through our hands: the UD-Q1_0
+      set was downloaded here on 2026-08-13, every shard matched the
+      repository's own SHA-256 checksums, and it could not be run
+      (section 07). The rest of the table remains listing-verified only,
+      neither downloaded nor run here. The other quantizer
       accounts people usually watch, bartowski and mradermacher, had
       published nothing under the name at check time, and one further
       well-known quantizer account carried only an empty placeholder.</p>
@@ -323,8 +328,14 @@
         existence proof, not a tool. Loadable, able to generate, worth
         studying and worth recommending are four different findings,
         and the precedent says a machine this size should expect, at
-        best, the first two. We have not run any Qwen3.8 file; if we
-        do, measured numbers will replace this sentence.
+        best, the first two. On release day we downloaded that 397.3 GB
+        set, verified all ten shards bit-perfect against the
+        repository's own checksums, and could not run it: its expert
+        tensors use a quantization type that no public runtime declares,
+        so the load was refused at the header parse with nothing
+        allocated (section 07). There are still no speed numbers because
+        nothing has ever loaded; the day a public build can read the
+        file, this machine gets its answer.
       </div>
     </section>
 
@@ -459,25 +470,216 @@
     <section>
       <div class="secnum">07</div>
       <h2>Measured on release day</h2>
+      <!-- Claims trace for this section, follow-up pass 2026-08-13.
+           Every figure maps to one of three dated project records, the
+           ones section 11 promises on request: the hosted battery, route
+           card and cost accounting = FINDINGS_2026-08-13b_day1-hosted.md;
+           the blocked morning attempt = FINDINGS_2026-08-13_day1-hosted.md;
+           the local download, hash verification, tensor census and load
+           refusal = FINDINGS_2026-08-13_giant-local.md plus the model's
+           spec card. Raw request and response bodies retained for every
+           call. Per-figure traces sit next to each block below. -->
       <p>The released model has a hosted twin: since 2026-08-12 at 16:21
       UTC the same 2.4T-A95B has been listed on the aggregator route we
-      measured in section 06, at a million-token context and the same
-      prices as the Max endpoint, two dollars per million input tokens
-      and six per million output. That makes a day-one battery cheap,
-      and a hosted-versus-local twin study possible if a local run ever
-      happens (section 04).</p>
-      <p>A day-one battery against that hosted route is underway as this
-      update is written: the thinking-budget map at the same caps as
-      section 06, the reasoning effort control at its three levels,
-      identity and honesty probes, and route accounting. House rule: no
-      number appears on this page before its recorded run is complete.
-      This section is the slot, not a preview; measured results land
-      here in a dated follow-up.</p>
-      <!-- RELEASE-DAY MEASUREMENTS SLOT: fold the day-one hosted-battery
-           results in here in the follow-up pass (budget map at fixed
-           caps, reasoning-effort levels, identity and honesty probes,
-           route accounting). Every number must come from a recorded run
-           and carry its date. No invented numbers. -->
+      measured in section 06, at the same listed prices as the Max
+      endpoint, two dollars per million input tokens and six per million
+      output. On 2026-08-13 we ran the day-one battery against that
+      route, and the same day we downloaded the one community file set
+      from section 04 that fits this machine and tried to run it. Both
+      halves of release day are below. Every number comes from a
+      recorded run with its raw bodies retained, one to three calls per
+      cell, single observations labeled as such: diagnostics, not a
+      benchmark.</p>
+      <p>One sentence of context first: a morning attempt never reached
+      the model, because on its first day the open-weights listing was
+      served only by third-party GPU clouds while this account's
+      provider allowlist admitted model authors only, so all 26 calls
+      returned the same not-found error in about a tenth of a second
+      each, and the battery below ran in the afternoon, after we
+      deliberately admitted two of those providers.</p>
+      <!-- trace: morning wall = FINDINGS_2026-08-13_day1-hosted.md F1
+           (26 identical not-found bodies, ~0.1 s each, unbilled;
+           allowlist-by-design, resolved by an explicit settings
+           decision before the afternoon re-run). -->
+      <p><strong>The hosted battery: thirty-five model calls, two
+      providers, thirty-nine cents.</strong> The aggregator filled our
+      calls from DeepInfra (20 of 35) and Together (15), switching
+      between them mid-battery; DeepInfra lists its serving precision as
+      fp4 and Together lists none, so every number below belongs to this
+      endpoint mix on this day, with the provider recorded per call. The
+      headline is continuity: <strong>the empty-answer behavior this
+      site documents is fully present on the open weights.</strong> The
+      marble prompt from the <a href="../empty-answer/">Empty Answer</a>
+      study, temperature zero, one call per cap:</p>
+      <!-- trace: provider split, fp4 listing = FINDINGS_2026-08-13b_day1-hosted.md
+           F1; billed total $0.38966 = F6. Budget table = F3: 60 DeepInfra
+           length 0 chars 73 rtok; 256 DeepInfra length 146 chars 179 rtok;
+           500 Together stop correct 223 rtok; 2000 DeepInfra stop correct
+           188 rtok. Max comparator = the 2026-08-09 curve on the
+           empty-answer page. -->
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Token cap</th><th>Provider</th><th>Thinking spent</th><th>Visible answer</th></tr></thead>
+        <tbody>
+          <tr><td>60</td><td>DeepInfra</td><td>73</td><td>empty</td></tr>
+          <tr><td>256</td><td>DeepInfra</td><td>179</td><td>first words, cut off</td></tr>
+          <tr><td>500</td><td>Together</td><td>223</td><td>complete and correct</td></tr>
+          <tr><td>2,000</td><td>DeepInfra</td><td>188</td><td>complete and correct</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One call per cell, 2026-08-13. "Thinking
+      spent" is the reasoning-token count the server reported back; the
+      60 and 256 rows finished with the length stop reason, the 500 and
+      2,000 rows stopped on their own. The shape matches the hosted Max
+      curve from 2026-08-09 at neighboring caps: empty at 60 where Max
+      was empty at 64, first truncated words at a 256 cap on both, clean
+      by 500 where Max was clean by 512.</p>
+      <p>The <code>reasoning_effort</code> control from section 03 then
+      got a same-prompt, same-cap reading: the marble prompt again, a
+      2,000-token cap, temperature zero, one call per level. On this one
+      trivial probe the knob did not change how much the model thinks.
+      What it demonstrably changed is the served prompt and the answer's
+      style:</p>
+      <!-- trace: effort sweep = FINDINGS_2026-08-13b_day1-hosted.md F4.
+           Request message bytes byte-identical across the three calls
+           (verified from retained request bodies); server-reported
+           prompt_tokens 112/70/100; costs are the server's own usage.cost
+           fields. Template consistency = FINDINGS_2026-08-13_giant-local.md
+           section 5 (the shipped chat template implements effort as
+           inserted instruction sentences: xhigh one, low one, medium none). -->
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Effort level</th><th>Provider</th><th>Thinking spent</th><th>Prompt tokens, server count</th><th>Cost, server billed</th><th>Visible answer</th></tr></thead>
+        <tbody>
+          <tr><td>xhigh (default)</td><td>DeepInfra</td><td>184</td><td>112</td><td>$0.00236</td><td>340 chars, terse, correct</td></tr>
+          <tr><td>medium</td><td>DeepInfra</td><td>197</td><td>70</td><td>$0.00363</td><td>720 chars, formatted, correct</td></tr>
+          <tr><td>low</td><td>Together</td><td>168</td><td>100</td><td>$0.00341</td><td>527 chars, formatted, correct</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One call per level, 2026-08-13; the low call
+      landed on the other provider, a stated confound. The three
+      requests were byte-identical apart from the effort field.</p>
+      <p>Read the columns against each other. Thinking spend stayed
+      flat, 168 to 197 tokens across the three levels, and every answer
+      was correct, so on this probe the knob neither bought nor saved
+      any thinking. But the server counted three different prompt
+      lengths for byte-identical requests, 112 tokens at the default, 70
+      at medium, 100 at low: the effort level is being written into the
+      served prompt itself. That is consistent with the shipped chat
+      template from section 03, which implements effort as inserted
+      instruction sentences, one for xhigh, one for low, none for
+      medium. And because lower effort produced longer, more formatted
+      answers, the billed cost ran opposite to the knob's apparent
+      intent: medium cost the most and the default cost the least. One
+      trivial prompt, one call per level; a harder-prompt replication is
+      the obvious next step, and until it runs we generalize
+      nothing.</p>
+      <p>Thinking is mandatory in practice, not just in the template.
+      Section 03 said the shipped chat template raises an error if asked
+      to run with thinking off; the hosted route does not raise, it just
+      does not comply: a probe that sent <code>enable_thinking:
+      false</code> got a reply that still carried 626 tokens of hidden
+      reasoning, the field silently ignored. Single observation,
+      2026-08-13.</p>
+      <!-- trace: enable_thinking probe = FINDINGS_2026-08-13b_day1-hosted.md
+           F2, routecheck card test C6 (disabled call, 626 reasoning
+           tokens with the field set). -->
+      <p>The listing is not the bill. Fine print, measured 2026-08-13:
+      both providers that served us ran the native 262,144-token context
+      from section 03, and the million-token context on the aggregator's
+      listing exists only on a provider we did not admit, so we never
+      touched it. Together bills above the listed price, two dollars
+      fifty per million input tokens and six twenty-five per million
+      output against the listed two and six, and the server-reported
+      cost of every Together call matched that premium to the digit. The
+      same provider billed 12,672 repeated identical prompt tokens at
+      roughly a fifth of its input price on one probe, a cache discount
+      the listing does not mention, which is why the session's billed
+      total came in just under the sum of list prices. Check the
+      per-provider terms behind an aggregator listing before budgeting:
+      the listing showed neither the premium nor the discount.</p>
+      <!-- trace: per-provider prices, contexts, million-token window =
+           FINDINGS_2026-08-13b_day1-hosted.md F1 (endpoints listing:
+           Together $2.5/$6.25 vs the $2/$6 aggregate listing; ctx 262,144
+           on both admitted providers). Cache discount and billed total =
+           F6 (12,672 cached prompt tokens at ~0.2x input rate; billed
+           $0.38966 vs $0.415006 computed without cache). -->
+      <p>The rest of the battery, one to three calls per cell: the
+      long-context cells planted a code and got it back exactly, once at
+      31,380 prompt tokens and once at 69,441, both counts as the server
+      reported them; tool calling passed every shot with exactly the
+      right function arguments; and structured output conformed on all
+      three attempts when the schema was written into the prompt. The
+      one serving-layer gap: a request that supplied its JSON schema
+      only through the API's response_format field starved to an empty
+      answer, and the retained reasoning opens by complaining that no
+      schema was provided, so on this route that field never reached the
+      model. Put the schema in the prompt. These cells came from
+      routecheck, the instrument that packages the fixed battery of
+      section 08 into one recorded pass, plus a few one-call checks
+      alongside it; routecheck also measured this route's
+      thinking-budget floor at 500 tokens for its own probe family,
+      where the marble prompt above showed first words at 256, which is
+      the floor lesson in one line: it is prompt-dependent, so measure
+      it on your prompts, not ours.</p>
+      <!-- trace: needles = routecheck card C10 (found at 31,380
+           server-reported prompt tokens) + the one-call ~69K cell
+           (FINDINGS_2026-08-13b_day1-hosted.md F5, 69,441 prompt tokens,
+           code returned exactly). Tools = card C7 two of two + a one-call
+           tool-shape cell with exact arguments (F5). Inline-schema JSON =
+           card C8, 3/3 conformant. response_format starvation = F5
+           (2,491 reasoning tokens, finish length, 0 visible chars;
+           retained reasoning complains no schema was provided). Floor
+           500 = card C5, measured on this endpoint and config, this
+           run. -->
+      <p><strong>The local half of release day ended at the runtime
+      layer, with zero seconds of model serving.</strong> We downloaded
+      the one file set from section 04 that fits this machine's free
+      disk, the 397.3 GB UD-Q1_0, at the pinned revision named there,
+      and verified it bit-perfect on 2026-08-13: all ten shards matched
+      the repository's own SHA-256 checksums, ten of ten, through a
+      download that had to survive two interruptions. Then our server
+      refused the file in 0.38 seconds, at the header parse, before
+      allocating anything. The reason is not memory and not
+      architecture: the 276 routed-expert tensors that hold most of the
+      2.4 trillion parameters are stored as quantization type number 66,
+      and in every public build we checked that day the type table ends
+      at 42, llama.cpp mainline and the quantizer's own public fork
+      alike. The "Q1_0" in the file name is branding, not the mainline
+      format of that name, and the file's own metadata label claims a
+      standard type that appears nowhere among its tensors. The type is
+      real; the code that reads it is, today, not public.</p>
+      <!-- trace: local half = FINDINGS_2026-08-13_giant-local.md and the
+           model's spec card. Shard hashes 10/10 vs the repository's own
+           LFS checksums at pinned revision 567d3e6a. Tensor census:
+           1,702/1,702 tensors parsed, 276 routed-expert tensors type 66.
+           Refusal log: "invalid ggml type 66. should be in [0, 43)",
+           0.38 s, zero graphics-memory allocation. Mainline and the
+           quantizer's public fork type tables end at 42, fetched
+           2026-08-13. Metadata label names a standard type of which the
+           file contains zero tensors. -->
+      <p>So the giant still has no local speed, memory or quality
+      numbers here, and the reason is now sharper than not having run
+      it: nothing public can load it. We will not invent what nothing
+      could measure. The re-test is standing and cheap: the day a public
+      build carries the new type family, the verified bytes on disk get
+      their load attempt, and its numbers land here, dated. Until then
+      the hosted route above is the only place the open 2.4T answers
+      questions from this desk.</p>
+      <div class="note">
+        <span class="label">The lesson, for anyone about to download</span>
+        Verify the quantization type against your runtime before the
+        download, not after. A familiar name is not a format: this file
+        is called Q1_0 and is not mainline Q1_0, its metadata label
+        claims a standard type it does not contain, and the truth lived
+        only in the per-tensor headers, where the expert tensors declare
+        a type no public build can read. The check against a runtime's
+        type table costs minutes. Here the download cost an afternoon
+        and 397 GB of disk, and the refusal arrived in less than half a
+        second.
+      </div>
     </section>
 
     <section>
@@ -503,19 +705,25 @@
         question here, not a reflex. Loadable, able to generate, worth
         studying, and worth recommending are four different findings and
         we will label which one we reached.
-        <strong>This is where the Max-class release stands now: the plan
-        gets written and weighed before a single byte is downloaded, and
-        nothing has been downloaded. The arithmetic so far is in
-        section 04.</strong></li>
+        <strong>Done 2026-08-13 for the Max-class release: the
+        arithmetic in section 04 picked the one tier that fits this
+        machine, storage and rollback were computed from the actual file
+        listing, and the download ran the same day (section 07).</strong></li>
         <li><strong>Checksums, then a first safe load</strong> at
-        conservative settings, nothing else running.</li>
+        conservative settings, nothing else running.
+        <strong>Half done 2026-08-13: checksums passed ten of ten; the
+        first safe load was refused at the header parse by the file's
+        quantization type, so the load stage waits on a public runtime
+        that declares it (section 07).</strong></li>
         <li><strong>The same fixed battery</strong> we run on every model:
         identity and file accounting, load and memory placement, warm
         speed medians, the thinking-budget map from section 06 run
         locally with identical prompts, the reasoning toggle, tool
         calls, structured output, an honesty probe, and a long-context
         retrieval check. Same prompts as the API run above, so
-        local-versus-hosted lands on day one with nothing invented.</li>
+        local-versus-hosted lands on day one with nothing invented.
+        <strong>The hosted side of that battery ran 2026-08-13
+        (section 07); the local side waits on a loadable file.</strong></li>
         <li><strong>This page updates the same day</strong>, dated, with
         whatever we actually measured and nothing more.</li>
       </ul>
@@ -545,6 +753,28 @@
         <tr><th scope="row">2026-08-09</th><td>Page created. Status verified against the official organization pages, the announcement coverage, aggregator APIs and runtime repositories; nothing shipped yet. API battery run and recorded (section 06).</td></tr>
         <tr><th scope="row">2026-08-10</th><td><strong>The empty-answer behavior in section 06 is not a Qwen fault, and we can now show that rather than assert it.</strong> On 2026-08-09 we swept one fixed reasoning prompt across the same token caps on two models from different vendors: Qwen3.8-Max on this aggregator route, and a comparable hidden-reasoning model from another family as a control. Both spend the whole cap thinking and return an empty answer when the cap is small. On this prompt <strong>Qwen was the better-behaved of the two</strong>: it produced its first visible words at a 256-token cap, where the control still returned nothing at 256 and did not finish until 1,024. This is a property of models that think invisibly and bill that thinking against one visible output budget, not a property of any one vendor. The whole comparison cost under three cents and it changed our conclusion: a page showing the Qwen curve alone would have implied a Qwen-specific defect and would have been wrong. The full study follows on its own page, <a href="../empty-answer/">Empty Answer</a>: three lanes including this machine's local Qwen3.5, the cross-vendor control, and the method for finding your own floor instead of trusting a number.</td></tr>
         <tr><th scope="row">2026-08-13</th><td><strong>Release day: the Max-class open weights shipped, and only the Max-class.</strong> Two repositories under the official Qwen organization flipped public on 2026-08-12 by their own timestamps; on 2026-08-13 we verified both at pinned revisions, with shard counts, sizes and the license file, so their rows in section 01 move to shipped and verified. The license is the practitioner headline: not Apache 2.0 but a custom Qwen3.8-Max License with a name-display threshold and a separate-license threshold, quoted verbatim in section 02; the pre-release revenue-share report resolved into thresholds, and the geographic-restriction rumor found no support in the text we read. The shipped config says one post-trained model, always thinking, text only, on a scaled Qwen3.5 architecture, which is why we expect existing runtimes to load it without new support work (section 03; stated as an expectation, not yet load-tested here). One community GGUF set is real and sized in section 04; no official GGUF exists. The 27B remains announced, with zero official artifacts anywhere we checked, and the name-squat hazard of section 05 held true on release day, with a fresh wave of placeholders around the release itself. A day-one battery against the hosted route is underway; its numbers land in a dated follow-up (section 07).</td></tr>
+        <tr><th scope="row">2026-08-13</th><td><strong>Same-day
+        follow-up: the two release-day studies completed, and section 07
+        now holds their numbers.</strong> Hosted: the day-one battery
+        ran in the afternoon, thirty-five model calls across two named
+        providers for thirty-nine cents, after a morning attempt was
+        blocked by this account's own provider allowlist. The budget map
+        on the open weights matches the hosted Max curve from
+        2026-08-09; the reasoning-effort control, on one trivial probe,
+        left thinking volume flat and rewrote the served prompt instead,
+        with billed cost running opposite to the knob's apparent intent;
+        asking for thinking off is silently ignored, so thinking is
+        mandatory in practice; and the per-provider fine print is
+        recorded, a premium over the listed price, a cache discount, the
+        native 262,144-token context on both providers we touched, the
+        million-token listing figure only on one we did not. Local: we
+        downloaded the one community file set that fits this machine,
+        verified all ten shards bit-perfect against the repository's own
+        checksums, and no public runtime can load it, so the server
+        refused it at the header parse in under half a second. Sections
+        01, 03, 04 and 08 now say downloaded, verified and refused
+        instead of not downloaded. The re-test waits on a public build
+        that declares the new quantization type.</td></tr>
       </table>
       <p class="fineprint">Every existence claim on this page is dated. If
       today is later than the newest row above, treat the status table as
@@ -601,6 +831,17 @@
         checkpoints through its existing Qwen3.5 path; the one open
         3.8-adjacent llama.cpp pull request is chat-template plumbing for
         the effort setting, not architecture support.</li>
+        <li>Our recorded day-one battery against the released 2.4T-A95B
+        via OpenRouter, 2026-08-13: thirty-five provider-recorded model
+        calls across DeepInfra and Together, raw request and response
+        bodies, per-call provider and cost accounting, the routecheck
+        route card, and the blocked morning attempt's 26 not-found
+        bodies. Project records that can be produced if questioned.</li>
+        <li>The local download and load-attempt record, 2026-08-13: the
+        pinned-revision manifest with the repository's SHA-256
+        checksums, our shard-by-shard verification log, the tensor-type
+        census of all ten shards, and the server's refusal log. Project
+        records that can be produced if questioned.</li>
         <li>The <a href="../qwen35/">Qwen3.5 pair field card</a> on this
         site for the local serving record this page builds on.</li>
       </ul>
@@ -627,7 +868,7 @@
     Tongyi are marks of Alibaba Group Holding Limited, referenced for
     identification only; not affiliated with, endorsed by, or sponsored by
     the Qwen team, Alibaba Group Holding Limited, Alibaba Cloud, OpenRouter,
-    or their affiliates. Product names and marks belong to their respective
+    DeepInfra, Together AI, or their affiliates. Product names and marks belong to their respective
     owners. This site is static. No scripts, no tracking, no cookies.</p>
   </div>
 </footer>
