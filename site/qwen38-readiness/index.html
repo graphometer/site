@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Release watch: Qwen3.8</title>
-<meta name="description" content="A verified status page for the Qwen3.8 generation: what has actually shipped as of 2026-08-09 (the Max model, API only), what is promised for the week of 2026-08-10 (open weights for the Max and a new 27B), the fake-repository hazard already live on Hugging Face, first measurements of the API model including its thinking-budget behavior, and the exact battery we will run the day real weights land.">
+<meta name="description" content="A verified status page for the Qwen3.8 generation, updated on release day 2026-08-13: the Max-class open weights shipped and we verified both official repositories at pinned revisions (213 shards each, 4,892.4 GB BF16 and 2,496.2 GB FP8); the license is a custom Qwen3.8-Max License, not Apache 2.0, quoted at its operative clause; the promised 27B has still not shipped and the fake-repository hazard persists; plus what the shipped config says, which community quantizations are real, and an honest account of what a desktop can do with files this size.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -117,22 +117,27 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Release watch · sources checked 2026-08-09 · API measured 2026-08-09</div>
+      <div class="eyebrow">Release watch · weights verified 2026-08-13 · API measured 2026-08-09</div>
       <h1>Release watch: <em>Qwen3.8</em></h1>
       <p class="lead">On 2026-08-03 the Qwen team announced Qwen3.8 and
-      promised something unprecedented for the family: open weights for a
-      Max-class model, alongside a new 27B, both due in the week beginning
-      2026-08-10. As of the date at the top of this page, <strong>no
-      Qwen3.8 weights exist anywhere official</strong>. The Max model is
-      real but API-only, and every repository we opened in our 2026-08-09
-      search of the main public hub using the Qwen3.8 name was a
-      placeholder or a rebadged model from someone else. This page holds the verified
-      state of the release, first measurements of the API model including
-      a budget behavior that will matter to anyone calling it, and the
-      exact battery we will run against the real weights on the day they
-      land. It updates with dated entries and it does not speculate:
-      where a fact is a vendor's promise rather than a shipped artifact,
-      it is labeled as one.</p>
+      promised open weights for a Max-class model alongside a new 27B,
+      both due in the week beginning 2026-08-10. On 2026-08-12 the larger
+      half of that promise landed. <strong>The Max-class open weights are
+      real, and we verified them</strong>: two repositories under the
+      official Qwen organization, checked at pinned revisions on
+      2026-08-13, 213 weight shards each, 4,892.4 GB in BF16 and
+      2,496.2 GB in FP8. The 27B named in the same announcement has still
+      not shipped anywhere official, and the fake repositories that grew
+      around the name before the release are still there after it. For
+      practitioners the headline is the license: <strong>it is not Apache
+      2.0</strong>. It is a custom license with revenue thresholds, read
+      at the pinned revision and quoted in section 02. This page holds
+      the verified state of the release, what the shipped configuration
+      says, which community quantizations are real, an honest account of
+      what a desktop can do with files this size, and our measurements of
+      the hosted model. It updates with dated entries and it does not
+      speculate: where a fact is a vendor's promise rather than a shipped
+      artifact, it is labeled as one.</p>
       <div class="nonaff">Independent measurements. Not affiliated with,
       endorsed by, or connected to the Qwen team, Alibaba Group, or
       OpenRouter.</div>
@@ -145,32 +150,187 @@
       verified</strong> means we saw the actual weight files at a named
       revision with a license. <strong>API only</strong> means the model
       answers requests but no weights exist. <strong>Announced</strong>
-      means a vendor promise with no artifact. <strong>Not official</strong>
-      means artifacts exist under the name but none come from the maker. A
-      repository name is never proof of a release.</p>
+      means a vendor promise with no artifact. <strong>Community
+      only</strong> means real files exist from a named third party but
+      nothing official. <strong>Not official</strong> means artifacts
+      exist under the name but none come from the maker. A repository
+      name is never proof of a release.</p>
       <div class="data-wrap">
       <table class="data">
-        <thead><tr><th>Model</th><th>Status</th><th class="t" style="text-align:left">Evidence, checked 2026-08-09</th></tr></thead>
+        <thead><tr><th>Model</th><th>Status</th><th class="t" style="text-align:left">Evidence, with check date</th></tr></thead>
         <tbody>
-          <tr><td>Qwen3.8-Max</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators. We measured it (section 03). Announced at 2.4 trillion total parameters; the active-parameter count circulating in press coverage has not been vendor-confirmed.</td></tr>
-          <tr><td>Qwen3.8-Max open weights</td><td>Announced</td><td class="t" style="text-align:left">Promised for the week of 2026-08-10 on Hugging Face and ModelScope. No repository under the official Qwen organization as of the check date. License undisclosed.</td></tr>
-          <tr><td>Qwen3.8-27B</td><td>Announced</td><td class="t" style="text-align:left">Named in the 2026-08-03 announcement as a companion open release. No parameters, architecture, context, or license published anywhere official.</td></tr>
-          <tr><td>Any "Qwen3.8" hub repo today</td><td>Not official</td><td class="t" style="text-align:left">Every repository we found using the name is third-party: placeholder cards with no weight tensors, or small models rebadged with the 3.8 name. Section 02.</td></tr>
-          <tr><td>Qwen3.7 family</td><td>API only</td><td class="t" style="text-align:left">Max, Plus and Flash tiers serve on the official API and aggregators. The vendor states they are proprietary; no 3.7 weights have ever shipped.</td></tr>
-          <tr><td>Qwen3.6-27B and 35B</td><td>Shipped and verified</td><td class="t" style="text-align:left">Still the newest open Qwen weights: file trees confirmed on the official organization, Apache 2.0 license files present.</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen3.8-2.4T-A95B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">On the official Qwen organization. Its own timestamps say created 2026-08-08 and last modified 10:24 UTC on 2026-08-12, the day an aggregator listed the model at 16:21 UTC. Verified 2026-08-13 at revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>: 213 weight shards plus an index file, 4,892.4 GB in BF16, license file present (section 02). The 95-billion-active-parameter figure that was press-only before the release now appears in the official repository name itself.</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B-FP8">Qwen3.8-2.4T-A95B-FP8</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Verified 2026-08-13 at revision <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>: 213 shards, 2,496.2 GB, fp8 dynamic quantization with 128 by 128 blocks, license file byte-identical to the BF16 repository. The organization's own Qwen3.8 collection contains exactly these two repositories and nothing else.</td></tr>
+          <tr><td>GGUF conversions</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists.</td></tr>
+          <tr><td>Qwen3.8-27B</td><td>Announced</td><td class="t" style="text-align:left">Still zero official artifacts, checked 2026-08-13: the official organization's search returns no 27B, the other named release venue returns an empty listing for the name, and the release README and collection never mention a 27B. The vendor's release-day silence leaves even the final name unconfirmed. The watch continues.</td></tr>
+          <tr><td>Qwen3.8-Max</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators. We measured it (section 06). Per the released model card, checked 2026-08-13, vision input, the non-thinking mode, and the million-token default context are Max API extras: none of them ship in the open weights (section 03).</td></tr>
+          <tr><td>Third-party "Qwen3.8" repos</td><td>Not official</td><td class="t" style="text-align:left">Re-screened 2026-08-13: every third-party 27B repository we had previously catalogued under the name still contains zero weight tensors, and a fresh wave of mirrors and placeholders using the Max name appeared around the release. Section 05.</td></tr>
+          <tr><td>Qwen3.7 family</td><td>API only</td><td class="t" style="text-align:left">Max, Plus and Flash tiers serve on the official API and aggregators (checked 2026-08-09). The vendor states they are proprietary; no 3.7 weights have ever shipped.</td></tr>
+          <tr><td>Qwen3.6-27B and 35B</td><td>Shipped and verified</td><td class="t" style="text-align:left">The newest open Qwen weights until 2026-08-12, and still the newest at sizes a normal computer can hold: file trees confirmed on the official organization, Apache 2.0 license files present (checked 2026-08-09).</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">One unverified report claims the coming weights
-      will carry geographic license restrictions. It is a single source and
-      corroborated nowhere; we treat it as rumor until the license file
-      exists, and note it only so its later appearance or absence is on the
-      record.</p>
+      <p class="tablenote">An earlier version of this page carried a
+      single-source report that the coming weights would have geographic
+      license restrictions, held as rumor until a license file existed.
+      The license file now exists, and we read it at the pinned revision
+      on 2026-08-13: its conditions are the two described in section 02,
+      and a geographic restriction is not among them. The note stays so
+      the rumor's resolution is on the record.</p>
     </section>
 
     <section>
       <div class="secnum">02</div>
-      <h2>The name-squat hazard, before the weights exist</h2>
+      <h2>The license: not Apache 2.0</h2>
+      <p>Qwen3.6, the previous open release, shipped under Apache 2.0.
+      Qwen3.8 does not. The file in both repositories is named the
+      <strong>Qwen3.8-Max License</strong>: 3,390 bytes, byte-identical
+      in the BF16 and FP8 repositories, read on 2026-08-13 at revision
+      <code class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</code>.
+      The body is an MIT-style permission grant with two conditions
+      attached:</p>
+      <ul class="plain">
+        <li><strong>A name-display condition above consumer scale.</strong>
+        Products or services built on the model that exceed 100 million
+        monthly active users, or twenty million US dollars in monthly
+        revenue, must display the model name prominently. Note the unit
+        on the second test: monthly revenue, not annual.</li>
+        <li><strong>A separate-license condition above fifty
+        million.</strong> Businesses offering the model as a service, or
+        offering an "AI Work Assistant" product, whose aggregate revenue
+        exceeds fifty million US dollars in any consecutive twelve
+        months, must obtain a separate license from Qwen before
+        commercial use. Internal use is exempt.</li>
+      </ul>
+      <div class="note">
+        <span class="label">The operative clause, verbatim</span>
+        For "Model as a Service" and "AI Work Assistant" licensees above
+        the fifty-million threshold, the license says they "shall obtain
+        a separate license from Qwen before Using the Software or its
+        derivative works for any commercial purpose." The capital U on
+        "Using" is the license's own. Read 2026-08-13 at revision
+        <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>;
+        identical bytes in the FP8 repository at revision
+        <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>.
+      </div>
+      <p style="margin-top:14px">In plain English, as we read it, the
+      grant works like MIT for individuals, researchers and ordinary
+      businesses, very large consumer products owe a visible name
+      credit, and a company past fifty million dollars in any rolling
+      twelve months that sells model access or an AI work assistant must
+      get a separate license from Qwen before commercial use; read the
+      license yourself, this is not legal advice.</p>
+      <p>The clause also settles a pre-release question. Reporting
+      sourced to Reuters on 2026-08-07 said to expect a revenue-share
+      arrangement in this license, with the rate still under
+      negotiation. What shipped resolves that expectation as thresholds
+      instead: as we read the file, no percentage of anyone's revenue
+      appears in it, a name-display duty starts at consumer scale, and a
+      separate-license duty starts at fifty million dollars for the two
+      named business shapes. The license file itself does not say what a
+      separate license costs above the threshold.</p>
+      <p>For local research use of the kind this site does, none of this
+      appears to bite: downloading, running, modifying and publishing
+      measurements sit inside the grant as we read it, far below every
+      threshold. Same caveat: our reading, not advice.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>One model, always thinking: what the config says</h2>
+      <p>Everything here comes from the repository files at the pinned
+      revision, mostly the config, tokenizer and chat template, plus the
+      model card, checked 2026-08-13. These are shipped facts, as
+      distinct from announcement promises.</p>
+      <table class="facts">
+        <tr><th scope="row">Release shape</th><td>One post-trained model. No base variant and no separate instruct variant exist: the repository is the assistant model, and the organization's Qwen3.8 collection carries nothing else.</td></tr>
+        <tr><th scope="row">Thinking</th><td>Mandatory. The thinking stage cannot be disabled, and the chat template raises an error if asked to run with thinking off. Control is a <code>reasoning_effort</code> setting with levels xhigh, medium and low; the default is xhigh, and thinking content is preserved across turns by default.</td></tr>
+        <tr><th scope="row">Modality</th><td>Text only. Vision input, the non-thinking mode and the million-token default context are hosted Qwen3.8-Max extras per the model card; none of them ship in these weights.</td></tr>
+        <tr><th scope="row">Context length</th><td>262,144 tokens native in the config. The model card calls it extensible to 1,010,000; the seven-figure number is a vendor claim we have not tested.</td></tr>
+        <tr><th scope="row">Architecture</th><td><code>Qwen3_5MoeForCausalLM</code>, model type <code>qwen3_5_moe_text</code>: a scaled Qwen3.5, not a new architecture. 92 layers arranged as 23 repeats of three GatedDeltaNet linear-attention layers plus one gated-attention layer, hidden size 8192, 512 experts with 10 routed and one shared active per token, and a one-layer multi-token-prediction head.</td></tr>
+        <tr><th scope="row">Tokenizer and template</th><td>Vocabulary 248,320 and end-of-sequence id 248044, both unchanged from the Qwen3.5 397B we already serve. The chat template drops the vision branches and adds the <code>reasoning_effort</code> control.</td></tr>
+      </table>
+      <p style="margin-top:16px">The architecture line is the practical
+      finding. Because the model declares an existing architecture
+      rather than a new one, the runtime wait that normally follows a
+      release should not apply: Qwen3.5 support took a merge, a revert
+      and a re-merge across a week, with the vendor's own pull request,
+      and none of that is needed if nothing new has to be merged. The
+      evidence, all checked 2026-08-13: llama.cpp has carried the
+      <code>qwen35moe</code> architecture enumeration since the 3.5
+      generation, and the build serving our Qwen3.5 pair, from upstream
+      commit <code>c8e03ce</code>, already contains it; the real
+      community GGUF conversion declares exactly that architecture and
+      the native 262,144 context in its own metadata (section 04); vLLM
+      merged a change on 2026-08-07 that routes Qwen3.8 checkpoints
+      through its existing Qwen3.5 path rather than adding a new model
+      class; and no new-architecture pull request is open or needed on
+      llama.cpp. The one open 3.8-adjacent llama.cpp pull request is
+      chat-template plumbing for the <code>reasoning_effort</code>
+      setting, and it does not block loading: the default effort applies
+      without it.</p>
+      <p><strong>We state this as an expectation with evidence, not as a
+      tested result: existing Qwen3.5 llama.cpp and vLLM paths should
+      load these weights unchanged. We have not load-tested it here. If
+      a load test lands, its measurements replace this
+      sentence.</strong></p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Community quantizations, and what fits at home</h2>
+      <p>The organization shipped safetensors only; no official GGUF
+      exists, checked 2026-08-13. One community conversion is real: the
+      quantizer account unsloth published
+      <span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span>, 312 GGUF
+      files at revision <span class="n">567d3e6ac26c</span>, last pushed
+      01:01 UTC on 2026-08-13, with architecture and context metadata
+      matching the official config (section 03). File-manifest sizes at
+      that revision:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Quantization</th><th>On-disk size</th></tr></thead>
+        <tbody>
+          <tr><td>UD-Q1_0</td><td>397.3 GB</td></tr>
+          <tr><td>UD-IQ1_S</td><td>508.4 GB</td></tr>
+          <tr><td>UD-IQ1_M</td><td>564.0 GB</td></tr>
+          <tr><td>UD-IQ2_XXS</td><td>656.6 GB</td></tr>
+          <tr><td>UD-IQ2_XS</td><td>730.7 GB</td></tr>
+          <tr><td>UD-IQ3_XXS</td><td>955.5 GB</td></tr>
+          <tr><td>UD-IQ4_XS</td><td>1,310.9 GB</td></tr>
+          <tr><td>Q8_0</td><td>2,600.2 GB</td></tr>
+          <tr><td>BF16</td><td>4,893.2 GB</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Sizes as listed in the repository manifest on
+      2026-08-13. We verified the file listing, not the files: nothing
+      in this table has been downloaded or run here. The other quantizer
+      accounts people usually watch, bartowski and mradermacher, had
+      published nothing under the name at check time, and one further
+      well-known quantizer account carried only an empty placeholder.</p>
+      <div class="note">
+        <span class="label">What a desktop can do with this, honestly</span>
+        The desktop this site measures on has 188 GB of system memory
+        and one 32 GB graphics card, and it serves two Qwen3.5 models
+        today. Against this release the arithmetic is blunt: the
+        smallest real Qwen3.8 artifact in existence, the 397.3 GB
+        Q1_0, is the only one that even fits in the free disk space
+        here, and at more than twice system memory it could only run
+        streamed from NVMe. We have done that before: a 594 GB
+        quantization of a different trillion-parameter mixture of
+        experts ran here at 0.19 to 0.28 tokens per second. That is an
+        existence proof, not a tool. Loadable, able to generate, worth
+        studying and worth recommending are four different findings,
+        and the precedent says a machine this size should expect, at
+        best, the first two. We have not run any Qwen3.8 file; if we
+        do, measured numbers will replace this sentence.
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The name-squat hazard, still live on release day</h2>
       <p>Within days of the announcement, and before any real weights,
       repositories using the Qwen3.8 name appeared on public model hubs
       under third-party accounts. The ones we examined fall into two
@@ -182,6 +342,16 @@
       releases. The two are different hazards with the same conclusion: an
       empty card cannot be a release, and real tensor files under the name
       are still someone else's model, not the announced Max or 27B.</p>
+      <p><strong>Release day did not retire this section; it sharpened
+      it.</strong> Re-screened 2026-08-13: every third-party 27B
+      repository we had previously catalogued under the name still
+      contains zero weight tensors, including ones whose cards now
+      advertise an Apache 2.0 license for a model that has never shipped
+      under any license. A fresh wave of mirrors and placeholders using
+      the Max name appeared around the release itself. And the size rule
+      below gained teeth: only the Max-class shipped, so any repository
+      claiming to be the 27B is not the announced model by that
+      arithmetic alone.</p>
       <p>The general rule is worth more than any list of today's fakes,
       because next week's will have different names. Three questions
       settle almost every case, and none of them requires downloading
@@ -209,18 +379,19 @@
       A rule generalizes to next week's uploads; a list of names is out of
       date the day after it is written, and it accuses people we have not
       contacted on evidence we have not asked them to answer.</p>
-      <p>When the drop happens, the safe path is boring: take the
+      <p>When a drop happens, the safe path is boring: take the
       repository link from the Qwen team's own announcement channels, or
       the official organization page directly, confirm the license file is
       present, confirm the weight shards are actually there with sizes
       that make sense for the stated parameter count, and verify
-      checksums after downloading. We will link the verified repositories
-      from this page the day they exist, with revisions and sizes as we
-      confirm them.</p>
+      checksums after downloading. That day arrived on 2026-08-12, and
+      the path above is exactly what we ran on 2026-08-13: the verified
+      repositories, revisions and sizes are in section 01. For the 27B,
+      the same path waits.</p>
     </section>
 
     <section>
-      <div class="secnum">03</div>
+      <div class="secnum">06</div>
       <h2>First measurements of the API model</h2>
       <p>On 2026-08-09 we ran a fixed fifteen-call battery against
       Qwen3.8-Max through one aggregator route (OpenRouter), with every
@@ -247,7 +418,7 @@
       card is linked below), and it is fully present on this frontier API
       route. It is not a Qwen trait: a model from a different vendor,
       swept on the same prompt at the same caps on 2026-08-09, was slower
-      than this one to produce a first visible answer (section 06, and the
+      than this one to produce a first visible answer (section 10, and the
       full study on <a href="../empty-answer/">Empty Answer</a>). The
       Qwen battery:</p>
       <div class="data-wrap">
@@ -286,18 +457,44 @@
     </section>
 
     <section>
-      <div class="secnum">04</div>
-      <h2>What we will do the day the weights land</h2>
+      <div class="secnum">07</div>
+      <h2>Measured on release day</h2>
+      <p>The released model has a hosted twin: since 2026-08-12 at 16:21
+      UTC the same 2.4T-A95B has been listed on the aggregator route we
+      measured in section 06, at a million-token context and the same
+      prices as the Max endpoint, two dollars per million input tokens
+      and six per million output. That makes a day-one battery cheap,
+      and a hosted-versus-local twin study possible if a local run ever
+      happens (section 04).</p>
+      <p>A day-one battery against that hosted route is underway as this
+      update is written: the thinking-budget map at the same caps as
+      section 06, the reasoning effort control at its three levels,
+      identity and honesty probes, and route accounting. House rule: no
+      number appears on this page before its recorded run is complete.
+      This section is the slot, not a preview; measured results land
+      here in a dated follow-up.</p>
+      <!-- RELEASE-DAY MEASUREMENTS SLOT: fold the day-one hosted-battery
+           results in here in the follow-up pass (budget map at fixed
+           caps, reasoning-effort levels, identity and honesty probes,
+           route accounting). Every number must come from a recorded run
+           and carry its date. No invented numbers. -->
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>The absorption path, and where it stands</h2>
       <p>This machine already serves two Qwen3.5 mixture-of-experts models
-      on one 32 GB graphics card, so the absorption path is rehearsed, and
-      the runbook is written before the release rather than after. In
-      order:</p>
+      on one 32 GB graphics card, so the absorption path was rehearsed and
+      written down before the release rather than after. Release day
+      followed it. In order:</p>
       <ul class="plain">
         <li><strong>Verify before downloading.</strong> Official
         repository, license file read, architecture string from the
         config, shard list with sizes. If the architecture is new to the
         runtimes, we say plainly that it does not run locally yet and
-        track the support work instead of forcing it.</li>
+        track the support work instead of forcing it.
+        <strong>Done 2026-08-13 for the Max-class release: sections 01
+        to 04 of this update are that step's output.</strong></li>
         <li><strong>Feasibility before the big one.</strong> The 27B-class
         model is a routine download. A Max-class open release is not: we
         compute storage, memory and rollback from the actual file listing
@@ -305,12 +502,16 @@
         streaming from disk, so "too big to be sensible" is a measurement
         question here, not a reflex. Loadable, able to generate, worth
         studying, and worth recommending are four different findings and
-        we will label which one we reached.</li>
+        we will label which one we reached.
+        <strong>This is where the Max-class release stands now: the plan
+        gets written and weighed before a single byte is downloaded, and
+        nothing has been downloaded. The arithmetic so far is in
+        section 04.</strong></li>
         <li><strong>Checksums, then a first safe load</strong> at
         conservative settings, nothing else running.</li>
         <li><strong>The same fixed battery</strong> we run on every model:
         identity and file accounting, load and memory placement, warm
-        speed medians, the thinking-budget map from section 03 run
+        speed medians, the thinking-budget map from section 06 run
         locally with identical prompts, the reasoning toggle, tool
         calls, structured output, an honesty probe, and a long-context
         retrieval check. Same prompts as the API run above, so
@@ -318,12 +519,16 @@
         <li><strong>This page updates the same day</strong>, dated, with
         whatever we actually measured and nothing more.</li>
       </ul>
+      <p>The 27B half of this plan stays parked until a 27B exists: it
+      would be the routine download, and it is the half that has not
+      shipped. The daily watch that caught this release continues for
+      it.</p>
     </section>
 
     <section>
-      <div class="secnum">05</div>
+      <div class="secnum">09</div>
       <h2>Where this page comes from</h2>
-      <p>Graphometer runs the current Qwen generation for real: the
+      <p>Graphometer runs big Qwen models for real: the
       Qwen3.5 122B and 397B serve on one desktop here, measured in a
       <a href="../qwen35/">field card</a> whose numbers trace to dated
       recorded runs, including a speculative-decoding gate trap that the
@@ -334,11 +539,12 @@
     </section>
 
     <section>
-      <div class="secnum">06</div>
+      <div class="secnum">10</div>
       <h2>Updates</h2>
       <table class="facts">
-        <tr><th scope="row">2026-08-09</th><td>Page created. Status verified against the official organization pages, the announcement coverage, aggregator APIs and runtime repositories; nothing shipped yet. API battery run and recorded (section 03).</td></tr>
-        <tr><th scope="row">2026-08-10</th><td><strong>The empty-answer behavior in section 03 is not a Qwen fault, and we can now show that rather than assert it.</strong> On 2026-08-09 we swept one fixed reasoning prompt across the same token caps on two models from different vendors: Qwen3.8-Max on this aggregator route, and a comparable hidden-reasoning model from another family as a control. Both spend the whole cap thinking and return an empty answer when the cap is small. On this prompt <strong>Qwen was the better-behaved of the two</strong>: it produced its first visible words at a 256-token cap, where the control still returned nothing at 256 and did not finish until 1,024. This is a property of models that think invisibly and bill that thinking against one visible output budget, not a property of any one vendor. The whole comparison cost under three cents and it changed our conclusion: a page showing the Qwen curve alone would have implied a Qwen-specific defect and would have been wrong. The full study follows on its own page, <a href="../empty-answer/">Empty Answer</a>: three lanes including this machine's local Qwen3.5, the cross-vendor control, and the method for finding your own floor instead of trusting a number.</td></tr>
+        <tr><th scope="row">2026-08-09</th><td>Page created. Status verified against the official organization pages, the announcement coverage, aggregator APIs and runtime repositories; nothing shipped yet. API battery run and recorded (section 06).</td></tr>
+        <tr><th scope="row">2026-08-10</th><td><strong>The empty-answer behavior in section 06 is not a Qwen fault, and we can now show that rather than assert it.</strong> On 2026-08-09 we swept one fixed reasoning prompt across the same token caps on two models from different vendors: Qwen3.8-Max on this aggregator route, and a comparable hidden-reasoning model from another family as a control. Both spend the whole cap thinking and return an empty answer when the cap is small. On this prompt <strong>Qwen was the better-behaved of the two</strong>: it produced its first visible words at a 256-token cap, where the control still returned nothing at 256 and did not finish until 1,024. This is a property of models that think invisibly and bill that thinking against one visible output budget, not a property of any one vendor. The whole comparison cost under three cents and it changed our conclusion: a page showing the Qwen curve alone would have implied a Qwen-specific defect and would have been wrong. The full study follows on its own page, <a href="../empty-answer/">Empty Answer</a>: three lanes including this machine's local Qwen3.5, the cross-vendor control, and the method for finding your own floor instead of trusting a number.</td></tr>
+        <tr><th scope="row">2026-08-13</th><td><strong>Release day: the Max-class open weights shipped, and only the Max-class.</strong> Two repositories under the official Qwen organization flipped public on 2026-08-12 by their own timestamps; on 2026-08-13 we verified both at pinned revisions, with shard counts, sizes and the license file, so their rows in section 01 move to shipped and verified. The license is the practitioner headline: not Apache 2.0 but a custom Qwen3.8-Max License with a name-display threshold and a separate-license threshold, quoted verbatim in section 02; the pre-release revenue-share report resolved into thresholds, and the geographic-restriction rumor found no support in the text we read. The shipped config says one post-trained model, always thinking, text only, on a scaled Qwen3.5 architecture, which is why we expect existing runtimes to load it without new support work (section 03; stated as an expectation, not yet load-tested here). One community GGUF set is real and sized in section 04; no official GGUF exists. The 27B remains announced, with zero official artifacts anywhere we checked, and the name-squat hazard of section 05 held true on release day, with a fresh wave of placeholders around the release itself. A day-one battery against the hosted route is underway; its numbers land in a dated follow-up (section 07).</td></tr>
       </table>
       <p class="fineprint">Every existence claim on this page is dated. If
       today is later than the newest row above, treat the status table as
@@ -347,7 +553,7 @@
     </section>
 
     <section>
-      <div class="secnum">07</div>
+      <div class="secnum">11</div>
       <h2>Sources</h2>
       <ul class="plain">
         <li>The Qwen team's 2026-08-03 announcement and the official Qwen
@@ -368,6 +574,33 @@
         checked 2026-08-09: Qwen3.5 support is merged and shipping;
         no merged Qwen3.8 support in those repositories as of that
         date.</li>
+        <li>The official Qwen organization on Hugging Face, checked
+        2026-08-13: <span class="n">Qwen/Qwen3.8-2.4T-A95B</span> at
+        revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>,
+        213 weight shards plus an index file, 4,892.4 GB; and
+        <span class="n">Qwen/Qwen3.8-2.4T-A95B-FP8</span> at revision
+        <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>,
+        213 shards, 2,496.2 GB. The organization's Qwen3.8 collection
+        lists exactly these two. The license file, 3,390 bytes and
+        byte-identical in both, read at those revisions.</li>
+        <li>ModelScope, checked 2026-08-13: both Max-class repositories
+        mirrored, with a 224-file listing confirmed; the 27B name
+        returns an empty listing.</li>
+        <li>The community GGUF repository
+        <span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span>, checked
+        2026-08-13 at revision <span class="n">567d3e6ac26c</span>: 312
+        GGUF files, last push 01:01 UTC that day; the sizes in section 04
+        are the manifest's.</li>
+        <li>OpenRouter's public model API, 2026-08-12: the released
+        2.4T-A95B listed at 16:21 UTC with a million-token context, two
+        dollars per million input tokens and six per million output,
+        matching the Max endpoint's prices.</li>
+        <li>Runtime repositories, checked 2026-08-13: the
+        <code>qwen35moe</code> architecture enumeration is merged and
+        shipping in llama.cpp; vLLM's 2026-08-07 change routes Qwen3.8
+        checkpoints through its existing Qwen3.5 path; the one open
+        3.8-adjacent llama.cpp pull request is chat-template plumbing for
+        the effort setting, not architecture support.</li>
         <li>The <a href="../qwen35/">Qwen3.5 pair field card</a> on this
         site for the local serving record this page builds on.</li>
       </ul>

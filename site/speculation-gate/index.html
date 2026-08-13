@@ -41,6 +41,10 @@
   }
   .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
   .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
   .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
   .nonaff{
     display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
@@ -131,6 +135,9 @@
     <div class="hero">
       <div class="eyebrow">Measured study &middot; main run 2026-08-10: five speculation settings, 160 paired measurements, recomputed from the raw records 2026-08-11 &middot; lower-gate follow-up run 2026-08-11: gates 0.10 and 0.25, 96 measurements &middot; one CPU-offloaded 397B MoE, one machine</div>
       <h1>Slower <em>by default</em></h1>
+      <p class="subtitle">llama.cpp's speculative-decoding gate, measured
+      five settings deep on a CPU-offloaded Qwen3.5 397B MoE, plus where
+      the widely recommended 0.75 actually came from.</p>
       <p class="lead">Speculative decoding is sold as a free lunch: a draft
       mechanism proposes tokens, the big model verifies them, and you get
       the same output faster. llama.cpp's implementation carries a
