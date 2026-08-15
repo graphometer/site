@@ -1,0 +1,52 @@
+{
+ "tag": "p4_merge_intervals",
+ "wall_s": 8.486,
+ "request": {
+  "model": "qwen3.8-27b",
+  "max_tokens": 4096,
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Python function merge_intervals(intervals) that merges overlapping intervals. Return ONLY a fenced python code block containing the function and three assert statements that verify it."
+   }
+  ]
+ },
+ "response": {
+  "choices": [
+   {
+    "finish_reason": "stop",
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    intervals = sorted(intervals, key=lambda interval: interval[0])\n    merged = [list(intervals[0])]\n\n    for start, end in intervals[1:]:\n        if start <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], end)\n        else:\n            merged.append([start, end])\n\n    return merged\n\nassert merge_intervals([[1, 3], [2, 6], [8, 10], [15, 18]]) == [[1, 6], [8, 10], [15, 18]]\nassert merge_intervals([[1, 4], [4, 5]]) == [[1, 5]]\nassert merge_intervals([]) == []\n```",
+     "reasoning_content": "We need respond to user: Write Python function merge_intervals(intervals) that merges overlapping intervals. Return ONLY a fenced python code block containing the function and three assert statements that verify it.\n\nNeed final only fenced python code block. Need ensure function correct. Consider edge cases: empty list, touching intervals? Usually merge overlapping intervals; often [1,4],[4,5] merge? In LeetCode, intervals [1,4] and [4,5] are considered touching/overlapping? Usually if end >= start merge. Use that. Need asserts three. Could include simple, non-overlap, empty. Return only code block no extra.\n\nNeed maybe function signature merge_intervals(intervals):\n    if not intervals: return []\n    intervals = sorted(intervals, key=lambda x: x[0])\n    merged = [intervals[0][:]] maybe if list. Then for start,end in intervals[1:]: if start <= merged[-1][1]: merged[-1][1]=max(merged[-1][1], end) else append. Return merged.\n\nPotential issue if input tuples, output lists okay. If nested lists mutated? We copy first interval, but later append [start,end]. Good.\n\nAsserts:\nassert merge_intervals([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]\nassert merge_intervals([[1,4],[4,5]]) == [[1,5]]\nassert merge_intervals([]) == []\n\nNeed ONLY fenced code block. Ensure no text outside. Final.\n"
+    }
+   }
+  ],
+  "created": 1786749787,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-c8e03ce",
+  "object": "chat.completion",
+  "usage": {
+   "completion_tokens": 533,
+   "prompt_tokens": 84,
+   "total_tokens": 617,
+   "prompt_tokens_details": {
+    "cached_tokens": 42
+   }
+  },
+  "id": "chatcmpl-bvVI6bV3mAcbsoXwT2J82GydDI6NWJrn",
+  "timings": {
+   "cache_n": 42,
+   "prompt_n": 42,
+   "prompt_ms": 195.603,
+   "prompt_per_token_ms": 4.657214285714286,
+   "prompt_per_second": 214.72063311912393,
+   "predicted_n": 533,
+   "predicted_ms": 8062.533,
+   "predicted_per_token_ms": 15.126703564727956,
+   "predicted_per_second": 66.10825654915148
+  }
+ },
+ "error": null
+}

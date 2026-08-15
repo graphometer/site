@@ -1,0 +1,91 @@
+{
+ "tag": "p5_tools",
+ "wall_s": 1.755,
+ "request": {
+  "model": "qwen3.8-27b",
+  "max_tokens": 4096,
+  "messages": [
+   {
+    "role": "user",
+    "content": "What is the weather in Reykjavik in Celsius?"
+   }
+  ],
+  "tools": [
+   {
+    "type": "function",
+    "function": {
+     "name": "get_weather",
+     "description": "Get the current weather for a city.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "city": {
+        "type": "string"
+       },
+       "unit": {
+        "type": "string",
+        "enum": [
+         "celsius",
+         "fahrenheit"
+        ]
+       }
+      },
+      "required": [
+       "city",
+       "unit"
+      ],
+      "additionalProperties": false
+     }
+    }
+   }
+  ]
+ },
+ "response": {
+  "choices": [
+   {
+    "finish_reason": "tool_calls",
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "",
+     "reasoning_content": "The user is asking for the weather in Reykjavik in Celsius. I have a get_weather function. I'll call it with city=\"Reykjavik\" and unit=\"celsius\".\n",
+     "tool_calls": [
+      {
+       "type": "function",
+       "function": {
+        "name": "get_weather",
+        "arguments": "{\"city\":\"Reykjavik\",\"unit\":\"celsius\"}"
+       },
+       "id": "hfpC4IjXdihVl8j3KEj9ofmnM5iOgtMl"
+      }
+     ]
+    }
+   }
+  ],
+  "created": 1786749789,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-c8e03ce",
+  "object": "chat.completion",
+  "usage": {
+   "completion_tokens": 85,
+   "prompt_tokens": 347,
+   "total_tokens": 432,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   }
+  },
+  "id": "chatcmpl-Bdoov5n47BWCr5GErHP7ZFSeUwOehLNz",
+  "timings": {
+   "cache_n": 0,
+   "prompt_n": 347,
+   "prompt_ms": 249.809,
+   "prompt_per_token_ms": 0.7199106628242075,
+   "prompt_per_second": 1389.0612427894912,
+   "predicted_n": 85,
+   "predicted_ms": 1283.406,
+   "predicted_per_token_ms": 15.098894117647058,
+   "predicted_per_second": 66.23001606662272
+  }
+ },
+ "error": null
+}

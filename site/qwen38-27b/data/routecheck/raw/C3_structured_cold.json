@@ -1,0 +1,66 @@
+{
+  "elapsed_seconds": 14.054031010999097,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 1200,
+    "messages": [
+      {
+        "content": "List the eight largest moons of Saturn by diameter, largest first. For each\none, output exactly one line in this exact format:\n\nNAME - approximate diameter in kilometers - one distinguishing fact\n\nOutput exactly eight lines and nothing else: no heading, no numbering, no\nclosing remark.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.8-27b",
+    "seed": 42
+  },
+  "response_headers": {
+    "Access-Control-Allow-Origin": "",
+    "Content-Length": "4769",
+    "Content-Type": "application/json; charset=utf-8",
+    "Keep-Alive": "timeout=5, max=100",
+    "Server": "llama.cpp"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "length",
+        "index": 0,
+        "message": {
+          "content": "",
+          "reasoning_content": "We need answer user's request. Need produce final exactly eight lines, no heading etc. Need list eight largest moons of Saturn by diameter largest first. Need format: NAME - approximate diameter in kilometers - one distinguishing fact.\n\nNeed ensure accurate. Saturn moons largest by diameter:\n1 Titan: 5150 km (approx 5,150). Distinguishing fact: only moon with substantial atmosphere / hydrocarbon lakes.\n2 Rhea: 1527 km (1,527). fact: second largest, heavily cratered icy.\n3 Iapetus: 1469 km (1,469). fact: strong light/dark dichotomy.\n4 Dione: 1435 km (1,435). fact: bright icy surface with lineae? maybe \"has bright linear rilles\".\n5 Tethys: 1062 km (1,062). fact: huge Odysseus crater / canyon Ithaca Chasma.\n6 Enceladus: 504 km (504). fact: water geysers / subsurface ocean.\n7 Mimas: 396 km (396). fact: Herschel crater resembles Death Star.\n8 Hyperion: 353 km? Hyperion diameter ~353.5 km? Let's check. Saturn's largest moons: Titan 5150, Rhea 1527, Iapetus 1469, Dione 1435, Tethys 1062, Enceladus 504, Mimas 396, Hyperion 353, Phoebe 213? Actually Hyperion is 353.5, Phoebe 213. So eight largest includes Hyperion. But is Rhea > Iapetus yes. Dione > Tethys yes. Enceladus > Mimas > Hyperion. Need approximate diameters. Could use common rounded integers: 5,150; 1,527; 1,469; 1,435; 1,062; 504; 396; 353. But output format says approximate diameter in kilometers. Could include no commas? It says exact format NAME - approximate diameter in kilometers - one distinguishing fact. Could use \"5,150\" maybe OK but to avoid ambiguity maybe \"5150\". One line exactly: \"Titan - 5150 - Only Saturn moon with a substantial nitrogen-rich atmosphere\". Need no closing. Ensure eight lines.\n\nNeed be careful: \"one distinguishing fact\" singular. Should we include units? It says approximate diameter in kilometers, likely number only. Could output \"5150\" without km? The format says in kilometers, maybe number enough. Could include \"km\"? Format: NAME - approximate diameter in kilometers - one distinguishing fact. It might expect e.g. \"Titan - 5150 km - ...\"? The phrase \"in kilometers\" could mean the value is in kilometers, not necessarily unit. To be safe? exact format includes placeholder \"approximate diameter in kilometers\". If I output \"5150\" it's a number. If output \"5150 km\", still diameter in kilometers. But exact format maybe three parts separated by \" - \". Unit might be okay. They likely want just number. Let's parse: \"NAME - approximate diameter in kilometers - one distinguishing fact\". If they wanted km they'd maybe include. Use no unit? They said approximate diameter in kilometers. Could be \"5150 kilometers\". But then part contains word. To maximize compliance, maybe \"5150\" because the field is described as in kilometers. But exact format with placeholder could accept \"5150\". Let's decide.\n\nNeed distinguish facts concise. Avoid commas? Not prohibited. Lines:\nTitan - 5150 - Only major Saturn moon with a thick, nitrogen-rich atmosphere\nRhea - 1527 - Heavily cratered icy moon with a bright trailing-hemisphere feature\nIapetus - 1469 - Extreme day-night contrast from a dark material on one hemisphere\nDione - 1435 - Bright icy surface marked by bright linear rilles\nTethys - 1062 - Has the giant Odysseus impact crater and the Ithaca Chasma canyon\nEnceladus - 504 - Shoots water-ice geysers from its south pole\nMimas - 396 - Dominated by the huge Herschel crater that resembles a space station\nHyperion - 353 - Porous, irregular moon with a chaotic tumbling spin\n\nNeed ensure eight largest by diameter: Could there be issue with Hyperion vs Phoebe: Hyperion 353 vs Phoebe 213 yes. Maybe \"largest moons\" sometimes include irregular? yes.\n\nNeed check diameters:\nTitan 5150.2; Rhea 1527.0; Iapetus 1468.8; Dione 1434.6; Tethys 1062.7; Enceladus 504.2; Mimas 396.4; Hyperion 353.5. Approx integers.\n\nNeed maybe \"distinguishing fact\" not just generic. For Rhea: \"has a bright equatorial band\"? Rhea has trailing hemisphere brighter. Good.\n\nNeed ensure no numbering. Final exactly 8 lines",
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1786750399,
+    "id": "chatcmpl-ZKSrzMpwrVBDbRswY3gwsx0PcHdUrZTD",
+    "model": "qwen3.8-27b",
+    "object": "chat.completion",
+    "system_fingerprint": "b1-c8e03ce",
+    "timings": {
+      "cache_n": 42,
+      "draft_n": 912,
+      "draft_n_accepted": 698,
+      "predicted_ms": 13636.033,
+      "predicted_n": 1200,
+      "predicted_per_second": 88.0021337584032,
+      "predicted_per_token_ms": 11.363360833333333,
+      "prompt_ms": 214.891,
+      "prompt_n": 68,
+      "prompt_per_second": 316.4394972334812,
+      "prompt_per_token_ms": 3.160161764705882
+    },
+    "usage": {
+      "completion_tokens": 1200,
+      "prompt_tokens": 110,
+      "prompt_tokens_details": {
+        "cached_tokens": 42
+      },
+      "total_tokens": 1310
+    }
+  },
+  "response_text": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"We need answer user's request. Need produce final exactly eight lines, no heading etc. Need list eight largest moons of Saturn by diameter largest first. Need format: NAME - approximate diameter in kilometers - one distinguishing fact.\\n\\nNeed ensure accurate. Saturn moons largest by diameter:\\n1 Titan: 5150 km (approx 5,150). Distinguishing fact: only moon with substantial atmosphere / hydrocarbon lakes.\\n2 Rhea: 1527 km (1,527). fact: second largest, heavily cratered icy.\\n3 Iapetus: 1469 km (1,469). fact: strong light/dark dichotomy.\\n4 Dione: 1435 km (1,435). fact: bright icy surface with lineae? maybe \\\"has bright linear rilles\\\".\\n5 Tethys: 1062 km (1,062). fact: huge Odysseus crater / canyon Ithaca Chasma.\\n6 Enceladus: 504 km (504). fact: water geysers / subsurface ocean.\\n7 Mimas: 396 km (396). fact: Herschel crater resembles Death Star.\\n8 Hyperion: 353 km? Hyperion diameter ~353.5 km? Let's check. Saturn's largest moons: Titan 5150, Rhea 1527, Iapetus 1469, Dione 1435, Tethys 1062, Enceladus 504, Mimas 396, Hyperion 353, Phoebe 213? Actually Hyperion is 353.5, Phoebe 213. So eight largest includes Hyperion. But is Rhea > Iapetus yes. Dione > Tethys yes. Enceladus > Mimas > Hyperion. Need approximate diameters. Could use common rounded integers: 5,150; 1,527; 1,469; 1,435; 1,062; 504; 396; 353. But output format says approximate diameter in kilometers. Could include no commas? It says exact format NAME - approximate diameter in kilometers - one distinguishing fact. Could use \\\"5,150\\\" maybe OK but to avoid ambiguity maybe \\\"5150\\\". One line exactly: \\\"Titan - 5150 - Only Saturn moon with a substantial nitrogen-rich atmosphere\\\". Need no closing. Ensure eight lines.\\n\\nNeed be careful: \\\"one distinguishing fact\\\" singular. Should we include units? It says approximate diameter in kilometers, likely number only. Could output \\\"5150\\\" without km? The format says in kilometers, maybe number enough. Could include \\\"km\\\"? Format: NAME - approximate diameter in kilometers - one distinguishing fact. It might expect e.g. \\\"Titan - 5150 km - ...\\\"? The phrase \\\"in kilometers\\\" could mean the value is in kilometers, not necessarily unit. To be safe? exact format includes placeholder \\\"approximate diameter in kilometers\\\". If I output \\\"5150\\\" it's a number. If output \\\"5150 km\\\", still diameter in kilometers. But exact format maybe three parts separated by \\\" - \\\". Unit might be okay. They likely want just number. Let's parse: \\\"NAME - approximate diameter in kilometers - one distinguishing fact\\\". If they wanted km they'd maybe include. Use no unit? They said approximate diameter in kilometers. Could be \\\"5150 kilometers\\\". But then part contains word. To maximize compliance, maybe \\\"5150\\\" because the field is described as in kilometers. But exact format with placeholder could accept \\\"5150\\\". Let's decide.\\n\\nNeed distinguish facts concise. Avoid commas? Not prohibited. Lines:\\nTitan - 5150 - Only major Saturn moon with a thick, nitrogen-rich atmosphere\\nRhea - 1527 - Heavily cratered icy moon with a bright trailing-hemisphere feature\\nIapetus - 1469 - Extreme day-night contrast from a dark material on one hemisphere\\nDione - 1435 - Bright icy surface marked by bright linear rilles\\nTethys - 1062 - Has the giant Odysseus impact crater and the Ithaca Chasma canyon\\nEnceladus - 504 - Shoots water-ice geysers from its south pole\\nMimas - 396 - Dominated by the huge Herschel crater that resembles a space station\\nHyperion - 353 - Porous, irregular moon with a chaotic tumbling spin\\n\\nNeed ensure eight largest by diameter: Could there be issue with Hyperion vs Phoebe: Hyperion 353 vs Phoebe 213 yes. Maybe \\\"largest moons\\\" sometimes include irregular? yes.\\n\\nNeed check diameters:\\nTitan 5150.2; Rhea 1527.0; Iapetus 1468.8; Dione 1434.6; Tethys 1062.7; Enceladus 504.2; Mimas 396.4; Hyperion 353.5. Approx integers.\\n\\nNeed maybe \\\"distinguishing fact\\\" not just generic. For Rhea: \\\"has a bright equatorial band\\\"? Rhea has trailing hemisphere brighter. Good.\\n\\nNeed ensure no numbering. Final exactly 8 lines\"}}],\"created\":1786750399,\"model\":\"qwen3.8-27b\",\"system_fingerprint\":\"b1-c8e03ce\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":1200,\"prompt_tokens\":110,\"total_tokens\":1310,\"prompt_tokens_details\":{\"cached_tokens\":42}},\"id\":\"chatcmpl-ZKSrzMpwrVBDbRswY3gwsx0PcHdUrZTD\",\"timings\":{\"cache_n\":42,\"prompt_n\":68,\"prompt_ms\":214.891,\"prompt_per_token_ms\":3.160161764705882,\"prompt_per_second\":316.4394972334812,\"predicted_n\":1200,\"predicted_ms\":13636.033,\"predicted_per_token_ms\":11.363360833333333,\"predicted_per_second\":88.0021337584032,\"draft_n\":912,\"draft_n_accepted\":698}}",
+  "status_code": 200,
+  "url": "http://127.0.0.1:8198/v1/chat/completions"
+}

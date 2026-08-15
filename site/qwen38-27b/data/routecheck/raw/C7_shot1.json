@@ -1,0 +1,105 @@
+{
+  "elapsed_seconds": 0.9429169690010895,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 800,
+    "messages": [
+      {
+        "content": "What is the weather like in Reykjavik right now? Use the weather tool to check, and give the answer in Celsius.",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.8-27b",
+    "seed": 42,
+    "tool_choice": "auto",
+    "tools": [
+      {
+        "function": {
+          "description": "Get the current weather conditions for a specific city.",
+          "name": "get_current_weather",
+          "parameters": {
+            "properties": {
+              "city": {
+                "description": "City name, e.g. 'Portland, OR' or 'Reykjavik'.",
+                "type": "string"
+              },
+              "unit": {
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "city"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response_headers": {
+    "Access-Control-Allow-Origin": "",
+    "Content-Length": "962",
+    "Content-Type": "application/json; charset=utf-8",
+    "Keep-Alive": "timeout=5, max=100",
+    "Server": "llama.cpp"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "message": {
+          "content": "",
+          "reasoning_content": "The user wants to know the current weather in Reykjavik, in Celsius. Let's use the weather tool.\n",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"city\":\"Reykjavik\",\"unit\":\"celsius\"}",
+                "name": "get_current_weather"
+              },
+              "id": "O5RV9crv71v28YrNerPyeYTUWre9jA8H",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786750469,
+    "id": "chatcmpl-K5HGfBWwB5HWjfg641nEEumNkxJTd5qk",
+    "model": "qwen3.8-27b",
+    "object": "chat.completion",
+    "system_fingerprint": "b1-c8e03ce",
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 64,
+      "draft_n_accepted": 56,
+      "predicted_ms": 618.815,
+      "predicted_n": 70,
+      "predicted_per_second": 113.1194298780734,
+      "predicted_per_token_ms": 8.840214285714287,
+      "prompt_ms": 320.87,
+      "prompt_n": 381,
+      "prompt_per_second": 1187.3967650450338,
+      "prompt_per_token_ms": 0.8421784776902888
+    },
+    "usage": {
+      "completion_tokens": 70,
+      "prompt_tokens": 381,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 451
+    }
+  },
+  "response_text": "{\"choices\":[{\"finish_reason\":\"tool_calls\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The user wants to know the current weather in Reykjavik, in Celsius. Let's use the weather tool.\\n\",\"tool_calls\":[{\"type\":\"function\",\"function\":{\"name\":\"get_current_weather\",\"arguments\":\"{\\\"city\\\":\\\"Reykjavik\\\",\\\"unit\\\":\\\"celsius\\\"}\"},\"id\":\"O5RV9crv71v28YrNerPyeYTUWre9jA8H\"}]}}],\"created\":1786750469,\"model\":\"qwen3.8-27b\",\"system_fingerprint\":\"b1-c8e03ce\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":70,\"prompt_tokens\":381,\"total_tokens\":451,\"prompt_tokens_details\":{\"cached_tokens\":0}},\"id\":\"chatcmpl-K5HGfBWwB5HWjfg641nEEumNkxJTd5qk\",\"timings\":{\"cache_n\":0,\"prompt_n\":381,\"prompt_ms\":320.87,\"prompt_per_token_ms\":0.8421784776902888,\"prompt_per_second\":1187.3967650450338,\"predicted_n\":70,\"predicted_ms\":618.815,\"predicted_per_token_ms\":8.840214285714287,\"predicted_per_second\":113.1194298780734,\"draft_n\":64,\"draft_n_accepted\":56}}",
+  "status_code": 200,
+  "url": "http://127.0.0.1:8198/v1/chat/completions"
+}

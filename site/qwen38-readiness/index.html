@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Release watch: Qwen3.8</title>
-<meta name="description" content="A verified status page for the Qwen3.8 generation, updated on release day 2026-08-13: the Max-class open weights shipped and we verified both official repositories at pinned revisions (213 shards each, 4,892.4 GB BF16 and 2,496.2 GB FP8); the license is a custom Qwen3.8-Max License, not Apache 2.0, quoted at its operative clause; the promised 27B has still not shipped and the fake-repository hazard persists; plus what the shipped config says, which community quantizations are real, and an honest account of what a desktop can do with files this size; updated the same day with the release-day measurements: the hosted open weights measured across two named providers, and a 397 GB local download verified bit-perfect that no public runtime can load yet.">
+<meta name="description" content="A verified status page for the Qwen3.8 generation, updated on release day 2026-08-13: the Max-class open weights shipped and we verified both official repositories at pinned revisions (213 shards each, 4,892.4 GB BF16 and 2,496.2 GB FP8); the license on those weights is a custom Qwen3.8-Max License, not Apache 2.0, quoted at its operative clause; updated 2026-08-14, when the promised 27B shipped under a genuine Apache 2.0 license, was verified at its own pinned revision and was measured on one desktop the same evening; plus the fake-repository hazard that persists, what the shipped config says, which community quantizations are real, and an honest account of what a desktop can do with files this size. Two models, one version number, two different licenses that must never be quoted as one.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -117,7 +117,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Release watch · weights verified 2026-08-13 · measured 2026-08-09 and 2026-08-13</div>
+      <div class="eyebrow">Release watch · weights verified 2026-08-13 and 2026-08-14 · measured 2026-08-09, 2026-08-13 and 2026-08-14</div>
       <h1>Release watch: <em>Qwen3.8</em></h1>
       <p class="lead">On 2026-08-03 the Qwen team announced Qwen3.8 and
       promised open weights for a Max-class model alongside a new 27B,
@@ -126,12 +126,16 @@
       real, and we verified them</strong>: two repositories under the
       official Qwen organization, checked at pinned revisions on
       2026-08-13, 213 weight shards each, 4,892.4 GB in BF16 and
-      2,496.2 GB in FP8. The 27B named in the same announcement has still
-      not shipped anywhere official, and the fake repositories that grew
-      around the name before the release are still there after it. For
-      practitioners the headline is the license: <strong>it is not Apache
-      2.0</strong>. It is a custom license with revenue thresholds, read
-      at the pinned revision and quoted in section 02. This page holds
+      2,496.2 GB in FP8. <strong>On 2026-08-14 the other half landed
+      too</strong>: the 27B named in the same announcement shipped, we
+      verified it at its own pinned revision, and it was downloaded,
+      hash-checked, served and measured on one desktop the same evening.
+      The fake repositories that grew around the name before the release
+      are still there after it. For practitioners the headline is the
+      license, and it is not one license: the Max-class weights carry a
+      custom license with revenue thresholds, read at the pinned revision
+      and quoted in section 02, while <strong>the 27B carries a genuine
+      Apache 2.0 file</strong>, read in full and retained. This page holds
       the verified state of the release, what the shipped configuration
       says, which community quantizations are real, an honest account of
       what a desktop can do with files this size, and our measurements of
@@ -161,8 +165,8 @@
         <tbody>
           <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen3.8-2.4T-A95B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">On the official Qwen organization. Its own timestamps say created 2026-08-08 and last modified 10:24 UTC on 2026-08-12, the day an aggregator listed the model at 16:21 UTC. Verified 2026-08-13 at revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>: 213 weight shards plus an index file, 4,892.4 GB in BF16, license file present (section 02). The 95-billion-active-parameter figure that was press-only before the release now appears in the official repository name itself.</td></tr>
           <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B-FP8">Qwen3.8-2.4T-A95B-FP8</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Verified 2026-08-13 at revision <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>: 213 shards, 2,496.2 GB, fp8 dynamic quantization with 128 by 128 blocks, license file byte-identical to the BF16 repository. The organization's own Qwen3.8 collection contains exactly these two repositories and nothing else.</td></tr>
-          <tr><td>GGUF conversions</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists. On release day we downloaded the smallest tier and verified it bit-perfect against the repository's own checksums, and no public runtime can load it yet: its expert tensors use a quantization type that exists in no public build (sections 04 and 07).</td></tr>
-          <tr><td>Qwen3.8-27B</td><td>Announced</td><td class="t" style="text-align:left">Still zero official artifacts, checked 2026-08-13: the official organization's search returns no 27B, the other named release venue returns an empty listing for the name, and the release README and collection never mention a 27B. The vendor's release-day silence leaves even the final name unconfirmed. The watch continues.</td></tr>
+          <tr><td>GGUF conversions of the 2.4T-A95B</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists. On release day we downloaded the smallest tier and verified it bit-perfect against the repository's own checksums, and no public runtime can load it yet: its expert tensors use a quantization type that exists in no public build (sections 04 and 07). This row is about the Max-class weights only; the 27B's conversions are a separate story, in the row below.</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen3.8-27B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Published at about 11:00 EDT on 2026-08-14 and verified the same day at revision <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>: 18 safetensors plus an index, 32 files, and a LICENSE file we read in full and retained. <strong>That license is Apache 2.0</strong>, 11,544 bytes of verbatim Apache text, byte-identical in the official FP8 repository at revision <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>. It is not the Max-class license of section 02, and the two must never be quoted as one. Still no official GGUF: the conversions are community work, including one from the llama.cpp project's own organization published the same day. We downloaded a community conversion, verified both files against the repository's own checksums, served it and measured it that evening; the numbers are in the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</td></tr>
           <tr><td>Qwen3.8-Max</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators. We measured it (section 06). Per the released model card, checked 2026-08-13, vision input, the non-thinking mode, and the million-token default context are Max API extras: none of them ship in the open weights (section 03).</td></tr>
           <tr><td>Third-party "Qwen3.8" repos</td><td>Not official</td><td class="t" style="text-align:left">Re-screened 2026-08-13: every third-party 27B repository we had previously catalogued under the name still contains zero weight tensors, and a fresh wave of mirrors and placeholders using the Max name appeared around the release. Section 05.</td></tr>
           <tr><td>Qwen3.7 family</td><td>API only</td><td class="t" style="text-align:left">Max, Plus and Flash tiers serve on the official API and aggregators (checked 2026-08-09). The vendor states they are proprietary; no 3.7 weights have ever shipped.</td></tr>
@@ -181,9 +185,9 @@
 
     <section>
       <div class="secnum">02</div>
-      <h2>The license: not Apache 2.0</h2>
+      <h2>The Max-class license: not Apache 2.0</h2>
       <p>Qwen3.6, the previous open release, shipped under Apache 2.0.
-      Qwen3.8 does not. The file in both repositories is named the
+      The Qwen3.8 Max-class weights do not. The file in both of their repositories is named the
       <strong>Qwen3.8-Max License</strong>: 3,390 bytes, byte-identical
       in the BF16 and FP8 repositories, read on 2026-08-13 at revision
       <code class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</code>.
@@ -233,15 +237,38 @@
       appears to bite: downloading, running, modifying and publishing
       measurements sit inside the grant as we read it, far below every
       threshold. Same caveat: our reading, not advice.</p>
+      <div class="note" style="margin-top:22px">
+        <span class="label">And the 27B is a different license entirely</span>
+        Everything above is about <code>Qwen3.8-2.4T-A95B</code> and its FP8
+        twin. The 27B that shipped on 2026-08-14 carries a genuine
+        <strong>Apache 2.0</strong> file: 11,544 bytes of verbatim Apache
+        License 2.0 text with an appendix reading
+        <code>Copyright 2026 Alibaba Cloud</code>, no monthly-active-user
+        threshold, no revenue-share clause, no separate-license requirement at
+        any revenue level, and byte-identical in the official FP8 repository.
+        We read it in full at revision
+        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span> on
+        2026-08-14 and retained the file. <strong>Two models, one version
+        number, two licenses.</strong> "Qwen3.8 is Apache 2.0" is inaccurate as
+        a family statement and true of the 27B; the reverse mistake, reading
+        this section's thresholds onto the 27B, is just as wrong. Section 03
+        of the <a href="../qwen38-27b/">Qwen3.8-27B field card</a> puts both
+        readings side by side with the retained files.
+      </div>
     </section>
 
     <section>
       <div class="secnum">03</div>
-      <h2>One model, always thinking: what the config says</h2>
-      <p>Everything here comes from the repository files at the pinned
-      revision, mostly the config, tokenizer and chat template, plus the
-      model card, checked 2026-08-13. These are shipped facts, as
-      distinct from announcement promises.</p>
+      <h2>The Max-class weights: one model, always thinking</h2>
+      <p>Everything here comes from the <code>Qwen3.8-2.4T-A95B</code>
+      repository files at the pinned revision, mostly the config,
+      tokenizer and chat template, plus the model card, checked
+      2026-08-13. These are shipped facts, as distinct from announcement
+      promises. <strong>None of this row set describes the 27B</strong>,
+      which is a different architecture with a working thinking
+      off-switch and a vision tower in its configuration; its own reading
+      is section 01 of the
+      <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</p>
       <table class="facts">
         <tr><th scope="row">Release shape</th><td>One post-trained model. No base variant and no separate instruct variant exist: the repository is the assistant model, and the organization's Qwen3.8 collection carries nothing else.</td></tr>
         <tr><th scope="row">Thinking</th><td>Mandatory. The thinking stage cannot be disabled, and the chat template raises an error if asked to run with thinking off. Control is a <code>reasoning_effort</code> setting with levels xhigh, medium and low; the default is xhigh, and thinking content is preserved across turns by default.</td></tr>
@@ -280,7 +307,11 @@
 
     <section>
       <div class="secnum">04</div>
-      <h2>Community quantizations, and what fits at home</h2>
+      <h2>Community quantizations of the Max-class weights, and what fits at home</h2>
+      <p>This section sizes the <code>Qwen3.8-2.4T-A95B</code> conversions.
+      The 27B's conversions are ordinary desktop-sized files and are
+      covered on its own <a href="../qwen38-27b/">field card</a>, which
+      names the one it served and its checksum.</p>
       <p>The organization shipped safetensors only; no official GGUF
       exists, checked 2026-08-13. One community conversion is real: the
       quantizer account unsloth published
@@ -357,12 +388,23 @@
       it.</strong> Re-screened 2026-08-13: every third-party 27B
       repository we had previously catalogued under the name still
       contains zero weight tensors, including ones whose cards now
-      advertise an Apache 2.0 license for a model that has never shipped
-      under any license. A fresh wave of mirrors and placeholders using
-      the Max name appeared around the release itself. And the size rule
-      below gained teeth: only the Max-class shipped, so any repository
-      claiming to be the 27B is not the announced model by that
-      arithmetic alone.</p>
+      advertise an Apache 2.0 license for a model that had not then
+      shipped under any license. A fresh wave of mirrors and placeholders
+      using the Max name appeared around the release itself.</p>
+      <p><strong>The real 27B now exists, which changes the test rather
+      than removing it.</strong> As of 2026-08-14 there is a genuine
+      article to compare against:
+      <code>Qwen/Qwen3.8-27B</code>, on the maker's own organization, at
+      revision
+      <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>, with
+      an Apache 2.0 license file. Verify against that repository and that
+      revision. A third-party repository under the 27B name is still that
+      account's artifact, and now it is also checkable: if the weights are
+      not the maker's files at a revision you can name, it is not the
+      released model. The empty placeholders that carried the name before
+      the release did not become real when a real model appeared beside
+      them, and one of them advertising Apache 2.0 does not make it the
+      Apache 2.0 model.</p>
       <p>The general rule is worth more than any list of today's fakes,
       because next week's will have different names. Three questions
       settle almost every case, and none of them requires downloading
@@ -397,8 +439,9 @@
       that make sense for the stated parameter count, and verify
       checksums after downloading. That day arrived on 2026-08-12, and
       the path above is exactly what we ran on 2026-08-13: the verified
-      repositories, revisions and sizes are in section 01. For the 27B,
-      the same path waits.</p>
+      repositories, revisions and sizes are in section 01. We ran it again
+      on 2026-08-14 for the 27B, in about five minutes, and the checksums
+      matched.</p>
     </section>
 
     <section>
@@ -727,10 +770,23 @@
         <li><strong>This page updates the same day</strong>, dated, with
         whatever we actually measured and nothing more.</li>
       </ul>
-      <p>The 27B half of this plan stays parked until a 27B exists: it
-      would be the routine download, and it is the half that has not
-      shipped. The daily watch that caught this release continues for
-      it.</p>
+      <p><strong>The 27B half ran on 2026-08-14, end to end, the day it
+      shipped.</strong> It was the routine download the plan predicted:
+      weights public at about 11:00 EDT, on this desktop by evening,
+      verified against the conversion repository's own checksums before
+      first load, and served on a llama.cpp build this machine already
+      had, because the file declares an architecture that build already
+      implements. Every stage of the plan above completed for it,
+      including the local half of the fixed battery that the Max-class
+      release could not reach. The full measured record is its own page:
+      the <a href="../qwen38-27b/">Qwen3.8-27B field card</a> carries the
+      seven-profile ladder and the exact invocation, the thinking
+      off-switch and the budget floor, three measured client traps, the
+      draft head that decodes prose at 72.4 tokens a second gated and
+      44.5 with the gate removed, and the license reading in full, with a
+      data package holding every request and response body behind it.
+      This page stays what it is: the dated record of what shipped and
+      when. The card is the record of what it does.</p>
     </section>
 
     <section>
@@ -775,6 +831,29 @@
         01, 03, 04 and 08 now say downloaded, verified and refused
         instead of not downloaded. The re-test waits on a public build
         that declares the new quantization type.</td></tr>
+        <tr><th scope="row">2026-08-14</th><td><strong>The 27B shipped,
+        and it is Apache 2.0.</strong> Weights public at about 11:00 EDT
+        under the official Qwen organization; verified the same day at
+        revision
+        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>,
+        18 safetensors plus an index, with a LICENSE file we read in full
+        and retained: 11,544 bytes of verbatim Apache License 2.0, no
+        revenue thresholds of any kind, byte-identical in the official FP8
+        repository. Its row in section 01 moves to shipped and verified.
+        <strong>The two open Qwen3.8 models therefore carry two different
+        licenses, and quoting one for both is a mistake in either
+        direction</strong>; section 02 now says so at the end. There is
+        still no official GGUF for the 27B, and the community conversions
+        include one from the llama.cpp project's own organization. The
+        absorption path of section 08 ran end to end the same evening: we
+        downloaded a community conversion, verified both files against the
+        repository's own checksums, served it on a build this machine
+        already had, and measured it. Those measurements are their own
+        page, the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>,
+        with a data package behind every figure. The name-squat hazard of
+        section 05 is not retired by any of this: it now has a real
+        repository and a real revision to check against, which section 05
+        names.</td></tr>
       </table>
       <p class="fineprint">Every existence claim on this page is dated. If
       today is later than the newest row above, treat the status table as
@@ -842,6 +921,18 @@
         checksums, our shard-by-shard verification log, the tensor-type
         census of all ten shards, and the server's refusal log. Project
         records that can be produced if questioned.</li>
+        <li>The official Qwen organization on Hugging Face, checked
+        2026-08-14: <span class="n">Qwen/Qwen3.8-27B</span> at revision
+        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>,
+        18 safetensors plus an index, and
+        <span class="n">Qwen/Qwen3.8-27B-FP8</span> at revision
+        <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>.
+        The Apache 2.0 LICENSE file, 11,544 bytes and byte-identical in
+        both, read and retained at those revisions; it ships in the field
+        card's data package.</li>
+        <li>The <a href="../qwen38-27b/">Qwen3.8-27B field card</a> on this
+        site for the 27B's measured record of 2026-08-14, and its data
+        package for the files behind it.</li>
         <li>The <a href="../qwen35/">Qwen3.5 pair field card</a> on this
         site for the local serving record this page builds on.</li>
       </ul>

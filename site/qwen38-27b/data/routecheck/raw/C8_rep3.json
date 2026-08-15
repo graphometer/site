@@ -1,0 +1,100 @@
+{
+  "elapsed_seconds": 1.4479548830004205,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 900,
+    "messages": [
+      {
+        "content": "Generate a single fictional weather field-station status report as one JSON object. It must validate against this JSON Schema exactly: every required key present, correct types, and no keys beyond the ones listed.\n\nSchema:\n{\"type\":\"object\",\"properties\":{\"station_id\":{\"type\":\"string\"},\"observed_temperature_c\":{\"type\":\"number\"},\"conditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"operational\":{\"type\":\"boolean\"}},\"required\":[\"station_id\",\"observed_temperature_c\",\"conditions\",\"operational\"],\"additionalProperties\":false}\n\nRespond with ONLY the JSON object. No prose, no markdown code fences, no explanation.",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.8-27b",
+    "response_format": {
+      "json_schema": {
+        "name": "field_station_report",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "conditions": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "observed_temperature_c": {
+              "type": "number"
+            },
+            "operational": {
+              "type": "boolean"
+            },
+            "station_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "station_id",
+            "observed_temperature_c",
+            "conditions",
+            "operational"
+          ],
+          "type": "object"
+        },
+        "strict": true
+      },
+      "type": "json_schema"
+    },
+    "seed": 42
+  },
+  "response_headers": {
+    "Access-Control-Allow-Origin": "",
+    "Content-Length": "1284",
+    "Content-Type": "application/json; charset=utf-8",
+    "Keep-Alive": "timeout=5, max=100",
+    "Server": "llama.cpp"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\"station_id\":\"WX-417\",\"observed_temperature_c\":-3.6,\"conditions\":[\"fog\",\"light-snow\"],\"operational\":true}",
+          "reasoning_content": "We need answer user's request: generate single fictional weather field-station status report as one JSON object validating schema exactly. Must output ONLY JSON object no prose/markdown. Need ensure keys exactly station_id string, observed_temperature_c number, conditions array of strings, operational boolean. Could be {\"station_id\":\"WX-7\",\"observed_temperature_c\":-4.2,\"conditions\":[\"fog\",\"light-snow\"],\"operational\":true}. Need final only JSON. Ensure no code fences.\n",
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1786750475,
+    "id": "chatcmpl-JrFHAgbbwqDvsdQO1bvZ07tIkiDtAIVC",
+    "model": "qwen3.8-27b",
+    "object": "chat.completion",
+    "system_fingerprint": "b1-c8e03ce",
+    "timings": {
+      "cache_n": 175,
+      "draft_n": 122,
+      "draft_n_accepted": 93,
+      "predicted_ms": 1337.235,
+      "predicted_n": 133,
+      "predicted_per_second": 99.4589582234985,
+      "predicted_per_token_ms": 10.054398496240601,
+      "prompt_ms": 107.454,
+      "prompt_n": 4,
+      "prompt_per_second": 37.225231261749215,
+      "prompt_per_token_ms": 26.8635
+    },
+    "usage": {
+      "completion_tokens": 133,
+      "prompt_tokens": 179,
+      "prompt_tokens_details": {
+        "cached_tokens": 175
+      },
+      "total_tokens": 312
+    }
+  },
+  "response_text": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"station_id\\\":\\\"WX-417\\\",\\\"observed_temperature_c\\\":-3.6,\\\"conditions\\\":[\\\"fog\\\",\\\"light-snow\\\"],\\\"operational\\\":true}\",\"reasoning_content\":\"We need answer user's request: generate single fictional weather field-station status report as one JSON object validating schema exactly. Must output ONLY JSON object no prose/markdown. Need ensure keys exactly station_id string, observed_temperature_c number, conditions array of strings, operational boolean. Could be {\\\"station_id\\\":\\\"WX-7\\\",\\\"observed_temperature_c\\\":-4.2,\\\"conditions\\\":[\\\"fog\\\",\\\"light-snow\\\"],\\\"operational\\\":true}. Need final only JSON. Ensure no code fences.\\n\"}}],\"created\":1786750475,\"model\":\"qwen3.8-27b\",\"system_fingerprint\":\"b1-c8e03ce\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":133,\"prompt_tokens\":179,\"total_tokens\":312,\"prompt_tokens_details\":{\"cached_tokens\":175}},\"id\":\"chatcmpl-JrFHAgbbwqDvsdQO1bvZ07tIkiDtAIVC\",\"timings\":{\"cache_n\":175,\"prompt_n\":4,\"prompt_ms\":107.454,\"prompt_per_token_ms\":26.8635,\"prompt_per_second\":37.225231261749215,\"predicted_n\":133,\"predicted_ms\":1337.235,\"predicted_per_token_ms\":10.054398496240601,\"predicted_per_second\":99.4589582234985,\"draft_n\":122,\"draft_n_accepted\":93}}",
+  "status_code": 200,
+  "url": "http://127.0.0.1:8198/v1/chat/completions"
+}
