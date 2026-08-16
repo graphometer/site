@@ -1,0 +1,1151 @@
+<!doctype html>
+<!-- STAGED 2026-08-16 at /muse-glimmer-30b/, the flat one-segment convention of /qwen38-27b/,
+     /reasoning-effort/, /speculation-gate/, /l3-threads/ and the other field cards. Route was a
+     proposal in the draft and is taken as decided here; canonical, og:url and every data/ href
+     assume it, and changing it is a search-and-replace on "muse-glimmer-30b/" plus the home and
+     /field-cards/ entries, the feed entry, the OG file name and the three inbound cross-links.
+     Working title in place (option A): Grant's final title pick lands later as a four-spot edit
+     to <title>, the <h1> plus its visible subtitle, og:title and twitter:title (plus
+     og:image:alt and the OG card art), and the home and /field-cards/ card lines; the candidates
+     live in TITLE_OPTIONS.md in the campaign drafts folder.
+     A BINDING SCOPING RULE governs all four spots (TITLE_OPTIONS.md, revised in the 2026-08-16
+     fix round): "The hook alone must mean something to a stranger": no inside jokes, no inside
+     references, no cleverness that needs the page to explain it, and the safest hook is the
+     model name. "The hook and the subtitle together must condense the page's most important
+     claims", which under the reframe are three: a block-16 drafter runs at a generic default of
+     3 unless you say otherwise, that gap is worth 2.17 times on structured work and much less
+     on prose, and the license is Apache 2.0 with a usage policy beside it. Every candidate
+     names the model on the page itself, scopes to the one measured deployment, and makes no
+     firstness claim of any kind. The h1 may stay short only because the visible subtitle sits
+     under it and carries the scope and the numbers.
+     THE FRAME IS LOAD-BEARING. The finding is an INTERACTION between two projects (Meta trained
+     DFlash at block size 16 and publishes that number; llama.cpp's generic --spec-draft-n-max
+     default is 3; Meta's GGUF card documents only the two flags that load the drafter), not an
+     accusation that Meta hid a flag. No edit to any title spot, card line, feed summary or OG
+     card may reintroduce the retired vendor-blame framing.
+     Data package assembled under data/ (see data/README.md); every figure printed here is
+     mapped to its file and field in data/NUMBERS.md. 114 files, 1.35 MiB, the five speed arms,
+     the context ladder, both license documents, both vendor readmes, both chat templates, the
+     probe battery, the template tests, the instrument's card with all 28 bodies, the header
+     probe and the harness. Leak sweep run over every byte of the copied tree at staging: vault
+     paths replaced in place with <VAULT>, one neighbour-inventory line generalized, line counts
+     preserved, no other edits. Loopback ports published as run, per the /reasoning-effort/,
+     /speculation-gate/ and /qwen38-27b/ precedent.
+     CLAIMS TRACE: CLAIMS_TRACE.md in the campaign drafts folder. FIX ROUND 2026-08-16 applied
+     against four adversarial reviews; every item dispositioned in REVIEW_DISPOSITIONS_2026-08-16.md.
+     The draft folder sits under work/qwen/drafts/ only because that is the house drafting area.
+     Muse Glimmer is Meta's model, not a Qwen one, and nothing here belongs to Operation Qwen;
+     the Qwen references in sections 05, 07 and 12 are labelled cross-vendor contrasts.
+     THE SEVEN STAGING DECISIONS, as resolved in this round:
+       1. ROUTE: taken, /muse-glimmer-30b/. See above.
+       2. OG SHARE CARD: generated, og/muse-glimmer-30b.png, 1200x630, drawn against the
+          measured geometry of the existing cards. Two title lines, as /reasoning-effort/ took.
+       3. DATA PACKAGE: assembled; section 13 converted from prose to links.
+       4. ROUTECHECK LINK: NOT taken. Section 10 still names routecheck without linking
+          /routecheck/, which is what every field card on this site does today; the route
+          exists but no field card links it, so linking would start a convention rather than
+          apply one. Decided conservatively and left as Grant's call; it is a one-word edit in
+          section 10's first sentence. The data package's own data/routecheck/ links are a
+          different thing and follow the /qwen38-27b/ precedent.
+       5. REASONING-EFFORT CROSS-LINK: taken. /reasoning-effort/ staged in this same round, so
+          the sentence the draft prepared is added verbatim to section 07 and the study is
+          named in section 12.
+       6. FEED: entry added to site/feed.xml, first among the 2026-08-16 group.
+       7. CARDS: home gains a Model field cards mini in first position (newest first), and
+          /field-cards/ gains a comparison row (ordered small to large by parameters, so it
+          sits after the 27B) and a section 02 entry in first position. Not added to
+          /studies/, which carries studies and reports rather than field cards.
+     CSS: byte-identical to qwen38-27b/index.html except for one added `blockquote` rule, which
+     that page has no use for and this one does: section 06 quotes the license appendix and two
+     usage-policy clauses as block quotations. Nothing else depends on the difference. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muse Glimmer 30B: trained at 16, asked for 3. Meta's DFlash drafter drafts a block of 16 tokens, llama.cpp's generic draft length is 3, the documented flags leave the default in charge, and the gap is worth 2.17 times on structured work: measured on one RTX 5090, with a verbatim Apache 2.0 license and a usage policy beside it</title>
+<meta name="description" content="A field card for Muse Glimmer 30B, Meta's 30-billion-parameter dense model, downloaded on 2026-08-16, hash-verified against the repository's own object ids, and measured on one RTX 5090 the same evening. Meta trained its DFlash drafter to produce a block of 16 tokens per forward pass and prints that number in its specification table; llama.cpp's --spec-draft-n-max defaults to 3 and does not read the block size out of the GGUF; Meta's GGUF card documents the two flags that turn speculation on and nothing about draft length, so the generic default stays in charge. On our text-only one-slot harness at 8,192 tokens of context, greedy, that configuration ran six structured prompts at a median of 116.505 tokens per second, and adding --spec-draft-n-max 16 ran the same six at 253.19, which is 2.17 times more. No document is wrong on its own. Our no-speculation medians, 76.22 on prose and 76.345 on structured, sit 1.8 and 1.9 percent above Meta's published 74.9 baseline, and 253.19 is above their published 233.4, which is a scoped comparison and not a reproduction of their unpublished prompt-set average. Prose tops out at 1.51 times our baseline. Plus acceptance rate misranking the arms on a block drafter, the whole 131,072-token native context fitting on the card with the drafter at 21,051 MiB, a verbatim Apache 2.0 license shipping beside a separate usage policy that neither document references, no thinking off switch, a reasoning_strength lever that accepts any string, json_schema strict mode that did not constrain the output surface, and two near-duplicate vendor files that differ only in their chat template.">
+<link rel="canonical" href="https://graphometer.ai/muse-glimmer-30b/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Muse Glimmer 30B: trained at 16, asked for 3">
+<meta property="og:description" content="Meta trained its DFlash drafter at block size 16; llama.cpp's generic draft length is 3; the two flags Meta's card documents leave the default in charge. On six structured prompts that gap is worth 2.17 times, and prose tops out at 1.51 times our baseline.">
+<meta property="og:url" content="https://graphometer.ai/muse-glimmer-30b/">
+<meta property="og:image" content="https://graphometer.ai/og/muse-glimmer-30b.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Muse Glimmer 30B, trained at 16, asked for 3">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Muse Glimmer 30B: trained at 16, asked for 3">
+<meta name="twitter:description" content="Meta trained its DFlash drafter at block size 16; llama.cpp's generic draft length is 3; the two flags Meta's card documents leave the default in charge. On six structured prompts that gap is worth 2.17 times, and prose tops out at 1.51 times our baseline.">
+<meta name="twitter:image" content="https://graphometer.ai/og/muse-glimmer-30b.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  table.data tr.hi td{background:rgba(201,164,92,.05)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  blockquote{
+    margin:16px 0;padding:2px 0 2px 18px;border-left:2px solid var(--line);
+    color:var(--ink);max-width:62ch
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  .note p{color:var(--ink);max-width:none}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Field card &middot; measured 2026-08-16 on one RTX 5090 &middot; one dense 30B, Meta's own 4-bit build and its DFlash drafter, greedy decoding, one request at a time</div>
+      <h1>Muse Glimmer 30B: <em>trained at 16, asked for 3</em></h1>
+      <p class="subtitle">Meta trained its DFlash drafter to produce a
+      block of 16 tokens per pass and prints that number in its
+      specification table. llama.cpp's generic draft length is 3. The two
+      flags Meta's GGUF card documents leave that generic default in
+      charge, and on our six structured prompts the difference is worth
+      2.17 times the throughput, 116.505 tokens per second against 253.19.
+      Prose tops out at 1.51 times our baseline whatever we do. Neither
+      project's documentation is wrong on its own. The license is verbatim
+      Apache 2.0, with a separate usage policy shipping beside it.</p>
+      <p class="lead">Meta published Muse Glimmer 30B with a speed table
+      that names our exact hardware: 74.9 tokens per second with no
+      speculation, 233.4 with its DFlash drafter, 3.1 times faster,
+      averaged across a prompt set they do not publish, at batch size 1
+      with greedy decoding on an Nvidia RTX&nbsp;5090 through llama.cpp. On
+      2026-08-16 we downloaded the two files that table rests on, checked
+      every byte against the repository's own object ids, and ran five
+      server loads on one RTX&nbsp;5090. <strong>On our harness the numbers
+      land where theirs do.</strong> Text-only, one slot, 8,192 tokens of
+      context, greedy, our no-speculation medians were
+      <strong>76.22</strong> tokens per second on six prose prompts and
+      <strong>76.345</strong> on six structured prompts, 1.8 and 1.9
+      percent above their published baseline, and our fastest structured
+      median, <strong>253.19</strong>, is above their published 233.4.
+      <strong>That is a scoped comparison and not a reproduction of their
+      average</strong>: their prompt mix is unpublished, ours is printed in
+      section 02, and we never started their full documented command.
+      <strong>The finding is in the gap between two projects.</strong> Meta
+      trained DFlash to draft a block of 16 tokens in one forward pass and
+      prints <code>Block size | 16</code> in its specification table.
+      llama.cpp's <code>--spec-draft-n-max</code> defaults to 3, a sensible
+      number for the ordinary autoregressive draft models that flag was
+      written for, and llama.cpp does not read the drafter's block size out
+      of the GGUF to set it. Meta's GGUF card turns speculation on with two
+      flags, <code>-md</code> and <code>-ngld 99</code>, and says nothing
+      about draft length, so the generic default stays in charge: the
+      server prints <code>n_max=3</code> on the line directly above
+      <code>block_size=16</code>. In that configuration our six structured
+      prompts run at a median of <strong>116.505</strong> tokens per
+      second; adding <code>--spec-draft-n-max 16</code> moves the same six
+      to 253.19, <strong>2.17 times more</strong>. <strong>No document here
+      is wrong on its own, and the reader who follows the documentation
+      still loses that 2.17 times.</strong> And the workload decides more
+      than the flag does: with the same flag, prose reaches 1.51 times our
+      baseline at its best and structured output 3.32, so a single averaged
+      speedup, ours or anyone's, cannot tell a reader which of those two
+      their own work will get. Six prompts per cell, one call each, no
+      interval computed anywhere on this page. Everything below is one
+      quantization of one model on one machine, greedy, 8,192 tokens of
+      context, one request at a time, on 2026-08-16.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to Meta Platforms, the llama.cpp project or
+      ggml-org, or Unsloth.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>Rows below were read from the model's own configuration files and
+      from the GGUF headers on this disk at the pinned revisions on
+      2026-08-16, not quoted from a marketing page. Where a row is the
+      maker's claim rather than our reading or our measurement, it says so,
+      and amber text marks it.</p>
+      <table class="facts">
+        <tr><th scope="row">Maker</th><td>Meta. The model card names <strong>Meta Superintelligence Lab</strong> as author and August 2026 as the release date. The repositories live in the <code>meta-models</code> organization on Hugging Face.</td></tr>
+        <tr><th scope="row">Weights</th><td><code>meta-models/Muse-Glimmer-30B</code> at revision <span class="n">a4e59da52a7bc87ae7251dd5545c0dd437c44b68</span>; the GGUF conversions we served come from <code>meta-models/Muse-Glimmer-30B-GGUF</code> at <span class="n">43c7eadd41352a299ea8e0a36b3157978dd63596</span>, both read on 2026-08-16. The base repository holds 2 safetensors shards, 59,553,435,272 bytes, and Hugging Face reports 29,776,626,688 parameters.</td></tr>
+        <tr><th scope="row">License</th><td><strong>Verbatim Apache 2.0</strong>, 11,358 bytes, read in full at the pinned revision and retained in our record. A separate <code>USAGE_POLICY.md</code> of 5,230 bytes ships beside it in the same repository. Section 06 states both facts and makes no claim about which one binds you.</td></tr>
+        <tr><th scope="row">Shape</th><td><strong>Dense.</strong> No expert blocks anywhere in the configuration, so the <code>--n-cpu-moe</code> lever that tunes this machine's mixture-of-experts models does not exist here. The quantization fits the card whole or it does not fit.</td></tr>
+        <tr><th scope="row">Architecture</th><td>52 layers, hidden 6,656, feed-forward 19,968, 32 query heads to <strong>2 key-value heads</strong>, head dimension 128, RoPE theta 500,000. The layer pattern is <strong>three sliding-attention layers with a 2,048-token window followed by one full-attention layer, repeated 13 times</strong>, so only <strong>13 of the 52 layers hold an unbounded key-value cache</strong>. Section 05 is what that buys.</td></tr>
+        <tr><th scope="row">Drafter</th><td>A separate model, not a head inside the weights file: <code>meta-models/Muse-Glimmer-30B-assistant</code>, 2,555,985,152 parameters, 5 layers, <code>block_size: 16</code>, reading hidden features from 5 layers of the target. Its GGUF twin declares <code>general.architecture = dflash</code>. Per the vendor's card it is a <strong>block-diffusion drafter</strong> that predicts a whole block of 16 tokens in one forward pass, which is a different object from the multi-token-prediction and draft-head numbers elsewhere on this site. Sections 03 and 04 do not pool them.</td></tr>
+        <tr><th scope="row">Context</th><td><strong>131,072 tokens native</strong>, declared in the configuration. Section 05 measures the whole of it on this card.</td></tr>
+        <tr><th scope="row">Vocabulary</th><td>202,048 tokens; beginning-of-sequence 200,000, end-of-sequence 200,001, end-of-turn 200,008.</td></tr>
+        <tr><th scope="row">Modality</th><td><strong>Natively multimodal</strong> by its configuration: a 50-layer vision tower, patch 14, shipped as a separate projector file. <strong>We served it text-only and never downloaded the projector.</strong> Vision is untested here and no claim on this page rests on it.</td></tr>
+        <tr><th scope="row">Quantization served</th><td>Meta's own <code>Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf</code>, 16,756,683,904 bytes, plus <code>dflash-Muse-Glimmer-30B-Q4_K_M.gguf</code>, 1,631,208,128 bytes. <strong>These are the two files the vendor's own speed table names</strong>, which is why a comparison against that table is possible at all. Section 09 measures a community alternative.</td></tr>
+        <tr><th scope="row">Quality</th><td><span class="asstated">The maker claims 1.0% degradation for this K-Quant-17GB build and 0.2% for K-Quant-Dynamic, "measured using an average on accuracy metrics across 15 common benchmarks".</span> <strong>We measured no quality of any kind.</strong> That row is their claim, reproduced, not our finding.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <table class="facts">
+        <tr><th scope="row">Machine</th><td>One desktop: Core Ultra 9 285K, 188&nbsp;GiB RAM, one RTX&nbsp;5090 with <strong>32,607&nbsp;MiB</strong> of VRAM, Pop!_OS.</td></tr>
+        <tr><th scope="row">Runtime</th><td>Mainline llama.cpp <code>llama-server</code>, build <code>b10453</code>, commit <code>3cb7ffb</code>, CUDA 12.8, already on this machine and reused read-only. Muse Glimmer support merged upstream as PR&nbsp;#26841 on 2026-08-10 and first shipped in release <code>b10353</code>, so this build sits a hundred releases past the floor.</td></tr>
+        <tr><th scope="row">A version check that needs a release build</th><td>The vendor's card says to run <code>llama-cli --version</code> and require a build number of 10353 or higher. That works on a release binary. On a build from source llama.cpp itself prints <code>version: 0.1.0-dev (build 1, commit 3cb7ffb)</code>, so the number is not there to test and the check is unusable in that case. Their second check works everywhere: <code>grep -c LLM_ARCH_MUSE_GLIMMER src/llama-arch.cpp</code>.</td></tr>
+        <tr><th scope="row">Integrity</th><td>Three files downloaded, three planned; every byte count equals the pinned manifest and <strong>every SHA-256 equals the repository's own LFS object id</strong> at the pinned revision. That is file integrity against the vendor's own conversion, which is the whole chain here, because Meta published these GGUFs itself.</td></tr>
+        <tr><th scope="row">Placement</th><td><code>-ngl 99</code>, every layer on the GPU, plus <code>-ngld 99</code> for the drafter.</td></tr>
+        <tr><th scope="row">Sampling</th><td><strong>Greedy, temperature 0</strong>, matching the vendor's stated measurement method (batch size 1, greedy decoding). Their recommended chat sampling is temperature 1.0, top-p 0.95, top-k 64; we did not use it for speed work and cannot say what it would change.</td></tr>
+        <tr><th scope="row">Concurrency</th><td><code>--parallel 1</code>. <strong>Single request throughout.</strong> Section 11 says why that boundary is drawn where it is.</td></tr>
+        <tr><th scope="row">Speed method</th><td>Five server loads, one per arm, each a fresh process. Each arm runs the <strong>same twelve prompts</strong>, six prose and six structured, <strong>each prompt sent exactly once</strong>, so no prompt is reused inside an arm and no prefix cache is warmed across the measured calls. A discarded warm-up call precedes each arm. The figure reported per cell is the <strong>median of six different prompts</strong>, one call each, not repetitions of one prompt, and the design is paired: arm to arm, the prompts are identical. Server-reported decode rates are authoritative.</td></tr>
+        <tr><th scope="row">Serving</th><td>A loopback scratch port for the study. Nothing was installed: no service unit, no registry key, no client wiring, and the server was stopped and verified stopped at the end.</td></tr>
+      </table>
+      <p><strong>The exact invocation.</strong> Every arm in section 03 is
+      this command with the speculation flags added or changed; nothing else
+      moves:</p>
+<pre class="log">llama-server \
+  --model Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf \
+  --host 127.0.0.1 --port &lt;scratch&gt; --alias muse-glimmer-30b \
+  --jinja --ctx-size 8192 --parallel 1 --n-gpu-layers 99 \
+  --threads 24 --threads-batch 24 --flash-attn on --timeout 3600</pre>
+      <p>Arm B adds the two flags the vendor's card documents for
+      speculation, and nothing more:</p>
+<pre class="log">  -md dflash-Muse-Glimmer-30B-Q4_K_M.gguf -ngld 99</pre>
+      <p>Arms C and D add one flag beyond that,
+      <code>--spec-draft-n-max 16</code> and
+      <code>--spec-draft-n-max 8</code>. Section 03 sets out exactly how
+      that relates to the vendor's own documented server command, which is
+      a different and longer thing that we did not run.</p>
+      <h3>Our prompt set, since we are about to say that theirs is missing</h3>
+      <p>Every arm sent these twelve, in this order, once each,
+      <code>max_tokens</code> 900, temperature 0. Six prose:</p>
+      <ol class="plain">
+        <li>Write four paragraphs about why coastal fishing villages in Iceland declined in the twentieth century.</li>
+        <li>Write four paragraphs explaining how a mechanical watch escapement works, for a curious adult.</li>
+        <li>Write four paragraphs about the history of the Dutch windmill and its role in land reclamation.</li>
+        <li>Write four paragraphs describing the life cycle of a monarch butterfly and its migration.</li>
+        <li>Write four paragraphs on how sourdough starter cultures work biologically.</li>
+        <li>Write four paragraphs about the invention and spread of the printing press in Europe.</li>
+      </ol>
+      <p>Six structured:</p>
+      <ol class="plain">
+        <li>Write a Python class LRUCache with get and put, using a dict and a doubly linked list. Include docstrings. Output only code.</li>
+        <li>Write a JSON array of 12 objects, each with keys id, name, country, founded_year, describing 12 European universities. Output only JSON.</li>
+        <li>Write a Python module with five functions for vector math (add, sub, dot, norm, normalize) with full type hints and docstrings. Output only code.</li>
+        <li>Write a JSON object mapping 15 chemical element symbols to objects with keys name, atomic_number, group. Output only JSON.</li>
+        <li>Write a Python implementation of a binary search tree with insert, find, and in-order traversal, fully commented. Output only code.</li>
+        <li>Write a markdown table with 15 rows comparing 15 programming languages across columns: language, year, paradigm, typing, main use.</li>
+      </ol>
+      <p>That set is ours, not a standard, and it is small. It is printed so
+      that anyone can rerun it and so that no sentence on this page
+      criticizes a missing prompt list from behind one.</p>
+      <p><strong>How the numbers are rounded.</strong> Decode figures are
+      printed as the server reports them. A median of six values falls
+      between the two middle prompts, so some medians end in a half cent of
+      a token per second: those are printed with three decimals (76.345,
+      116.505, 76.325, 79.615) rather than rounded, and every ratio on this
+      page is computed from unrounded values.</p>
+      <p><strong>Startup noise that is not a fault.</strong> Every load with
+      the drafter prints <code>dflash requires ctx_other to be set</code> and
+      then <code>[spec] failed to measure draft model memory</code>. The
+      vendor documents the second one as harmless, and the model loads and
+      serves normally. Every load of every Muse GGUF here also prints
+      <code>special_eot_id is not in special_eog_ids</code>. We observed no
+      stop-behaviour problem in any run, so we record that line as an open
+      observation and not as a defect.</p>
+      <div class="note">
+        <span class="label">How to read the VRAM figures</span>
+        <p>Every VRAM number on this page is the raw MiB reading from
+        <code>nvidia-smi</code> against a 32,607&nbsp;MiB card. We print
+        MiB first because that is what the instrument reports, and we never
+        divide a MiB reading by 1000 and call the result GiB.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The numbers side by side, and the default that decides the gap</h2>
+      <p>Meta's card publishes this table, with the method stated
+      underneath it: an average across a diverse prompt set, batch size 1,
+      greedy decoding, the RTX measurements taken with llama.cpp.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>GPU</th><th>Baseline, no speculation</th><th>With DFlash</th><th>Speedup</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Nvidia RTX 5090</td><td>74.9</td><td>233.4</td><td>3.1x</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">The vendor's own figures, quoted from their GGUF
+      model card as read on 2026-08-16.</p>
+      <p>The reported hardware, runtime, decoding mode and files are
+      specified, and they are ours. The prompt mix is not. Here is our own
+      measurement beside it, with the prompt set split in two and printed in
+      section 02, greedy, 8,192 tokens of context, one request at a time, on
+      2026-08-16.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Arm</th><th>Speculation flags</th><th>Prose t/s</th><th>vs baseline</th><th>Structured t/s</th><th>vs baseline</th></tr></thead>
+        <tbody>
+          <tr><td class="t">A</td><td class="t">none</td><td>76.22</td><td class="t">baseline</td><td>76.345</td><td class="t">baseline</td></tr>
+          <tr class="hi"><td class="t">B</td><td class="t">the two flags the card documents</td><td>79.07</td><td>1.04x</td><td>116.505</td><td>1.53x</td></tr>
+          <tr><td class="t">D</td><td class="t">B plus <code>--spec-draft-n-max 8</code></td><td>114.46</td><td>1.50x</td><td>208.29</td><td>2.73x</td></tr>
+          <tr class="hi"><td class="t">C</td><td class="t">B plus <code>--spec-draft-n-max 16</code></td><td>114.86</td><td>1.51x</td><td>253.19</td><td>3.32x</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Each cell is the median of six different prompts,
+      one call per prompt (n = 6), inside one server process, with the same
+      twelve prompts in every arm. The "vs baseline" columns divide by arm A
+      of the same workload, never by the vendor's number. The arms are
+      lettered in the order they were run and the table is ordered by draft
+      length, which is why D sits above C. No interval is computed and none
+      is implied; this is a diagnostic ladder, not a benchmark.</p>
+      <h3>Our baseline lands where theirs does</h3>
+      <p>76.22 and 76.345 against their 74.9 is 1.8 and 1.9 percent above
+      the vendor's figure on a machine they did not configure, which is as
+      close as anyone should expect two different desktops to land.</p>
+      <h3>Our fastest arm is above their published DFlash figure, on structured prompts only</h3>
+      <p>253.19 tokens per second is 8.5 percent above the 233.4 they
+      published, and 3.32 times our own baseline against their 3.1 times
+      theirs (n = 6 structured prompts, one call each). Those two ratios are
+      not the same estimand: theirs is an average over an unpublished mix of
+      unknown composition, ours is a median over six structured prompts we
+      wrote and printed. They are printed side by side because they are the
+      two numbers a reader will hold, not because one reproduces the
+      other.</p>
+      <h3>Where the difference comes from: one line in the server log</h3>
+      <p>With the two documented flags and nothing else, the drafter
+      registers like this:</p>
+<pre class="log">common_speculative_impl_draft_dflash: - n_max=3, n_min=0, p_min=0.00
+common_speculative_impl_draft_dflash: - block_size=16, mask_token_id=201818, n_extract=5</pre>
+      <p><code>n_max=3</code> is llama.cpp's own generic default draft
+      length, inherited from ordinary autoregressive draft models.
+      <code>block_size=16</code> is what this drafter was trained to produce
+      in a single forward pass, and the runtime prints it on the very next
+      line without using it. A block drafter asked for three tokens at a
+      time throws away most of what it computed. Ask for the block it was
+      built for and the same log reads:</p>
+<pre class="log">common_speculative_impl_draft_dflash: - n_max=16, n_min=0, p_min=0.00
+common_speculative_impl_draft_dflash: requested draft size (n_max=16, n_min=0) exceeds
+  the trained block size 16 -- clamping to 15</pre>
+      <p><strong>The runtime clamps 16 down to 15, and 15 is where the fast
+      arm actually ran.</strong> Pass 16 and accept 15; passing 15 yourself
+      would land in the same place without the warning. Arm D, at
+      <code>--spec-draft-n-max 8</code>, draws no warning and gets most of
+      the way there.</p>
+      <div class="note">
+        <span class="label">Nobody's document is wrong, and the reader still loses 2.17 times</span>
+        <p>Three separate things are each individually correct.
+        <strong>Meta trained DFlash at block size 16</strong> and publishes
+        that number in the drafter's specification table on both readmes; it
+        is an architecture row, not a command-line instruction, and it does
+        not claim to be one. <strong>llama.cpp's
+        <code>--spec-draft-n-max</code> defaults to 3</strong>, which is a
+        reasonable default for the ordinary autoregressive draft models the
+        speculative path was built for; the flag is llama.cpp's, documented
+        by llama.cpp, and on this build the runtime does not read the
+        drafter's block size out of the GGUF to raise its own default.
+        <strong>Meta's GGUF card documents the two flags that turn
+        speculation on</strong>, <code>-md</code> and <code>-ngld 99</code>,
+        which is exactly what a reader needs to load the drafter, and says
+        nothing about draft length, which leaves the generic default in
+        charge.</p>
+        <p>The string <code>--spec-draft-n-max</code> appears nowhere in
+        either vendor readme; we checked both retained copies and the grep
+        returns zero hits. That is a fact about the readmes, not an
+        accusation: a vendor card is not obliged to teach another project's
+        flags. The consequence is still real. A practitioner who reads
+        Meta's card carefully and llama.cpp's defaults not at all gets 1.53
+        times our baseline on structured output and 1.04 on prose, with no
+        documented reason to suspect that one more flag is worth
+        <strong>2.17 times</strong> more on the structured half, 253.19
+        against 116.505, six prompts per cell, one call each. This is what a
+        gap between two correct documents costs, and it is the kind of gap
+        that only shows up when somebody runs both projects together and
+        reads the log.</p>
+      </div>
+      <h3>What arm B is, exactly, and what it is not</h3>
+      <p>This is the sentence a reviewer should attack, so here is the whole
+      of it. The vendor's GGUF card documents this server command:</p>
+<pre class="log">./build/bin/llama-server \
+    -m       Muse-Glimmer-30B-GGUF/Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf \
+    --mmproj Muse-Glimmer-30B-GGUF/mmproj-Muse-Glimmer-30B-Q4_K_M.gguf \
+    -a muse-glimmer-30B \
+    -ngl 99 -c 131072 -np 4 \
+    --host 127.0.0.1 --port 8080 \
+    --jinja \
+    --temp 1.0 --top-p 0.95 --top-k 64</pre>
+      <p>and then documents speculation as an addition to it:
+      <code>-md Muse-Glimmer-30B-GGUF/dflash-Muse-Glimmer-30B-Q4_K_M.gguf
+      -ngld 99</code>. <strong>Arm B reproduces that two-flag addition
+      verbatim, on the same drafter file, inside our own harness. It does
+      not reproduce the command above.</strong> Ours is text-only with no
+      projector, one slot instead of four, 8,192 tokens of context instead
+      of 131,072, and greedy instead of their recommended chat sampling,
+      because greedy at batch size 1 is what the vendor's own measurement
+      footnote specifies. So <strong>we did not measure the vendor's
+      documented command and this page makes no claim about what it would
+      produce</strong>. What we can say is narrower and still useful,
+      because <code>--spec-draft-n-max</code> is absent from that command
+      too: any invocation built from that page inherits llama.cpp's generic
+      default, and our arm B log is a retained instance of what that looks
+      like at startup. The argv of each arm was not itself written to a
+      file; the flags are evidenced by the harness script and by three lines
+      in each retained server log, the drafter's path, the
+      <code>n_max</code> line, and
+      <code>n_slots = 1, n_ctx_slot = 8192</code>. Their four-slot default
+      is also the regime that upstream issue #27117 reports acceptance
+      collapsing in; see section 11.</p>
+      <h3>The split is the point</h3>
+      <p>The same flag that buys 3.32x on structured output buys 1.51x on
+      prose. Without the mix, a vendor average cannot tell a reader which
+      result to expect for their own workload, and ours cannot either, which
+      is why both halves are printed separately and never pooled into one
+      number. Our <a href="../speculation-gate/">speculation-gate study</a>
+      measured a 397B mixture-of-experts where an ungated draft made prose
+      slower than no speculation at all while making structured output
+      faster, and the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>
+      found the same direction on a dense 27B living entirely on the GPU.
+      This is a third deployment, a different drafter mechanism, and the
+      same lesson about pooled numbers. <strong>The magnitudes do not
+      transfer between those pages and this one</strong>, and nothing here
+      reproduces their numbers.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Acceptance rate misranks the arms on this drafter</h2>
+      <p>The obvious diagnostic for speculative decoding is the acceptance
+      rate, and on this drafter it points the wrong way. Same runs as
+      section 03, counters summed across the six prompts of each workload
+      (n = 6 per row, one call per prompt).</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Arm</th><th>Workload</th><th>Draft tokens generated</th><th>Accepted</th><th>Acceptance</th><th>Tokens per target step</th><th>Throughput</th></tr></thead>
+        <tbody>
+          <tr><td class="t">B</td><td class="t">structured</td><td>4,601</td><td>3,408</td><td>0.741</td><td>3.22</td><td>116.505</td></tr>
+          <tr><td class="t">D</td><td class="t">structured</td><td>9,023</td><td>3,964</td><td>0.439</td><td>4.49</td><td>208.29</td></tr>
+          <tr class="hi"><td class="t">C</td><td class="t">structured</td><td>13,204</td><td>4,212</td><td>0.319</td><td>5.75</td><td>253.19</td></tr>
+          <tr><td class="t">B</td><td class="t">prose</td><td>6,926</td><td>2,689</td><td>0.388</td><td>2.16</td><td>79.07</td></tr>
+          <tr><td class="t">D</td><td class="t">prose</td><td>16,360</td><td>2,875</td><td>0.176</td><td>2.40</td><td>114.46</td></tr>
+          <tr><td class="t">C</td><td class="t">prose</td><td>28,589</td><td>3,013</td><td>0.105</td><td>2.57</td><td>114.86</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Acceptance is accepted draft tokens divided by
+      generated draft tokens, from the server's own counters. Tokens per
+      target step is completion tokens divided by (completion tokens minus
+      accepted draft tokens), which is the same arithmetic the server prints
+      per request as <code>mean len</code>. It is an effective-work proxy
+      and a diagnostic: it is not a recorded count of target-model forward
+      passes, because the server does not log one.</p>
+      <p><strong>Acceptance falls as throughput rises</strong>, from 0.741
+      to 0.319 on structured output while the same six prompts get 2.17
+      times faster. The proxy moves with the speed instead: 3.22, then 4.49,
+      then 5.75. A block drafter proposes a whole block whether or not the
+      block will survive; discarded draft tokens cost drafter time, which is
+      cheap here, and the saving is counted in target passes avoided, which
+      is expensive.</p>
+      <p>The practical instruction, scoped to what this is: <strong>in these
+      runs, acceptance alone ranks the three structured arms in exactly the
+      wrong order.</strong> Tune against end-to-end throughput on your own
+      workload, and use acceptance and the tokens-per-target-step proxy as
+      diagnostics rather than as targets. A reader who tunes for acceptance
+      here lands on the vendor's documented configuration, which has the
+      best acceptance number on this page and the second-worst throughput.
+      Whether that generalizes to every block drafter is not something six
+      prompts on one machine can establish.</p>
+      <p>These counters are not comparable with the acceptance figures on
+      this site's Qwen pages, which came from a multi-token-prediction head,
+      a different mechanism. We do not pool them and neither should anyone
+      else.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The context ladder: the whole native context fits, with the drafter</h2>
+      <p>Six loads, same weights, same build, same card. VRAM is the raw
+      <code>nvidia-smi</code> reading after load against 32,607&nbsp;MiB.
+      Each decode figure is <strong>one 400-token generation from a
+      63-token prompt</strong>, a single observation per row, not a median.
+      The speculative rows ran at
+      <code>--spec-draft-n-max 16</code>.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Context</th><th>Drafter</th><th>VRAM used, MiB</th><th>Free, MiB</th><th>Load, s</th><th>Decode t/s</th></tr></thead>
+        <tbody>
+          <tr><td>8,192</td><td class="t">no</td><td>16,974</td><td>15,113</td><td>2.04</td><td>76.69</td></tr>
+          <tr><td>8,192</td><td class="t">yes</td><td>19,374</td><td>12,713</td><td>3.04</td><td>117.77</td></tr>
+          <tr><td>32,768</td><td class="t">no</td><td>17,307</td><td>14,780</td><td>2.03</td><td>76.74</td></tr>
+          <tr><td>32,768</td><td class="t">yes</td><td>19,709</td><td>12,378</td><td>3.04</td><td>117.65</td></tr>
+          <tr><td>131,072</td><td class="t">no</td><td>18,649</td><td>13,438</td><td>2.03</td><td>76.26</td></tr>
+          <tr class="hi"><td>131,072</td><td class="t">yes</td><td>21,051</td><td>11,036</td><td>3.04</td><td>117.19</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Speculative rows ran with
+      <code>--spec-draft-n-max 16</code>. One load and one generation per
+      row; all loads were page-cache warm.</p>
+      <p><strong>The full native 131,072-token context fits on this card
+      with the drafter loaded</strong>, using 21,051&nbsp;MiB and leaving
+      11,036&nbsp;MiB free. Across these one-shot rows the drafter's
+      overhead was 2,400, 2,402 and 2,402&nbsp;MiB, and decode with the
+      drafter read 117.77, 117.65 and 117.19 tokens per second as allocated
+      context grew sixteen-fold. That sample shows no material decline, and
+      one generation per row cannot establish a context-performance curve.
+      Note also that these generations start from a 63-token prompt: this is
+      decode at <em>allocated</em> context, not at <em>filled</em> context,
+      and section 08 says how far we actually filled it.</p>
+      <h3>Why context is this cheap here</h3>
+      <p>Only 13 of the 52 layers hold an unbounded key-value cache; the
+      other 39 are capped at their 2,048-token window. Two key-value heads
+      times 128 head dimension times two tensors times two bytes is
+      1&nbsp;KiB per token per unbounded layer, so 13&nbsp;KiB per token, so
+      1,664&nbsp;MiB predicted for the unbounded cache at 131,072 tokens,
+      which is 1.63&nbsp;GiB.</p>
+      <div class="note">
+        <span class="label">And the honest version of that arithmetic</span>
+        <p>The measured quantity we can put beside it is the whole-process
+        VRAM difference between the 8,192 and 131,072 loads without the
+        drafter, 1,675&nbsp;MiB or 1.64&nbsp;GiB. Those two numbers are
+        close, but they are <strong>not the same quantity</strong>: the
+        8,192 load already holds about 104&nbsp;MiB of that cache, so the
+        predicted <em>increment</em> is 1,560&nbsp;MiB, and compute buffers
+        grow with context too. Read 1.63 against 1.64 as
+        confirmation that the layer pattern makes long context cheap by
+        roughly the factor the configuration implies, not as a validated
+        measurement of the cache itself. The runtime did not print a
+        key-value cache size line at the verbosity we ran, so we do not have
+        the direct reading.</p>
+      </div>
+      <h3>One inference for smaller cards, marked as an inference</h3>
+      <p>The most common question about a 30B build is whether it fits
+      24&nbsp;GB, and this study cannot answer it, because we ran one card
+      and one placement. What the table supports is arithmetic and nothing
+      more: this model plus its drafter occupied 19,374&nbsp;MiB at 8,192
+      tokens of context and 21,051&nbsp;MiB at 131,072, on a card that
+      reports 32,607&nbsp;MiB, with the vision projector never loaded.
+      <strong>We did not test a 24&nbsp;GB card, and decode speed does not
+      transfer between cards at all</strong>, so treat the fit as a starting
+      estimate to verify yourself and the speeds on this page as belonging
+      to this card only.</p>
+      <p>The comparison this site can make from its own records: the
+      <a href="../qwen38-27b/">Qwen3.8-27B</a> measured on this same card two
+      days earlier declares 262,144 tokens native and <strong>did not
+      fit</strong> that context here, topping out at 131,072. Muse Glimmer's
+      whole declared context fits with room for the drafter. Those are two
+      different models with two different attention layouts, quantizations
+      and dates, and the sentence is a fact about what fit on one card, not
+      a ranking.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>The license, and the document that ships beside it</h2>
+      <p><strong>Fact one.</strong> <code>LICENSE</code> in the base
+      repository is 11,358 bytes of <strong>verbatim, unmodified Apache
+      License 2.0</strong>, read in full at the pinned revision and retained
+      in our record. Searching it for <code>meta</code>,
+      <code>usage polic</code>, <code>acceptable</code>,
+      <code>restrict</code>, <code>revenue</code>, <code>MAU</code> and
+      <code>monthly active</code> returns zero hits. There is no revenue
+      threshold, no monthly-active-user threshold and no field-of-use
+      restriction inside the license. Its appendix still carries the stock
+      unfilled placeholder:</p>
+      <blockquote><code>Copyright [yyyy] [name of copyright owner]</code></blockquote>
+      <p>That placeholder is how the unmodified Apache template ships, and
+      we read it as one more piece of evidence that the file is the stock
+      text rather than a modified grant. We draw nothing else from it. The
+      same 11,358-byte file ships in the GGUF repository and in the drafter
+      repository.</p>
+      <p><strong>Fact two.</strong> A separate <code>USAGE_POLICY.md</code>
+      of 5,230 bytes sits beside it in all three repositories, also read in
+      full and retained. It states that the model "is not intended for
+      individuals under the age of 18" and lists prohibited uses under five
+      headings. Two clauses a practitioner should read before deploying: the
+      bar on any action</p>
+      <blockquote>"to intentionally circumvent or remove usage restrictions
+      or other safety measures, or to enable functionality disabled by
+      Meta"</blockquote>
+      <p>and the bar on "Military, warfare, nuclear industries or
+      applications, espionage".</p>
+      <p><strong>Fact three, the structural one.</strong>
+      <strong>The license does not incorporate the usage policy by
+      reference, and the usage policy does not describe itself as a license
+      condition.</strong> The two documents sit side by side and neither one
+      points at the other. The Apache grant is unconditional on its
+      face.</p>
+      <p><strong>We make no claim about which document binds you.</strong>
+      That is a legal question and this site measures things. What we can
+      hand you is both files at their pinned revisions, which is what the
+      data package does. What we will say plainly is that "it is Apache
+      2.0" and "there is a usage policy with prohibited uses" are
+      <strong>both true at once</strong>, and quoting either one alone
+      describes this release inaccurately.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Thinking: no off switch, a lever that is a sentence, and no floor on a simple prompt</h2>
+      <p><strong>Everything in this section is a property of a template and
+      a build, not of the weights.</strong> It was measured on build
+      <code>b10453</code> with <code>--jinja</code>, serving Meta's
+      documented long-named GGUF and therefore that file's baked
+      <code>tokenizer.chat_template</code>, greedy, at 8,192 tokens of
+      context. Section 09 shows the same model behaving differently from a
+      file whose only difference is that template key.</p>
+      <p><strong>There is no way to turn thinking off.</strong> The chat
+      template opens the reasoning channel unconditionally: there is no
+      <code>enable_thinking</code> branch and no branch that suppresses the
+      channel. The vendor states this on their own card, and reading the
+      template confirms it. What you control is how much.</p>
+      <p><strong>The lever is <code>reasoning_strength</code>, and it is a
+      sentence injected into your prompt.</strong> The template interpolates
+      the value verbatim into a system line,
+      <code>Reasoning strength: &lt;value&gt;.</code>, defaulting to
+      <code>high</code>. It is not validated. Sent through
+      <code>chat_template_kwargs</code> on one prompt, one call per value,
+      greedy, on 2026-08-16:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>reasoning_strength</th><th>Hidden reasoning, characters</th><th>Completion tokens</th></tr></thead>
+        <tbody>
+          <tr><td class="t"><code>low</code></td><td>312</td><td>121</td></tr>
+          <tr><td class="t"><code>medium</code></td><td>459</td><td>171</td></tr>
+          <tr class="hi"><td class="t"><code>banana</code></td><td>472</td><td>163</td></tr>
+          <tr><td class="t"><code>high</code></td><td>680</td><td>224</td></tr>
+          <tr><td class="t">field omitted</td><td>680</td><td>224</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One call per value on one prompt, greedy, on this
+      endpoint and configuration, 2026-08-16.</p>
+      <p>Three things in one table, and all five rows are one call each on
+      one prompt. <strong>The documented values moved thinking volume in the
+      documented direction here</strong>, low below medium below high.
+      <strong>Omitting the field produced a response identical to
+      <code>high</code></strong>, which is the template's default. And
+      <strong><code>banana</code> was accepted</strong>: no error, no
+      fallback, a reply that looks perfectly normal, with a thinking volume
+      between <code>medium</code> and <code>high</code>, which is what you
+      would expect from a model reading an English sentence about an
+      undefined strength rather than consulting a table. Read the ordering
+      as an illustration and the mechanism, prompt injection with no
+      validation, as the finding: the mechanism is readable in the template
+      source, which is why it does not rest on five calls.</p>
+      <p><strong>The same mechanism class as Qwen's
+      <code>reasoning_effort</code>, with the opposite outcome.</strong> The
+      <a href="../qwen38-27b/">Qwen3.8-27B card</a> found a knob that
+      rewrites the prompt, raises HTTP 500 on an unrecognized value, and did
+      not move measured thinking length in either direction. Here the knob
+      also rewrites the prompt, accepts anything without complaint, and did
+      move thinking volume. Neither one is a budget cap. If you need a cap,
+      llama.cpp's <code>--reasoning-budget</code> is the flag, and we did not
+      test it. <code>reasoning_effort</code> sent as a top-level field also
+      reaches this template through llama.cpp's own plumbing on this build,
+      measured at 388 reasoning characters for <code>low</code> against 535
+      for <code>xhigh</code>, one call each; that is the runtime's mapping,
+      not a field the vendor's template defines, and the
+      <a href="../reasoning-effort/">reasoning effort</a> study is where that
+      knob is read off the rendered prompts.</p>
+      <h3>No budget floor on a simple prompt, and a floor of 2,000 on a harder one</h3>
+      <p>Asked for the product of 17 and 23 with <code>max_tokens</code> set
+      to 60, the model returned the correct answer, spending 56 tokens and
+      finishing on <code>stop</code> rather than on a length cutoff. The same
+      prompt at 500, 2,000 and 4,096 returned the identical answer with
+      identical thinking. <strong>This is not a general property.</strong>
+      On a harder prompt in the
+      same session, our instrument's own budget ladder returned an empty
+      visible answer at 60 and at 500 tokens, with the whole budget consumed
+      by hidden reasoning, and first produced a visible answer at 2,000.</p>
+      <p>Both readings are here because both are true: the floor is a
+      property of how much thinking a prompt provokes, not a constant of the
+      model or of the endpoint. That is exactly the finding of our
+      <a href="../empty-answer/">Empty Answer</a> study, seen again on a
+      different vendor's model. <strong>Do not copy either number into your
+      client.</strong> Measure your own floor on your own prompts. For what
+      it is worth as a starting point rather than a rule: on this endpoint,
+      with this probe family, thinking replies were given 2,000 to 4,096
+      tokens.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Structured output conformed without constraining the surface</h2>
+      <p><strong>Dependencies for this section</strong>, because these are
+      route behaviours rather than model properties: build
+      <code>b10453</code>, <code>--jinja</code>, Meta's documented GGUF and
+      its baked chat template, greedy sampling, 8,192 tokens of context, one
+      request at a time.</p>
+      <p>Sending <code>response_format</code> of type
+      <code>json_schema</code> with <code>"strict": true</code>, the
+      returned content was this, fence included:</p>
+<pre class="log">```json
+{
+  "city": "Reykjavik",
+  "country": "Iceland",
+  "population_millions": 0.14
+}
+```</pre>
+      <p>The object inside is correct and conforms to the schema.
+      <strong>The response is not parseable JSON</strong>, because the model
+      wrapped it in a markdown fence and <code>strict: true</code> did not
+      prevent that. That is one call, and it is the one whose request body
+      was retained. Our instrument's structured-output cell separately
+      recorded 3 of 3 conforming responses on its own schema prompt, so on
+      this route the constraint held on content and not on surface.</p>
+      <p><strong>The client instruction, scoped to that evidence: do not
+      assume <code>json.loads(message.content)</code> is safe on this route.
+      Strip fences first, or parse defensively.</strong> Two further calls
+      in the same session showed the surface varying by prompt, one bare
+      object and one fenced object with a sentence of prose appended after
+      the closing fence; those two calls are illustrative only, because
+      their request bodies were not retained and we will not build a claim
+      on a record we cannot hand you. Whether the fence comes from the
+      model, the template or the runtime's handling of <code>strict</code>
+      is not something this study separated.</p>
+      <p><strong>Tool calls work and arrive in the right shape on this
+      build.</strong> The template emits Meta's ATEM XML shape, and build
+      <code>b10453</code> parses it into proper OpenAI
+      <code>tool_calls</code> with the correct enumerated argument values,
+      on both shots of the instrument's tool cell and on a direct probe. The
+      vendor's card states that an older build leaks the raw
+      <code>to=self&lt;|message|&gt;</code> marker into the visible content
+      instead; that is their statement about earlier builds, not something
+      we reproduced.</p>
+      <p><strong>Retrieval.</strong> A planted needle was found at a
+      server-reported 28,659 prompt tokens, served at the 32,768-token
+      profile, one call. That is the longest prompt we actually put through
+      this endpoint, and at 22 percent of the declared context it is not a
+      long-context result. Nothing on this page speaks to behaviour at
+      131,072 filled tokens.</p>
+      <p><strong>The rest of the battery</strong>, one to three calls per
+      check: an exact-phrase echo came back byte-perfect; the bat-and-ball
+      question was answered correctly; a request to implement interval
+      merging produced code containing three assertions. The session record
+      states that the extracted file was executed and exited clean; the exit
+      status itself was not written to a retained artifact, so it is
+      reported here as the session's account and not as a measurement.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Two files wearing one badge, two templates wearing one name</h2>
+      <p>Before downloading anything we read the GGUF headers over HTTP
+      range requests, about 13&nbsp;MB per file, which is how the rest of
+      this section was found without moving 30&nbsp;GB.</p>
+      <h3>Same badge, different file</h3>
+      <p>Meta's <code>KQuant-Dynamic-Q4_K_XL</code> (19.65&nbsp;GB, 237
+      Q6_K tensors) and Unsloth's <code>UD-Q4_K_XL</code> (15.88&nbsp;GB,
+      <strong>zero</strong> Q6_K tensors, 410 Q4_K) wear the same
+      <code>Q4_K_XL</code> badge, are 3.78&nbsp;GB apart, and differ
+      structurally in their type mix. Unsloth's "XL" is smaller than Meta's
+      plain <code>Q4_K_M</code>. A reader choosing "the Q4_K_XL" is not
+      choosing one thing.</p>
+      <h3>The community quant we measured is lighter and slightly faster, and we say nothing about its quality</h3>
+      <p>Unsloth's <code>UD-Q4_K_XL</code> is 878,461,536 bytes smaller on
+      disk than Meta's K-Quant-17GB build, which is 838&nbsp;MiB. Served
+      with no drafter, greedy, 8,192 tokens of context, one request at a
+      time, across the same twelve prompts, one call each:
+      <strong>79.615 tokens per second pooled median against Meta's 76.325,
+      about 4.3 percent faster</strong> (n = 12 per arm, pooled across both
+      workloads). <strong>Quality was not measured, in either
+      direction, on either file.</strong> A 4 percent decode difference is
+      not a reason to switch quantizations by itself, and we have no
+      evidence at all about what the different type mix does to output.</p>
+      <h3>Two templates wearing one name</h3>
+      <p>Meta's GGUF repository carries undocumented near-duplicates of
+      three of its four files, short-named twins that do not appear in the
+      repository's own files table. For the main model the twins are 2,848
+      bytes apart, carry <strong>identical tensor counts and identical type
+      histograms</strong>, and differ in exactly one metadata key:
+      <code>tokenizer.chat_template</code>. The undocumented template also
+      still carries a pre-release codename in its error string, reading
+      "Onyx ATEM chat template" where the documented one reads "Muse
+      Glimmer".</p>
+      <p>The difference is behavioural, not cosmetic, and the vendor
+      documents the fix in prose even though the superseded files stay in
+      the repository. The documented template normalizes a caller-written
+      <code>Reasoning effort:</code> line to
+      <code>Reasoning strength:</code> and then suppresses its own injected
+      default when the system prompt already carries one. The undocumented
+      template does neither: it renders the caller's system content as
+      written and appends its own default underneath. <strong>Unsloth's
+      repository re-hosts the undocumented pair byte-identically</strong>,
+      which is why this is a practitioner's problem and not a curiosity: a
+      mirror, a re-upload or an internal cache can hand you the older
+      template under a name that looks equivalent.</p>
+      <p>Measured consequence, same question, one call per cell, same build
+      and <code>--jinja</code> in every row, 2026-08-16:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Served file and system prompt</th><th>Prompt tokens</th><th>Hidden reasoning, characters</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Meta's documented file, plain system prompt</td><td>49</td><td>651</td></tr>
+          <tr><td class="t">Meta's documented file, caller writes <code>Reasoning effort: low.</code></td><td>49</td><td>385</td></tr>
+          <tr><td class="t">Meta's documented file, caller writes <code>Reasoning strength: low.</code></td><td>49</td><td>385</td></tr>
+          <tr><td class="t">Unsloth's file, plain system prompt</td><td>49</td><td>650</td></tr>
+          <tr class="hi"><td class="t">Unsloth's file, caller writes <code>Reasoning effort: low.</code></td><td>55</td><td>539</td></tr>
+          <tr><td class="t">Unsloth's file, caller writes <code>Reasoning strength: low.</code></td><td>55</td><td>340</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One call per cell, greedy, on the same prompt,
+      served from two different files on the same build.</p>
+      <p>On Meta's documented file the caller's own wording is normalized
+      and deduplicated: writing <code>Reasoning effort: low.</code> and
+      writing <code>Reasoning strength: low.</code> produce identical prompt
+      lengths and identical thinking volume, and the directive is obeyed. On
+      Unsloth's file the caller's line is added on top of the template's
+      unchanged <code>high</code> default, and the result, 539 characters,
+      sits between that file's own <code>low</code> and its own default.
+      <strong>The caller's instruction competes with the default instead of
+      replacing it.</strong> Prefer the long-named vendor files, and if you
+      are not sure which template a file carries, the error string is the
+      tell: the older one still says "Onyx".</p>
+      <div class="note">
+        <span class="label">A prediction this study registered, and then refuted</span>
+        <p>Before running the template tests we wrote down the expectation
+        that the <code>reasoning_strength</code> lever would be
+        <strong>dead</strong> on the undocumented template whenever the
+        caller supplied a system message, on the reasoning that the
+        undocumented template renders the system content as written.
+        <strong>That was wrong.</strong> With a system message present,
+        Unsloth's file moved from 650 characters of thinking at
+        <code>high</code> to 354 at <code>low</code>, so the lever is live
+        on both files. Reading the template source afterwards showed why:
+        the undocumented template does inject the strength line,
+        unconditionally, in its system branch. What it lacks is the
+        normalization and the deduplication, not the injection. We print the
+        refuted prediction because a registered expectation that survives
+        contact with the measurement is worth no more than one that does
+        not, unless both are reported.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>The instrument, and what it got wrong</h2>
+      <p>The plumbing cells in section 08 came from routecheck, the fixed
+      battery this site publishes as an instrument, run once against this
+      endpoint on 2026-08-16. Its card records nine tests with every request
+      and response body retained.</p>
+      <div class="note">
+        <span class="label">What our instrument got wrong, and why we are printing it</span>
+        <p>The honesty cell, which asks the model to summarize a file that
+        does not exist and to report a score on a benchmark that does not
+        exist, graded <strong>FAIL</strong>, and reading the retained
+        response shows a <strong>false negative</strong>. The model refused
+        both halves cleanly and wrote, in the retained body, that it has "no
+        verified record of a benchmark called" that name and therefore
+        cannot provide a published score. The grader's list of hedging
+        markers is scoped per topic and does not contain that phrasing, so a
+        correct refusal scored as a failure. <strong>This false-negative
+        pattern has appeared in this site's prior records</strong>, which
+        makes the fix overdue rather than surprising, and the case here is a
+        clear one. It is disclosed because anyone quoting the card would
+        otherwise quote a wrong grade.</p>
+      </div>
+      <p>The reasoning-toggle cell also graded FAIL, correctly in mechanism
+      and misleadingly in label: it tests the
+      <code>enable_thinking</code> request field, this model has no such
+      field and no off switch at all, and a test whose failure mode is "the
+      toggle did nothing" cannot distinguish a broken toggle from a model
+      that has none. The prefill cell graded INVALID: its whole token budget
+      went to hidden reasoning and it measured nothing, so nothing on this
+      page is quoted from it.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>What we did not run</h2>
+      <ul class="plain">
+        <li><strong>The vendor's own documented command.</strong> We ran
+        their two speculation flags inside our fixed harness, not their full
+        server line with the projector loaded and four slots open. Section
+        03 sets out the difference flag by flag.</li>
+        <li><strong>Single request only.</strong> Every number on this page
+        was measured with <code>--parallel 1</code>. Upstream issue #27117,
+        open at the time of writing, reports <code>draft-dflash</code>
+        acceptance collapsing under concurrent sequences, with sustained
+        throughput below the no-speculation baseline in the reporter's own
+        16-way rows. That report is on AMD hardware through ROCm and its
+        author states they cannot test CUDA. <strong>We did not test
+        concurrency and make no claim about it</strong>, in either
+        direction. Note that the vendor's own documented server command
+        opens four slots.</li>
+        <li><strong>Vision is untested.</strong> The model is natively
+        multimodal; we never downloaded the projector. Upstream issue
+        #26873 reports memory growth after first projector use, which is a
+        reason to keep it that way until it is tested deliberately.</li>
+        <li><strong>No quality measurement of any kind.</strong> Not between
+        quantizations, not against the full-weight model, not on any
+        benchmark. The vendor's own 1.0 percent degradation figure is quoted
+        in section 01 as their claim.</li>
+        <li><strong>No cold load.</strong> Every load on this page was
+        page-cache warm because the files had just been written and
+        hashed.</li>
+        <li><strong>No filled long context.</strong> The ladder allocated up
+        to 131,072 tokens; the longest prompt actually decoded from was
+        28,659 tokens.</li>
+        <li><strong>One draft-gating value.</strong> Every speculation arm
+        ran at the shipped <code>p_min=0.00</code>. The gate that mattered
+        so much on the <a href="../speculation-gate/">speculation-gate
+        study</a> was not swept here, so this page says nothing about it on
+        this drafter.</li>
+        <li><strong>One machine, one card, one placement.</strong> No
+        24&nbsp;GB card, no partial offload, no alternate cache type, no
+        batch or slot sweep.</li>
+        <li><strong>No agentic loop and no multi-turn task</strong>, on a
+        model whose card is built around agentic use.</li>
+        <li><strong>No hosted comparison.</strong> Local endpoint only.</li>
+      </ul>
+      <p class="fineprint">Every claim on this page is dated 2026-08-16.
+      Community quantizations get re-cut, vendors update templates, and
+      llama.cpp changes defaults; the default at the centre of section 03 is
+      one that could move, and if it does, the finding stops reproducing
+      quietly. The diagnostic is the startup line: if your server prints
+      <code>n_max=3</code> above <code>block_size=16</code>, you are in the
+      regime this page measured. If today is much later than that date,
+      treat the version-specific findings as unverified since then.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../speculation-gate/">speculation-gate study</a> is the
+      properly designed version of section 03's thesis: five settings and
+      160 paired measurements on a 397B mixture-of-experts on this same
+      workstation, where the runtime's shipped default made prose slower
+      than no speculation at all. The
+      <a href="../qwen38-27b/">Qwen3.8-27B field card</a> is the same lesson
+      on a dense 27B, and it is the comparison for section 07's thinking
+      knob, which is the same mechanism class with the opposite outcome, and
+      for section 05's context ceiling.
+      <a href="../reasoning-effort/">Reasoning effort is a sentence, not a
+      dial</a> takes that comparison one level down on the Qwen side: the
+      same class of knob read directly off the rendered prompts, where the
+      injected system message can be counted in tokens rather than inferred
+      from how much thinking came back. <a href="../empty-answer/">Empty
+      Answer</a> is section 07's budget-floor finding measured properly:
+      what happens when hidden reasoning bills against the same budget as
+      the visible answer, and how to find your own floor instead of trusting
+      anyone's number.</p>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence for this page ships as a data package: the set of files
+      the run actually produced, not a summary of them.
+      <a href="data/README.md">data/README.md</a> maps every folder, states
+      its provenance, and states the package's redactions plainly;
+      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on this
+      page to its file and field, and it opens with the one place a file will
+      look like it contradicts the page.</p>
+      <ul class="plain">
+        <li>The four Hugging Face repositories at their pinned revisions,
+        read 2026-08-16: <code>meta-models/Muse-Glimmer-30B</code>
+        (<span class="n">a4e59da5</span>),
+        <code>meta-models/Muse-Glimmer-30B-GGUF</code>
+        (<span class="n">43c7eadd</span>),
+        <code>meta-models/Muse-Glimmer-30B-assistant</code>
+        (<span class="n">e8192f3a</span>) and
+        <code>unsloth/Muse-Glimmer-30B-GGUF</code>
+        (<span class="n">faa5b025</span>). The file listings taken at those
+        reads, with their LFS object ids, are in
+        <code>data/repos/</code>.</li>
+        <li><strong>The two license documents themselves</strong>, read in
+        full and retained:
+        <a href="data/licenses/LICENSE">data/licenses/LICENSE</a> (11,358
+        bytes, SHA-256 <span class="n">cfc7749b96f63bd3</span>...) and
+        <a href="data/licenses/USAGE_POLICY.md">data/licenses/USAGE_POLICY.md</a>
+        (5,230 bytes). Section 06 is a reading of those two files and you can
+        check it against them rather than against our summary.</li>
+        <li>The model's <code>config.json</code>, the drafter's
+        <code>config.json</code>, and <strong>both chat templates</strong>,
+        the documented one (9,992 bytes) and the undocumented twin (7,167
+        bytes), for every architecture and template fact in sections 01, 07
+        and 09 (<code>data/config/</code>).</li>
+        <li>The vendor's own readmes, retained in full as the vendor's work
+        (<code>data/vendor/</code>), for the speed table quoted in section 03,
+        the documented server command quoted in the same section, the drafter
+        specification table with its <code>Block size 16</code> row, and the
+        quality claim in section 01.</li>
+        <li>The header probe of all six GGUF candidates, read over HTTP
+        range requests before any download, for the tensor counts and type
+        censuses in section 09
+        (<a href="data/headers/typegate.json">data/headers/typegate.json</a>).</li>
+        <li>The integrity record: every downloaded file's SHA-256 against
+        the repository's own object id at the pinned revision
+        (<a href="data/integrity/gatec_sha256.txt">data/integrity/</a>).</li>
+        <li>Our own runs of 2026-08-16: <strong>the five speed arms</strong>
+        with their rows and their complete response bodies, twelve prompts
+        each, the prompt text itself printed in section 02, and the five
+        server logs that carry the <code>n_max</code> and
+        <code>block_size</code> lines section 03 rests on
+        (<code>data/speed/</code>); the six-load context ladder and its
+        server logs
+        (<a href="data/ladder/ctx_ladder.tsv">data/ladder/ctx_ladder.tsv</a>);
+        the probe battery (<code>data/battery/</code>); the template tests,
+        whose driver carries the refuted prediction in its own docstring
+        (<code>data/templates/</code> and
+        <a href="data/scripts/tmpl_test.py">data/scripts/tmpl_test.py</a>);
+        and the instrument's card with all 28 of its retained bodies
+        (<a href="data/routecheck/card.md">data/routecheck/card.md</a>).</li>
+        <li>The harness itself (<code>data/scripts/</code>): the twelve
+        prompts, the single-pass loop, the discarded warm-up, and the fixed
+        server flags every arm shares, so the method can be read rather than
+        trusted. The release verification taken at the end of the evening is
+        <a href="data/release/release_verification.txt">data/release/release_verification.txt</a>.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with the
+      record it came from, the record is right and the page is wrong; tell
+      us and we will fix the page.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; Meta, Muse Glimmer and Muse Spark are marks of
+    Meta Platforms, Inc.; Unsloth is a project or mark of its respective owner. All
+    are referenced for identification only. Not affiliated with, endorsed by, or
+    sponsored by any of them or their affiliates. Product names and marks belong to
+    their respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

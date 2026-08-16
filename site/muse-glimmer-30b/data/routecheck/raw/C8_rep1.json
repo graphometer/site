@@ -1,0 +1,100 @@
+{
+  "elapsed_seconds": 1.9091590970019752,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 2400,
+    "messages": [
+      {
+        "content": "Generate a single fictional weather field-station status report as one JSON object. It must validate against this JSON Schema exactly: every required key present, correct types, and no keys beyond the ones listed.\n\nSchema:\n{\"type\":\"object\",\"properties\":{\"station_id\":{\"type\":\"string\"},\"observed_temperature_c\":{\"type\":\"number\"},\"conditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"operational\":{\"type\":\"boolean\"}},\"required\":[\"station_id\",\"observed_temperature_c\",\"conditions\",\"operational\"],\"additionalProperties\":false}\n\nRespond with ONLY the JSON object. No prose, no markdown code fences, no explanation.",
+        "role": "user"
+      }
+    ],
+    "model": "muse-glimmer-30b",
+    "response_format": {
+      "json_schema": {
+        "name": "field_station_report",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "conditions": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "observed_temperature_c": {
+              "type": "number"
+            },
+            "operational": {
+              "type": "boolean"
+            },
+            "station_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "station_id",
+            "observed_temperature_c",
+            "conditions",
+            "operational"
+          ],
+          "type": "object"
+        },
+        "strict": true
+      },
+      "type": "json_schema"
+    },
+    "seed": 42
+  },
+  "response_headers": {
+    "Access-Control-Allow-Origin": "",
+    "Content-Length": "2486",
+    "Content-Type": "application/json; charset=utf-8",
+    "Keep-Alive": "timeout=5, max=100",
+    "Server": "llama.cpp"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\"station_id\":\"WX-FS-42B\",\"observed_temperature_c\":12.4,\"conditions\":[\"partly cloudy\",\"light wind\"],\"operational\":true}\n",
+          "reasoning_content": "Generate a single fictional weather field-station status report as one JSON object. It must validate against this JSON Schema exactly: every required key present, correct types, and no keys beyond the ones listed.\n\nSchema:\n{\"type\":\"object\",\"properties\":{\"station_id\":{\"type\":\"string\"},\"observed_temperature_c\":{\"type\":\"number\"},\"conditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"operational\":{\"type\":\"boolean\"}},\"required\":[\"station_id\",\"observed_temperature_c\",\"conditions\",\"operational\"],\"additionalProperties\":false}\n\nRespond with ONLY the JSON object. No prose, no markdown code fences, no explanation.\n\nWe need output JSON object only. No markdown code fences. So just raw JSON.\n\nEnsure types: station_id string, observed_temperature_c number, conditions array of strings, operational boolean.\n\nNo extra keys.\n\nMake fictional.\n\nExample: {\"station_id\":\"WX-FS-42B\",\"observed_temperature_c\":12.4,\"conditions\":[\"partly cloudy\",\"light wind\"],\"operational\":true}\n\nMust be valid JSON. No trailing commas. Ensure number not string.\n\nReturn only JSON object.\n\nPotential pitfalls: JSON object output must be single line? Could be pretty printed. It's okay. Probably single line.\n\nNo prose.\n\nMake sure no markdown code fences like ```json. Just raw.\n\nOutput exactly JSON.\n\nLet's produce.\n\nEnsure station_id string. observed_temperature_c number. conditions array items string. operational boolean.\n\nMake it fictional.\n\nOk.\n\nPotential issue: additionalProperties false so no extra.\n\nReturn.\n\nPossibly ensure no newline before? It's fine.\n\nLet's output.\n\n",
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1786912315,
+    "id": "chatcmpl-f7OBX2hKhjgBWxlhNkFM7YgC9NvuAzdE",
+    "model": "muse-glimmer-30b",
+    "object": "chat.completion",
+    "system_fingerprint": "b1-3cb7ffb",
+    "timings": {
+      "cache_n": 0,
+      "draft_n": 1140,
+      "draft_n_accepted": 281,
+      "predicted_ms": 1755.834,
+      "predicted_n": 358,
+      "predicted_per_second": 203.32218193747244,
+      "predicted_per_token_ms": 4.918302521008403,
+      "prompt_ms": 99.78,
+      "prompt_n": 178,
+      "prompt_per_second": 1783.9246341952296,
+      "prompt_per_token_ms": 0.560561797752809
+    },
+    "usage": {
+      "completion_tokens": 358,
+      "prompt_tokens": 178,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 536
+    }
+  },
+  "response_text": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"station_id\\\":\\\"WX-FS-42B\\\",\\\"observed_temperature_c\\\":12.4,\\\"conditions\\\":[\\\"partly cloudy\\\",\\\"light wind\\\"],\\\"operational\\\":true}\\n\",\"reasoning_content\":\"Generate a single fictional weather field-station status report as one JSON object. It must validate against this JSON Schema exactly: every required key present, correct types, and no keys beyond the ones listed.\\n\\nSchema:\\n{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"station_id\\\":{\\\"type\\\":\\\"string\\\"},\\\"observed_temperature_c\\\":{\\\"type\\\":\\\"number\\\"},\\\"conditions\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"}},\\\"operational\\\":{\\\"type\\\":\\\"boolean\\\"}},\\\"required\\\":[\\\"station_id\\\",\\\"observed_temperature_c\\\",\\\"conditions\\\",\\\"operational\\\"],\\\"additionalProperties\\\":false}\\n\\nRespond with ONLY the JSON object. No prose, no markdown code fences, no explanation.\\n\\nWe need output JSON object only. No markdown code fences. So just raw JSON.\\n\\nEnsure types: station_id string, observed_temperature_c number, conditions array of strings, operational boolean.\\n\\nNo extra keys.\\n\\nMake fictional.\\n\\nExample: {\\\"station_id\\\":\\\"WX-FS-42B\\\",\\\"observed_temperature_c\\\":12.4,\\\"conditions\\\":[\\\"partly cloudy\\\",\\\"light wind\\\"],\\\"operational\\\":true}\\n\\nMust be valid JSON. No trailing commas. Ensure number not string.\\n\\nReturn only JSON object.\\n\\nPotential pitfalls: JSON object output must be single line? Could be pretty printed. It's okay. Probably single line.\\n\\nNo prose.\\n\\nMake sure no markdown code fences like ```json. Just raw.\\n\\nOutput exactly JSON.\\n\\nLet's produce.\\n\\nEnsure station_id string. observed_temperature_c number. conditions array items string. operational boolean.\\n\\nMake it fictional.\\n\\nOk.\\n\\nPotential issue: additionalProperties false so no extra.\\n\\nReturn.\\n\\nPossibly ensure no newline before? It's fine.\\n\\nLet's output.\\n\\n\"}}],\"created\":1786912315,\"model\":\"muse-glimmer-30b\",\"system_fingerprint\":\"b1-3cb7ffb\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":358,\"prompt_tokens\":178,\"total_tokens\":536,\"prompt_tokens_details\":{\"cached_tokens\":0}},\"id\":\"chatcmpl-f7OBX2hKhjgBWxlhNkFM7YgC9NvuAzdE\",\"timings\":{\"cache_n\":0,\"prompt_n\":178,\"prompt_ms\":99.78,\"prompt_per_token_ms\":0.560561797752809,\"prompt_per_second\":1783.9246341952296,\"predicted_n\":358,\"predicted_ms\":1755.834,\"predicted_per_token_ms\":4.918302521008403,\"predicted_per_second\":203.32218193747244,\"draft_n\":1140,\"draft_n_accepted\":281}}",
+  "status_code": 200,
+  "url": "http://127.0.0.1:8195/v1/chat/completions"
+}

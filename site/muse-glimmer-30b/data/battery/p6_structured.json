@@ -1,0 +1,79 @@
+{
+ "probe": "p6_structured",
+ "request": {
+  "messages": [
+   {
+    "role": "user",
+    "content": "Give me the city of Reykjavik as JSON with keys city, country, population_millions."
+   }
+  ],
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "city",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "properties": {
+      "city": {
+       "type": "string"
+      },
+      "country": {
+       "type": "string"
+      },
+      "population_millions": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "city",
+      "country",
+      "population_millions"
+     ],
+     "additionalProperties": false
+    }
+   }
+  },
+  "max_tokens": 4000,
+  "temperature": 0,
+  "model": "muse-glimmer-30b"
+ },
+ "response": {
+  "choices": [
+   {
+    "finish_reason": "stop",
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "```json\n{\n  \"city\": \"Reykjavik\",\n  \"country\": \"Iceland\",\n  \"population_millions\": 0.14\n}\n```",
+     "reasoning_content": "Give me the city of Reykjavik as JSON with keys city, country, population_millions.\n\nGive me the city of Reykjavik as JSON with keys city, country, population_millions.\n\nWe need to output JSON. Probably city: \"Reykjavik\", country: \"Iceland\", population_millions: ?\n\nPopulation of Reykjavik city proper ~ 139,000? Actually 2024 ~ 139,000. That's 0.139 million. Or metropolitan ~ 240k. Might be ~0.14 million.\n\nPopulation_millions: maybe 0.14. Could be 0.139.\n\nNeed accurate? Knowledge cutoff 2026-01-04. Current date 2026-05-02.\n\nReykjavik population 2025 estimate ~ 145,000? Let's check approximate. According to Statistics Iceland, Reykjavik municipality population ~ 145,000 in 2024. That's 0.145 million.\n\nCould give 0.14.\n\nProbably acceptable.\n\nWe should output JSON only? Probably just JSON.\n\nProvide keys city, country, population_millions.\n\nMake sure valid JSON.\n\nPossibly {\"city\":\"Reykjavik\",\"country\":\"Iceland\",\"population_millions\":0.14}\n\nMaybe use 0.139.\n\nBetter give approximate.\n\nCould give 0.145.\n\nLet's give 0.14.\n\nNo extra text? Might be okay to give just JSON.\n\nThe instruction: Give me the city of Reykjavik as JSON with keys city, country, population_millions.\n\nOutput JSON.\n\nProbably safe.\n\nEnsure proper escaping.\n\nReturn:\n\n{\n  \"city\": \"Reykjavik\",\n  \"country\": \"Iceland\",\n  \"population_millions\": 0.14\n}\n\nMaybe population_millions as number.\n\nCould also be string? No.\n\nProvide.\n\nPotential nuance: Reykjavik spelling with accent? Reykjav\u00edk. City name often Reykjavik without accent. Use Reykjavik.\n\nProvide JSON.\n\nIf want more precise: 0.145.\n\nLet's pick 0.14.\n\nMaybe provide 0.139.\n\nI'll give ~0.14.\n\nProbably fine.\n\nOutput JSON only.\n\nLet's do that."
+    }
+   }
+  ],
+  "created": 1786911035,
+  "model": "muse-glimmer-30b",
+  "system_fingerprint": "b1-3cb7ffb",
+  "object": "chat.completion",
+  "usage": {
+   "completion_tokens": 494,
+   "prompt_tokens": 76,
+   "total_tokens": 570,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   }
+  },
+  "id": "chatcmpl-Jc66C2Iyti3RgxluNooj99nxZXoFyjFP",
+  "timings": {
+   "cache_n": 0,
+   "prompt_n": 76,
+   "prompt_ms": 68.883,
+   "prompt_per_token_ms": 0.9063552631578947,
+   "prompt_per_second": 1103.3201225266032,
+   "predicted_n": 494,
+   "predicted_ms": 6443.105,
+   "predicted_per_token_ms": 13.069178498985801,
+   "predicted_per_second": 76.515903434757
+  }
+ },
+ "wall_s": 6.554
+}

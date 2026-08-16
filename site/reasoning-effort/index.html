@@ -1,0 +1,963 @@
+<!doctype html>
+<!-- STAGED 2026-08-16 at /reasoning-effort/, the flat one-segment convention of /qwen38-27b/,
+     /speculation-gate/, /l3-threads/ and the field cards. Route was a proposal in the draft and
+     is taken as decided here; canonical, og:url and every data/ href assume it, and changing it
+     is a search-and-replace on "reasoning-effort/" plus the two cards and the feed entry.
+     Working title in place (option A): Grant's final title pick lands later as a four-spot edit
+     to <title>, the <h1> plus its visible subtitle, og:title and twitter:title, and the home and
+     /studies/ card lines; the candidates live in TITLE_OPTIONS.md in the campaign drafts folder.
+     A BINDING SCOPING RULE governs all four spots (TITLE_OPTIONS.md, added in the 2026-08-16 fix
+     round): the template finding belongs to the chat template embedded in the Qwen3.8-27B GGUF
+     we served, rendered by a server that applies it, and no title, subtitle, og:title or card
+     line may imply it was established for Qwen3.8 in general, for other quantizations, or for
+     the hosted 2.4T. The h1 may stay short only because the visible subtitle sits under it and
+     carries the scope.
+     Data package assembled under data/ (see data/README.md); every figure printed here is mapped
+     to its file and field in data/NUMBERS.md. Both legs ship: data/local/ is the 2026-08-16
+     Qwen3.8-27B study, data/hosted/ is the effort-relevant subset of the 2026-08-13 hosted
+     battery. The two server logs are retained because both carry the template's own Minja
+     traceback, which is the direct proof that the injection lives in the chat template rather
+     than in the runtime. Leak sweep run over every byte of the package at staging: vault paths
+     replaced in place with <VAULT>, line counts preserved, no other edits.
+     CLAIMS TRACE: CLAIMS_TRACE.md in the campaign drafts folder. FIX ROUND 2026-08-16 applied
+     against four adversarial reviews; every item dispositioned in REVIEW_DISPOSITIONS_2026-08-16.md.
+     CSS: byte-identical to qwen38-27b/index.html except that this page drops the unused
+     `table.data tr.hi td` highlight rule and narrows `.note p` to color only, because its note
+     blocks want the shared measure. Nothing depends on either difference. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reasoning effort is a sentence, not a dial: what Qwen3.8's reasoning_effort setting injects on the chat template we served, read off the rendered prompts on a local 27B and observed earlier on a hosted 2.4T-A95B</title>
+<meta name="description" content="On the chat template shipped inside the Qwen3.8-27B GGUF we served, reasoning_effort is implemented in the template, not in the sampler: the value you send is looked up and a matching instruction is injected into your prompt as a system message. xhigh adds a 42-token system block, low adds 30, and medium adds nothing at all, the same deltas on three prompts of different lengths; omitting the field renders byte-identical to xhigh. Read directly off the rendered prompts on a local Qwen3.8-27B on 2026-08-16, served by llama.cpp with --jinja and no template override, three days after a hosted Qwen3.8-2.4T-A95B through OpenRouter reported the same three prompt-token counts of 112, 70 and 100 with the mechanism invisible. Also: on llama.cpp b10290 the top-level reasoning_effort field never reached the template, while on b10453 it does and an unrecognized value returns HTTP 500 while thinking is on; the run log attributes that change to pull request #26941, reported first shipped in b10434. Includes a cross-build render comparison, a practitioner section, and a data package containing the raw records.">
+<link rel="canonical" href="https://graphometer.ai/reasoning-effort/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Reasoning effort is a sentence, not a dial: Qwen3.8's effort setting on the template we served, measured">
+<meta property="og:description" content="On the chat template inside the GGUF we served, xhigh adds 42 tokens of system message to your prompt, low adds 30, and medium adds nothing at all. Leaving the field out is byte-identical to xhigh. Read off the rendered prompts on a local 27B.">
+<meta property="og:url" content="https://graphometer.ai/reasoning-effort/">
+<meta property="og:image" content="https://graphometer.ai/og/reasoning-effort.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Reasoning effort is a sentence, not a dial">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Reasoning effort is a sentence, not a dial: Qwen3.8's effort setting on the template we served, measured">
+<meta name="twitter:description" content="On the chat template inside the GGUF we served, xhigh adds 42 tokens of system message to your prompt, low adds 30, and medium adds nothing at all. Leaving the field out is byte-identical to xhigh. Read off the rendered prompts on a local 27B.">
+<meta name="twitter:image" content="https://graphometer.ai/og/reasoning-effort.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  .note p{color:var(--ink)}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; hosted leg 2026-08-13: Qwen3.8-2.4T-A95B via OpenRouter, one call per effort level &middot; local leg 2026-08-16: Qwen3.8-27B on one RTX 5090, 36 calls plus 16 rendered prompts read directly, two llama.cpp builds</div>
+      <h1>Reasoning effort is a <em>sentence</em>, not a dial</h1>
+      <p class="subtitle">On the chat template shipped inside the Qwen3.8-27B GGUF we
+      served, the xhigh / medium / low setting is a system sentence added to your prompt:
+      xhigh adds 42 tokens, low adds 30, medium adds none at all, and leaving the field out
+      is byte-identical to xhigh. Read directly off the rendered prompts on a local 27B,
+      three days after a hosted 2.4T-A95B reported the same three prompt-token counts with
+      the mechanism invisible, plus the llama.cpp build where the top-level field started
+      reaching the template.</p>
+      <p class="lead">Most model APIs now take a <code>reasoning_effort</code> field, and it
+      presents itself as a dial: high, medium, low, turn it up for hard problems and down for
+      cheap ones. On the Qwen3.8 template we served it is not a dial. It is a sentence. The
+      value you send is looked up in the chat template that ships inside the model file, and
+      the template pastes a matching instruction into your prompt as a system message before
+      the model ever sees your question. Setting
+      <code>xhigh</code> adds 42 tokens of system message telling the model to think
+      carefully, validate its assumptions and consider alternatives. Setting <code>low</code>
+      adds 30 tokens telling it to keep its thinking brief. Setting <code>medium</code> adds
+      nothing at all: there is no medium branch in the template, so medium is the absence of
+      an instruction rather than a middle amount of one. And omitting the field entirely
+      renders a prompt that is byte-identical to <code>xhigh</code>, because the template's
+      default is <code>xhigh</code>, so there is no way to turn the setting off by leaving it
+      out. Two of those facts fight each other in plain English, and it is worth holding both
+      at once before reading on: the value named <code>medium</code> gets you no instruction,
+      and sending no value at all gets you the maximum one. We directly measured the mechanism
+      once, on a local 27B. An earlier hosted run observed matching prompt-token counts on the
+      same message, but could not inspect prompt construction: on 2026-08-13, on the hosted
+      2.4-trillion-parameter Qwen3.8-2.4T-A95B, we could see only that the server reported
+      three different prompt-token counts, 112 and 70 and 100, for three sends of a
+      byte-identical message, and we wrote down that we did not know why. On 2026-08-16, on
+      the 27-billion-parameter Qwen3.8-27B running locally, we asked the server to render the
+      prompt and read it. The rendered prompts tokenize to 112, 70 and 100. The third finding
+      belongs to the runtime rather than the model: on the older llama.cpp build we tested,
+      the top-level OpenAI-style <code>reasoning_effort</code> field did not reach the
+      template at all, so every value rendered the default prompt, and on the newer build it
+      reaches the template and an unrecognized value returns HTTP 500 while thinking is on.
+      The run log attributes that change to pull request #26941, reported merged on 2026-08-14
+      and first shipped in release <span class="n">b10434</span>; we measured
+      <span class="n">b10290</span> and <span class="n">b10453</span>, one build on each side
+      of it.</p>
+      <div class="nonaff">Independent measurements; no affiliation with the Qwen models'
+      provider (Alibaba), the llama.cpp project or ggml-org, Unsloth, OpenRouter, DeepInfra,
+      Together, or OpenAI.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Summary</h2>
+      <p>The <code>reasoning_effort</code> field, on the Qwen3.8 build we served, is
+      implemented in the chat template that ships inside the model file, not in the sampler
+      and not in the serving runtime. The template maps the value to a string it calls
+      <code>reasoning_instructions</code> and injects that string as a system message ahead
+      of your own message. That single implementation detail explains everything below.</p>
+      <p>Everything in this section describes a server that applies the GGUF's own chat
+      template. On llama.cpp that means <code>--jinja</code> with no
+      <code>--chat-template</code> or <code>--chat-template-file</code> override, which is the
+      configuration both of our builds ran and which section 03 states in full. A server that
+      substitutes a built-in template renders a different prompt, and none of these numbers
+      describe it.</p>
+      <ol class="plain">
+        <li><strong>The three levels inject three different amounts of text, and the amounts
+        are fixed.</strong> On the served template, <code>xhigh</code> injects a system block
+        of 42 tokens, <code>low</code> injects 30, and <code>medium</code> injects zero.
+        Those deltas were identical on all three test prompts, whose lengths differ, so the
+        injection is a constant added to your prompt rather than anything proportional to
+        it.</li>
+        <li><strong>Medium is not a middle setting. It is the absence of a setting.</strong>
+        The template has an <code>xhigh</code> branch and a <code>low</code> branch and no
+        <code>medium</code> branch, so <code>medium</code> falls through with the instruction
+        string empty and the rendered prompt carries no system message at all.</li>
+        <li><strong>Omitting the field is identical to sending <code>xhigh</code>.</strong>
+        The template's default is <code>xhigh</code>, so the rendered prompts for "field
+        absent" and for <code>xhigh</code> were byte-identical, and the generations they
+        produced were byte-identical too. There is no "unset" state.</li>
+        <li><strong>What moved most consistently was answer style, not thinking
+        volume.</strong> On the local 27B, <code>low</code> produced the least thinking on all
+        three prompts (62% to 73% of what <code>xhigh</code> spent on the same prompt), but
+        <code>medium</code> was erratic: 85% and 97% of <code>xhigh</code> on two prompts and
+        <strong>3.3 times <code>xhigh</code></strong> on the third. <code>xhigh</code> gave
+        the tersest answer on every prompt and <code>medium</code> the longest, by factors of
+        roughly 2 to 3. These are three prompts at one observation each (section 04), so read
+        them as three readings, not as a rate. The hosted 2.4T leg had shown the same style
+        direction three days earlier.</li>
+        <li><strong>On the hosted 2.4T-A95B, thinking spend did not order by
+        effort.</strong> One call per level: 184 reasoning tokens at <code>xhigh</code>, 197
+        at <code>medium</code>, 168 at <code>low</code>. A 17% band with the nominal
+        maximum-effort setting in the middle of it, from three calls split across two
+        providers. That is not a measurement of a small effect; it is a failure to see a large
+        one. Section 07 carries the cost figures and the provider confound that comes with
+        them.</li>
+        <li><strong>The same three integers appeared on both legs.</strong> The hosted study
+        recorded server prompt-token counts of 112 / 70 / 100 for xhigh / medium / low on a
+        marble-probability prompt and wrote "mechanism unknown". Our locally rendered prompts
+        for the same three levels on the same message tokenize to 112 / 70 / 100. Two
+        different models on two different serving stacks: the hosted counts are an unexplained
+        observation that is consistent with the injection we can read locally, and nothing
+        more. This is a convergence of two independent readings, not a replication, and
+        section 07 says exactly what it does and does not license.</li>
+        <li><strong>On llama.cpp, whether the field reaches the template at all depends on
+        your build.</strong> On the older build we tested, <span class="n">b10290</span>, the
+        OpenAI-compatibility layer handled the value <code>none</code> and left every other
+        value unhandled, under a source comment saying those values are model-specific and not
+        yet handled. The effect on the wire is that every level rendered the default prompt:
+        <code>xhigh</code>, <code>medium</code>, <code>low</code>, absent and even the nonsense
+        value <code>ultra</code> all rendered the same 112-token prompt. On the newer build,
+        <span class="n">b10453</span>, the field reaches the template, the three levels render
+        three different prompts, and <code>ultra</code> returns <strong>HTTP 500</strong>.
+        Those are the two builds we ran. The run log attributes the change to pull request
+        #26941, reported merged on 2026-08-14 and first shipped in
+        <span class="n">b10434</span>; section 08 says which parts of that we measured and
+        which parts we are repeating.</li>
+        <li><strong>There are two paths into the template, and they disagree about one
+        word.</strong> Passing effort inside <code>chat_template_kwargs</code> always worked,
+        on both builds, because it is generic passthrough. Passing it at top level is the path
+        the merge added. The word <code>none</code> is intercepted by the server's
+        OpenAI-compatibility handler on the top-level path (it turns thinking off, HTTP 200)
+        and passed straight through to the template on the kwargs path, where it is not a
+        valid effort and raises (HTTP 500). Same word, two paths, opposite outcomes, on both
+        builds.</li>
+      </ol>
+      <p>Everything on this page is one model family, two deployments, two builds, on the
+      dates stated. The local leg is a single observation per cell; section 04 explains why,
+      and why we think it is still worth reading.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What the setting actually is</h2>
+      <p>The clearest way to state this is to show the prompt the server built. This is the
+      local 27B's own render of the same user message under three effort values, retrieved
+      from the server's <code>/apply-template</code> endpoint, on a server started with
+      <code>--jinja</code> and no template override, so the template being rendered here is
+      the one inside the GGUF.</p>
+      <p><code>/apply-template</code> is not the endpoint you generate through, so we checked
+      it against the one you do. On the four marble conditions we ran both ways, the
+      prompt-token count the server reported for a real <code>/v1/chat/completions</code>
+      generation is the same as the token count of the retained render: 112 for
+      <code>xhigh</code>, 70 for <code>medium</code>, 100 for <code>low</code>, 112 for the
+      field omitted. The two endpoints also share their prompt-construction call in the source
+      of the build we ran, but the matching counts are the part we can hand you as a
+      record.</p>
+
+      <h3><code>reasoning_effort: "xhigh"</code> renders</h3>
+      <pre class="log">&lt;|im_start|&gt;system
+Reasoning effort is set to xhigh. Please think carefully through the task,
+validate key assumptions, consider plausible alternatives, and prioritize
+correctness, consistency, and clarity in the final answer.&lt;|im_end|&gt;
+&lt;|im_start|&gt;user
+A bag holds 3 red, 4 blue and 5 green marbles. ...&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant
+&lt;think&gt;</pre>
+
+      <h3><code>reasoning_effort: "low"</code> renders</h3>
+      <pre class="log">&lt;|im_start|&gt;system
+Reasoning effort is set to low. Keep your thinking brief and focused, moving
+directly to the conclusion without unnecessary elaboration.&lt;|im_end|&gt;
+&lt;|im_start|&gt;user
+A bag holds 3 red, 4 blue and 5 green marbles. ...&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant
+&lt;think&gt;</pre>
+
+      <h3><code>reasoning_effort: "medium"</code> renders</h3>
+      <pre class="log">&lt;|im_start|&gt;user
+A bag holds 3 red, 4 blue and 5 green marbles. ...&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant
+&lt;think&gt;</pre>
+
+      <p>That is the whole finding in three blocks. There is no system message in the medium
+      render. Not a shorter instruction: none. And <strong>the render with the field omitted
+      entirely is byte-identical to the <code>xhigh</code> render</strong>, because the
+      template line that resolves the value reads, in the shipped jinja,
+      <code>reasoning_effort|default('xhigh')</code>.</p>
+      <p>The template also normalizes <code>high</code> to <code>xhigh</code> before the
+      lookup, and validates: any value that is not one of <code>xhigh</code>,
+      <code>medium</code> or <code>low</code> after normalization calls
+      <code>raise_exception</code>. That validation is what produces the HTTP 500 in section
+      08, and it sits inside the template's thinking branch, which is why it disappears when
+      thinking is off (section 09).</p>
+      <p>One detail worth stating plainly because it changes how you read the numbers: the 42
+      and 30 token figures are the size of the <strong>entire injected system block</strong>,
+      the <code>&lt;|im_start|&gt;system</code> and <code>&lt;|im_end|&gt;</code> role markers
+      included, not of the English sentence alone. They are the difference between what your
+      prompt costs at that setting and what it costs at <code>medium</code>, which is the
+      number a practitioner is actually billed for.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Environment</h2>
+
+      <h3>Local leg, 2026-08-16</h3>
+      <table class="facts">
+        <tr><th scope="row">Model</th><td>Qwen3.8-27B, <span class="n">unsloth/Qwen3.8-27B-GGUF</span>, <span class="n">UD-Q5_K_XL</span> quantization, already on disk from a prior run, SHA-256 verified <span class="n">176a6a3f&hellip;</span></td></tr>
+        <tr><th scope="row">Chat template</th><td>The one embedded in that GGUF (9,993 characters, carrying Unsloth's "Unsloth fixes" marker). This matters: the <code>high</code> to <code>xhigh</code> normalization is an Unsloth addition and is absent from the ggml-org conversion's template.</td></tr>
+        <tr><th scope="row">Runtime</th><td>llama.cpp release <span class="n">b10453</span>, commit <span class="n">3cb7ffb1a1f612d5e4a46244ae5a3c77ad934a70</span>, published 2026-08-16, built fresh for this study in a scratch tree. The production build on this machine was read and never modified.</td></tr>
+        <tr><th scope="row">Control runtime</th><td>llama.cpp <span class="n">b10290</span>, commit <span class="n">c8e03ce</span>, the pre-merge build, run read-only on a second scratch port with zero GPU layers for the render comparison in section 08.</td></tr>
+        <tr><th scope="row">Serving flags</th><td><strong><code>--jinja</code></strong>, ctx 32,768, <code>--n-gpu-layers 999</code>, <code>--flash-attn on</code>, <code>--parallel 1</code>, loopback only, <strong>no speculative decoding of any kind</strong>. <strong>No <code>--chat-template</code> and no <code>--chat-template-file</code></strong>: nothing overrode the template inside the GGUF. The control build ran the same flags with <code>--n-gpu-layers 0</code> and ctx 2,048.</td></tr>
+        <tr><th scope="row">Template actually applied</th><td>The GGUF's own jinja, on both builds, and each build's server log says so. An invalid effort produces a Minja traceback quoting line 64 of the served template, <code>raise_exception('Unexpected reasoning effort ...')</code>. That validator exists only in this template; llama.cpp's built-in templates carry nothing like it. Both logs also print <code>chat template supports preserving reasoning</code> at startup, which is capability detection over the template that was loaded.</td></tr>
+        <tr><th scope="row">Thinking</th><td>On, by the template's own default. No reasoning-related server flag was passed, and no <code>enable_thinking</code> key appears in any of the 36 retained request bodies; the template takes its thinking branch when <code>enable_thinking</code> is undefined. Every render on this page ends at <code>&lt;think&gt;</code> except the three thinking-off ones in section 09.</td></tr>
+        <tr><th scope="row">Hardware</th><td>One RTX 5090, 32,607 MiB. Load used 21,856 MiB. Decode ran at roughly 65 tokens per second throughout; the study counts tokens, not speed.</td></tr>
+        <tr><th scope="row">Per call</th><td><code>max_tokens: 2000</code>, <code>temperature: 0</code>, <code>seed: 42</code>, effort sent as the <strong>top-level</strong> <code>reasoning_effort</code> field.</td></tr>
+      </table>
+      <p class="fineprint">Speculative decoding was deliberately excluded: llama.cpp issue
+      #27122 reports reproducible CUDA lockups with the multi-token-prediction path on this
+      model class on recent builds. The server log confirms the draft head was loaded but
+      unused.</p>
+      <p>Those two flag rows are load-bearing for everything this page says about the
+      template. The finding is that a specific string inside this GGUF's jinja gets pasted
+      into your prompt. If your server does not apply that jinja, because it substitutes a
+      built-in template or was started without <code>--jinja</code>, the mechanism described
+      here is not what your server is doing, and the token counts below are not your token
+      counts.</p>
+
+      <h3>Hosted leg, 2026-08-13</h3>
+      <table class="facts">
+        <tr><th scope="row">Model</th><td>Qwen3.8-2.4T-A95B, a mixture-of-experts model, served through OpenRouter</td></tr>
+        <tr><th scope="row">Providers</th><td class="asstated">Not pinned. The three effort calls landed on <strong>DeepInfra</strong> (xhigh, medium) and <strong>Together</strong> (low). DeepInfra listed quantization fp4; Together listed none. This is a confound and is treated as one in section 07.</td></tr>
+        <tr><th scope="row">Request shape</th><td>OpenRouter's <code>reasoning: {"effort": ...}</code> object, <code>temperature: 0</code>, <code>max_tokens: 2000</code>, one call per level</td></tr>
+        <tr><th scope="row">Template actually applied</th><td class="asstated"><strong>Unknown.</strong> We did not see either provider's serving configuration and could not. No template claim on this page extends to the hosted leg.</td></tr>
+        <tr><th scope="row">What was visible</th><td>Server-reported token counts, cost, and the returned text. Nothing about prompt construction.</td></tr>
+      </table>
+      <p>The two legs are <strong>different models on different serving stacks</strong>.
+      Nothing below treats one as a check on the other in the sense of a replication.</p>
+
+      <h3>The three request shapes</h3>
+      <p>One setting, three body shapes, and the study touched all three. The local leg sent
+      the field at the top level of an OpenAI-shaped body, which is the path section 08's
+      build boundary is about:</p>
+      <pre class="log">{"model": "...", "messages": [ ... ], "reasoning_effort": "low",
+ "temperature": 0, "seed": 42, "max_tokens": 2000}</pre>
+      <p>llama.cpp also accepts the same value inside its own passthrough object, which is the
+      path that worked on both of our builds:</p>
+      <pre class="log">{"model": "...", "messages": [ ... ], "chat_template_kwargs": {"reasoning_effort": "low"}}</pre>
+      <p>The hosted leg went through OpenRouter, which takes its own object:</p>
+      <pre class="log">{"model": "...", "messages": [ ... ], "reasoning": {"effort": "low"}}</pre>
+      <p>We did not test whether any of these servers accepts the others' shapes, so treat the
+      shapes as tied to the stacks we sent them to. If you are debugging a field that appears
+      to do nothing, the shape your stack expects is the first thing to check and the
+      cheapest.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The experiment, and the limitation that came out of it</h2>
+      <p>The local run was pre-registered: the question, the grid, the expectations and the
+      honesty rules were written and saved before the first model call, and the source-level
+      reading of what the llama.cpp merge changed was done before the run so the prediction
+      could be scored rather than retrofitted. The run log carries all of it, including the
+      expectations that were confirmed and the deviations that were not planned.</p>
+      <p><strong>The grid:</strong> three prompts by four effort levels by three repetitions,
+      36 calls.</p>
+      <ul class="plain">
+        <li>The <strong>marble</strong> prompt is the hosted study's own prompt, carried over
+        verbatim so that one cell of the local grid is the same message the hosted leg
+        sent.</li>
+        <li>Two further prompts came from our standing probe set: a <strong>word
+        problem</strong> with a checkable integer answer, and a <strong>short prose
+        question</strong> with no single right answer.</li>
+        <li>The four levels are <code>xhigh</code>, <code>medium</code>, <code>low</code>, and
+        <strong>absent</strong>, the last meaning the field is omitted from the request body
+        entirely.</li>
+      </ul>
+      <p><strong>Separately, 16 rendered prompts</strong> were retrieved and retained: the
+      four levels on the top-level path and three of them on the
+      <code>chat_template_kwargs</code> path, since there is no kwargs spelling of an omitted
+      field, plus the special values <code>high</code>, <code>none</code> and
+      <code>ultra</code> on both paths, plus three thinking-off renders. Those renders are the evidence in sections 02, 05, 08 and 09, and
+      none of them required a single generated token.</p>
+      <div class="note">
+        <span class="label">The limitation, discovered during the run and logged there</span>
+        <p>At <code>temperature: 0</code> with a fixed seed the server was fully
+        deterministic. All three repetitions of all twelve cells returned byte-identical
+        visible text <strong>and</strong> byte-identical reasoning text: 12 of 12 cells. The
+        three repetitions therefore measured the server's determinism, not the model's
+        variance, and <strong>the effective observation count per cell is one</strong>. Every
+        generation number on this page is a single observation and is labeled as one. Nothing
+        here has an interval, and no language on this page implies a distribution. Getting a
+        spread would need a temperature above zero or varied seeds; that run has not
+        happened.</p>
+        <p>The renders are not affected by this. A rendered prompt is a deterministic function
+        of the request, and section 05's injection sizes are exact counts of text, not samples
+        of behavior.</p>
+      </div>
+      <p style="margin-top:22px">All 36 calls returned HTTP 200 with a stop reason of
+      <code>stop</code>. Nothing was truncated: the largest completion was 651 tokens against
+      a 2,000-token cap. No reasoning text leaked into the visible answer in any cell. Zero
+      retries, zero errors.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Observed: the injection is a fixed-size block</h2>
+      <p>Prompt tokens for the same four levels, on three prompts of different lengths. The
+      counts come from the server's own tokenizer applied to the rendered prompt.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Prompt</th><th>xhigh</th><th>field absent</th><th>low</th><th>medium</th><th>xhigh minus medium</th><th>low minus medium</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Marble probability</td><td>112</td><td>112</td><td>100</td><td>70</td><td><strong>+42</strong></td><td><strong>+30</strong></td></tr>
+          <tr><td class="t">Word problem</td><td>111</td><td>111</td><td>99</td><td>69</td><td><strong>+42</strong></td><td><strong>+30</strong></td></tr>
+          <tr><td class="t">Prose question</td><td>99</td><td>99</td><td>87</td><td>57</td><td><strong>+42</strong></td><td><strong>+30</strong></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Every cell is the prompt-token count the server reported for the
+      generations. The marble row is also confirmed independently by the retained renders,
+      tokenized by the server itself (section 02); the other two prompts were measured through
+      generations only and were not rendered separately.</p>
+      <p>Three readings of the same two constants. The injected block does not scale with
+      your prompt: it is 42 tokens for <code>xhigh</code>, 30 for <code>low</code>, and 0 for
+      <code>medium</code>, added on top of whatever you sent. In characters, the same three
+      renders of the marble prompt measure 566, 495 and 329, so <code>xhigh</code> adds 237
+      characters of system message and <code>low</code> adds 166.</p>
+      <p>The <code>xhigh</code> and absent columns are not merely equal in count. On the
+      marble prompt the two rendered prompts are byte-identical strings, and the two
+      generations they produced are byte-identical too: same reasoning text, same visible
+      answer, same token counts, on all three prompts. If you are choosing between "send
+      xhigh" and "leave it out", you are choosing between two spellings of the same
+      request.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Observed: what it does to thinking, and to answers</h2>
+      <p>Single observation per cell. Reasoning tokens are counted exactly, by sending the
+      returned reasoning text back to the server's own tokenizer, rather than trusting a
+      reported field.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Prompt</th><th class="t" style="text-align:left">Effort</th><th>Reasoning tokens</th><th>Answer characters</th><th class="t" style="text-align:left">Answer shape</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Marble probability</td><td class="t">xhigh</td><td>399</td><td>284</td><td class="t">bare LaTeX, boxed result</td></tr>
+          <tr><td class="t"></td><td class="t">field absent</td><td>399</td><td>284</td><td class="t">identical to xhigh</td></tr>
+          <tr><td class="t"></td><td class="t">medium</td><td>339</td><td>797</td><td class="t">markdown headers, a table</td></tr>
+          <tr><td class="t"></td><td class="t">low</td><td>283</td><td>711</td><td class="t">markdown headers, a table</td></tr>
+          <tr><td class="t">Word problem</td><td class="t">xhigh</td><td>126</td><td>134</td><td class="t">two sentences</td></tr>
+          <tr><td class="t"></td><td class="t">field absent</td><td>126</td><td>134</td><td class="t">identical to xhigh</td></tr>
+          <tr><td class="t"></td><td class="t">medium</td><td>122</td><td>345</td><td class="t">numbered steps in bold</td></tr>
+          <tr><td class="t"></td><td class="t">low</td><td>78</td><td>148</td><td class="t">three short lines</td></tr>
+          <tr><td class="t">Prose question</td><td class="t">xhigh</td><td>123</td><td>346</td><td class="t">three sentences</td></tr>
+          <tr><td class="t"></td><td class="t">field absent</td><td>123</td><td>346</td><td class="t">identical to xhigh</td></tr>
+          <tr><td class="t"></td><td class="t">medium</td><td><strong>405</strong></td><td>686</td><td class="t">one long paragraph</td></tr>
+          <tr><td class="t"></td><td class="t">low</td><td>90</td><td>391</td><td class="t">two long sentences</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Every row is one observation. The three repetitions of each cell
+      were byte-identical (section 04).</p>
+      <p><strong>On thinking volume, <code>low</code> behaves and <code>medium</code> does
+      not.</strong> <code>low</code> spent less than <code>xhigh</code> on every prompt, at
+      71%, 62% and 73% of the <code>xhigh</code> figure. <code>medium</code> spent 85% on one
+      prompt, 97% on another, and <strong>329% on the third</strong>: on the prose question,
+      the level with no injected instruction at all produced 3.3 times the thinking of the
+      level that explicitly asks for careful thought. That is not a middle setting
+      misbehaving. It is what you would expect if <code>medium</code> simply removes an
+      instruction and lets the model do whatever it does unprompted.</p>
+      <p><strong>On answer style, the direction held on all three prompts.</strong>
+      <code>xhigh</code> produced the shortest visible answer in each of the three, and
+      <code>medium</code> the longest in each, by factors of 2.8, 2.6 and 2.0. Three prompts,
+      one observation each. The direction is the same one the hosted 2.4T leg showed three
+      days earlier: there, <code>xhigh</code> returned 340 characters of terse mathematics
+      while <code>medium</code> returned 720 characters of markdown with headers.</p>
+      <p>There is a readable mechanism for that, and it is in the injected text itself: the
+      <code>xhigh</code> sentence ends by asking for "correctness, consistency, and clarity in
+      the final answer", and the <code>low</code> sentence asks the model to move "directly to
+      the conclusion without unnecessary elaboration". Both of those are instructions about
+      the answer as much as about the thinking. The setting is named for reasoning effort and
+      reads, in practice, as a house-style instruction. We are reading the injected sentence
+      here, not instrumenting the model, and the distinction matters: this is an
+      interpretation of a measured text, offered as one.</p>
+      <p><strong>Correctness:</strong> the two prompts with a checkable answer were right in
+      all eight of their cells (the marble probability came back 3/11 with 60 favourable
+      outcomes and 220 total; the word problem came back 27). The third prompt is open prose
+      and has no key, so we make no correctness claim about it.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Observed: the hosted 2.4T leg, and what converges</h2>
+      <p>Three days before the local run, the same marble prompt went to the hosted
+      Qwen3.8-2.4T-A95B through OpenRouter, one call per level, same temperature and same
+      output cap. What the hosted study could see was this:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Effort</th><th class="t" style="text-align:left">Provider</th><th>Prompt tokens</th><th>Reasoning tokens</th><th>Answer characters</th><th>Completion tokens</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td class="t">xhigh</td><td class="t">DeepInfra</td><td><strong>112</strong></td><td>184</td><td>340</td><td>356</td><td>$0.00236</td></tr>
+          <tr><td class="t">medium</td><td class="t">DeepInfra</td><td><strong>70</strong></td><td>197</td><td>720</td><td>582</td><td>$0.003632</td></tr>
+          <tr><td class="t">low</td><td class="t">Together</td><td><strong>100</strong></td><td>168</td><td>527</td><td>505</td><td>$0.00341</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Single observation per level, 2026-08-13. Cost is the server's own
+      reported figure, not a computation.</p>
+      <p><strong>The thinking-volume dial did not appear.</strong> Reasoning spend across the
+      three levels was 168 to 197 tokens, a 17% band, with the nominal maximum-effort setting
+      sitting in the middle of it. The study's pre-registered expectation had been that spend
+      would order xhigh above medium above low. It did not.</p>
+      <p><strong>The cost ordering inverted the knob's apparent intent</strong>: medium cost
+      the most, xhigh the least, because the visible answer grew as the nominal effort fell
+      and output tokens are what you pay for. State that with its confound attached: the
+      <code>low</code> call landed on Together, whose listed prices were higher than
+      DeepInfra's, so the medium-versus-low ordering is not clean. The xhigh-versus-medium
+      comparison is clean, both being DeepInfra calls, and on that pair the lowest nominal
+      effort setting of the two cost 54% more.</p>
+      <p><strong>And the three prompt-token counts had no explanation.</strong> The message
+      bytes were identical across the three calls, verified from the retained request bodies,
+      yet the server reported 112, 70 and 100 prompt tokens. The study recorded them and
+      wrote, in the finding itself, "Mechanism unknown; recorded as evidence the effort level
+      rewrites the served prompt."</p>
+      <p>Our locally rendered prompts, for the same three levels on the same message,
+      tokenize to 112, 70 and 100.</p>
+      <div class="note">
+        <span class="label">What that licenses, stated carefully</span>
+        <p>These are two different models on two different serving stacks: a
+        2.4-trillion-parameter mixture-of-experts model served by two commercial GPU clouds
+        through an aggregator, and a 27-billion-parameter dense model in a
+        community-quantized GGUF served by llama.cpp on a desktop. We did not read the hosted
+        providers' prompt construction and cannot. This is a <strong>convergence of two
+        independent readings, not a replication</strong>. What it supports is that the hosted
+        numbers are consistent with the same template mechanism we can read locally, which is
+        a good deal more than the hosted study could say on its own and a good deal less than
+        proof of what DeepInfra's server does. The two models are the same family and, on this
+        evidence, tokenize this prompt identically, which is the premise the convergence rests
+        on and is itself an inference from the matching integers rather than something we
+        verified independently.</p>
+      </div>
+      <p style="margin-top:22px">The style direction converged too: terse at
+      <code>xhigh</code>, long and formatted at <code>medium</code>, on both legs. The
+      thinking-volume result did not fully converge. Hosted spend was flat across all three
+      levels; locally, <code>low</code> came in below <code>xhigh</code> on each of the three
+      prompts while <code>medium</code> was erratic. Two observations of one cell each
+      disagreeing about a
+      small effect is exactly what you would expect whether or not the effect is real, and we
+      draw nothing from it.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>The version boundary: llama.cpp b10290 and b10453</h2>
+      <p>The mechanism above lives in the chat template, so it applies wherever that template
+      is the one being rendered. Whether the field ever reaches the template is a property of
+      your runtime, and on llama.cpp that changed recently.</p>
+      <p>Be precise about which half of this we measured. Our renders show different behavior
+      on <span class="n">b10290</span> and on <span class="n">b10453</span>, and both builds
+      were started with the same flags, <code>--jinja</code> and no template override. What we
+      are repeating rather than measuring is the release mapping: the run log reports that
+      pull request <strong>#26941</strong> merged on 2026-08-14 and first shipped in release
+      <span class="n">b10434</span>, read from the project's own records. We did not build
+      b10434, and we tested nothing between b10435 and b10453. Confirm that mapping against
+      your deployed build rather than taking the number from this page.</p>
+      <p>The two builds do differ in the way that pull request describes. On
+      <span class="n">b10290</span> the OpenAI-compatibility layer handles the value
+      <code>none</code> and leaves every other value unhandled, under a source comment saying
+      in full that other <code>reasoning_effort</code> values are model-specific and not yet
+      handled. That reads as an incomplete compatibility stub rather than a defect: on that
+      build there was no Qwen effort vocabulary on that field for the server to forward. The
+      user-visible consequence is the same either way, and it is what the table shows. On
+      <span class="n">b10453</span> the value is forwarded into the template's variable
+      context.</p>
+      <p>We measured both ends rather than taking the diff's word for it. The same model file,
+      the same prompt, the same flags and the same render conditions were sent to both builds,
+      the pre-merge one run read-only on a separate scratch port with zero GPU layers.
+      <strong>Every cell below is an <code>/apply-template</code> render</strong>, tokenized
+      by that build's own tokenizer. Exactly three cells differ:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Value sent</th><th class="t" style="text-align:left">Path</th><th>Pre-merge b10290</th><th>Post-merge b10453</th><th class="t" style="text-align:left"></th></tr></thead>
+        <tbody>
+          <tr><td class="t">xhigh</td><td class="t">top-level field</td><td>112 tok</td><td>112 tok</td><td class="t">unchanged by coincidence: read the note below</td></tr>
+          <tr><td class="t"><strong>medium</strong></td><td class="t">top-level field</td><td>112 tok</td><td><strong>70 tok</strong></td><td class="t"><strong>changed</strong></td></tr>
+          <tr><td class="t"><strong>low</strong></td><td class="t">top-level field</td><td>112 tok</td><td><strong>100 tok</strong></td><td class="t"><strong>changed</strong></td></tr>
+          <tr><td class="t">field absent</td><td class="t">top-level field</td><td>112 tok</td><td>112 tok</td><td class="t"></td></tr>
+          <tr><td class="t">xhigh / medium / low</td><td class="t">chat_template_kwargs</td><td>112 / 70 / 100</td><td>112 / 70 / 100</td><td class="t">unchanged: this path always worked</td></tr>
+          <tr><td class="t">high</td><td class="t">either path</td><td>112 tok</td><td>112 tok</td><td class="t">normalized to xhigh by this template</td></tr>
+          <tr><td class="t">none</td><td class="t">top-level field</td><td>72 tok</td><td>72 tok</td><td class="t">handled pre-merge too</td></tr>
+          <tr><td class="t">none</td><td class="t">chat_template_kwargs</td><td class="neg">HTTP 500</td><td class="neg">HTTP 500</td><td class="t">not a valid template value</td></tr>
+          <tr><td class="t"><strong>ultra</strong></td><td class="t">top-level field</td><td>112 tok</td><td class="neg"><strong>HTTP 500</strong></td><td class="t"><strong>changed: HTTP 200 with the default prompt became HTTP 500</strong></td></tr>
+          <tr><td class="t">ultra</td><td class="t">chat_template_kwargs</td><td class="neg">HTTP 500</td><td class="neg">HTTP 500</td><td class="t"></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Both columns are renders of the same prompt through the same model
+      file, retrieved from each build's <code>/apply-template</code> endpoint and tokenized by
+      that build's own tokenizer.</p>
+      <p>Read the <code>xhigh</code> row carefully, because it is the trap in this table. On
+      the pre-merge build <code>xhigh</code> rendered 112 tokens, the same as the post-merge
+      build, and that is a coincidence rather than support. Pre-merge, <strong>every</strong>
+      top-level value rendered 112 tokens, because the field never reached the template and
+      the template fell back to its <code>xhigh</code> default. A user who sent
+      <code>xhigh</code> to that build got the right prompt for the wrong reason. A user who
+      sent <code>low</code> got the <code>xhigh</code> prompt and no error. A user who sent a
+      typo got the <code>xhigh</code> prompt and no error.</p>
+      <p><strong>Which endpoint produced these cells.</strong> Every cell in the table is a
+      render from <code>/apply-template</code> on the build named in its column. On the
+      post-merge build we also sent the invalid value through
+      <code>/v1/chat/completions</code> itself, both at the top level and inside
+      <code>chat_template_kwargs</code>, and both returned HTTP 500 there too, so that result
+      is not an artifact of the render endpoint. We did not run the pre-merge build through
+      <code>/v1/chat/completions</code>: its column is a render comparison only.</p>
+      <p>Upstream issue <strong>#27023</strong>, "Misc. bug: reasoning_effort seems broken",
+      has been open since 2026-08-13, and a webui proposal (<strong>#27118</strong>,
+      2026-08-15) asks for effort and thinking budget to become two separate settings. The
+      boundary above is consistent with confusion from both directions: before the merge the
+      field did nothing, and after it the field does something and rejects values that used to
+      pass. We make no claim about what any particular reporter experienced.</p>
+      <div class="note">
+        <span class="label">The operational consequence</span>
+        <p>If you run llama.cpp with this GGUF's template applied, and thinking is on, and
+        your client sends a top-level <code>reasoning_effort</code> that the template does not
+        recognize, then crossing this build boundary turns a value that had no effect into an
+        HTTP 500. All three conditions are load-bearing: with thinking off the same request
+        returns HTTP 200 (section 09), and with a built-in template applied instead it is a
+        different question that this page did not measure. Anything a client library sends by
+        default, including vocabulary borrowed from other vendors' APIs, is worth auditing
+        before that upgrade.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Special values, two paths, and one escape hatch</h2>
+      <p>Three behaviors are worth separating out, because each of them will bite
+      somebody.</p>
+      <p><strong><code>none</code> means two different things depending on how you send
+      it.</strong> Sent as the top-level field, it is intercepted by the server's own
+      compatibility handler before the template is reached: thinking is turned off, the render
+      carries a closed empty thinking block, and a generation returns an answer with zero
+      reasoning tokens. That render is the <code>medium</code> render plus that block and
+      nothing else, which is where its 72 tokens come from: 340 characters against medium's
+      329, 72 tokens against medium's 70. The two extra tokens are the closed block, not an
+      instruction. Sent inside <code>chat_template_kwargs</code>, it goes straight into
+      the template, which does not list <code>none</code> among its valid values, and the
+      template raises: HTTP 500. Same word, two paths, opposite outcomes, on both builds we
+      tested.</p>
+      <p><strong><code>high</code> is normalized, but that normalization belongs to the
+      quantizer's template, not to the standard.</strong> The template in the file we served
+      maps <code>high</code> to <code>xhigh</code> before validating, so <code>high</code>
+      renders the <code>xhigh</code> prompt on both paths and both builds. That normalization
+      line is an Unsloth addition. The ggml-org conversion of the same model carries a
+      template without it. We did not serve the ggml-org file, so we make no measurement claim
+      about it, but on a plain reading of that template text a <code>high</code> sent to it
+      would fail validation the way <code>ultra</code> does. Treat this as a prediction to
+      test, not a result.</p>
+      <p><strong>Invalid values fail loudly, and the failure is conditional on thinking being
+      on.</strong> An unrecognized value returns HTTP 500 with the template's own traceback,
+      which names the supported set in plain text:</p>
+      <pre class="log">Error: Jinja Exception: Unexpected reasoning effort ultra. Supported types
+are xhigh (default), medium, and low.</pre>
+      <p>That is an unusually good error message, and it is worth knowing it can appear at
+      all. But the validation lives inside the template's thinking branch, so it is
+      unreachable when thinking is off. We tested that: with thinking turned off, the invalid
+      value <code>ultra</code> returned HTTP 200 and a render byte-identical to the
+      thinking-off render without it. On this model the thinking switch belongs inside
+      <code>chat_template_kwargs</code>, as <code>{"enable_thinking": false}</code>; a
+      top-level <code>enable_thinking</code> field was measured as ignored on this endpoint
+      two days earlier. One retention note, because this page asks you to check its records:
+      the three thinking-off entries retain the rendered prompt but not the request body, so
+      the render is the artifact and the key used is the run log's account of it.</p>
+      <p>The consequence is worth stating in both directions. If your integration disables
+      thinking, an invalid effort value passes silently. If somebody later turns thinking back
+      on, the same request starts returning HTTP 500.</p>
+      <p>We tested one invalid value, <code>ultra</code>. The template's validation rejects
+      anything outside <code>xhigh</code>, <code>medium</code> and <code>low</code> after
+      normalization, so on a plain reading of that source any other unrecognized value takes
+      the same branch. That is a read of the template, labeled as such, not a second
+      measurement. The practical point is that clients send what they send, and a value
+      another vendor's API accepts is not thereby a value this template accepts. The only way
+      to know is to send it at the template and runtime you actually deploy and look at what
+      comes back.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>Every generation figure here is a single observation.</strong>
+        Temperature 0 with a fixed seed collapsed three repetitions into one, in 12 cells out
+        of 12. No intervals, no significance, no distribution. Differences of a few percent
+        between cells mean nothing on this page; the ones we lean on are large (a 3.3-times
+        ratio, a 2-to-3-times answer length ratio, an exact zero in the medium render).</li>
+        <li><strong>One template, applied one way.</strong> Both builds ran
+        <code>--jinja</code> with no template override, so every template result here
+        describes a server that applies the GGUF's own jinja; we did not measure what happens
+        with a built-in template substituted for it. And the jinja we read is the Unsloth
+        conversion's. We did not serve the ggml-org conversion, whose template differs at
+        least in the <code>high</code> normalization (section 09), and we never read the 2.4T
+        model's template at all.</li>
+        <li><strong>Two deployments, not a survey.</strong> One hosted 2.4T-A95B through one
+        aggregator on 2026-08-13, split across two providers without pinning, and one local
+        27B in one community quantization on one desktop on 2026-08-16. Other quantizations
+        ship other templates. Other runtimes handle the field their own way.</li>
+        <li><strong>The hosted mechanism was not read, only inferred.</strong> We do not know
+        how DeepInfra or Together construct the prompt. The match of three integers is
+        consistent with the template mechanism and is not proof of it.</li>
+        <li><strong>Three prompts.</strong> Two with checkable answers, one prose. The prompts
+        are short. Whether the levels separate more on genuinely hard problems, where a
+        reasoning instruction has more to bite on, is unmeasured and is the obvious next
+        run.</li>
+        <li><strong>We did not instrument the model.</strong> Section 06's reading of why
+        answer style moves more than thinking volume is an interpretation of the injected
+        sentence's wording, not a mechanistic result.</li>
+        <li><strong>No comparison of models and no quality ranking.</strong> Nothing here says
+        one model reasons better than another, and the two legs are not scored against each
+        other.</li>
+        <li><strong>Other stacks were not examined.</strong> We did not test vLLM,
+        TensorRT-LLM, text-generation-inference, or the vendors' own first-party endpoints,
+        and nothing here speaks to how they handle this field.</li>
+        <li><strong>Dates matter more than usual on this page.</strong> The llama.cpp behavior
+        changed two days before we measured it, and an open upstream issue and an open
+        proposal both touch this surface. Treat every version-specific statement as unverified
+        after 2026-08-16.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>If you send <code>reasoning_effort</code> to Qwen3.8</h2>
+      <p>Seven narrow things, each scoped to what is above, and all of them assuming a server
+      that applies this GGUF's own chat template.</p>
+      <ol class="plain">
+        <li><strong>Know that you are writing a sentence into your prompt.</strong> On this
+        model the field is not a sampler control. It prepends a system message. If you already
+        send your own system message about how the model should work, you are now sending two,
+        and the template's one comes first.</li>
+        <li><strong>Send <code>medium</code> when you want no instruction at all.</strong>
+        This is the counterintuitive one. <code>medium</code> is the only value that leaves
+        your prompt alone. It is also the cheapest of the three on input tokens, by 42 tokens
+        against <code>xhigh</code>. What it is not is a middle amount of effort.</li>
+        <li><strong>Do not treat omitting the field as neutral.</strong> It renders as
+        <code>xhigh</code>, byte for byte. If your intent is "do not touch my prompt", omitting
+        the field does the opposite of what you want and <code>medium</code> is the value you
+        are looking for.</li>
+        <li><strong><code>low</code> bought less thinking on our three prompts, and a
+        different answer with it.</strong> In these three deterministic local prompts,
+        <code>low</code> used 62% to 73% as many reasoning tokens as <code>xhigh</code>. Test
+        that pattern on your own prompts before relying on it. It also made answers longer and
+        more heavily formatted than <code>xhigh</code> did, which may be the opposite of what
+        a trim-the-thinking setting is being reached for.</li>
+        <li><strong>To turn thinking off, send <code>none</code> at the top level, and never
+        put <code>none</code> in the kwargs.</strong> This is the most useful single fact on
+        the page for anyone watching a bill. Top-level <code>none</code> is intercepted by the
+        server before the template: thinking off, HTTP 200, zero reasoning tokens. The same
+        word inside <code>chat_template_kwargs</code> reaches the template, which does not
+        list it as a valid effort, and returns HTTP 500. This model also has a real thinking
+        switch of its own, <code>chat_template_kwargs {"enable_thinking": false}</code>, which
+        we measured on this endpoint two days before this study.</li>
+        <li><strong>On llama.cpp, know which side of the build boundary you are on.</strong>
+        On the older build a top-level <code>reasoning_effort</code> other than
+        <code>none</code> never reached the template and every request rendered the default.
+        On the newer one the value takes effect, and an unrecognized value returns HTTP 500
+        while thinking is on. Before upgrading across that boundary, four things are worth
+        auditing: what your clients actually put in that field, including values borrowed from
+        other vendors' vocabularies; whether thinking is on, since the HTTP 500 needs it;
+        whether your server applies the GGUF's template or a built-in one; and which of the
+        request shapes in section 03 your code sends. A setting that has been quietly doing
+        nothing in your stack starts doing something the day you rebuild.</li>
+        <li><strong>Pick one path and know its quirks.</strong> The top-level field is the
+        standard-shaped one and handles <code>none</code> as thinking-off. The
+        <code>chat_template_kwargs</code> path worked on both builds and passes
+        <code>none</code> through to a template error. If you need one code path that behaves
+        the same on old and new llama.cpp builds, <code>chat_template_kwargs</code> is that
+        path, with the caveat that it is a llama.cpp-specific request shape.</li>
+      </ol>
+      <div class="note">
+        <span class="label">A ten-minute check on your own stack</span>
+        <p>This page cannot tell you what vLLM, text-generation-inference or a vendor's own
+        endpoint does with this field, because we did not test them. It can tell you how to
+        find out in two requests. Send the same message twice, once with the field at
+        <code>xhigh</code> and once at <code>medium</code>, and compare the server's reported
+        <code>prompt_tokens</code>. If the two counts differ, something in your stack is
+        rewriting your prompt from that field, and the difference is the size of what it
+        injects. If they are identical, the field is not reaching a template that does
+        anything with it, and whatever behavior you are attributing to it is coming from
+        somewhere else. On llama.cpp you can go one step further and read the prompt itself
+        out of <code>/apply-template</code>.</p>
+      </div>
+      <p style="margin-top:22px">And one thing to measure if the levels matter to you: whether
+      they separate on your prompts. On ours they mostly changed the shape of the answer. Send
+      your real prompts at <code>xhigh</code> and at <code>medium</code>, count reasoning
+      tokens and read the two answers side by side. It is a cheap test and it will tell you
+      which of the two effects you are actually buying.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Artifacts</h2>
+      <p>The complete evidence for this page ships as a data package: the files the two runs
+      actually produced, not a summary. If a number on this page disagrees with a file in the
+      package, the file is right and the page is wrong; tell us and we will fix the page.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: what is in each folder, the record
+        schema, and the provenance of every file.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure printed on this page,
+        with the file and the field it came from.</li>
+        <li><strong>The pre-registration and run log</strong>
+        (<a href="data/local/RUN_LOG.md">data/local/RUN_LOG.md</a>) for the local study,
+        written and saved before the first model call, including the source-level reading of
+        the llama.cpp change made before the run, the expectations it predicted, and the
+        deviations logged as they happened, including the determinism finding that reduced the
+        effective observation count to one per cell.</li>
+        <li><strong>The 16 rendered prompts</strong>, verbatim, every condition in sections
+        02, 05, 08 and 09 (<code>data/local/raw/render_*.json</code>). These are the primary
+        evidence: the rendered text is the finding.</li>
+        <li><strong>The 36 per-call records</strong> from the grid
+        (<code>data/local/raw/grid_*.json</code>), each carrying the full request and response
+        body, the server's token counts and timings, the exact reasoning-token count, and the
+        wall time, plus the summarized grid
+        (<a href="data/local/effort_grid.tsv">data/local/effort_grid.tsv</a>).</li>
+        <li><strong>The cross-build comparison</strong>
+        (<a href="data/local/merge_ab_comparison.txt">data/local/merge_ab_comparison.txt</a>)
+        against the pre-merge llama.cpp build, plus that build's server log and the 13
+        pre-merge renders (<code>data/local/raw_premerge/</code>).</li>
+        <li><strong>The hosted study's effort records</strong> from 2026-08-13
+        (<code>data/hosted/raw/effort_*.json</code>): the three request bodies proving the
+        messages were byte-identical, and the three response bodies carrying the provider name,
+        the token counts and the server-reported cost.</li>
+        <li><strong>The release verification</strong>
+        (<a href="data/local/release_verification.txt">data/local/release_verification.txt</a>)
+        taken at the end of the local run: GPU memory, ports, and process state.</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-08-13</th><td>Hosted battery on Qwen3.8-2.4T-A95B through OpenRouter, including the three-level effort sweep on the marble prompt. One call per level; providers recorded per call and not pinned. The three unexplained prompt-token counts were recorded that day as "mechanism unknown".</td></tr>
+        <tr><th scope="row">2026-08-14</th><td class="asstated">llama.cpp pull request #26941 merged, reported as first carried in release <span class="n">b10434</span>: the top-level <code>reasoning_effort</code> field begins reaching the chat template. This row is the project's record, not our measurement.</td></tr>
+        <tr><th scope="row">2026-08-16</th><td>Local study on Qwen3.8-27B: pre-registration written before the first call, 36 generations and 16 renders on the post-merge build <span class="n">b10453</span>, then the same renders on the pre-merge build <span class="n">b10290</span> with zero GPU layers. No unexpected operational failures or exclusions; the planned invalid-value probes returned the documented HTTP 500 results. GPU released and verified clean.</td></tr>
+      </table>
+      <p class="fineprint">Every claim on this page is dated. The llama.cpp behavior described
+      in section 08 changed on 2026-08-14 and was measured on 2026-08-16; if today is much
+      later, treat it as unverified since that date.</p>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>Related pages on this site</h2>
+      <p><a href="../qwen38-27b/">Qwen3.8-27B: day zero</a> is the release-day field card for
+      the local model measured here, on the same desktop.
+      <a href="../qwen38-readiness/">Release watch: Qwen3.8</a> tracks the family's releases
+      and licenses, including the split between the Apache-licensed 27B and its
+      differently-licensed 2.4T sibling.
+      <a href="../muse-glimmer-30b/">Muse Glimmer 30B</a> is the same class of knob on another
+      vendor's model, measured the same day on the same desktop: there the lever is called
+      <code>reasoning_strength</code>, the template interpolates the value into a system line
+      without validating it, and an undefined value was accepted without complaint.
+      <a href="../empty-answer/">Empty Answer</a> is the same editorial thesis in the
+      neighbouring domain: what a reasoning model does with your output budget when the
+      thinking does not fit. The <a href="../qwen/">Qwen hub page</a> carries downloadable
+      serving profiles for the local models on this machine.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; Qwen and Qwen3.8 are marks of Alibaba Group Holding
+    Limited; Unsloth, OpenRouter, DeepInfra, Together and OpenAI are projects or marks of
+    their respective owners. All are referenced for identification only. Not affiliated
+    with, endorsed by, or sponsored by any of them or their affiliates. Product names and
+    marks belong to their respective owners. This site is static. No scripts, no tracking,
+    no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

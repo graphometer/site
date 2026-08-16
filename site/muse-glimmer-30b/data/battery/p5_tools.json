@@ -1,0 +1,90 @@
+{
+ "probe": "p5_tools",
+ "request": {
+  "messages": [
+   {
+    "role": "user",
+    "content": "What is the weather in Reykjavik right now? Use the tool. Celsius."
+   }
+  ],
+  "tools": [
+   {
+    "type": "function",
+    "function": {
+     "name": "get_weather",
+     "description": "Get the current weather for a city.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "city": {
+        "type": "string",
+        "description": "City name"
+       },
+       "unit": {
+        "type": "string",
+        "enum": [
+         "c",
+         "f"
+        ]
+       }
+      },
+      "required": [
+       "city"
+      ]
+     }
+    }
+   }
+  ],
+  "max_tokens": 4000,
+  "temperature": 0,
+  "model": "muse-glimmer-30b"
+ },
+ "response": {
+  "choices": [
+   {
+    "finish_reason": "tool_calls",
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "",
+     "reasoning_content": "What is the weather in Reykjavik right now? Use the tool. Celsius.\n\nWe need to get weather for Reykjavik. Use get_weather. City = Reykjavik, unit = c.\n\nWe must call tool.",
+     "tool_calls": [
+      {
+       "type": "function",
+       "function": {
+        "name": "get_weather",
+        "arguments": "{\"city\":\"Reykjavik\",\"unit\":\"c\"}"
+       },
+       "id": "JCtsGIUmGhpBfsJwMR4OXiDcGETltboF"
+      }
+     ]
+    }
+   }
+  ],
+  "created": 1786911028,
+  "model": "muse-glimmer-30b",
+  "system_fingerprint": "b1-3cb7ffb",
+  "object": "chat.completion",
+  "usage": {
+   "completion_tokens": 112,
+   "prompt_tokens": 438,
+   "total_tokens": 550,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   }
+  },
+  "id": "chatcmpl-KDMYLa4qq3kOSSN1qyd8RetlFlMG4DLq",
+  "timings": {
+   "cache_n": 0,
+   "prompt_n": 438,
+   "prompt_ms": 147.304,
+   "prompt_per_token_ms": 0.33631050228310505,
+   "prompt_per_second": 2973.442676369956,
+   "predicted_n": 112,
+   "predicted_ms": 1453.871,
+   "predicted_per_token_ms": 13.097936936936938,
+   "predicted_per_second": 76.34790156760812
+  }
+ },
+ "wall_s": 1.638
+}

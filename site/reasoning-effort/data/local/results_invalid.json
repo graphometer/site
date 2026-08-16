@@ -1,0 +1,259 @@
+{
+ "invalid": [
+  {
+   "tag": "invalid_toplevel_chat",
+   "effort": "ultra",
+   "path": "toplevel",
+   "endpoint": "/v1/chat/completions",
+   "http_status": 500,
+   "error": "HTTPError 500",
+   "wall_s": 0.013,
+   "summary": null,
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "max_tokens": 2000,
+    "temperature": 0,
+    "seed": 42,
+    "reasoning_effort": "ultra"
+   },
+   "response": {
+    "error": {
+     "code": 500,
+     "message": "\n------------\nWhile executing CallExpression at line 64, column 28 in source:\n...', 'low') %}\u21b5        {{- raise_exception('Unexpected reasoning effort ' ~ reason...\n                                           ^\nError: Jinja Exception: Unexpected reasoning effort ultra. Supported types are xhigh (default), medium, and low.",
+     "type": "server_error"
+    }
+   }
+  },
+  {
+   "tag": "invalid_kwargs_chat",
+   "effort": "ultra",
+   "path": "kwargs",
+   "endpoint": "/v1/chat/completions",
+   "http_status": 500,
+   "error": "HTTPError 500",
+   "wall_s": 0.001,
+   "summary": null,
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "max_tokens": 2000,
+    "temperature": 0,
+    "seed": 42,
+    "chat_template_kwargs": {
+     "reasoning_effort": "ultra"
+    }
+   },
+   "response": {
+    "error": {
+     "code": 500,
+     "message": "\n------------\nWhile executing CallExpression at line 64, column 28 in source:\n...', 'low') %}\u21b5        {{- raise_exception('Unexpected reasoning effort ' ~ reason...\n                                           ^\nError: Jinja Exception: Unexpected reasoning effort ultra. Supported types are xhigh (default), medium, and low.",
+     "type": "server_error"
+    }
+   }
+  },
+  {
+   "tag": "invalid_toplevel_apply",
+   "effort": "ultra",
+   "path": "toplevel",
+   "endpoint": "/apply-template",
+   "http_status": 500,
+   "error": "HTTPError 500",
+   "wall_s": 0.001,
+   "summary": null,
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "temperature": 0,
+    "seed": 42,
+    "reasoning_effort": "ultra"
+   },
+   "response": {
+    "error": {
+     "code": 500,
+     "message": "\n------------\nWhile executing CallExpression at line 64, column 28 in source:\n...', 'low') %}\u21b5        {{- raise_exception('Unexpected reasoning effort ' ~ reason...\n                                           ^\nError: Jinja Exception: Unexpected reasoning effort ultra. Supported types are xhigh (default), medium, and low.",
+     "type": "server_error"
+    }
+   }
+  },
+  {
+   "tag": "invalid_kwargs_apply",
+   "effort": "ultra",
+   "path": "kwargs",
+   "endpoint": "/apply-template",
+   "http_status": 500,
+   "error": "HTTPError 500",
+   "wall_s": 0.001,
+   "summary": null,
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "temperature": 0,
+    "seed": 42,
+    "chat_template_kwargs": {
+     "reasoning_effort": "ultra"
+    }
+   },
+   "response": {
+    "error": {
+     "code": 500,
+     "message": "\n------------\nWhile executing CallExpression at line 64, column 28 in source:\n...', 'low') %}\u21b5        {{- raise_exception('Unexpected reasoning effort ' ~ reason...\n                                           ^\nError: Jinja Exception: Unexpected reasoning effort ultra. Supported types are xhigh (default), medium, and low.",
+     "type": "server_error"
+    }
+   }
+  },
+  {
+   "tag": "none_toplevel_chat",
+   "effort": "none",
+   "path": "toplevel",
+   "endpoint": "/v1/chat/completions",
+   "http_status": 200,
+   "error": null,
+   "wall_s": 0.173,
+   "summary": {
+    "finish_reason": "stop",
+    "prompt_tokens": 26,
+    "completion_tokens": 4,
+    "reasoning_tokens": 0,
+    "visible_tokens": 3,
+    "visible_head": "408"
+   },
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "max_tokens": 2000,
+    "temperature": 0,
+    "seed": 42,
+    "reasoning_effort": "none"
+   },
+   "response": {
+    "choices": [
+     {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+       "role": "assistant",
+       "content": "408"
+      }
+     }
+    ],
+    "created": 1786909984,
+    "model": "qwen3.8-27b-study",
+    "system_fingerprint": "b1-3cb7ffb",
+    "object": "chat.completion",
+    "usage": {
+     "completion_tokens": 4,
+     "prompt_tokens": 26,
+     "total_tokens": 30,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     }
+    },
+    "id": "chatcmpl-hw8rTQaalQUHz0HQYzWDn21Ahr2tN0ZS",
+    "timings": {
+     "cache_n": 0,
+     "prompt_n": 26,
+     "prompt_ms": 120.428,
+     "prompt_per_token_ms": 4.631846153846154,
+     "prompt_per_second": 215.8966353339755,
+     "predicted_n": 4,
+     "predicted_ms": 50.297,
+     "predicted_per_token_ms": 16.765666666666664,
+     "predicted_per_second": 59.645704515179844
+    }
+   }
+  },
+  {
+   "tag": "high_toplevel_chat",
+   "effort": "high",
+   "path": "toplevel",
+   "endpoint": "/v1/chat/completions",
+   "http_status": 200,
+   "error": null,
+   "wall_s": 1.034,
+   "summary": {
+    "finish_reason": "stop",
+    "prompt_tokens": 66,
+    "completion_tokens": 48,
+    "reasoning_tokens": 42,
+    "visible_tokens": 3,
+    "visible_head": "408"
+   },
+   "request": {
+    "model": "qwen3.8-27b-study",
+    "messages": [
+     {
+      "role": "user",
+      "content": "What is 17 * 24? Give the number."
+     }
+    ],
+    "max_tokens": 2000,
+    "temperature": 0,
+    "seed": 42,
+    "reasoning_effort": "high"
+   },
+   "response": {
+    "choices": [
+     {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+       "role": "assistant",
+       "content": "408",
+       "reasoning_content": "We need answer simple multiplication. Need final just number likely. 17*24 = 408. Ensure no extra? User: Give the number. Final: 408.\n"
+      }
+     }
+    ],
+    "created": 1786909985,
+    "model": "qwen3.8-27b-study",
+    "system_fingerprint": "b1-3cb7ffb",
+    "object": "chat.completion",
+    "usage": {
+     "completion_tokens": 48,
+     "prompt_tokens": 66,
+     "total_tokens": 114,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     }
+    },
+    "id": "chatcmpl-YEVBSyZnmRaQFGjqsq210myLf9H0iRHl",
+    "timings": {
+     "cache_n": 0,
+     "prompt_n": 66,
+     "prompt_ms": 193.573,
+     "prompt_per_token_ms": 2.9329242424242423,
+     "prompt_per_second": 340.9566416803996,
+     "predicted_n": 48,
+     "predicted_ms": 725.004,
+     "predicted_per_token_ms": 15.425617021276596,
+     "predicted_per_second": 64.82722853942875
+    }
+   }
+  }
+ ]
+}

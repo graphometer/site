@@ -180,6 +180,7 @@
           <tbody>
             <tr><td><a href="../lfm25-26b/">LFM2.5-2.6B</a></td><td class="t">A single network, 2.69B per the card</td><td class="t">489.8 median on the recommended Q4_K_M file</td><td class="t">2026-08-04, updated 2026-08-07</td></tr>
             <tr><td><a href="../qwen38-27b/">Qwen3.8-27B</a></td><td class="t">Dense, 27B</td><td class="t">72.4 prose, 118.7 structured, gated draft head, thinking off</td><td class="t">2026-08-14, release day</td></tr>
+            <tr><td><a href="../muse-glimmer-30b/">Muse Glimmer 30B</a></td><td class="t">Dense, 30B, with a separate block-16 DFlash drafter</td><td class="t">76.22 prose and 76.345 structured with no speculation, 114.86 and 253.19 once the drafter is asked for its own block size</td><td class="t">2026-08-16</td></tr>
             <tr><td><a href="../qwen35/">Qwen3.5-122B</a></td><td class="t">Mixture of experts, 122B total, about 9.8B active per token</td><td class="t">26 to 38, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
             <tr><td><a href="../mistral-medium-35/">Mistral Medium 3.5</a></td><td class="t">Dense, 128B class, 125.03B served</td><td class="t">about 1 alone, 2 to 5 with the vocabulary-repaired draft</td><td class="t">2026-08-06</td></tr>
             <tr><td><a href="../qwen35/">Qwen3.5-397B</a></td><td class="t">Mixture of experts, 397B total, about 17.4B active per token</td><td class="t">14 to 20, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
@@ -202,6 +203,13 @@
       <div class="secnum">02</div>
       <h2>The cards</h2>
       <ul class="plain">
+        <li><strong><a href="../muse-glimmer-30b/">Muse Glimmer 30B: trained at 16, asked for 3</a></strong>
+        · measured 2026-08-16. Meta trained its DFlash drafter to draft a block
+        of 16 tokens per pass and prints that number; llama.cpp's generic draft
+        length is 3; the two flags Meta's GGUF card documents leave that
+        default in charge, and on six structured prompts the gap is worth 2.17
+        times the throughput. Verbatim Apache 2.0, with a separate usage
+        policy beside it.</li>
         <li><strong><a href="../qwen38-27b/">Qwen3.8-27B: day zero</a></strong>
         · released and measured 2026-08-14. One model family with two
         licenses, and a built-in draft head decoding prose at 72.4 tokens a
@@ -255,8 +263,8 @@
     <p>Copyright 2026 Grant Williams. Independent work: model names appear for
     identification only; not affiliated with, endorsed by, or sponsored by
     Liquid AI, Beijing Moonshot Technology Co., Ltd., Moonshot AI PTE. LTD.,
-    Mistral AI, the Qwen team, Alibaba Group, or their affiliates. This site
-    is static. No scripts, no tracking, no cookies.</p>
+    Mistral AI, Meta Platforms, Inc., the Qwen team, Alibaba Group, or their
+    affiliates. This site is static. No scripts, no tracking, no cookies.</p>
     <div class="foot-links"><a href="../">Graphometer</a></div>
   </div>
 </footer>

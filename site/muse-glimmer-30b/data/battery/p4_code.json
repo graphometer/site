@@ -1,0 +1,52 @@
+{
+ "probe": "p4_code",
+ "request": {
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Python function merge_intervals(intervals) that merges overlapping intervals and returns them sorted by start. Then write exactly three assert statements testing it. Output ONLY a single ```python code block, no prose."
+   }
+  ],
+  "max_tokens": 6000,
+  "temperature": 0,
+  "model": "muse-glimmer-30b"
+ },
+ "response": {
+  "choices": [
+   {
+    "finish_reason": "stop",
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n    sorted_intervals = sorted(intervals, key=lambda x: x[0])\n    merged = [list(sorted_intervals[0])]\n    for start, end in sorted_intervals[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            merged[-1][1] = max(last_end, end)\n        else:\n            merged.append([start, end])\n    return merged\n\nassert merge_intervals([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]\nassert merge_intervals([[1,4],[4,5]]) == [[1,5]]\nassert merge_intervals([]) == []\n```",
+     "reasoning_content": "Write a Python function merge_intervals(intervals) that merges overlapping intervals and returns them sorted by start. Then write exactly three assert statements testing it. Output ONLY a single ```python code block, no prose.\n\nWe need output ONLY a single ```python code block, no prose.\n\nWrite function merge_intervals(intervals) that merges overlapping intervals and returns them sorted by start.\n\nThen write exactly three assert statements testing it.\n\nOutput ONLY a single ```python code block, no prose.\n\nSo code block with python. Must contain function definition and exactly three assert statements.\n\nProbably like:\n\n```python\ndef merge_intervals(intervals):\n    ...\n...\nassert ...\nassert ...\nassert ...\n```\n\nExactly three assert statements. No prose outside code block. Ensure code block is single.\n\nPotential edge cases: intervals may be list of [start, end]. Merge overlapping.\n\nImplementation: if not intervals: return [] . Sort by start. Iterate.\n\nReturn list of lists.\n\nThree asserts.\n\nMake sure exactly three assert statements. Not more. No other asserts.\n\nPotential pitfalls: assert statements count. Must be exactly three. Ensure no assert inside function? Probably okay but counts? Safer to have only three asserts total in file. So function should not contain assert.\n\nMake sure code block starts with ```python and ends with ```.\n\nNo prose outside.\n\nLet's produce:\n\n```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n    sorted_intervals = sorted(intervals, key=lambda x: x[0])\n    merged = [sorted_intervals[0]]\n    for start, end in sorted_intervals[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            merged[-1][1] = max(last_end, end)\n        else:\n            merged.append([start, end])\n    return merged\n\nassert merge_intervals([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]\nassert merge_intervals([[1,4],[4,5]]) == [[1,5]]\nassert merge_intervals([]) == []\n```\n\nThat's three asserts.\n\nCheck exactly three assert statements. Yes.\n\nPotential issue: intervals may be tuples? Using list. Works.\n\nMake sure function returns sorted by start. Yes.\n\nOutput ONLY a single code block, no prose. Ensure no extra text before/after.\n\nProbably fine.\n\nEdge: merge_intervals returns list of lists, but input may be tuples. Might be okay.\n\nAlternative test: overlapping etc.\n\nMake sure no extra blank lines with asserts? It's fine.\n\nEnsure code block is single. No prose.\n\nReturn.\n\nPotential nuance: exactly three assert statements testing it. Could be three asserts. Good.\n\nMake sure not to include extra assert in docstring.\n\nOk.\n\nFinal output."
+    }
+   }
+  ],
+  "created": 1786911027,
+  "model": "muse-glimmer-30b",
+  "system_fingerprint": "b1-3cb7ffb",
+  "object": "chat.completion",
+  "usage": {
+   "completion_tokens": 753,
+   "prompt_tokens": 98,
+   "total_tokens": 851,
+   "prompt_tokens_details": {
+    "cached_tokens": 49
+   }
+  },
+  "id": "chatcmpl-HRttCMhrJnOEkXDt8VuzbmdH4DH4EqWi",
+  "timings": {
+   "cache_n": 49,
+   "prompt_n": 49,
+   "prompt_ms": 60.063,
+   "prompt_per_token_ms": 1.2257755102040817,
+   "prompt_per_second": 815.8100660972644,
+   "predicted_n": 753,
+   "predicted_ms": 9834.438,
+   "predicted_per_token_ms": 13.077710106382979,
+   "predicted_per_second": 76.46598616006324
+  }
+ },
+ "wall_s": 9.916
+}

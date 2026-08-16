@@ -1,0 +1,105 @@
+{
+  "elapsed_seconds": 0.5048537029979343,
+  "error": null,
+  "error_type": null,
+  "ok": true,
+  "request_body": {
+    "max_tokens": 2300,
+    "messages": [
+      {
+        "content": "What is the weather like in Reykjavik right now? Use the weather tool to check, and give the answer in Celsius.",
+        "role": "user"
+      }
+    ],
+    "model": "muse-glimmer-30b",
+    "seed": 42,
+    "tool_choice": "auto",
+    "tools": [
+      {
+        "function": {
+          "description": "Get the current weather conditions for a specific city.",
+          "name": "get_current_weather",
+          "parameters": {
+            "properties": {
+              "city": {
+                "description": "City name, e.g. 'Portland, OR' or 'Reykjavik'.",
+                "type": "string"
+              },
+              "unit": {
+                "enum": [
+                  "celsius",
+                  "fahrenheit"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "city"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response_headers": {
+    "Access-Control-Allow-Origin": "",
+    "Content-Length": "1078",
+    "Content-Type": "application/json; charset=utf-8",
+    "Keep-Alive": "timeout=5, max=100",
+    "Server": "llama.cpp"
+  },
+  "response_json": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "message": {
+          "content": "",
+          "reasoning_content": "We need to use weather tool to check, give answer in Celsius. Use get_current_weather with city Reykjavik, unit celsius. The tool requires city string. Probably \"Reykjavik\". Unit celsius.\n\nWe must call function.",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"city\":\"Reykjavik\",\"unit\":\"celsius\"}",
+                "name": "get_current_weather"
+              },
+              "id": "c0dWbRiGgQR7eym62K9ztGEZmKdHMugu",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786912313,
+    "id": "chatcmpl-Hud34gi5f0AQvodHJc3kgzM2Tg5zUYsr",
+    "model": "muse-glimmer-30b",
+    "object": "chat.completion",
+    "system_fingerprint": "b1-3cb7ffb",
+    "timings": {
+      "cache_n": 467,
+      "draft_n": 270,
+      "draft_n_accepted": 99,
+      "predicted_ms": 446.683,
+      "predicted_n": 117,
+      "predicted_per_second": 259.69199633744734,
+      "predicted_per_token_ms": 3.850715517241379,
+      "prompt_ms": 50.636,
+      "prompt_n": 5,
+      "prompt_per_second": 98.74397661742633,
+      "prompt_per_token_ms": 10.1272
+    },
+    "usage": {
+      "completion_tokens": 117,
+      "prompt_tokens": 472,
+      "prompt_tokens_details": {
+        "cached_tokens": 467
+      },
+      "total_tokens": 589
+    }
+  },
+  "response_text": "{\"choices\":[{\"finish_reason\":\"tool_calls\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"We need to use weather tool to check, give answer in Celsius. Use get_current_weather with city Reykjavik, unit celsius. The tool requires city string. Probably \\\"Reykjavik\\\". Unit celsius.\\n\\nWe must call function.\",\"tool_calls\":[{\"type\":\"function\",\"function\":{\"name\":\"get_current_weather\",\"arguments\":\"{\\\"city\\\":\\\"Reykjavik\\\",\\\"unit\\\":\\\"celsius\\\"}\"},\"id\":\"c0dWbRiGgQR7eym62K9ztGEZmKdHMugu\"}]}}],\"created\":1786912313,\"model\":\"muse-glimmer-30b\",\"system_fingerprint\":\"b1-3cb7ffb\",\"object\":\"chat.completion\",\"usage\":{\"completion_tokens\":117,\"prompt_tokens\":472,\"total_tokens\":589,\"prompt_tokens_details\":{\"cached_tokens\":467}},\"id\":\"chatcmpl-Hud34gi5f0AQvodHJc3kgzM2Tg5zUYsr\",\"timings\":{\"cache_n\":467,\"prompt_n\":5,\"prompt_ms\":50.636,\"prompt_per_token_ms\":10.1272,\"prompt_per_second\":98.74397661742633,\"predicted_n\":117,\"predicted_ms\":446.683,\"predicted_per_token_ms\":3.850715517241379,\"predicted_per_second\":259.69199633744734,\"draft_n\":270,\"draft_n_accepted\":99}}",
+  "status_code": 200,
+  "url": "http://127.0.0.1:8195/v1/chat/completions"
+}
