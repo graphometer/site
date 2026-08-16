@@ -3,40 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Graphometer Workbench</title>
-<meta name="description" content="Graphometer Workbench: a local interface for the Grok Build coding agent. In development.">
+<title>Graphometer Workbench, for Grok Build</title>
+<meta name="description" content="Graphometer Workbench, for Grok Build: a local, readable window on the Grok Build coding agent. It asks before it changes your files, lets you review and undo one change at a time, and survives the agent dying. Runs on your machine and collects nothing itself. Open source, MIT.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
     --bg:#0b0c0e; --panel:#111318; --line:#23262d;
-    --ink:#e7eaef; --dim:#9aa1ac; --faint:#6b7280;
-    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#8b929e;
+    --gold:#c9a45c; --gold-dim:#a38b54;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
   body{
     background:var(--bg); color:var(--ink);
-    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--sans);
     line-height:1.6; -webkit-font-smoothing:antialiased;
     min-height:100vh; display:flex; flex-direction:column;
+    overflow-wrap:break-word;
   }
   a{color:var(--gold); text-decoration:none}
   a:hover{text-decoration:underline}
-  .wrap{max-width:760px;margin:0 auto;padding:0 24px;width:100%}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;width:100%}
+  .rule{height:1px;background:var(--line)}
+
+  /* ---------- header (exact) ---------- */
   header{padding:28px 0;border-bottom:1px solid var(--line)}
-  .brand{display:flex;align-items:center;gap:14px}
-  .brand img{width:32px;height:32px}
-  .brand span{font-size:14px;letter-spacing:.42em;font-weight:600;text-transform:uppercase}
-  main{flex:1;display:flex;align-items:center;padding:72px 0}
-  .chip{display:inline-block;border:1px solid var(--line);color:var(--dim);
-    border-radius:999px;padding:3px 12px;font-size:11px;letter-spacing:.2em;
-    text-transform:uppercase;font-weight:600;margin-bottom:22px}
-  h1{font-size:clamp(28px,4.5vw,40px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
-  .descriptor{margin-top:8px;color:var(--gold);font-size:15px;letter-spacing:.06em}
-  p.body{margin-top:22px;color:var(--dim);max-width:56ch;font-size:16px}
-  p.soon{margin-top:22px;color:var(--faint);font-size:14px}
-  .fineprint{margin-top:34px;font-size:12.5px;color:var(--faint)}
-  footer{border-top:1px solid var(--line);padding:28px 0 40px}
-  footer p{font-size:12.5px;color:var(--faint)}
+  .brand{display:flex;align-items:center;gap:18px}
+  @media (max-width:480px){
+    .brand span{font-size:16px!important;letter-spacing:.2em!important}
+    .brand svg{width:44px!important;height:44px!important}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:78px 0 8px}
+  .hero .name{
+    font-size:clamp(26px,5.6vw,56px);font-weight:700;letter-spacing:-.02em;
+    line-height:1.08;overflow-wrap:anywhere
+  }
+  .hero .name em{font-style:normal;color:var(--gold);font-weight:700}
+  .hero .tagline{
+    margin-top:22px;max-width:34ch;color:var(--ink);font-weight:600;
+    font-size:clamp(18px,2.7vw,23px);line-height:1.25
+  }
+  .hero p.lead{margin-top:20px;max-width:60ch;color:var(--dim);font-size:clamp(16px,2.1vw,17px)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:12.5px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 15px;letter-spacing:.01em
+  }
+
+  /* ---------- buttons ---------- */
+  .ctarow{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;margin-top:30px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;
+    letter-spacing:.01em;border-radius:10px;padding:13px 22px;border:1px solid transparent;
+    transition:background-color .15s ease,border-color .15s ease,color .15s ease
+  }
+  .btn-primary{background:var(--gold);color:#0b0c0e;border-color:var(--gold)}
+  .btn-primary:hover{background:#d8b673;border-color:#d8b673;text-decoration:none}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--gold-dim);text-decoration:none}
+  .btn svg{width:17px;height:17px;flex:none}
+  .ctarow .subnote{font-size:13px;color:var(--faint);width:100%;margin-top:2px;max-width:60ch}
+
+  /* ---------- film ---------- */
+  .film{padding:40px 0 60px}
+  .film .kicker{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:20px}
+  .film .kicker .lbl{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-dim);font-weight:600
+  }
+  .film .kicker p{color:var(--dim);font-size:14.5px;max-width:60ch}
+  video{width:100%;border-radius:12px;border:1px solid var(--line);background:#000;display:block}
+  .film .cap{margin-top:14px;color:var(--faint);font-size:13px;max-width:66ch}
+
+  /* ---------- transcript ---------- */
+  .transcript{margin-top:18px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .transcript>summary{
+    cursor:pointer;padding:14px 18px;font-size:14px;font-weight:600;color:var(--ink);list-style:none
+  }
+  .transcript>summary::-webkit-details-marker{display:none}
+  .transcript>summary::before{content:"\25B8\00a0";color:var(--gold)}
+  .transcript[open]>summary::before{content:"\25BE\00a0"}
+  .transcript .tbody{padding:2px 18px 18px}
+  .transcript .tbody p{color:var(--dim);font-size:14px;margin-top:12px;max-width:70ch}
+
+  /* ---------- generic section ---------- */
+  section{padding:60px 0}
+  .sechead{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .secnum{font-family:var(--mono);font-size:12.5px;color:var(--gold);letter-spacing:.16em;flex:none}
+  h2{font-size:clamp(22px,3.5vw,29px);font-weight:650;letter-spacing:-.01em;line-height:1.2}
+  h2 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--dim);max-width:62ch;margin-top:14px;font-size:16px}
+
+  /* ---------- primary features ---------- */
+  .feats{display:grid;gap:16px;margin-top:38px}
+  .feat{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:26px 28px;display:grid;grid-template-columns:auto 1fr;gap:8px 22px;
+    align-items:start;transition:border-color .15s ease
+  }
+  .feat:hover{border-color:var(--gold-dim)}
+  .feat .idx{
+    font-family:var(--mono);font-size:13px;color:var(--gold-dim);letter-spacing:.1em;
+    grid-row:1 / span 4;padding-top:3px
+  }
+  .feat h3{font-size:18.5px;font-weight:650;letter-spacing:-.005em;color:var(--ink)}
+  .feat p{color:var(--dim);margin-top:9px;max-width:64ch;font-size:15.5px}
+  .feat .measured{
+    margin-top:14px;padding-left:14px;border-left:2px solid var(--gold-dim);
+    color:var(--faint);font-size:13.5px;max-width:64ch;line-height:1.5
+  }
+  .feat .measured b{color:var(--gold);font-weight:600}
+  .feat .payoff{margin-top:14px;color:var(--ink);font-size:15px;font-weight:600;line-height:1.5}
+  @media (max-width:520px){
+    .feat{grid-template-columns:1fr;gap:6px;padding:22px}
+    .feat .idx{grid-row:auto;padding-top:0}
+  }
+
+  /* ---------- secondary features ---------- */
+  .more{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
+  .mcard{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px;transition:border-color .15s ease
+  }
+  .mcard:hover{border-color:var(--gold-dim)}
+  .mcard h3{font-size:15.5px;font-weight:650;color:var(--ink);margin-bottom:8px}
+  .mcard p{color:var(--dim);font-size:14px}
+  @media (max-width:820px){.more{grid-template-columns:1fr}}
+
+  /* ---------- trust band ---------- */
+  .trust{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .trust h2{max-width:24ch}
+  .trust .lede{max-width:64ch}
+  .trustgrid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:34px
+  }
+  .titem{background:var(--panel);padding:20px 22px;display:grid;gap:6px}
+  .titem .t{font-size:15px;font-weight:650;color:var(--ink)}
+  .titem p{color:var(--dim);font-size:13.5px}
+  @media (max-width:640px){.trustgrid{grid-template-columns:1fr}}
+  .caveat{margin-top:26px;color:var(--faint);font-size:13.5px;max-width:74ch}
+
+  /* ---------- requirements ---------- */
+  .reqs{margin-top:34px;border-top:1px solid var(--line)}
+  .req{
+    display:grid;grid-template-columns:190px 1fr;gap:6px 28px;
+    padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline
+  }
+  .req .rk{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+  .req .rv{color:var(--dim);font-size:15px;max-width:62ch}
+  .req .rv code{font-family:var(--mono);font-size:13px;color:var(--ink)}
+  @media (max-width:560px){.req{grid-template-columns:1fr;gap:4px}}
+
+  /* ---------- final cta ---------- */
+  .get .lede{max-width:60ch}
+  .repo{
+    font-family:var(--mono);font-size:14px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:12px 16px;margin-top:26px;max-width:100%;overflow-wrap:anywhere
+  }
+  .repo .mk{color:var(--gold);margin-right:10px;user-select:none}
+  .repo a{color:var(--ink)}
+
+  /* ---------- footer (exact content) ---------- */
+  footer{border-top:1px solid var(--line);padding:34px 0 54px;margin-top:auto}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px;color:var(--faint)}
+  footer p{font-size:12.5px;color:var(--faint);max-width:74ch;margin-top:6px}
+
+  /* ---------- mobile rhythm ---------- */
+  @media (max-width:520px){
+    .hero{padding-top:48px}
+    section{padding:44px 0}
+    .nonaff{display:block;border-radius:8px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  }
 </style>
 </head>
 <body>
@@ -44,37 +190,301 @@
 <header>
   <div class="wrap">
     <div class="brand">
-      <a href="../" style="display:flex;align-items:center;gap:14px;color:inherit">
-        <img src="../logo.svg" alt="Graphometer mark">
-        <span>Graphometer</span>
+      <a href="../" style="display:flex;align-items:center;gap:18px;color:inherit">
+        <svg viewBox="0 0 64 64" aria-hidden="true" style="width:56px;height:56px;flex:none">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span style="font-size:20px;letter-spacing:.3em;font-weight:650;text-transform:uppercase">Graphometer</span>
       </a>
     </div>
   </div>
 </header>
 
 <main>
+
   <div class="wrap">
-    <span class="chip">In development</span>
-    <h1>Graphometer Workbench</h1>
-    <div class="descriptor">for Grok Build</div>
-    <p class="body">A local interface for the Grok Build coding agent, for
-    people who direct AI agents without living in a terminal. It puts the
-    agent's sessions, its work as it happens, and the moments it stops to ask
-    a question into one plain, readable window.</p>
-    <p class="soon">The full page is on its way. Until then, the
-    <a href="../">Graphometer home page</a> has the rest of the line.</p>
-    <div class="fineprint">Works with Grok Build. Not affiliated with,
-    endorsed by, or connected to xAI.</div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <h1 class="name">Graphometer Workbench<br><em>for Grok Build</em></h1>
+      <p class="tagline">See what Grok Build is doing, and stay in control.</p>
+      <p class="lead">A local, readable window on the Grok Build coding agent, for people who
+      direct AI agents without living in a terminal. It puts the agent's sessions, its work as
+      it happens, and every moment it stops to ask you a question into one plain screen.</p>
+      <div class="ctarow">
+        <a class="btn btn-primary" href="https://github.com/graphometer/workbench-for-grok-build">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Get it on GitHub
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/graphometer/workbench-for-grok-build#readme">Read the README</a>
+        <span class="subnote">Open source, MIT licensed. The README has the exact install steps.</span>
+      </div>
+      <div class="nonaff">Works with Grok Build. Not affiliated with, endorsed by, or connected to xAI.</div>
+    </div>
+
+    <!-- FILM -->
+    <div class="film">
+      <div class="kicker">
+        <span class="lbl">The film</span>
+        <p>Edited from real screen captures of the running app, narrated by the founder. Nothing on screen is mocked or generated.</p>
+      </div>
+      <video controls preload="metadata" poster="poster.jpg" playsinline width="1920" height="1080"
+        aria-label="Narrated screen-capture launch film of the Graphometer Workbench for Grok Build: permission prompts before file changes, per-change review and undo, the context meter, crash recovery, and session management, all shown in the running app.">
+        <source src="launch.mp4" type="video/mp4">
+        <track kind="captions" src="captions.vtt" srclang="en" label="English" default>
+        Your browser does not support the video tag.
+      </video>
+      <p class="cap">The five capabilities in the next section all appear in it, on screen.
+      Everything shown is something the agent actually reported.</p>
+
+      <details class="transcript">
+        <summary>Read the transcript</summary>
+        <div class="tbody">
+          <p>Introducing the Workbench, for Grok Build. We love Grok. We love Linux. We just
+          don't love living in the terminal. So we built a window onto Grok Build, for people
+          who'd rather vibe-code than type. Here's what that looks like.</p>
+          <p>You tell the agent what you want, and it starts thinking. But before it changes a
+          single file, it stops and asks, in its own words. You read it, click Yes, and only
+          then does it write the file. That little line? That's what it cost. Nothing changes
+          your files until you say so.</p>
+          <p>The agent just made three changes. This drawer lists every file it touched, with
+          the real count of lines added and removed, nothing guessed. Open one and see it
+          before and after, side by side. Don't like this change? Click Undo. It tells you in
+          plain words what that will do, you confirm, and that one change is gone, the other two
+          stay put. And here's the part that matters most: if you edited that file yourself,
+          undoing the agent's work never touches what you wrote. Your work stays yours.</p>
+          <p>This meter shows how full the agent's working memory is right now, and the numbers
+          actually add up, because we checked. Feeling crowded? Click Compact to clear space,
+          and watch the real number drop. Below that, your privacy settings sit next to where
+          each one comes from. And the only switch that shares more of your data always asks you
+          first.</p>
+          <p>Now watch us kill the agent mid-sentence, on purpose, for real. No blank screen, no
+          fake "everything's fine." A plain red line tells you exactly what happened: the agent
+          was killed. Then the app reloads every session from the files saved on your machine,
+          marks it recovered, and the next question answers fine. Still here.</p>
+          <p>Every session on your machine, together in one list, grouped by folder. Open a
+          second one alongside it. Rename this one right where it sits. Fold a group and keep
+          the count. Run several at once, everything in one place.</p>
+          <p>So that's the Workbench, for Grok Build. It doesn't change what the agent can do,
+          it makes what it already does easy to see, and easy to use. Browse for a file instead
+          of typing out the path. Start a session, and find it again later. Rename your work,
+          undo any change, and always know where your privacy settings stand. The Workbench runs
+          on your own machine, it collects nothing itself, and it's free and open source. We
+          made Grok Build easier to build with. That's the Workbench. For Grok Build.</p>
+        </div>
+      </details>
+    </div>
+
   </div>
+
+  <div class="rule"></div>
+
+  <!-- PRIMARY FEATURES -->
+  <section>
+    <div class="wrap">
+      <div class="sechead"><span class="secnum">01-05</span><h2>What it does, <em>shown in the film</em></h2></div>
+      <p class="lede">Five capabilities, each demonstrated on screen. A measured note or the
+      payoff under each one is the limit or the design decision behind it.</p>
+
+      <div class="feats">
+
+        <div class="feat">
+          <div class="idx">01</div>
+          <h3>It asks before it changes your files</h3>
+          <p>Permission cards, written in the agent's own words. In Ask mode, the Workbench
+          shows the agent's own options and relays no approval until you pick one. The agent,
+          not the Workbench, then writes the file. You see exactly what it wants to do before
+          it does it.</p>
+          <div class="payoff">Auto-approve exists, and it is honest too: one clearly labelled
+          switch, confirmed on the way on, applying to every session in the window. Until you
+          flip it, every request is a card in front of you, and the Workbench never invents a
+          button.</div>
+        </div>
+
+        <div class="feat">
+          <div class="idx">02</div>
+          <h3>Review and undo, one change at a time</h3>
+          <p>Every changed file, with real plus-added and minus-removed counts, expandable to
+          the full before-and-after. Undo any single change.</p>
+          <div class="measured">The Workbench's single-change undo <b>leaves edits you made
+          yourself untouched</b>. Your work stays yours.</div>
+        </div>
+
+        <div class="feat">
+          <div class="idx">03</div>
+          <h3>A context meter that adds up</h3>
+          <p>The segments genuinely add up to the window. The meter reads what the agent
+          reports, or it shows nothing at all.</p>
+          <div class="measured">A live mid-turn tick was built, <b>measured wrong on the wire,
+          and removed</b>. A number the Workbench cannot stand behind is a number it does not
+          display.</div>
+        </div>
+
+        <div class="feat">
+          <div class="idx">04</div>
+          <h3>It survives the agent dying</h3>
+          <p>Kill the agent mid-turn and the page says the agent process is gone, then reloads
+          every session from the files on your machine and marks it recovered.</p>
+          <div class="measured">Never a blank page; <b>never a recovery it cannot verify</b>.</div>
+        </div>
+
+        <div class="feat">
+          <div class="idx">05</div>
+          <h3>Every session in one sidebar</h3>
+          <p>All your sessions grouped by folder, several live at once on a single agent. Rename
+          them, organize them, and move between them without losing your place.</p>
+          <div class="payoff">One window for all of it, instead of one terminal tab per thing you started.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- SECONDARY FEATURES -->
+  <section>
+    <div class="wrap">
+      <div class="sechead"><span class="secnum">06-08</span><h2>And more</h2></div>
+      <p class="lede">Beyond the film, the same discipline: say only what is true, and
+      refuse visibly rather than guess.</p>
+
+      <div class="more">
+        <div class="mcard">
+          <h3>Answer in the agent's own words</h3>
+          <p>Permission, plan-approval and question cards use the agent's own option labels,
+          verbatim. If it offers no options, the app refuses visibly rather than inventing one.</p>
+        </div>
+        <div class="mcard">
+          <h3>Reach for a file, not a path</h3>
+          <p>Browse for a file instead of typing its path, open new sessions, and export or
+          import whole sessions when you need to move them.</p>
+        </div>
+        <div class="mcard">
+          <h3>Shows the agent's own retention settings</h3>
+          <p>These are Grok Build's own retention settings, which the Workbench reads back and
+          displays next to each source, not a statement about xAI's data practices. The
+          one changeable setting is set through the agent's own protocol, then verified by
+          reading it back.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAND -->
+  <section class="trust">
+    <div class="wrap">
+      <div class="sechead"><span class="secnum">09</span><h2>It runs on your machine, and <em>collects nothing itself</em>.</h2></div>
+      <p class="lede">These are properties of the Workbench, checked in the code and against the
+      recorded checks, not promises about Grok Build or xAI.</p>
+
+      <div class="trustgrid">
+        <div class="titem">
+          <div class="t">Loopback only</div>
+          <p>The Workbench server binds 127.0.0.1 and no other interface: its listen
+          address, not a claim about Grok Build or xAI.</p>
+        </div>
+        <div class="titem">
+          <div class="t">Zero telemetry</div>
+          <p>The Workbench sends nothing out: no analytics, no phone-home, no tracking of any kind.</p>
+        </div>
+        <div class="titem">
+          <div class="t">Per-run access token</div>
+          <p>The Workbench gates its local interface with a fresh access token each time the
+          server starts.</p>
+        </div>
+        <div class="titem">
+          <div class="t">Strict Content-Security-Policy</div>
+          <p>The Workbench holds its page to a locked-down CSP that permits only what it needs
+          and nothing more.</p>
+        </div>
+        <div class="titem">
+          <div class="t">Agent output is text, never code</div>
+          <p>The Workbench renders every string the agent sends as text, and never runs it as
+          markup or code.</p>
+        </div>
+        <div class="titem">
+          <div class="t">MIT licensed &middot; 1,400+ checks green</div>
+          <p>The Workbench is open source under the MIT license, with more than 1,400
+          deterministic checks that run green.</p>
+        </div>
+      </div>
+
+      <p class="caveat">These claims are about the Workbench itself. They say nothing about what
+      Grok Build or xAI do on their side. The Workbench is the local window you run; how the
+      agent behaves upstream is the agent's own matter.</p>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- REQUIREMENTS -->
+  <section>
+    <div class="wrap">
+      <div class="sechead"><span class="secnum">10</span><h2>What you need to run it</h2></div>
+      <p class="lede">Small on purpose. The server runs TypeScript directly: no build step, no
+      dependencies to install.</p>
+
+      <div class="reqs">
+        <div class="req">
+          <div class="rk">Operating system</div>
+          <div class="rv">Linux (tested), or Windows via WSL2. The process-safety machinery is
+          Linux-specific by design. macOS is unverified and not claimed.</div>
+        </div>
+        <div class="req">
+          <div class="rk">Runtime</div>
+          <div class="rv"><code>Node.js 22+</code>. The server runs TypeScript directly:
+          no build step, no dependencies.</div>
+        </div>
+        <div class="req">
+          <div class="rk">Agent</div>
+          <div class="rv">Grok Build, installed separately. The Workbench is a window on that
+          agent, not a substitute.</div>
+        </div>
+        <div class="req">
+          <div class="rk">Install</div>
+          <div class="rv">From the public repository. Clone it, follow the README, and you are running.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- FINAL CTA -->
+  <section class="get">
+    <div class="wrap">
+      <div class="sechead"><span class="secnum">&rarr;</span><h2>Ready when you are. <em>It's on GitHub</em>.</h2></div>
+      <p class="lede">The whole thing lives in one public repository under the MIT license.
+      Read the code and run it locally. The Workbench itself needs no account and no sign-up;
+      Grok Build needs its own login, installed separately.</p>
+      <div class="repo"><span class="mk" aria-hidden="true">&rsaquo;</span><a href="https://github.com/graphometer/workbench-for-grok-build">github.com/graphometer/workbench-for-grok-build</a></div>
+      <div class="ctarow">
+        <a class="btn btn-primary" href="https://github.com/graphometer/workbench-for-grok-build">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Open the repository
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/graphometer/workbench-for-grok-build/blob/main/SECURITY.md">Read SECURITY</a>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
   <div class="wrap">
-    <p><a href="../">Graphometer</a> ·
-    <a href="https://grantwilliams.ai">About</a> ·
-    hello@graphometer.ai</p>
-    <p>Copyright 2026 Grant Williams. This site is static. No scripts,
-    no tracking, no cookies.</p>
+    <div class="foot-links">
+      <a href="https://grantwilliams.ai">About</a> &middot;
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> &middot;
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is checked against
+    recorded runs.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: not affiliated with, endorsed by, or
+    connected to xAI. This site is static. No scripts, no tracking, no cookies.</p>
   </div>
 </footer>
 
