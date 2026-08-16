@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field cards: models, measured</title>
+<meta name="description" content="The measured field cards: records of models actually running on one desktop bench, every number from recorded runs. What each model is, its measured decode speed, its measured date, and the card behind it.">
+<link rel="canonical" href="https://graphometer.ai/field-cards/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Field cards: models, measured">
+<meta property="og:description" content="Measured records of models actually running on one desktop bench: what each model is, its measured decode speed, and when it was measured. Every number from recorded runs, each linked to its card.">
+<meta property="og:url" content="https://graphometer.ai/field-cards/">
+<meta property="og:image" content="https://graphometer.ai/og/field-cards.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Field cards: models, measured">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Field cards: models, measured">
+<meta name="twitter:description" content="Measured records of models actually running on one desktop bench: what each model is, its measured decode speed, and when it was measured. Every number from recorded runs, each linked to its card.">
+<meta name="twitter:image" content="https://graphometer.ai/og/field-cards.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Field cards · published 2026-08-16</div>
+      <h1>Field cards: <em>models, measured</em></h1>
+      <p class="lead">A field card is a measured record of a model actually
+      running on this project's bench: one desktop, dated runs, evidence
+      kept. Every number on a card comes from those recorded runs or from
+      the model files on our disk, and where a fact is a vendor's claim
+      instead, the card says so in place. That makes a field card a
+      different document from a vendor's model card: the model card
+      describes what a model is built to do, and a field card records what
+      one copy of it measurably did here.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to any model maker named on this page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Side by side</h2>
+      <p>One row per measured model, ordered small to large by total
+      parameters. Every cell repeats a number its card already publishes,
+      with that card's own qualifiers; nothing in this table is a new
+      measurement, and the rows are not a benchmark of one model against
+      another.</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Model</th><th>What it is</th><th>Measured decode, tokens per second</th><th>Measured</th></tr></thead>
+          <tbody>
+            <tr><td><a href="../lfm25-26b/">LFM2.5-2.6B</a></td><td class="t">A single network, 2.69B per the card</td><td class="t">489.8 median on the recommended Q4_K_M file</td><td class="t">2026-08-04, updated 2026-08-07</td></tr>
+            <tr><td><a href="../qwen38-27b/">Qwen3.8-27B</a></td><td class="t">Dense, 27B</td><td class="t">72.4 prose, 118.7 structured, gated draft head, thinking off</td><td class="t">2026-08-14, release day</td></tr>
+            <tr><td><a href="../qwen35/">Qwen3.5-122B</a></td><td class="t">Mixture of experts, 122B total, about 9.8B active per token</td><td class="t">26 to 38, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
+            <tr><td><a href="../mistral-medium-35/">Mistral Medium 3.5</a></td><td class="t">Dense, 128B class, 125.03B served</td><td class="t">about 1 alone, 2 to 5 with the vocabulary-repaired draft</td><td class="t">2026-08-06</td></tr>
+            <tr><td><a href="../qwen35/">Qwen3.5-397B</a></td><td class="t">Mixture of experts, 397B total, about 17.4B active per token</td><td class="t">14 to 20, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
+            <tr><td><a href="../kimi-k3/">Kimi K3</a></td><td class="t">Mixture of experts, 2.78T total, about 104B active per token</td><td class="t">0.18 to 0.28 (about 0.2)</td><td class="t">2026-08-01 to 08-05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">Each speed is the card's own headline number and
+      keeps the card's meaning: one configuration on one machine, a field
+      measurement rather than a benchmark. The LFM2.5-2.6B figure is an
+      end-to-end median on that card's recommended download, a run
+      diagnostic in the card's own words. The Qwen3.8-27B figures were
+      taken with thinking off on release day; the Kimi K3 range is the
+      current quant generation. Where a number needs more qualification
+      than a cell can carry, the card carries it; follow the links for the
+      full conditions.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>The cards</h2>
+      <ul class="plain">
+        <li><strong><a href="../qwen38-27b/">Qwen3.8-27B: day zero</a></strong>
+        · released and measured 2026-08-14. One model family with two
+        licenses, and a built-in draft head decoding prose at 72.4 tokens a
+        second gated, 65.9 with no speculation at all, 44.5 with the gate
+        removed.</li>
+        <li><strong><a href="../mistral-medium-35/">Field card: Mistral Medium 3.5</a></strong>
+        · runs 2026-08-06. A dense 128B-class model made genuinely usable
+        on one desktop: about 1 token per second alone, 2 to 5 once a
+        two-token vocabulary repair let the draft model load.</li>
+        <li><strong><a href="../qwen35/">Field card: Qwen3.5 (122B and 397B)</a></strong>
+        · runs 2026-08-05 to 08-06. Two models into service on one desktop
+        by the same method, and the trap next to their built-in guessing
+        head: run it without its confidence gate and creative text goes
+        slower than no speculation at all.</li>
+        <li><strong><a href="../lfm25-26b/">Field card: LFM2.5-2.6B</a></strong>
+        · measured 2026-08-04, updated 2026-08-07. The context window as
+        measured, which file to download, how big an output budget it
+        really needs, and which sampling settings are actually in
+        effect.</li>
+        <li><strong><a href="../kimi-k3/">Field card: Kimi K3</a></strong>
+        · runs 2026-08-01 to 2026-08-05. The complete model, all 93 blocks
+        and all 896 experts, generating at about 0.2 tokens per second: one
+        careful question answered overnight from hardware you own.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>What gets a model on this page</h2>
+      <p>Three things, and only these: the model ran on this bench, it was
+      measured while it ran, and the run was recorded with its evidence
+      kept. No entry comes from a spec sheet, a leaderboard, or another
+      site's numbers. What a number must have behind it before it is
+      published here is written down on the
+      <a href="../method/">method page</a>.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: model names appear for
+    identification only; not affiliated with, endorsed by, or sponsored by
+    Liquid AI, Beijing Moonshot Technology Co., Ltd., Moonshot AI PTE. LTD.,
+    Mistral AI, the Qwen team, Alibaba Group, or their affiliates. This site
+    is static. No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

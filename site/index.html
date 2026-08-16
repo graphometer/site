@@ -5,12 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Graphometer</title>
 <meta name="description" content="Seeing AI from the right angle. Free, open tools, resources, reports, and data that show what AI systems actually do.">
+<link rel="canonical" href="https://graphometer.ai/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Graphometer">
+<meta property="og:description" content="Seeing AI from the right angle. Open tools, field cards, and measured studies that show what AI systems actually do.">
+<meta property="og:url" content="https://graphometer.ai/">
+<meta property="og:image" content="https://graphometer.ai/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: seeing AI from the right angle">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Graphometer">
+<meta name="twitter:description" content="Seeing AI from the right angle. Open tools, field cards, and measured studies that show what AI systems actually do.">
+<meta name="twitter:image" content="https://graphometer.ai/og/home.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   :root{
     --bg:#0b0c0e; --panel:#111318; --line:#23262d;
     --ink:#e7eaef; --dim:#9aa1ac; --faint:#6b7280;
-    --gold:#c9a45c; --gold-dim:#8a7648;
+    --gold:#c9a45c; --gold-dim:#8a7648; --silver:#c9d2de;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
@@ -20,51 +35,134 @@
   }
   a{color:var(--gold); text-decoration:none}
   a:hover{text-decoration:underline}
+  code{overflow-wrap:anywhere}
   .wrap{max-width:960px;margin:0 auto;padding:0 24px}
-  header{padding:36px 0;border-bottom:1px solid var(--line)}
+  header{padding:30px 0 26px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:18px}
-  .brand svg{width:64px;height:64px;flex:none}
+  .brand svg{width:56px;height:56px;flex:none}
   .brand span{
-    font-size:clamp(22px,4.5vw,30px);letter-spacing:.3em;font-weight:650;
+    font-size:clamp(20px,4.5vw,26px);letter-spacing:.3em;font-weight:650;
     color:var(--ink);text-transform:uppercase
   }
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
   @media (max-width:480px){
     .brand{gap:14px}
-    .brand svg{width:44px;height:44px}
-    .brand span{font-size:17px;letter-spacing:.2em}
+    .brand svg{width:42px;height:42px}
+    .brand span{font-size:16px;letter-spacing:.2em}
   }
-  .hero{padding:92px 0 64px}
-  .hero h1{font-size:clamp(30px,5vw,46px);font-weight:650;letter-spacing:-.01em;line-height:1.15;max-width:20ch}
-  .hero h1 em{font-style:normal;color:var(--gold)}
-  .hero p.lead{margin-top:20px;max-width:58ch;color:var(--dim);font-size:17px}
-  .hero p.note{margin-top:24px;max-width:58ch;color:var(--faint);font-size:13px}
   .rule{height:1px;background:var(--line)}
-  section{padding:60px 0}
+  section{padding:56px 0}
   .eyebrow{
     font-size:12px;letter-spacing:.28em;text-transform:uppercase;
     color:var(--gold-dim);margin-bottom:26px;font-weight:600
   }
+
+  /* hero */
+  .hero{padding:64px 0 60px}
+  .hero .kicker{font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold-dim);font-weight:600;margin-bottom:18px;display:flex;
+    align-items:center;gap:12px;flex-wrap:wrap}
+  .chip{border:1px solid var(--gold-dim);color:var(--gold);border-radius:999px;
+    padding:2px 10px;font-size:11px;letter-spacing:.12em}
+  .chip.dev{border-color:var(--line);color:var(--dim)}
+  .herogrid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:36px;align-items:start}
+  @media (max-width:760px){.herogrid{grid-template-columns:1fr}}
+  .hero h1{font-size:clamp(34px,6vw,52px);font-weight:700;letter-spacing:-.01em;line-height:1.08}
+  .hero .h1sub{font-size:clamp(34px,6vw,52px);color:var(--gold);font-weight:700;
+    letter-spacing:-.01em;line-height:1.08;margin-top:2px}
+  .hero .h1sub .for{color:var(--dim);font-weight:650}
+  .hero p.tag{margin-top:18px;font-size:19px;color:var(--ink);max-width:44ch;font-weight:500}
+  .hero p.lead{margin-top:12px;max-width:54ch;color:var(--dim);font-size:16px}
+  .btnrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}
+  .btn{display:inline-block;border-radius:9px;padding:12px 22px;font-size:15px;
+    font-weight:650;letter-spacing:.01em}
+  .btn.primary{background:var(--gold);color:#0b0c0e}
+  .btn.primary:hover{background:#d8b56e;text-decoration:none}
+  .btn.ghost{border:1px solid var(--gold-dim);color:var(--gold)}
+  .btn.ghost:hover{border-color:var(--gold);text-decoration:none}
+  .trustline{margin-top:22px;font-size:13.5px;color:var(--dim);max-width:58ch}
+  .ethic{margin-top:26px;border-left:2px solid var(--gold-dim);padding:2px 0 2px 16px;
+    font-size:14.5px;color:var(--dim);max-width:52ch}
+  .fineprint{font-size:12.5px;color:var(--faint)}
+  .hero .fineprint{margin-top:18px}
+  .poster{display:block;position:relative}
+  .poster img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:12px}
+  .poster:hover img{border-color:var(--gold-dim)}
+  .playhint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .playhint span{background:rgba(11,12,14,.82);border:1px solid var(--gold-dim);
+    color:var(--ink);border-radius:999px;padding:10px 20px;font-size:14px;font-weight:600}
+  .postercap{margin-top:10px;font-size:12.5px;color:var(--faint);max-width:44ch}
+
+  /* what this is */
+  .whatis p{color:var(--dim);max-width:64ch}
+  .whatis p.big{color:var(--ink);font-size:18px;max-width:56ch}
+  .whatis p.note{margin-top:12px;font-size:13px;color:var(--faint)}
+
+  /* doors */
+  .doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  @media (max-width:760px){.doors{grid-template-columns:1fr}}
+  .door{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px;position:relative;transition:border-color .15s ease}
+  .door:hover{border-color:var(--gold-dim)}
+  .door h3{font-size:16px;font-weight:650;margin-bottom:8px}
+  .door p{font-size:14px;color:var(--dim)}
+  .door .go{display:block;margin-top:12px;font-size:13.5px}
+  a.doorlink::after{content:"";position:absolute;inset:0;border-radius:12px}
+
+  /* cards */
   .cards{display:grid;gap:18px}
   .card{
     background:var(--panel);border:1px solid var(--line);border-radius:12px;
-    padding:28px;display:grid;gap:12px;position:relative;
+    padding:26px;display:grid;gap:11px;position:relative;
     transition:border-color .15s ease
   }
   .card:hover{border-color:var(--gold-dim)}
   a.cardlink::after{content:"";position:absolute;inset:0;border-radius:12px}
   .card .links a{position:relative;z-index:1}
-  .card .sub{color:var(--gold);font-size:16px;letter-spacing:.05em;
-    font-weight:600;margin-top:-4px}
-  .card .meta{display:flex;align-items:center;gap:12px;font-size:12px;
+  .card .sub{color:var(--gold);font-size:15px;letter-spacing:.04em;font-weight:600;margin-top:-4px}
+  .card .meta{display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap;
     letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:600}
-  .chip{border:1px solid var(--gold-dim);color:var(--gold);border-radius:999px;
-    padding:2px 10px;font-size:11px;letter-spacing:.12em}
-  .chip.dev{border-color:var(--line);color:var(--dim)}
-  .card h3{font-size:20px;font-weight:650}
-  .card p{color:var(--dim);max-width:66ch}
+  .card h3{font-size:19px;font-weight:650}
+  .card p{color:var(--dim);max-width:66ch;font-size:15px}
   .card .links{font-size:14px}
-  .fineprint{font-size:12.5px;color:var(--faint)}
+
+  /* featured stats */
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  @media (max-width:760px){.stats{grid-template-columns:1fr}}
+  .stat .n{font-size:clamp(30px,4.6vw,42px);line-height:1.1;color:var(--gold);
+    font-weight:700;letter-spacing:-.01em}
+  .stat p{font-size:14px;color:var(--dim);margin-top:10px}
+  .stat .date{margin-top:10px;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--faint);font-weight:600}
+
+  /* compact grids and lists */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:700px){.grid2{grid-template-columns:1fr}}
+  .mini{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;position:relative;transition:border-color .15s ease}
+  .mini:hover{border-color:var(--gold-dim)}
+  .mini h3{font-size:16.5px;font-weight:650}
+  .mini p{font-size:14px;color:var(--dim);margin-top:6px}
+  .mini .date{margin-top:10px;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--faint);font-weight:600}
+  .allof{margin-top:20px;font-size:14.5px}
+  .listrow{border-top:1px solid var(--line);padding:18px 0;position:relative}
+  .listrow:last-of-type{border-bottom:1px solid var(--line)}
+  .listrow .meta{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--faint);font-weight:600;margin-bottom:6px}
+  .listrow h3{font-size:17px;font-weight:650;display:inline}
+  .listrow p{font-size:14px;color:var(--dim);margin-top:4px;max-width:70ch}
+
+  /* method strip */
+  .method p{color:var(--dim);max-width:64ch}
+  .method p.rulebig{color:var(--ink);font-size:17px;max-width:60ch}
+  .method .go{display:block;margin-top:16px;font-size:14.5px}
+  .method p.static{margin-top:14px;font-size:13.5px;color:var(--faint)}
+
   .workshop p{color:var(--dim);max-width:64ch}
+
   footer{border-top:1px solid var(--line);padding:34px 0 54px}
   footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
   footer .foot-links{margin-bottom:12px;font-size:13.5px}
@@ -87,6 +185,13 @@
       </svg>
       <span>Graphometer</span>
     </div>
+    <nav class="sitenav" aria-label="Site">
+      <a href="tools/">Tools</a>
+      <a href="field-cards/">Model field cards</a>
+      <a href="studies/">Studies</a>
+      <a href="method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
   </div>
 </header>
 
@@ -94,12 +199,109 @@
   <div class="wrap">
 
     <div class="hero">
-      <h1>Seeing AI from <em>the right angle</em>.</h1>
-      <p class="lead">Free, open tools, resources, reports, and data that show
-      what AI systems actually do.</p>
+      <div class="kicker"><span class="chip">Released 2026-08-14</span> <span>Free and open source</span> <span>Instrument 02</span></div>
+      <div class="herogrid">
+        <div>
+          <h1>Graphometer Workbench</h1>
+          <div class="h1sub"><span class="for">for</span> Grok Build</div>
+          <p class="tag">See what Grok Build is doing, and stay in control.</p>
+          <p class="lead">A friendly, readable window on the Grok Build coding
+          agent, for people who would rather vibe-code than live in a
+          terminal. Everything the agent does becomes plain and clickable: it
+          asks before it touches your files, you review and undo one change
+          at a time, and it survives the agent dying.</p>
+          <div class="btnrow">
+            <a class="btn primary" href="https://github.com/graphometer/workbench-for-grok-build">Get it on GitHub</a>
+            <a class="btn ghost" href="workbench/">Watch the 3 minute film</a>
+          </div>
+          <p class="trustline">MIT licensed · 1,400+ checks green · Runs on
+          your machine and collects nothing itself · Linux, or Windows via
+          WSL2 · Node.js 22+ and Grok Build, installed separately</p>
+          <p class="ethic">During development we built a live progress number,
+          checked it against what the agent actually reported, found it
+          wrong, and removed it. A number the Workbench cannot stand behind
+          is a number it does not display.</p>
+          <div class="fineprint">Works with Grok Build. Not affiliated with,
+          endorsed by, or connected to xAI.</div>
+        </div>
+        <div>
+          <a class="poster" href="workbench/" aria-label="Watch the three minute Workbench film on the Workbench page">
+            <img src="workbench/poster.jpg" alt="A still from the Workbench launch film: the Workbench interface showing a session with Grok Build" width="1280" height="720">
+            <span class="playhint"><span>Watch the film</span></span>
+          </a>
+          <p class="postercap">Just over three minutes, edited from real screen
+          captures of the running app, narrated by the founder. Nothing on
+          screen is mocked or generated.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+
+    <section class="whatis">
+      <div class="eyebrow">Seeing AI from the right angle</div>
+      <p class="big">Graphometer builds instruments that make AI systems easier
+      to see, test, and control, and publishes measured records of models
+      actually running. Free, open, and every measured number traces to a
+      recorded run.</p>
       <p class="note">A graphometer is a surveyor's instrument for measuring
       angles. We took the name seriously.</p>
-    </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section>
+      <div class="eyebrow">Start here</div>
+      <div class="doors">
+        <div class="door">
+          <h3>I run models locally</h3>
+          <p>Field cards: measured records of models running on one desktop,
+          from a 2.6B to the complete 2.78-trillion-parameter Kimi K3.</p>
+          <a class="doorlink go" href="field-cards/">The field cards</a>
+        </div>
+        <div class="door">
+          <h3>I direct a coding agent</h3>
+          <p>The Workbench puts the agent's sessions, its changes, and its
+          questions into one plain, readable window on your machine.</p>
+          <a class="doorlink go" href="workbench/">The Workbench</a>
+        </div>
+        <div class="door">
+          <h3>I test model endpoints</h3>
+          <p>Routecheck runs one command against an OpenAI-compatible endpoint
+          and writes a dated, plain-English diagnostic card.</p>
+          <a class="doorlink go" href="routecheck/">Routecheck</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section>
+      <div class="eyebrow">Latest measurements</div>
+      <div class="stats">
+        <div class="card stat">
+          <div class="n">72.4 tok/s</div>
+          <p>Qwen3.8-27B's own draft head decoding prose, measured the day the
+          weights went public.</p>
+          <div class="date">Measured 2026-08-14</div>
+          <div class="links"><a class="cardlink" href="qwen38-27b/">The day-zero field card</a></div>
+        </div>
+        <div class="card stat">
+          <div class="n">2.78T params</div>
+          <p>The complete Kimi K3, topology intact under a 1-bit expert build,
+          generating on one desktop at about 0.2 tokens per second.</p>
+          <div class="date">Runs 2026-08-01 to 08-05</div>
+          <div class="links"><a class="cardlink" href="kimi-k3/">The field card</a></div>
+        </div>
+        <div class="card stat">
+          <div class="n">19.8% slower</div>
+          <p>What llama.cpp's shipped speculation default did to prose, in the
+          same run that made structured output 22.5% faster.</p>
+          <div class="date">Measured 2026-08-10</div>
+          <div class="links"><a class="cardlink" href="speculation-gate/">The study</a></div>
+        </div>
+      </div>
+    </section>
 
     <div class="rule"></div>
 
@@ -123,179 +325,137 @@
         </div>
 
         <div class="card">
-          <div class="meta">Field card <span class="chip">New</span></div>
-          <h3>Field card: LFM2.5-2.6B</h3>
-          <p>A measured field card for Liquid AI's new small model: the
-          context window as measured, which file to download, the output
-          budget it really needs, and which sampling settings are actually
-          in effect. Every number from recorded runs.</p>
-          <div class="links"><a class="cardlink" href="lfm25-26b/">Read the field card</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to Liquid AI.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Field card <span class="chip">New</span></div>
-          <h3>Field card: Kimi K3</h3>
-          <p>The complete 2.78-trillion-parameter Kimi K3, topology intact
-          under a 1-bit expert build, generating on one desktop at about
-          0.2 tokens per second. Placement arithmetic worked out before
-          loading, phase telemetry, and speeds with nothing softened. Every
-          number from recorded runs or the model files themselves.</p>
-          <div class="links"><a class="cardlink" href="kimi-k3/">Read the field card</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to Moonshot AI or Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Field card <span class="chip">New</span></div>
-          <h3>Field card: Mistral Medium 3.5</h3>
-          <p>Mistral's dense 128B-class model made usable on one desktop:
-          the memory-bandwidth physics measured four ways, a two-token
-          vocabulary repair that let a small draft model do the guessing
-          (about 1 token per second alone, 2 to 5 with it), and timed
-          agent work with the protocol disclosed. Every number from
-          recorded runs.</p>
-          <div class="links"><a class="cardlink" href="mistral-medium-35/">Read the field card</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to Mistral AI or Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Field card <span class="chip">New</span></div>
-          <h3>Field card: Qwen3.5 (122B and 397B)</h3>
-          <p>Two Qwen3.5 models on one desktop: 26 to 38 tokens per second
-          on the 122B, 14 to 20 on the 397B, and the confidence-gate trap
-          measured on the 122B, where ungated speculation ran slower than
-          none on creative text while every benchmark shape looked fine.
-          Every number from recorded runs or the model files
-          themselves.</p>
-          <div class="links"><a class="cardlink" href="qwen35/">Read the field card</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the Qwen team, Alibaba Group, or Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Field card <span class="chip">New</span></div>
-          <h3>Qwen3.8-27B: day zero</h3>
-          <div class="sub">An early look on release day: a genuine Apache 2.0
-          license the 2.4T sibling does not carry, and a built-in draft head
-          measured at 72.4 tokens a second</div>
-          <p>Qwen3.8-27B went public at about 11:00 EDT on 2026-08-14 and was
-          downloaded, hash-verified, served and measured on one desktop the
-          same evening. A dense 27B with hybrid attention, natively multimodal
-          but served text-only here, running on a llama.cpp build this machine
-          already had. Seven measured profiles with the exact invocation, a
-          thinking off-switch and a budget floor that belongs to the task, and
-          the model's own draft head decoding prose at 72.4 tokens a second
-          gated, 65.9 with no speculation at all, and 44.5 with the gate
-          removed. Every figure traces to a data package of the run's own
-          files.</p>
-          <div class="links"><a class="cardlink" href="qwen38-27b/">Read the field card</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the Qwen team, Alibaba Group, the llama.cpp
-          project or ggml-org, or Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Guide <span class="chip">New</span></div>
-          <h3>Which Qwen should I run?</h3>
-          <p>A hardware-honest guide to the whole Qwen family: what your
-          machine can run from a laptop to a 397B on one desktop, a
-          two-command first install, downloadable known-good serving
-          profiles, and when the honest answer is the API. Measured rows
-          labeled measured; vendor rows labeled vendor.</p>
-          <div class="links"><a class="cardlink" href="qwen/">Read the guide</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the Qwen team or Alibaba Group.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Release watch <span class="chip">New</span></div>
-          <h3>Release watch: Qwen3.8</h3>
-          <p>What has actually shipped versus what is promised, verified
-          with dates: the Max model measured over the API including the
-          thinking-budget trap, the fake-repository hazard already live on
-          public hubs, and the exact battery we run the day real weights
-          land. Updates as things ship.</p>
-          <div class="links"><a class="cardlink" href="qwen38-readiness/">Read the release watch</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the Qwen team or Alibaba Group.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Incident report <span class="chip">New</span></div>
-          <h3>Empty Answer: how a reasoning model spends your whole budget thinking</h3>
-          <p>A reasoning model can spend your whole output budget thinking
-          and hand back nothing at all: a successful call, no error, an
-          empty answer, and a bill for the hidden tokens. One fixed prompt
-          across three serving lanes with a second vendor's model as a
-          control, the measuring instrument of ours it defeated, and how
-          to find your own budget floor instead of trusting a number.
-          Every figure traces to the download, and the few with no
-          retained body say so.</p>
-          <div class="links"><a class="cardlink" href="empty-answer/">Read the report</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the Qwen team, Alibaba Group, Z.ai, Ollama, or
-          OpenRouter.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Measured study <span class="chip">New</span></div>
-          <h3>Slower by default</h3>
-          <div class="sub">llama.cpp's speculative-decoding gate, measured on a
-          CPU-offloaded Qwen3.5 397B MoE</div>
-          <p>Speculative decoding is sold as a free lunch, and llama.cpp's
-          confidence gate on it has shipped three different defaults in two
-          years. On one CPU-offloaded 397B mixture-of-experts deployment,
-          the current default made prose 19.8% slower than no speculation
-          at all while making structured output 22.5% faster, in the same
-          run; every gate tested at or above 0.50 reversed the prose loss,
-          and the widely recommended 0.75 turns out to be the project's
-          own former shipped default. Two recorded runs with stated
-          intervals, every figure traced to the raw records.</p>
-          <div class="links"><a class="cardlink" href="speculation-gate/">Read the study</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to the llama.cpp project, ggml-org, the Qwen team,
-          Alibaba Group, or Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Measured study <span class="chip">New</span></div>
-          <h3>The wrong flag</h3>
-          <div class="sub">A Mistral Large 3 675B decode-speed gap traced to
-          llama.cpp's default thread count, not warmup</div>
-          <p>For six days our own records said llama.cpp's warmup pass was
-          the difference between about 6 tokens per second and 3.6 on a
-          CPU-offloaded 675B mixture-of-experts. A pre-registered
-          three-arm A/B traced the gap to llama.cpp's default thread
-          heuristic instead: it excludes efficiency cores and resolved to
-          4 compute threads on this 24-core CPU, roughly half this
-          deployment's warm decode speed left on the table by an
-          invisible default. The misattribution, the mechanism, and the
-          corrected records, every figure traced to the raw files.</p>
-          <div class="links"><a class="cardlink" href="l3-threads/">Read the study</a></div>
-          <div class="fineprint">Independent work. Not affiliated with, endorsed
-          by, or connected to Mistral AI, the llama.cpp project, ggml-org, or
-          Unsloth.</div>
-        </div>
-
-        <div class="card">
-          <div class="meta">Instrument 02 <span class="chip dev">In development</span></div>
+          <div class="meta">Instrument 02 <span class="chip">Released</span></div>
           <h3>Graphometer Workbench</h3>
           <div class="sub">for Grok Build</div>
-          <p>A local interface for the Grok Build coding agent, for people who
-          direct AI agents without living in a terminal. It puts the agent's
-          sessions, its work as it happens, and the moments it stops to ask a
-          question into one plain, readable window.</p>
+          <p>The featured instrument above: the agent's sessions, permission
+          cards in its own words, per-change review and undo, and a context
+          meter whose numbers add up, in one local window. MIT licensed,
+          launch film on the page.</p>
           <div class="links">
-            <a class="cardlink" href="workbench/">A first look</a>
+            <a class="cardlink" href="workbench/">The Workbench page</a> ·
+            <a href="https://github.com/graphometer/workbench-for-grok-build">github.com/graphometer/workbench-for-grok-build</a>
           </div>
           <div class="fineprint">Works with Grok Build. Not affiliated with,
           endorsed by, or connected to xAI.</div>
         </div>
 
+        <div class="card">
+          <div class="meta">Instrument 03 <span class="chip">Released</span></div>
+          <h3>Routecheck</h3>
+          <p>One command against an OpenAI-compatible endpoint produces a
+          dated diagnostic card, human-readable and machine-readable, with
+          every raw response retained: the output budget floor, the thinking
+          toggle, tool calls, structured output, retrieval, throughput.</p>
+          <div class="links">
+            <a class="cardlink" href="routecheck/">The Routecheck page</a> ·
+            <a href="https://github.com/graphometer/routecheck">github.com/graphometer/routecheck</a>
+          </div>
+        </div>
+
       </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section>
+      <div class="eyebrow">Model field cards</div>
+      <div class="grid2">
+        <div class="mini">
+          <h3><a href="qwen38-27b/">Qwen3.8-27B: day zero</a></h3>
+          <p>Downloaded, hash-verified, served and measured on release day:
+          seven profiles, a genuine Apache 2.0 license, the draft head at 72.4
+          tokens a second.</p>
+          <div class="date">Measured 2026-08-14</div>
+        </div>
+        <div class="mini">
+          <h3><a href="kimi-k3/">Kimi K3</a></h3>
+          <p>The complete 2.78-trillion-parameter model generating on one
+          desktop at about 0.2 tokens per second, with nothing softened.</p>
+          <div class="date">Runs 2026-08-01 to 08-05</div>
+        </div>
+        <div class="mini">
+          <h3><a href="qwen35/">Qwen3.5 (122B and 397B)</a></h3>
+          <p>26 to 38 tokens per second on the 122B, 14 to 20 on the 397B, and
+          the confidence-gate trap measured.</p>
+          <div class="date">Runs 2026-08-05 to 08-06</div>
+        </div>
+        <div class="mini">
+          <h3><a href="mistral-medium-35/">Mistral Medium 3.5</a></h3>
+          <p>A dense 128B made usable on one desktop: about 1 token per second
+          alone, 2 to 5 with a vocabulary-repaired draft model.</p>
+          <div class="date">Runs 2026-08-06</div>
+        </div>
+        <div class="mini">
+          <h3><a href="lfm25-26b/">LFM2.5-2.6B</a></h3>
+          <p>Liquid AI's small model: the context window as measured, which
+          file to download, and the output budget it really needs.</p>
+          <div class="date">Measured 2026-08-04</div>
+        </div>
+        <div class="mini">
+          <h3><a href="field-cards/">All field cards</a></h3>
+          <p>The whole set in one place, with a comparison table: what each
+          model is, what it measured, and when.</p>
+          <div class="date">The index</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section>
+      <div class="eyebrow">Studies and reports</div>
+
+      <div class="listrow">
+        <div class="meta">Release watch · Updated 2026-08-14</div>
+        <h3><a href="qwen38-readiness/">Release watch: Qwen3.8</a></h3>
+        <p>What actually shipped versus what was promised, verified with
+        dates, including the license split between the 27B and the 2.4T Max
+        weights.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · 2026-08-11</div>
+        <h3><a href="l3-threads/">The wrong flag: a 675B decode gap traced to a default</a></h3>
+        <p>Six days of our own records blamed warmup for a 675B decode-speed
+        gap. A pre-registered three-arm A/B traced it to llama.cpp's default
+        thread count instead, and the correction is published in full.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · 2026-08-10</div>
+        <h3><a href="speculation-gate/">Slower by default: llama.cpp's speculation gate, measured</a></h3>
+        <p>llama.cpp's shipped speculation default made prose 19.8% slower
+        than no speculation at all while structured output ran 22.5% faster,
+        in the same run. 160 paired measurements.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Incident report · 2026-08-09</div>
+        <h3><a href="empty-answer/">Empty Answer: the thinking-budget trap, measured</a></h3>
+        <p>A reasoning model can spend the whole output budget thinking and
+        hand back nothing at all: a successful call, no error, an empty
+        answer, and a bill for the hidden tokens.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Guide · Updated 2026-08-14</div>
+        <h3><a href="qwen/">Which Qwen should I run?</a></h3>
+        <p>A hardware-honest guide to the whole family, from a laptop to a
+        397B on one desktop. Measured rows labeled measured, vendor rows
+        labeled vendor.</p>
+      </div>
+
+      <div class="allof"><a href="studies/">All studies and reports</a></div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="method">
+      <div class="eyebrow">The method</div>
+      <p class="rulebig">Measured rows are labeled measured. Vendor rows are
+      labeled vendor. Every measured number traces to a recorded run, studies
+      ship their raw data as downloadable packages, and when our own records
+      turn out wrong, the correction is published in full.</p>
+      <a class="go" href="method/">How Graphometer measures</a>
+      <p class="static">No scripts, no tracking, no cookies: this site is
+      static, and you can view source to check.</p>
     </section>
 
     <div class="rule"></div>
@@ -318,12 +478,14 @@
       <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
       <a href="https://github.com/graphometer">github.com/graphometer</a>
     </div>
+    <div class="foot-links"><a href="feed.xml">Updates feed (RSS)</a></div>
     <p>Built by a human steward with heavy AI assistance; every public claim is
     checked against recorded runs.</p>
     <p>Copyright 2026 Grant Williams. Independent work: not affiliated with,
-    endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, or
-    Alibaba Group. This site is static. No scripts, no tracking, no
-    cookies.</p>
+    endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, the
+    Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter, the llama.cpp
+    project, ggml-org, or Unsloth. This site is static. No scripts, no
+    tracking, no cookies.</p>
   </div>
 </footer>
 

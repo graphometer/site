@@ -1,13 +1,25 @@
 <!doctype html>
-<!-- STAGED 2026-08-11. TITLE APPLIED 2026-08-11: Grant picked option A (the May-2026
-     default-flip extended subject); the <h1> stays short per the house pattern. Data package assembled under data/
-     (see data/README.md); every figure is mapped to its file in data/NUMBERS.md. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Slower by default: how llama.cpp's speculative-decoding gate turned off in May 2026, and what 160 paired measurements on a CPU-offloaded 397B MoE say it costs</title>
+<title>Slower by default: llama.cpp's speculative-decoding gate, measured on a 397B MoE</title>
 <meta name="description" content="A measured study of llama.cpp's speculative-decoding confidence gate, the --spec-draft-p-min CLI flag, which defaults to 0.00. On one CPU-offloaded 397B mixture-of-experts deployment, 160 paired measurements on 2026-08-10 show the shipped default making prose 19.8% slower than no speculation at all while making structured output 22.5% faster; every tested gate at or above 0.50 (0.50, 0.75, 0.90) reverses the prose loss, and a 96-measurement follow-up run the next night measured gates of 0.10 and 0.25 as prose regressions against their own baseline, bracketing the crossover between 0.25 and 0.50. Includes the provenance of the widely recommended 0.75 (llama.cpp's own shipped default for roughly fifteen months, replaced by 0.00 in May 2026), the maintainer's stated tradeoff, three contradictory public two-point comparisons, and a data package containing the raw records.">
+<link rel="canonical" href="https://graphometer.ai/speculation-gate/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Slower by default: llama.cpp's speculation gate, measured">
+<meta property="og:description" content="The shipped default made prose 19.8% slower than no speculation at all while structured output ran 22.5% faster, in the same run. 160 paired measurements, every figure traced to raw records.">
+<meta property="og:url" content="https://graphometer.ai/speculation-gate/">
+<meta property="og:image" content="https://graphometer.ai/og/speculation-gate.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Slower by default: llama.cpp's speculation gate, measured">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Slower by default: llama.cpp's speculation gate, measured">
+<meta name="twitter:description" content="The shipped default made prose 19.8% slower than no speculation at all while structured output ran 22.5% faster, in the same run. 160 paired measurements, every figure traced to raw records.">
+<meta name="twitter:image" content="https://graphometer.ai/og/speculation-gate.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -113,6 +125,10 @@
   footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
   footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -130,6 +146,13 @@
         <span>Graphometer</span>
       </div>
     </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
   </div>
 </header>
 
@@ -1033,9 +1056,6 @@
       flags, load witnesses, analysis outputs and per-observation
       records) are in the package under <code>data/lowerarm/</code>,
       kept as their own census under the same rules.</p>
-      <!-- Package assembled at staging, 2026-08-11. Layout and redaction notes:
-      data/README.md; the lower-arm run ships under data/lowerarm/ as its own
-      census, never pooled with the main run's. -->
       <ul class="plain">
         <li><a href="data/README.md">data/README.md</a>: what is in each
         folder, the record schema, and the provenance of every file.</li>

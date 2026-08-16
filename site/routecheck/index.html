@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Routecheck: a one-command diagnostic card for OpenAI-compatible model endpoints</title>
+<meta name="description" content="One command against an OpenAI-compatible chat endpoint produces a dated diagnostic card: plain English in card.md, machine-readable results with provenance on every field in card.json, and the complete raw request and response body of every probe retained. Ten checks, from endpoint identity to the thinking-budget floor that turns answers empty. MIT licensed, 331 offline tests. Its first published card measured a hosted Qwen3.8 route on release day.">
+<link rel="canonical" href="https://graphometer.ai/routecheck/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Routecheck: one command, one dated diagnostic card">
+<meta property="og:description" content="Point it at an OpenAI-compatible endpoint and get a dated, plain-English diagnostic card: budget floor, thinking toggle, tool calls, structured output, retrieval, every raw response retained.">
+<meta property="og:url" content="https://graphometer.ai/routecheck/">
+<meta property="og:image" content="https://graphometer.ai/og/routecheck.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Routecheck: one command, one dated diagnostic card">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Routecheck: one command, one dated diagnostic card">
+<meta name="twitter:description" content="Point it at an OpenAI-compatible endpoint and get a dated, plain-English diagnostic card: budget floor, thinking toggle, tool calls, structured output, retrieval, every raw response retained.">
+<meta name="twitter:image" content="https://graphometer.ai/og/routecheck.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.sub{margin-top:16px;font-size:clamp(17px,2.8vw,21px);color:var(--ink);max-width:56ch;font-weight:500}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ul.plain li strong{color:var(--ink);font-weight:600}
+  .term{background:#0e1013;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:18px 0}
+  .term-bar{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .term-bar .dot{width:10px;height:10px;border-radius:50%;background:#3a3f47;flex:none}
+  .term-title{margin-left:7px;font-family:var(--mono);font-size:12.5px;color:var(--faint)}
+  .term pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .t-cmd{color:var(--ink)}
+  .t-dim{color:var(--faint)}
+  .cta{margin-top:26px;display:flex;align-items:center;flex-wrap:wrap;gap:12px 18px}
+  .cta .btn{display:inline-block;border:1px solid var(--gold-dim);border-radius:8px;padding:10px 20px;color:var(--gold);font-weight:600}
+  .cta .btn:hover{border-color:var(--gold);text-decoration:none}
+  .cta .repo-n{font-family:var(--mono);font-size:13px;color:var(--faint)}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Instrument 03 &middot; Published 2026-08-16</div>
+      <h1><em>Routecheck</em></h1>
+      <p class="sub">One command against an OpenAI-compatible model endpoint.
+      One dated, evidence-backed diagnostic card.</p>
+      <p class="lead">Before you build on a model endpoint, you want to know
+      what it actually does: whether small output budgets come back empty,
+      whether the thinking toggle is honored, what shape tool calls arrive
+      in, how fast it really decodes. Routecheck asks those questions the
+      same way every time and writes the answers down where they can be
+      checked: a card in plain English, the same results machine-readable
+      with the provenance of every field tagged, and the complete raw
+      request and response bodies behind every probe.</p>
+      <div class="nonaff">Independent tool, MIT licensed. Not affiliated
+      with, endorsed by, or connected to OpenAI or any vendor named on this
+      page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>Routecheck runs a fixed battery of behavioral probes, QFS-CORE,
+      checks C1 to C10, against a running
+      <code>/v1/chat/completions</code> route: the widely implemented
+      OpenAI-compatible shape that llama.cpp server, Ollama and most hosted
+      routes speak. It needs Python 3.10 or newer and the
+      <code>requests</code> package; everything else is standard library.
+      There is no install step and no packaging layer: clone the repository
+      and run it in place, or copy the directory anywhere, a USB stick or an
+      air-gapped box, and run it from the copy.</p>
+      <p>Every run writes three things:</p>
+      <ul class="plain">
+        <li><strong><code>card.md</code></strong>, the diagnostic card in
+        plain English;</li>
+        <li><strong><code>card.json</code></strong>, the same results
+        machine-readable, every field tagged with its provenance;</li>
+        <li><strong><code>raw/</code></strong>, the complete raw request and
+        response body for every probe, so any claim on the card can be
+        checked against what actually went over the wire.</li>
+      </ul>
+      <p>A card describes one endpoint, in one configuration, on one date.
+      That scope is printed on the card itself, and it is the point: a
+      different quant or server of the same model can behave differently,
+      which is much of the reason to measure at all.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>The trap it is built around</h2>
+      <p>A reasoning model pays for its hidden thinking out of the same
+      output budget your client sets as <code>max_tokens</code>. If the
+      thinking uses the budget up, the request still succeeds: HTTP 200, no
+      error, a stop reason of <code>length</code>, and an empty answer. Our
+      <a href="../empty-answer/">Empty Answer</a> study measured that trap
+      across three serving lanes, and its least flattering chapter is the
+      reason this tool exists.</p>
+      <p>On 2026-08-09 this site's own field-card harness, the fixed battery
+      we run against every model we put into service, ran end to end against
+      a 27B model on a local route, exited cleanly, and produced a
+      confident card. <strong>Eighteen of its 25 retained completions were
+      empty answers that should not have been</strong>, and the harness
+      graded the empty strings. It recorded a two-part honesty failure for a
+      model that never got to say anything. It recorded a long-context
+      needle as not found while the retained hidden reasoning quoted the
+      planted code back correctly. The one test built to find the budget
+      floor found it, empty at 500 output tokens and answering at 2,000,
+      and nothing in the harness connected that measurement to the budgets
+      the other tests sent.</p>
+      <p>The study set conditions before that battery produces a
+      record-bearing card again: mark an empty answer with a length stop as
+      invalid rather than as a pass or a failure, size every test's budget
+      above the floor the budget test itself measures, and report hidden
+      output next to visible output. Routecheck packages the same fixed
+      battery into one recorded pass with those conditions built in as
+      code: INVALID is its own verdict on the card, with the reason stated
+      and a warning not to quote the cell; the C5 budget ladder's measured
+      floor sizes every other test in the same run; and the raw body of
+      every exchange is retained, reasoning fields included, so hidden text
+      is part of the record rather than invisible.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>What it checks</h2>
+      <p>Ten checks, each answering a question about this endpoint, in this
+      configuration, on this date, never about the model in general. The
+      list below is the README's own scope, condensed.</p>
+      <table class="facts">
+        <tr><th scope="row">C1 Identity</th><td>What exactly was tested: model id, served file name and size, context size, server build when exposed, the full command line, the date. A card without a complete identity block is never written.</td></tr>
+        <tr><th scope="row">C2 Load, placement</th><td>Load time, memory and placement recipe, operator-supplied only. The tool talks to an already-running route, so when this data is not handed in, the card says SKIPPED instead of guessing.</td></tr>
+        <tr><th scope="row">C3 Speed</th><td>Decode tokens per second, medians of at least three warm reps with the cold rep discarded, on one fixed prose prompt and one fixed structured prompt. Server-reported timings are authoritative when present; client wall-clock is a labeled diagnostic.</td></tr>
+        <tr><th scope="row">C4 Prefill</th><td>Prompt-processing speed on a fixed passage of about 8,000 tokens, same median rules.</td></tr>
+        <tr><th scope="row">C5 Thinking budget</th><td>Does the visible answer come back empty at small output budgets? A ladder of 60, 500, 2,000 and 4,096 max tokens finds the smallest probed budget at which the endpoint visibly answers, and that measured floor sizes every other test in the same run.</td></tr>
+        <tr><th scope="row">C6 Thinking toggle</th><td>Is the <code>enable_thinking</code> request field honored? Checks for a separate reasoning field, for <code>&lt;think&gt;</code>-tag leakage into the visible answer, and for reasoning duplicated untagged into it. The verdict names this exact mechanism; a route using a different toggle is not exercised.</td></tr>
+        <tr><th scope="row">C7 Tool calls</th><td>One fixed tool, one fixed user message, two shots. Pass requires exactly one tool call, the right function, schema-conformant arguments and the expected explicit values.</td></tr>
+        <tr><th scope="row">C8 Structured output</th><td>A fixed JSON Schema embedded in a fixed prompt, three reps, conformance checked: required keys, types, extra-key policy.</td></tr>
+        <tr><th scope="row">C9 Honesty probe</th><td>Asks about a nonexistent file and a nonexistent benchmark; a keyword heuristic flags hedging versus confident fabrication. Explicitly not a semantic judge: the raw response is retained for human review, and the card records exactly how it was graded.</td></tr>
+        <tr><th scope="row">C10 Needle retrieval</th><td>A seeded, programmatically generated haystack sized to about 75 percent of the served context, one planted fact, one question. The server's own prompt-token count is the recorded authoritative length.</td></tr>
+      </table>
+      <p class="fineprint">Probe list and scope from the Routecheck README,
+      read 2026-08-16.</p>
+      <p>Five rules run through every card. Every field carries provenance:
+      RECORDED means a raw artifact is on disk, and the tool refuses to
+      write a card whose RECORDED claims do not resolve to real files;
+      STATED means observed or operator-supplied with no artifact; SKIPPED
+      means not attempted, with the reason stated. INVALID is its own
+      verdict. A failed probe is never a placeholder: connection refused,
+      HTTP errors and malformed JSON are recorded with their raw evidence,
+      and one test's failure never drops the rest of the run. Every prompt
+      file is sha256-pinned in a manifest that is itself pinned in code, so
+      a modified prompt refuses to run. And scope is stated on the card:
+      the measurements describe the endpoint and configuration in the
+      identity block, on the card's date.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The first published card</h2>
+      <p>Routecheck's first card on the public record ran on a release day.
+      On 2026-08-13, the day the release watch verified Qwen3.8's Max-class
+      open weights and ran its day-one battery, it ran against
+      the released 2.4T-A95B model through a hosted route, as part of this
+      site's day-one battery: thirty-five model calls, two providers,
+      thirty-nine cents, with the aggregator filling calls from DeepInfra and Together
+      and switching between them mid-battery, so every number belongs to
+      that endpoint mix on that day. The full account, with the companion
+      one-call checks that ran alongside the card, is in the
+      <a href="../qwen38-readiness/">Qwen3.8 release watch</a>. What the
+      card recorded:</p>
+      <ul class="plain">
+        <li><strong>C5, the budget ladder:</strong> the route's
+        thinking-budget floor came out at 500 tokens for the card's own
+        probe family, on a route where a different, simpler prompt showed
+        its first visible words at a 256-token cap the same day. That is
+        the floor lesson in one line: it is prompt-dependent, so measure it
+        on your prompts, not ours.</li>
+        <li><strong>C6, the toggle:</strong> a call sent with
+        <code>enable_thinking: false</code> got a reply that still carried
+        626 tokens of hidden reasoning. No error, no refusal, the field
+        silently ignored. A single observation, recorded as such.</li>
+        <li><strong>C7, tools:</strong> both shots passed, with exactly the
+        right function and arguments.</li>
+        <li><strong>C8, structured output:</strong> three of three replies
+        conformed when the schema was written into the prompt.</li>
+        <li><strong>C10, retrieval:</strong> one planted code came back
+        exactly, at 31,380 prompt tokens as the server itself counted
+        them.</li>
+      </ul>
+      <p>One endpoint mix, one day, one to three calls per cell:
+      diagnostics, not a benchmark.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Get it, run it</h2>
+      <p>Two supported paths, deliberately boring: clone and run in place,
+      or copy the directory anywhere and run it from the copy. Nothing
+      depends on where the directory sits or on <code>.git</code> being
+      present.</p>
+      <figure class="term">
+        <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">terminal &middot; a local route</span></div>
+        <pre><code><span class="t-cmd">$ git clone https://github.com/graphometer/routecheck &amp;&amp; cd routecheck</span>
+<span class="t-cmd">$ ./routecheck run \
+  --base-url http://127.0.0.1:8080/v1 \
+  --model-id my-served-model \
+  --ctx-size 32768 \
+  --out runs/my-model/$(date +%F)/</span></code></pre>
+      </figure>
+      <p>That is the whole thing. <code>--ctx-size</code> is required
+      unless the route's <code>/props</code> endpoint reports its context
+      size, as llama.cpp server does; then the server's own value is
+      preferred and recorded as such. Against an authenticated remote
+      endpoint:</p>
+      <figure class="term">
+        <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">terminal &middot; an authed remote route</span></div>
+        <pre><code><span class="t-cmd">$ export ROUTECHECK_API_KEY=...</span>   <span class="t-dim"># sent as "Authorization: Bearer &lt;key&gt;"</span>
+<span class="t-cmd">$ ./routecheck run \
+  --base-url https://api.example.com/v1 \
+  --model-id some-model \
+  --ctx-size 32768 \
+  --allow-remote \
+  --out runs/some-model/$(date +%F)/</span></code></pre>
+      </figure>
+      <p>Non-loopback URLs require the explicit
+      <code>--allow-remote</code> flag. The API key goes out as a bearer
+      header and nowhere else: it is never logged and never written into
+      <code>card.json</code>, <code>card.md</code> or any raw artifact, the
+      recorded command line shows <code>[REDACTED]</code> in its place, and
+      proxy environment variables and <code>~/.netrc</code> are never
+      inherited.</p>
+      <figure class="term">
+        <div class="term-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="term-title">terminal &middot; verify a copy</span></div>
+        <pre><code><span class="t-cmd">$ ./smoke.sh</span>   <span class="t-dim"># verifies a fresh copy in seconds</span>
+<span class="t-cmd">$ make test</span>    <span class="t-dim"># 331 offline tests: no GPU, no model, no network beyond loopback mocks</span></code></pre>
+      </figure>
+      <p>The offline suite deliberately proves the negative paths: tampered
+      prompt manifests refused, empty-answer traps detected both ways,
+      symlink escapes refused, RECORDED claims without evidence refused,
+      API keys absent from every written file.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/graphometer/routecheck">Routecheck on GitHub</a>
+        <span class="repo-n">github.com/graphometer/routecheck &middot; MIT license</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Who it is for</h2>
+      <p>Three readers we had in mind. If you serve models locally, on
+      llama.cpp server or Ollama, the card is a dated record of what your
+      route actually does before you build on it, and again after every
+      server upgrade or quant swap. If you are about to build on a hosted
+      route, the card tells you on day one where the budget floor sits,
+      whether the thinking toggle does anything, what shape tool calls
+      arrive in and whether schema output conforms, with the raw bodies
+      kept so you can re-check any cell. And if you publish measurements,
+      the provenance discipline is the product: every field tagged, every
+      RECORDED claim resolving to a file on disk, every card scoped to its
+      endpoint and its date.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>What it will not tell you</h2>
+      <p>Routecheck is young. Its first public release, v0.1, is dated
+      2026-08-11. The live routes on its record are llama.cpp server and
+      Ollama locally, plus the hosted aggregator route of the card above;
+      beyond those, authed and remote behavior is exercised by the offline
+      suite. Known issues and future work live in the open in the
+      repository, and the README carries its own section on what a card
+      cannot tell you. The short version of that section:</p>
+      <ul class="plain">
+        <li><strong>Nothing about quality or intelligence.</strong> No
+        benchmark scores, no win rates, no rankings. It probes mechanical
+        contract behavior: budgets, toggles, tool shape, schema
+        conformance, retrieval of one planted fact, throughput.</li>
+        <li><strong>Nothing universal about a model.</strong> A card
+        describes one served configuration at one point in time.</li>
+        <li><strong>C9 is a heuristic, not a judge.</strong> Check the
+        retained response before repeating any honesty verdict.</li>
+        <li><strong>C10 is synthetic filler.</strong> It tests retrieval of
+        one planted fact, not general long-context comprehension.</li>
+        <li><strong>C6 tests one toggle mechanism.</strong> A route using a
+        different mechanism will look like a non-working toggle, and the
+        card says so rather than guessing.</li>
+        <li><strong>C2 cannot be measured over HTTP</strong> by a tool that
+        did not start the server; it is operator-supplied or honestly
+        SKIPPED.</li>
+        <li><strong>Speed numbers are not a leaderboard.</strong> Medians
+        of three or more warm reps on fixed prompts, with server-reported
+        and client-side figures kept separate and labeled.</li>
+      </ul>
+      <p>One naming note, so nothing in the repository looks inconsistent:
+      Routecheck began life under the internal codename
+      <code>qwenfield</code>, and a few identifiers deliberately keep that
+      history so that every card ever written stays comparable: the
+      internal package name, the card's <code>instrument</code> field, and
+      the QFS-1.0 protocol id. Frozen identifiers, not branding.</p>
+      <p class="fineprint">The house discipline applies to this page too:
+      every number on it traces to the routecheck repository's README and
+      changelog or to the two published Graphometer pages linked above.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: OpenAI is named on
+    this page only to identify the widely implemented OpenAI-compatible API
+    shape; Routecheck and this site are not affiliated with, endorsed by, or
+    sponsored by OpenAI. llama.cpp is a project of ggml-org and its
+    contributors; Qwen and Qwen3.8 are marks of Alibaba Group Holding
+    Limited; Ollama, DeepInfra, and Together are marks of their respective
+    owners. All are referenced for identification only. Not affiliated with,
+    endorsed by, or sponsored by any of them or their affiliates. Product
+    names and marks belong to their respective owners. This site is static.
+    No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

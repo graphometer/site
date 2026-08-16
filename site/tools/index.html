@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphometer tools: the instrument line</title>
+<meta name="description" content="Three instruments, each free and open source with a public repository: a readable window on the Grok Build coding agent, a compatibility kit for Liquid LFMs, and a one-command diagnostic card for an OpenAI-compatible endpoint. Not affiliated with xAI.">
+<link rel="canonical" href="https://graphometer.ai/tools/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Graphometer tools: the instrument line">
+<meta property="og:description" content="Three instruments, free and open source: a window on the Grok Build coding agent, a kit for Liquid LFMs, and a one-command endpoint diagnostic. Not affiliated with xAI.">
+<meta property="og:url" content="https://graphometer.ai/tools/">
+<meta property="og:image" content="https://graphometer.ai/og/tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: tools, the instrument line">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Graphometer tools: the instrument line">
+<meta name="twitter:description" content="Three instruments, free and open source: a window on the Grok Build coding agent, a kit for Liquid LFMs, and a one-command endpoint diagnostic. Not affiliated with xAI.">
+<meta name="twitter:image" content="https://graphometer.ai/og/tools.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Tools · Published 2026-08-16</div>
+      <h1>Tools: <em>the instrument line</em></h1>
+      <p class="lead">Three instruments, each free, open source, and made to
+      run on your own machine. Each gets a short entry here and a full page
+      of its own; every claim below comes from the instrument's page or its
+      public repository, and the links carry the rest.</p>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Graphometer Workbench, for Grok Build</h2>
+      <div class="eyebrow">Instrument 02 · Released 2026-08-14 · MIT</div>
+      <p>A local, readable window on the Grok Build coding agent: it puts
+      the agent's sessions, its work as it happens, and every moment it
+      stops to ask you a question into one plain screen. It asks before
+      the agent changes your files, lets you review and undo one change
+      at a time, and survives the agent dying.</p>
+      <p><strong>Who it is for:</strong> people who direct AI agents
+      without living in a terminal.</p>
+      <p>Runs on Linux (tested), or Windows via WSL2; macOS is unverified
+      and not claimed. The server needs <code>Node.js 22+</code> and runs
+      TypeScript directly, with no build step and no dependencies to
+      install; Grok Build itself is installed separately.</p>
+      <p><a href="../workbench/">The Workbench page</a> ·
+      <a href="https://github.com/graphometer/workbench-for-grok-build">github.com/graphometer/workbench-for-grok-build</a></p>
+      <p class="fineprint">Works with Grok Build. Not affiliated with,
+      endorsed by, or connected to xAI.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>Graphometer Droplet</h2>
+      <div class="eyebrow">Instrument 01 · Released · Apache 2.0 code</div>
+      <p>An independent compatibility kit for Liquid LFMs: the harness
+      can break the model, and Droplet checks the fit. When it does not
+      fit, Droplet names the failing layer and applies the smallest
+      proven repair, then gets out of the way.</p>
+      <p><strong>Who it is for:</strong> anyone serving a Liquid LFM
+      locally who needs to know whether a failure is the plumbing's
+      fault or the model's.</p>
+      <p>Installs with <code>pip</code> from the repository; no
+      telemetry, no accounts, loopback only. Licensed Apache 2.0 for the
+      original code, CC BY 4.0 for the evidence data, and LFM Open
+      License v1.0 for the Liquid-derived templates.</p>
+      <p><a href="../droplet/">The Droplet page</a> ·
+      <a href="https://github.com/graphometer/droplet">github.com/graphometer/droplet</a></p>
+      <p class="fineprint">Independent work. Not affiliated with,
+      endorsed by, or connected to Liquid AI.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Routecheck</h2>
+      <div class="eyebrow">Instrument 03 · Released · MIT</div>
+      <p>One command against an OpenAI-compatible chat endpoint, one
+      dated, evidence-backed diagnostic card. It runs a fixed battery of
+      behavioral probes against a running route and writes the results
+      three ways: machine-readable, plain English, and the complete raw
+      request and response for every probe, so any claim on the card can
+      be checked against what actually went over the wire.</p>
+      <p><strong>Who it is for:</strong> anyone running a model behind an
+      OpenAI-compatible route who wants a dated, checkable record of how
+      that endpoint actually behaves.</p>
+      <p>Needs Python 3.10 or newer plus the <code>requests</code>
+      package; everything else is standard library, and there is no
+      install step: clone the repository and run in place, or copy the
+      directory anywhere and run it from the copy. llama.cpp server and
+      Ollama locally, plus the hosted aggregator route of its first
+      published card, are the routes it has been run against live so far;
+      authed and remote endpoints are supported. On the
+      <a href="../qwen38-readiness/">Qwen3.8 release watch</a> it is the
+      instrument that packaged the fixed battery into one recorded
+      pass.</p>
+      <p><a href="../routecheck/">The Routecheck page</a> ·
+      <a href="https://github.com/graphometer/routecheck">github.com/graphometer/routecheck</a></p>
+      <p class="fineprint">Independent work. Not affiliated with,
+      endorsed by, or connected to the llama.cpp project, ggml-org, or
+      Ollama.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Looking for a specific model?</h2>
+      <p>The per-model measured records live on the
+      <a href="../field-cards/">field cards index</a>, and the studies,
+      reports, and guides have <a href="../studies/">an index of their
+      own</a>.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Grok Build is a product
+    of xAI; LFM and Liquid are marks of Liquid AI; llama.cpp is a project of
+    ggml-org and its contributors; Ollama and Qwen are marks of their respective
+    owners; OpenAI is a mark of OpenAI, and the OpenAI-compatible API shape is
+    referenced as a protocol description only. All are referenced for
+    identification only. Not affiliated with, endorsed by, or connected to xAI,
+    Liquid AI, the llama.cpp project, ggml-org, Ollama, the Qwen team, Alibaba
+    Group, or OpenAI. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

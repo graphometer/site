@@ -1,14 +1,25 @@
 <!doctype html>
-<!-- STAGED 2026-08-11. Working title in place (option A): Grant's final title pick lands
-     later as a two-minute edit to <title>, the <h1>, and the home card; the candidates
-     live in TITLE_OPTIONS.md in the campaign drafts folder. Data package assembled under
-     data/ (see data/README.md); every figure is mapped to its file in data/NUMBERS.md. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The wrong flag: how six days of records blamed warmup for a 3.6-versus-6 t/s decode gap on a CPU-offloaded 675B MoE, and a three-arm A/B traced it to llama.cpp's default thread count instead</title>
+<title>The wrong flag: a Mistral Large 3 675B decode gap traced to llama.cpp's default thread count</title>
 <meta name="description" content="A measured correction study. Mistral Large 3 675B (Unsloth UD-IQ1_S, experts CPU-offloaded behind one RTX 5090 on a 24-core Core Ultra 9 285K) was recorded for six days as decoding ~6 tokens/s with llama.cpp's warmup on and 3.6 without. A pre-registered three-arm A/B on 2026-08-11 refuted the attribution: --no-warmup alone left warm decode unchanged (5.82-7.09 t/s), while the arm that also unset --threads 24 landed back on the slow number (3.56-3.57 vs the record's 3.58-3.61). llama.cpp's default thread heuristic excludes E-cores on hybrid Intel CPUs and resolves to 4 compute threads on this 24-core chip. In this run warmup's observed effect was consistent with moving expert page-fault cost into load time, and on a truly cold cache it did not protect the first answer (897 s with warmup on). Includes the corrected VRAM record (24,420 MiB = 23.85 GiB used / 8,187 MiB = 8.00 GiB free), the MiB-divided-by-1000 correction family, prior art back to 2023, and a practitioner checklist for CPU-offloaded MoE deployments.">
+<link rel="canonical" href="https://graphometer.ai/l3-threads/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="The wrong flag: a 675B decode gap traced to a default">
+<meta property="og:description" content="Six days of records blamed warmup for a 3.6 versus 6 tokens per second gap on Mistral Large 3 675B. A three-arm A/B traced it to llama.cpp's default thread count instead.">
+<meta property="og:url" content="https://graphometer.ai/l3-threads/">
+<meta property="og:image" content="https://graphometer.ai/og/l3-threads.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: The wrong flag: a 675B decode gap traced to a default">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The wrong flag: a 675B decode gap traced to a default">
+<meta name="twitter:description" content="Six days of records blamed warmup for a 3.6 versus 6 tokens per second gap on Mistral Large 3 675B. A three-arm A/B traced it to llama.cpp's default thread count instead.">
+<meta name="twitter:image" content="https://graphometer.ai/og/l3-threads.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -114,6 +125,10 @@
   footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
   footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -131,6 +146,13 @@
         <span>Graphometer</span>
       </div>
     </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
   </div>
 </header>
 

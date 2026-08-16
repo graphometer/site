@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Graphometer measures: the rules behind every number on this site</title>
+<meta name="description" content="The Graphometer method, stated plainly: the five labels that say where every figure came from (measured, vendor, arithmetic, stated, transferred), downloadable data packages holding the raw records, corrections published in full, the one desktop every local number comes from, and a static site you can verify by viewing source.">
+<link rel="canonical" href="https://graphometer.ai/method/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="How Graphometer measures">
+<meta property="og:description" content="The house rules: five labels that say where each figure came from, data packages that ship the raw records, corrections published in full, and the one desktop the numbers come from.">
+<meta property="og:url" content="https://graphometer.ai/method/">
+<meta property="og:image" content="https://graphometer.ai/og/method.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: How Graphometer measures">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Graphometer measures">
+<meta name="twitter:description" content="The house rules: five labels that say where each figure came from, data packages that ship the raw records, corrections published in full, and the one desktop the numbers come from.">
+<meta name="twitter:image" content="https://graphometer.ai/og/method.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">House method &middot; published 2026-08-16</div>
+      <h1>How Graphometer <em>measures</em></h1>
+      <p class="lead">Graphometer measures large language models on hardware
+      you can own, and publishes what the records support, nothing more. This
+      page is the method behind every other page: what the labels mean, what
+      counts as evidence, what happens when we get something wrong, which
+      machine the numbers come from, and why you can check all of it
+      yourself.</p>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>The rules</h2>
+      <p>Every figure on this site carries a label naming its basis, and the
+      labels have fixed meanings.</p>
+      <table class="facts">
+        <tr><th scope="row">measured</th><td>From a recorded run on our machine, with the date given.</td></tr>
+        <tr><th scope="row">vendor</th><td>The maker's claim, printed as the maker's claim, never restated as ours.</td></tr>
+        <tr><th scope="row">arithmetic</th><td>Reasoning from file sizes and headers that we consider sound but have not run.</td></tr>
+        <tr><th scope="row"><span class="asstated">stated</span></th><td>A value a maker states that we did not measure. It is marked in amber wherever it appears, like this row's name.</td></tr>
+        <tr><th scope="row">transferred</th><td>A number measured in one configuration and carried, labeled, into advice about a different one.</td></tr>
+      </table>
+      <p>Behind every measured number is a recorded run: a dated file the run
+      itself produced, kept, so that every figure has a home that can be
+      produced if questioned. Where no such record exists, no number appears.
+      The <a href="../workbench/">Workbench</a> states the rule for its own
+      context meter, and it is the house rule everywhere: <strong>a number we
+      cannot stand behind is a number we do not display</strong>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What counts as evidence</h2>
+      <p>Our studies ship their evidence as a downloadable data package: the
+      files the runs actually produced, not a summary. In each package,
+      <code>data/README.md</code> maps every file, states its provenance, and
+      states the redactions plainly, and <code>data/NUMBERS.md</code> maps
+      every figure on the page to its file. The standing offer printed on
+      those pages holds here too: if a number on a page disagrees with a file
+      in its package, <strong>the file is right and the page is wrong</strong>;
+      tell us and we will fix the page.</p>
+      <p>Packages ship today with
+      <a href="../empty-answer/">Empty Answer</a>,
+      <a href="../speculation-gate/">Slower by default</a>,
+      <a href="../l3-threads/">The wrong flag</a>, and the
+      <a href="../qwen38-27b/">Qwen3.8-27B day-zero field card</a>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Corrections, published in full</h2>
+      <p>This site publishes corrections of our own records as a genre. The
+      worked example is <a href="../l3-threads/">The wrong flag</a>: for six
+      days our records blamed warmup for a decode-speed gap on Mistral
+      Large 3 675B, and a pre-registered three-arm A/B then refuted our own
+      attribution and traced the gap to llama.cpp's default thread count
+      instead. The page does not quietly fix the records. It names what we
+      got wrong and why the wrong story survived, and the superseded entries
+      are annotated rather than rewritten. A correction published in full is
+      worth more than a claim that was never tested.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The bench</h2>
+      <p>Every local number on this site comes from one desktop computer:
+      one NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM, an Intel Core
+      Ultra 9 285K (24 cores: 8 performance + 16 efficiency, no
+      hyperthreading), 188 GiB of system RAM, and the weights on a consumer
+      4 TB NVMe SSD.</p>
+      <p>One machine is a boundary, and we treat it as one: speeds are field
+      measurements, one configuration each, not benchmarks, and they do not
+      transfer across configurations, which is rather the point of
+      measuring.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>No scripts, no tracking, no cookies</h2>
+      <p>This site is static. Not one script tag exists on any page, the
+      styles are inline in the page itself, the fonts are the ones your
+      system already has, and your browser makes no request to anyone's
+      server but this one.</p>
+      <p>You do not have to take that on trust, which is the point: open any
+      page's source and look. A site about verifiable numbers should itself
+      be verifiable in under a minute.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; Mistral Large 3 is a model of Mistral AI;
+    Qwen and Qwen3.8 are marks of Alibaba Group Holding Limited; Intel and Core
+    Ultra are marks of Intel Corporation; NVIDIA and GeForce RTX are marks of
+    NVIDIA Corporation. All are referenced for identification only. Not
+    affiliated with, endorsed by, or sponsored by any of them or their
+    affiliates. Product names and marks belong to their respective owners. This
+    site is static. No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

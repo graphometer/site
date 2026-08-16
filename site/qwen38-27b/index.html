@@ -1,26 +1,25 @@
 <!doctype html>
-<!-- STAGED 2026-08-14 at /qwen38-27b/, the flat one-segment convention of /qwen35/, /kimi-k3/,
-     /lfm25-26b/ and /mistral-medium-35/. Working title in place (option A): Grant's final title
-     pick lands later as a two-minute edit to <title>, the <h1>, the visible subtitle and the home
-     card; the candidates live in TITLE_OPTIONS.md in the campaign drafts folder.
-     Data package assembled under data/ (see data/README.md); every figure is mapped to its file
-     in data/NUMBERS.md. Three LICENSE files are retained there, including the official FP8
-     repository's, which was verified byte-identical to the 27B's on 2026-08-14, so section 03's
-     byte-identity clause is artifact-backed rather than a reading. The same-day header-probe
-     re-run ships under data/headers/.
-     CLAIMS TRACE: CLAIMS_TRACE.md in the campaign drafts folder. FIX ROUND 2026-08-14 applied
-     against four adversarial reviews; every item dispositioned in REVIEW_DISPOSITIONS_2026-08-14.md.
-     CSS: byte-identical to speculation-gate/index.html except for two additions, both flagged
-     for review: `table.data tr.hi td{background:rgba(201,164,92,.05)}` to mark the default
-     and the trap rows in section 04, and `.note p{color:var(--ink);max-width:none}` because
-     this page's note blocks carry paragraphs where the existing pages carry bare text.
-     Drop both if the house prefers the stylesheet unchanged; nothing depends on them. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Qwen3.8-27B: day zero. An early look at the new Qwen family and its two licenses, measured on one RTX 5090 on release day 2026-08-14: 72.4 tokens per second with a gated draft head, 65.9 with no speculation, 44.5 ungated</title>
+<title>Qwen3.8-27B: day zero. A release-day field card measured on one RTX 5090</title>
 <meta name="description" content="A release-day field card for Qwen3.8-27B: weights public at about 11:00 EDT on 2026-08-14, downloaded, hash-verified against the conversion repository, loaded and measured on one desktop the same evening. A dense 27B with hybrid attention, natively multimodal but served text-only here, running on a llama.cpp build this machine already had because the file declares the existing qwen35 dense architecture. 72.4 tokens per second on prose and 118.7 on structured output at a 65,536-token profile using 25,470 MiB of a 32,607 MiB card, with the full profiles ladder and the exact invocation. The license is Apache 2.0, read in full at the pinned revision and retained, where Qwen3.8-2.4T-A95B released the same week carries a custom license with revenue thresholds. The model's built-in draft head repeats the direction of the speculation-gate finding: ungated it decodes prose at 44.5 tokens per second, below the 65.9 of no speculation at all, against 72.4 gated. Plus a thinking off-switch, a budget floor that belongs to the task rather than the endpoint, and three measured client traps.">
+<link rel="canonical" href="https://graphometer.ai/qwen38-27b/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Qwen3.8-27B: day zero">
+<meta property="og:description" content="Downloaded, hash-verified, served and measured on release day: seven profiles, a genuine Apache 2.0 license the 2.4T sibling does not carry, and the built-in draft head at 72.4 tokens a second.">
+<meta property="og:url" content="https://graphometer.ai/qwen38-27b/">
+<meta property="og:image" content="https://graphometer.ai/og/qwen38-27b.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Qwen3.8-27B: day zero">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Qwen3.8-27B: day zero">
+<meta name="twitter:description" content="Downloaded, hash-verified, served and measured on release day: seven profiles, a genuine Apache 2.0 license the 2.4T sibling does not carry, and the built-in draft head at 72.4 tokens a second.">
+<meta name="twitter:image" content="https://graphometer.ai/og/qwen38-27b.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   :root{
@@ -128,6 +127,10 @@
   footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
   footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -145,6 +148,13 @@
         <span>Graphometer</span>
       </div>
     </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
   </div>
 </header>
 
