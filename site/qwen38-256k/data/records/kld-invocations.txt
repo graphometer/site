@@ -1,0 +1,12 @@
+# measures KL divergence against unsloth's plain Q8_0 of the same revision (@4ca72078, 29,047,086,048 B, SHA-256
+# checked against the HF LFS oid). Same public text as the perplexity run (llama.cpp docs), 12 chunks of 4,096;
+$BIN -m $S/Qwen3.8-27B-Q8_0.gguf -f $E/scripts/ppl_corpus.txt -c 4096 --chunks 12 -ngl 999 -fa on -b 4096 -ub 512 \
+  --kl-divergence-base $BASE > $E/logs/kld_base_q8_0.log 2>&1 || { echo "BASE FAILED"; tail -5 $E/logs/kld_base_q8_0.log; exit 1; }
+grep "Final estimate" $E/logs/kld_base_q8_0.log | sed 's/^/PPL q8_0 reference: /'
+for pair in q5xl_installed:$G/Qwen3.8-27B-UD-Q5_K_XL.gguf q5ks_new:$G/UD-Q5_K_S/Qwen3.8-27B-UD-Q5_K_S.gguf q4kxl_new:$G/UD-Q4_K_XL/Qwen3.8-27B-UD-Q4_K_XL.gguf; do
+  tag=${pair%%:*}; f=${pair#*:}
+  echo "kld $tag $(date +%T)"
+  $BIN -m $f -f $E/scripts/ppl_corpus.txt -c 4096 --chunks 12 -ngl 999 -fa on -b 4096 -ub 512 \
+    --kl-divergence-base $BASE --kl-divergence > $E/logs/kld_$tag.log 2>&1 || echo "KLD $tag FAILED"
+  grep -E "Mean    KLD|Median  KLD|99.0%   KLD|Maximum KLD|Same top p|RMS Δp|Mean PPL\(Q\)" $E/logs/kld_$tag.log | sed "s/^/  $tag /"
+done

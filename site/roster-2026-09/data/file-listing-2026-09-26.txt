@@ -59,10 +59,18 @@ Row 6: Qwen3.5-122B-A10B, UD-Q4_K_S
    73,428,564,992  total, 3 files
   note: a vision projector file sits beside it and is not counted
 
-Row 7: Qwen3.8-27B, UD-Q5_K_XL
+Row 7: Qwen3.8-27B, the default: UD-Q5_K_XL (read again after the change of 26 September, afternoon)
    20,218,178,624  Qwen3.8-27B-UD-Q5_K_XL.gguf
    20,218,178,624  total, 1 file
   note: a vision projector file sits beside it and is not counted
+
+Row 7: Qwen3.8-27B, selectable since 2026-09-26: UD-Q4_K_XL (keeps the draft head on at 262,144)
+   17,559,178,144  Qwen3.8-27B-UD-Q4_K_XL.gguf
+   17,559,178,144  total, 1 file
+
+Row 7: Qwen3.8-27B, selectable since 2026-09-26: UD-Q5_K_S (keeps the draft head on at 262,144)
+   18,665,753,504  Qwen3.8-27B-UD-Q5_K_S.gguf
+   18,665,753,504  total, 1 file
 
 Row 8: Ornith-1.5-35B-A3B, Q6_K
    29,208,731,392  Ornith-1.5-35B-Q6_K.gguf
@@ -210,10 +218,21 @@ Row 6, Qwen3.5-122B-A10B: the windows it accepts; batch by window, with the reas
    131: # stays 512 ** — that rung measured 30.6 GB with the old default; a 4096 buffer would not fit.
    133: if [ "$CTX" -gt 131072 ]; then _Q122_B_DEFAULT=2048; _Q122_UB_DEFAULT=512; else _Q122_B_DEFAULT=4096; _Q122_UB_DEFAULT=4096; fi
 
-Row 7, Qwen3.8-27B: the windows it accepts; batch
-    41: # 262144 MEASURED 2026-09-17: 29,947 MiB VRAM, 65.0 t/s, healthy in 13 s — but it costs MTP.
-    46: case "$CTX" in 32768|65536|131072|262144) ;; *)
-   156: Q38_BATCH="${Q38_BATCH:-2048}"; Q38_UBATCH="${Q38_UBATCH:-512}"
+Row 7, Qwen3.8-27B: window fallback (the installed window is set in settings this package does not publish), file choice,
+the windows it accepts, the 262,144 rung (cache, draft head), batch. Read again after the change of 26 September, afternoon
+    37: CTX="${Q38_CTX:-65536}"; MTP="${Q38_MTP:-1}"
+    53: Q38_FILE="${Q38_FILE:-q5xl}"
+    55:   q5xl)  MODEL="$DIR/Qwen3.8-27B-UD-Q5_K_XL.gguf"; WANT_SIZE=20218178624 ;;
+    56:   q4kxl) MODEL="$DIR/UD-Q4_K_XL/Qwen3.8-27B-UD-Q4_K_XL.gguf"; WANT_SIZE=17559178144 ;;
+    57:   q5ks)  MODEL="$DIR/UD-Q5_K_S/Qwen3.8-27B-UD-Q5_K_S.gguf"; WANT_SIZE=18665753504 ;;
+    67: # 262144 MEASURED 2026-09-17: 29,947 MiB VRAM, 65.0 t/s, healthy in 13 s — but it costs MTP on the q5xl file.
+    73: case "$CTX" in 32768|65536|131072|262144) ;; *)
+   150: if [ "$CTX" = 262144 ]; then
+   151:   KVARGS=(--cache-type-k q8_0 --cache-type-v q8_0)
+   153:     if [ "$Q38_FILE" = q5xl ]; then
+   155:       SPEC=()
+   158:       SPEC+=(--cache-type-k-draft q8_0 --cache-type-v-draft q8_0)
+   188: Q38_BATCH="${Q38_BATCH:-2048}"; Q38_UBATCH="${Q38_UBATCH:-512}"
 
 Row 8, Ornith-1.5-35B-A3B: the windows it accepts; batch by window
     48: # 262144 MEASURED 2026-09-17: 30,576 MiB VRAM, 92.7 t/s decode, healthy in 43 s — FASTER than

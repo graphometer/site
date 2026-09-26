@@ -32,7 +32,8 @@ Read this section first. Every one of these is real, and none of them is a mista
    262,144. At 262,144 with the same setting only reads of about 3,000 tokens exist (`*_2048_ctx262144_3k.result`
    on 20 September and `batch-sweep-2026-09-21/*_ctx262144_3k.result` on 21 September), each the first request after
    the server started; the long reads at 262,144 in this package are from before the setting changed. The page
-   prints each figure with its window.
+   prints each figure with its window. (26 September update: for Qwen3.8-Flash-Next, reads of 3,019, 48,075 and
+   229,981 tokens at 262,144 with that setting now exist, in `qwen3.8-flash-next-2026-09-26/`; see point 23.)
 4. **MiniMax M3's "194 at depth" is in no file as a rate.** It is 58,307 tokens divided by the whole request's
    300.2 seconds (`minimax-m3/2026-09-20_q2kl_needle_58k.json`); the server's own timing for the same read is
    208.11 (`2026-09-20_q2kl_ctx131072_ub2048.server.log`).
@@ -120,23 +121,64 @@ Read this section first. Every one of these is real, and none of them is a mista
     `_skip` runs are also the runs that passed no window, which is why `installed-windows-2026-09-21.txt` rests on
     them. Laguna S 2.1's crash check ran at 14:25, before its window changed later that day, and was served 32,768.
 
+**Added in the update of 26 September (Qwen3.8-Flash-Next at its served window)**
+
+23. **Qwen3.8-Flash-Next's first read on 26 September is its slowest, and the page leads with the second.**
+    `qwen3.8-flash-next-2026-09-26/shipped_b4096_ub2048.jsonl` row 1 read 3,035 tokens at 87.7; row 2 read 3,019
+    at 517.6. During the first request the file's share in memory grew from 43.54 to 57.66 GB (`resident_gb_before`,
+    `resident_gb_after`; `run_fn.out` shows 0.0 GB before that start): the only start recorded with the file out of
+    memory. The page leads with the later reads, made with 57.7 to 60.1 GB of the 89.99 GB file in memory, and gives
+    the first one in its row note. The run at the defaults came second and began with 60.05 GB in memory, so its
+    first two reads are alike (253.7 and 255.7): the two settings' first reads are not a like-for-like pair. The
+    file never became fully resident (at most 60.06 GB). The 20 September 45.4 was also the first request after a
+    start (`load=65s` in its result), but that file records no memory state, so the page gives it no cause. Every read was a new prompt (`fn_reads.py`), so no
+    read reused another's prompt cache. The server was started through a copy of the start script that differs
+    from the installed one only in the line naming its settings file (and in a comment the installed script gained
+    afterwards); `run_fn.sh` points that line at a settings file which, by the run's own notes, held the installed
+    values without the helper process. We did not open it.
+
+**Added in the same update (Qwen3.8-27B at 262,144)**
+
+24. **Qwen3.8-27B's run says `Q38_MTP=1` and the page says the draft head was off.**
+    `qwen3.8-27b-2026-09-26/Qwen3.8-27B_ctx262144_draft-off.result` asked for the draft head, and at 262,144 on
+    this file the start script turns it off (`file-listing-2026-09-26.txt` section C, lines 150 to 155): its
+    `cmdline:` line has no draft flags and every JSON line has `draft_n` null. The run went through a copy of the
+    start script, named in its first line, pointed at a settings file named in its `env:` lines, which we did not
+    open; the command line it produced is the one the installed script produces for this file at this window.
+25. **One structured reply in that file says `code_in_answer` false and quotes a code.** At 229,152 tokens the
+    ledger holds three codes; the structured request asks for "the sealed reference", and the reply ends with the
+    first of the three, `CEDAR-4418-HARBOR`, while the check looks only for the middle one. The page prints no
+    structured figure; its `read` line at that depth has all three (`codes3_hits` 3).
+26. **Qwen3.8-27B's window differs by date.** The 21 September sweep served it 131,072
+    (`installed-windows-2026-09-21.txt` section B); it was installed at 262,144 on 26 September, and no run in this
+    package started the installed script without a window after that (section C). The page gives the 262,144 in
+    the install-record form and keeps the 131,072 figures, a window at which the default file keeps its draft
+    head. The start script can also serve two smaller files, UD-Q4_K_XL and UD-Q5_K_S, both on disk
+    (`file-listing-2026-09-26.txt` section A), and at 262,144 it keeps the draft head for both (section C, lines 150
+    to 158; the two `*_draft-on.result` files in `qwen3.8-27b-2026-09-26/`). Our operator records call these
+    configurations presets; the start script does not name them, so the page does not either.
+
 ## What was removed, and why
 
 Everything in this package was recorded on a personal machine that also does private work. The redactions remove
 where and how, never what was measured.
 
-**Files added on 26 September** (181 copied records, plus `ROSTER_23.csv`, `summary-table-corrections-2026-09-26.csv`,
+**Files added on 26 September** (192 copied records, plus `ROSTER_23.csv`, `summary-table-corrections-2026-09-26.csv`,
 `file-listing-2026-09-26.txt` and `installed-windows-2026-09-21.txt`, which were written for this revision; the fix
-pass of 26 September added ten copied records and the last of the written files), replacements by kind, as counted
-by the copying script:
+pass of 26 September added ten copied records and the last of the written files, and the update of the same day
+the six files of `qwen3.8-flash-next-2026-09-26/` and the five of `qwen3.8-27b-2026-09-26/`), replacements by kind,
+as counted by the copying scripts:
 
-- 111 absolute or working-tree paths to `<REDACTED_PATH>` (the file name is kept when it is a model shard, a
+- 126 absolute or working-tree paths to `<REDACTED_PATH>` (the file name is kept when it is a model shard, a
   library or a source file);
-- 123 bridge and loopback addresses to `<LOCAL>`; 4 link addresses to `<LAPTOP>`; 26 uses of the laptop's short name
+- 131 bridge and loopback addresses to `<LOCAL>`; 4 link addresses to `<LAPTOP>`; 26 uses of the laptop's short name
   or the desktop's host name to `<LAPTOP>` or `<DESKTOP>`;
-- 17 port numbers to `<PORT>`, two of them in the usage lines of `batch_sweep.sh`;
-- 106 of our internal keys for a model to its public name, in run tags, labels and script text (file names were
-  renamed the same way), 9 serving aliases to `<ALIAS>`, and 4 build folder names to `<BUILD>`;
+- 20 port numbers to `<PORT>`, two of them in the usage lines of `batch_sweep.sh`;
+- 174 of our internal keys for a model to its public name, in run tags, labels and script text (file names were
+  renamed the same way; 67 of them are the Qwen3.8-27B runs' tags in their four result files), 12 serving aliases to
+  `<ALIAS>`, and 4 build folder names to `<BUILD>`; in
+  `qwen3.8-flash-next-2026-09-26/run_fn.sh` the key rule also matched `grep`'s `-m3` flag, which was put back
+  and is not counted;
 - 56 request identifiers removed from response JSON;
 - **lines removed:** 103. Of these, 94 were a helper process's start-up and status lines in the server logs, each
   kept as its timestamp followed by `<line removed>`, so the logs still show when each run began; four are an
@@ -154,7 +196,9 @@ technical content, two comment lines about a private use became one, and a dash 
 `qwen3.8-flash-next-2026-09-20/hard_recall_probe.py` and one phrase of `run_hard.sh` were reworded;
 `batch_sweep.sh` lost a clause of its opening comment; one printed label in each of the two
 `minimax-m3/*.measure.log` files has a phrase replaced with `<REDACTED>`; the two `minimax-m3/*launch-check.log`
-files lose the line telling the operator how to stop the server, which named a process-id file.
+files lose the line telling the operator how to stop the server, which named a process-id file. The docstring
+of `qwen3.8-27b-2026-09-26/probe38.py` was rewritten to its technical content in the same way as
+`prose_probe.py`'s, one comment line about a private use was shortened, and a dash in a help string became a colon.
 
 **Extracts, each saying so in its first lines.** `minimax-m2.7/2026-09-13_extract.txt` (the launch block of a
 serving script, two probe lines, the result lines of two runs with their texts omitted, and the layer count from
@@ -198,6 +242,8 @@ and not a port.
 | `summary-table-corrections-2026-09-26.csv` | section 05's table: what our records said, where that figure stood, what the files show, and the files | written 2026-09-26 |
 | `file-listing-2026-09-26.txt` | every file each row serves, with byte counts from the file system; the files no longer present; and the start-script lines behind the row notes (windows, batch sizes, cache, file choice), paths and ports removed | read 2026-09-26 |
 | `batch-sweep-2026-09-21/` | the batch-size sweep through each model's own start script: results and server logs at the defaults and at the setting each model now runs, the other rungs of the models kept at the defaults (results only), the series runs (several lengths per load) for GLM-5.3-Flash, Ling-3.0-flash, Laguna S 2.1 and both DeepSeek services (each DeepSeek service also at `-ub 2048`), the 3,000-token reads at 262,144 for Inkling-Small and Qwen3.8-Flash-Next, two runs through the model manager, the three drivers and the pair's chain script; and the crash check of the same day (its chain `stress_chain.sh`, its per-model script `stress_model.py` and its summary `STRESS.txt`), whose runs passed no window | 2026-09-21 |
+| `qwen3.8-27b-2026-09-26/` | Qwen3.8-27B at 262,144 with the draft head off, the configuration installed as its default that afternoon: the result file (window, command line, card memory) and one JSON line per measurement, reads and letters at about 20,000, 48,000, 100,000 and 230,000 tokens, with the probe; and the result files of the two smaller files at 262,144 with the draft head on, cited for their command lines | 2026-09-26 |
+| `qwen3.8-flash-next-2026-09-26/` | Qwen3.8-Flash-Next at its served 262,144 window, the server started once at `-b 4096 -ub 2048` (from a cold start) and once at llama.cpp's defaults: one JSON line per read for each setting (`shipped_b4096_ub2048.jsonl`, `default_b2048_ub512.jsonl`), the run's own log of each load (`run_fn.out`: window, card memory, how much of the model was in memory), the driver, the read probe and the memory-residency script | 2026-09-26 |
 | `installed-windows-2026-09-21.txt` | for each endpoint that has one, a run on 21 September that passed no window, and the window its server reported; notes for the endpoints these records cannot settle | written 2026-09-26 from runs of 2026-09-21 |
 | `batch-sweep-2026-09-20/` | the runs started by hand: Inkling-Small and Qwen3.8-Flash-Next at the defaults and at `-b 4096 -ub 2048` (131,072), the same setting at 262,144 on 3,000 tokens, DeepSeek's 8-bit file at the defaults and at 8192 (48,073 tokens at 131,072; 150,324 at 262,144) with the two result summaries its verify runs printed, and the drivers | 2026-09-20 |
 | `qwen3.8-flash-next-2026-09-20/` | Qwen3.8-Flash-Next at 262,144 with the 8-bit cache: a 229,982-token read and a 5,986-token control, and the two larger windows (results only), with the driver and the probe | 2026-09-20 |

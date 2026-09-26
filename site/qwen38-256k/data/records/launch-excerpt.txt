@@ -1,0 +1,24 @@
+  SPEC=(--spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75)
+  [ -n "${Q38_DKV:-}" ] && SPEC+=(--cache-type-k-draft "$Q38_DKV" --cache-type-v-draft "$Q38_DKV")   # TEST: MTP draft-context KV type
+fi
+KVARGS=()
+if [ "$CTX" = 262144 ]; then
+  KVARGS=(--cache-type-k "${Q38_KV_K:-q8_0}" --cache-type-v "${Q38_KV_V:-q8_0}")
+  if [ "${#SPEC[@]}" -gt 0 ] && [ -z "${Q38_TEST_MTP_AT_256K:-}" ]; then
+    echo "NOTE: ctx 262144 forces MTP off : the draft context does not fit beside a 256K cache (measured 2026-09-17)." >&2
+    SPEC=()
+  fi
+fi
+Q38_BATCH="${Q38_BATCH:-2048}"; Q38_UBATCH="${Q38_UBATCH:-512}"
+case "$Q38_BATCH$Q38_UBATCH" in *[!0-9]*) echo "ERROR: Q38_BATCH/Q38_UBATCH must be integers." >&2; exit 2 ;; esac
+exec <REDACTED_PATH>/llama-server \
+  --model "${Q38_MODEL_OVERRIDE:-<REDACTED_PATH>/Qwen3.8-27B-UD-Q5_K_XL.gguf}" \
+  --host "${HOST}" --port "${PORT}" --alias qwen3.8-27b \
+  --jinja --ctx-size "${CTX}" --parallel 1 \
+  --batch-size "${Q38_BATCH}" --ubatch-size "${Q38_UBATCH}" \
+  ${KVARGS[@]+"${KVARGS[@]}"} \
+  --n-gpu-layers 999 \
+  ${SPEC[@]+"${SPEC[@]}"} \
+  --threads 24 --threads-batch 24 \
+  --flash-attn on --cors-origins localhost --timeout 3600 \
+  --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0

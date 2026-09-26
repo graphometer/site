@@ -1,0 +1,50 @@
+hybrid model's save points are exercised by a follow-up turn on a cached prefix, so each prompt here:
+  1. reads real mixed text (llama.cpp's own public C/C++/markdown sources) of a length mostly around one and
+     two ubatches, then writes ~150 tokens at the served temperature (speculation active);
+  2. takes a follow-up turn on the same conversation (prefix reuse + checkpoint restore + speculation).
+def make_prompt(target):
+    parts, total = [], 0
+    while total < target * 5:
+        f = files[rng.randrange(len(files))]
+        t = f.read_text(errors="replace"); a = rng.randrange(max(1, len(t) - 3000))
+        parts.append(f"\n\n=== {f.name} ===\n" + t[a:a + rng.randint(1500, 9000)])
+        total = sum(len(x) for x in parts)
+    toks = post("/tokenize", {"content": "".join(parts)}, 300)["tokens"][:target]
+    return post("/detokenize", {"tokens": toks}, 300)["content"]
+
+
+def pick_len():
+    u = rng.random()
+    if u < 0.55:
+        return rng.randint(max(300, UB // 2), UB + 64)
+    if u < 0.85:
+        return rng.randint(UB + 65, 2 * UB + 600)
+    return rng.randint(300, 12000)
+
+
+def turn(messages, max_tokens):
+    d = post("/v1/chat/completions", {"messages": messages, "max_tokens": max_tokens, "temperature": 0.7,
+                                      "seed": rng.randint(1, 10**6), "stream": False,
+                                      "chat_template_kwargs": {"enable_thinking": False}}, 1800)
+    m = d["choices"][0]["message"]
+    return (m.get("content") or "").strip(), d.get("timings", {}) or {}
+        try:
+            if i == 0:
+                q = ledger_3000(); rec["target"] = "replay3000"
+            else:
+                L = pick_len(); rec["target"] = L
+                q = make_prompt(L) + "\n\nIn two or three sentences: what is the text above mostly about?"
+            msgs = [{"role": "user", "content": q}]
+            a1, ti1 = turn(msgs, 160)
+            msgs += [{"role": "assistant", "content": a1},
+                     {"role": "user", "content": "And what is one specific detail you noticed? One sentence."}]
+            a2, ti2 = turn(msgs, 80)
+            rec.update(ok=True, prompt_n=ti1.get("prompt_n"), dec1=round(ti1.get("predicted_per_second", 0) or 0, 1),
+                       n1=ti1.get("predicted_n"), prompt2_n=ti2.get("prompt_n"),
+                       dec2=round(ti2.get("predicted_per_second", 0) or 0, 1), n2=ti2.get("predicted_n"),
+                       draft_acc1=ti1.get("draft_n_accepted"), draft_n1=ti1.get("draft_n"),
+                       empty=(not a1) or (not a2), code_ok=("AMBER-3172-WILLOW" in a1) if i == 0 else None)
+            if rec["empty"]:
+                empties += 1
+        except Exception as e:
+            time.sleep(3)

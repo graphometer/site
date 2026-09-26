@@ -1,0 +1,16 @@
+Qwen3.8-Flash-Next, 26 September 2026: the placement flags of the start-script copy used for both runs in this
+folder. Excerpt of its launch line; paths, host and port are omitted, and only flags the script sets unconditionally
+or that the run's records confirm are listed. The model file is Qwen3.8-Flash-Next-UD-Q3_K_XL-00001-of-00003.gguf
+(three shards). The run's own notes record the same placement: ctx 262144, q8_0 KV, --n-cpu-moe 40.
+
+  --ctx-size 262144 --parallel 1              (the server logs print n_ctx_slot = 262144)
+  --cache-type-k q8_0 --cache-type-v q8_0     (the script's default cache type; the run's notes record q8_0)
+  --batch-size 4096 --ubatch-size 2048        (shipped_b4096_ub2048; the server log's progress lines mostly step by 4,096)
+  --batch-size 2048 --ubatch-size 512         (default_b2048_ub512, llama.cpp's default; its progress lines mostly step by 2,048)
+  --n-gpu-layers 99 --n-cpu-moe 40
+  --fit off
+  --threads 24 --threads-batch 24
+  --flash-attn auto
+
+Thinking was switched off per request (chat_template_kwargs enable_thinking false in the read script), not by a
+launch flag. No rope scaling applies at 262,144: the script adds it only above that window.

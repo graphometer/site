@@ -181,8 +181,19 @@
 <div class="data-wrap"><table class="data"><caption>Measured later runs; time definitions differ as labelled</caption><thead><tr><th>Run</th><th>Batch / micro-batch</th><th>Tokens read</th><th>Recorded time</th><th>Read tokens/s</th><th>Card MiB</th></tr></thead><tbody>
 <tr><td class="t">DeepSeek V4 Flash<br>UD-Q8_K_XL, desktop<br>September 20 (collection date)</td><td>8192 / 8192</td><td>150,324</td><td>313,172.17 ms<br>prompt processing</td><td>480.00</td><td>26,023<br>at load</td></tr>
 <tr><td class="t">Laguna S 2.1<br>September 21 (collection date)</td><td>not recorded / 4096</td><td>200,098</td><td>233.9 s<br>request wall time</td><td class="t">866.1 prefill, not wall ÷ tokens</td><td>27,995<br>series peak</td></tr>
+<tr><td class="t">Qwen3.8-Flash-Next<br>UD-Q3_K_XL<br>September 26<br>40 expert layers on CPU, 8-bit cache</td><td>4096 / 2048</td><td>229,981</td><td>429.6 s<br>prompt processing</td><td>535.4</td><td>26,795<br>at load</td></tr>
+<tr><td class="t">Qwen3.8-Flash-Next<br>same file, placement and day</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,981</td><td>1,119.3 s<br>prompt processing</td><td>205.5</td><td>21,333<br>at load</td></tr>
 </tbody></table></div>
 <p>DeepSeek’s later log names the same Q8 model file, one slot and the same served window. Its result records all experts in RAM and both batch settings at 8192. The prompt lengths differ, and the later record lacks a build identifier and full launch command. It records a completed answer, but does not retain the three-code answer needed to repeat the earlier retrieval score. No 3/3 result is claimed for this run.</p>
+<p>The two Flash-Next rows are one measured comparison, run one after the other on 26 September: the same file, window,
+placement and 229,981-token prompt, and both returned 3 of 3 planted codes. That placement is not the one in the 15 September
+table above: 40 expert layers requested on CPU instead of 99, fit off, and an 8-bit (<code>q8_0</code>) cache. So 205.5 tokens a
+second at the default batch is not a new measurement of the 165.70 row; the placement and the cache changed too. Both long reads
+started from the same state, with about 60 GB of the 90 GB model file already in system memory. The first server began with none
+of the file in memory, and its first request, 3,035 tokens, read at 87.7 tokens a second while the file's share in memory grew
+from 43.5 to 57.7 GB; the next request on that server read 3,019 tokens at 517.6. It is the only start recorded with the file out
+of memory, so it shows what this start did, not a rule for other models. The <a href="../batch-size/">batch-size study</a> has the rest of
+this run.</p>
 <p>Laguna’s record reports the planted string found. Its test used one string and a different prompt harness. The 200,098-token request followed a shorter request in the same series; the peak covers that series. The saved result does not identify the quantization, build, complete placement or sampling settings. It proves this recorded run, not an exact reproducible profile or a before-and-after gain.</p>
 <p>The <a href="../batch-size/">batch-size study</a> covers the broader tuning sweep. There is no new reading time here for a September 15 configuration that was not re-measured at comparable depth.</p></section>
 <section id="s5"><div class="secnum">05</div><h2>Where memory stopped the run</h2><p><strong>Measured failures.</strong> Ornith-1.5-35B Q6_K, with 6 expert layers in RAM and MTP enabled, reached draft-context creation at 262,144 and failed on a 512.00 MiB allocation. Ornith-1.5-397B IQ3_XXS-UD, with 57 expert layers in RAM and MTP enabled, failed on a 1,862.00 MiB compute-buffer allocation. The latter log does not establish that the draft context caused the failure. Neither failure log proves a successful draft-off run at that window.</p>

@@ -72,7 +72,7 @@ Muse Glimmer 30B
   [run] Muse-Glimmer-30B ubatch=skip (the script's own default)
   served: n_ctx_slot = 131072
 
-Qwen3.8-27B
+Qwen3.8-27B (before its 26 September change)
   [run] Qwen3.8-27B ubatch=skip (the script's own default)
   served: n_ctx_slot = 131072
 
@@ -96,6 +96,11 @@ DeepSeek V4 Flash 0731, across two machines: every run that loaded 262,144 passe
 Qwen3.6-27B since 26 September: the letter runs set the window to 262144 themselves (the env: line of each
   letters-2026-09-26/*.result); the start script's fallback is 131,072, CTX="${Q36_CTX:-131072}"
   (file-listing-2026-09-26.txt, section C).
+Qwen3.8-27B since the afternoon of 26 September: installed at 262,144, by our install record, in settings this
+  package does not publish; the start script's own fallback is 65,536, CTX="${Q38_CTX:-65536}"
+  (file-listing-2026-09-26.txt, section C). The run of that day passed its window (the env: line Q38_CTX=262144 in
+  qwen3.8-27b-2026-09-26/Qwen3.8-27B_ctx262144_draft-off.result), and no run in these records started the
+  installed script without a window after the change. Section B shows the 131,072 it served on 21 September.
 
 ## D. Endpoints whose window is the start script's own fallback, with no settings file involved
 

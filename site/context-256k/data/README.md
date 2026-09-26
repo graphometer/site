@@ -3,11 +3,12 @@
 ## Where these files can appear to disagree
 
 - The main TSV has eleven rows. The page’s main table uses ten configurations at their large served windows. The extra DeepSeek split row at 131,072 is retained for completeness, not included in the ten-row ranges.
-- `decode_tps` is the best of two earlier short-prompt prose replies. The page’s at-depth rates are `deep_decode_tps` and the deep JSON’s `predicted_per_second`, for 25–33-token code answers. They are different workloads.
+- `decode_tps` is the best of two earlier short-prompt prose replies. The page’s at-depth rates are `deep_decode_tps` and the deep JSON’s `predicted_per_second`, for 25 to 33 token code answers. They are different workloads.
 - The 15 September DeepSeek Q8 read and the 20 September (collection date) read are both preserved. The latter has explicit larger batch settings, a different prompt length and no recorded build identifier. The timing improvement is not a controlled single-variable result.
 - Laguna’s 866.1 tokens/s is `prefill_tps`, not wall ÷ tokens; its 233.9 s `wall_s` is request wall time, whereas the main table uses prompt-processing time. Its peak is for a series of requests, and its retrieval check uses one planted string. DeepSeek’s later memory value is at load, not a request peak.
 - Qwen3.5’s main-table launches retained MTP. The Ornith failures and GLM setup note do not justify a blanket claim that draft heads cannot coexist with a 262,144 window.
 - GLM Full is a copied configuration-comment excerpt, not a raw run result. It is labelled as such on the page.
+- The two 26 September Flash-Next rows (`flashnext-fullwindow/`) used another placement than the 15 September Flash-Next row: 40 expert layers requested on CPU instead of 99, and an 8-bit cache. Their 205.5 tokens/s at the default batch is not a re-measurement of the 165.70 row.
 
 If a number on the page disagrees with a file in its package, the file is right and the page is wrong.
 
@@ -32,6 +33,9 @@ The raw JSON timing fields, generated content, token usage, finish reasons and c
 | `later/Laguna_ctx262144_ub4096.result` | Primary later long-window result; two-request series and series peak |
 | `later/MSA_256K.console.log` | Primary MiniMax sparse-attention failure ladder |
 | `later/GLM-4.7-Full-config-excerpt.txt` | Source-comment excerpt only, recording the 128K MTP placement trade; not a raw response |
+| `flashnext-fullwindow/shipped_b4096_ub2048.jsonl`, `flashnext-fullwindow/default_b2048_ub512.jsonl` | Primary 26 September Flash-Next reads at 262,144, one row per request: tokens, prompt milliseconds, rates, the model file's share in memory before and after, card use, codes |
+| `flashnext-fullwindow/run.console.log` | Primary console record of the same run: the file's share in memory before each start, load time, card use at load, served window |
+| `flashnext-fullwindow/launch-flags.txt` | Excerpt of the launch flags of the start-script copy used for both rows, paths omitted |
 | `build-records.tsv` | Derived mapping from each original deep response build identifier to its commit |
 | `CONFIGURATIONS.md` | Derived per-model command and build map from the archived primary files |
 | `NUMBERS.md` | Derived figure-to-field map, rounding and arithmetic |
@@ -123,3 +127,7 @@ The package brief’s complete case-insensitive leak-sweep pattern was run over 
 - [later/Laguna_ctx262144_ub4096.result](later/Laguna_ctx262144_ub4096.result)
 - [later/MSA_256K.console.log](later/MSA_256K.console.log)
 - [later/GLM-4.7-Full-config-excerpt.txt](later/GLM-4.7-Full-config-excerpt.txt)
+- [flashnext-fullwindow/shipped_b4096_ub2048.jsonl](flashnext-fullwindow/shipped_b4096_ub2048.jsonl)
+- [flashnext-fullwindow/default_b2048_ub512.jsonl](flashnext-fullwindow/default_b2048_ub512.jsonl)
+- [flashnext-fullwindow/run.console.log](flashnext-fullwindow/run.console.log)
+- [flashnext-fullwindow/launch-flags.txt](flashnext-fullwindow/launch-flags.txt)

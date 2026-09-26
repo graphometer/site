@@ -1,0 +1,15 @@
+[ "$(stat -c %s $Q5S)" = 18665753504 ] && [ "$(sha256sum $Q5S | cut -c1-64)" = d8d62ffcf84d42658dd6ccf9782b4d0404700af78b26d750507510c7597b5bfe ] && echo "Q5_K_S OK" || { echo "Q5_K_S VERIFY FAILED"; exit 1; }
+[ "$(stat -c %s $Q4)" = 17559178144 ] && [ "$(sha256sum $Q4 | cut -c1-64)" = 3f227079003add2511437e5b1e94812e363385225bf6a9b47b0054a72bc8b01e ] && echo "Q4_K_XL OK" || { echo "Q4_K_XL VERIFY FAILED"; exit 1; }
+# quality: perplexity on a fixed public text (llama.cpp docs, 414,554 B, sha256 2fc9d482…), 24 chunks of 4,096
+pgrep -x llama-server && { echo "REFUSED: server running"; exit 1; }
+export LD_LIBRARY_PATH="<REDACTED_PATH>/lib64:${LD_LIBRARY_PATH:-}"
+for pair in "q5xl_installed:$Q5XL" "q5ks_new:$Q5S" "q4kxl_new:$Q4"; do
+  tag=${pair%%:*}; f=${pair#*:}
+  <REDACTED_PATH>/llama-perplexity -m $f -f $E/scripts/ppl_corpus.txt -c 4096 --chunks 24 -ngl 999 -fa on -b 4096 -ub 512 > $E/logs/ppl_$tag.log 2>&1
+  echo "PPL $tag: $(grep -oE 'Final estimate: PPL = [0-9.]+ \+/- [0-9.]+' $E/logs/ppl_$tag.log)"
+done
+# C1: 5-bit small copy, 256K, MTP on (draft KV q8_0), ub 512 : then ub 256 if it cannot load
+Q38_MODEL_OVERRIDE=$Q5S Q38_CTX=262144 Q38_MTP=1 Q38_TEST_MTP_AT_256K=1 Q38_DKV=q8_0 ./scripts/run38.sh q38_q5ks_256k_mtp $V <PORT> 20000,48000,100000,230000 --think-off --structured --recall3-depth 230000
+grep -q "DIED on load" $E/results/q38_q5ks_256k_mtp.result && Q38_MODEL_OVERRIDE=$Q5S Q38_CTX=262144 Q38_MTP=1 Q38_TEST_MTP_AT_256K=1 Q38_DKV=q8_0 Q38_UBATCH=256 ./scripts/run38.sh q38_q5ks_256k_mtp_ub256 $V <PORT> 20000,48000,100000,230000 --think-off --structured --recall3-depth 230000
+# C2: 4-bit copy, 256K, MTP on (draft KV q8_0), ub 512
+Q38_MODEL_OVERRIDE=$Q4 Q38_CTX=262144 Q38_MTP=1 Q38_TEST_MTP_AT_256K=1 Q38_DKV=q8_0 ./scripts/run38.sh q38_q4kxl_256k_mtp $V <PORT> 20000,48000,100000,230000 --think-off --structured --recall3-depth 230000

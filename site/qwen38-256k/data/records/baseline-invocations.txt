@@ -1,0 +1,5 @@
+cd $E
+# A: today's 256K rung : q8_0 KV, MTP forced off (the script's own behaviour), ub 512
+Q38_CTX=262144 Q38_MTP=1 ./scripts/run38.sh q38_q5xl_256k_nomtp $V <PORT> 20000,48000,100000,230000 --think-off --structured --recall3-depth 230000
+# D: the coder baseline : 128K f16 KV + MTP (n-max 6, p-min 0.75), ub 512
+Q38_CTX=131072 Q38_MTP=1 ./scripts/run38.sh q38_q5xl_128k_mtp $V <PORT> 20000,48000,100000 --think-off --structured

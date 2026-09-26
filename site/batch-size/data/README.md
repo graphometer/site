@@ -47,8 +47,8 @@ file in this package, the file is right and the page is wrong; tell us and we wi
    sweep's reads of similar size (MiniMax M2.7: 192.6 t/s on 3,042 tokens, against 564.0 on 3,658 tokens on 19
    September). The page quotes two of them, and only as what they are: the 21 September replays of
    Qwen3.8-Flash-Next (112.3 t/s on 2,999 tokens) and Inkling-Small (187.9 on 3,033), because they and the 20
-   September `*_262k-confirm` reads are the only speeds we have for those two models at the 262,144 window
-   they serve (point 14).
+   September `*_262k-confirm` reads were the only speeds for those two models at the 262,144 window they serve
+   (point 14), until Qwen3.8-Flash-Next was re-measured there on 26 September (point 15).
 10. **Cross-pass ratios.** Ling's 238.2 comes from the 20 September pass (hand-copied flags, 131,072 window) and
     its 727.7 from 21 September (its own script, 262,144); each keeps its own card and decode figures on the
     page (7,233 MiB after load and 27.46 t/s on 77 tokens; 8,824 MiB peak over the series and 23.25 t/s on 77
@@ -74,8 +74,23 @@ file in this package, the file is right and the page is wrong; tell us and we wi
     `runs/2026-09-20_first-pass/` hold one 3,000-token read each. Inkling-Small's ran at 263.6 t/s and
     Qwen3.8-Flash-Next's at 45.4 (3,041 tokens, 67.0 s, of which the first 989 tokens took 57.1 s by the log's
     progress lines). The start-script comments quoted in `derived/excerpts.md` section 3 cite only their card
-    figures. No deep read of either model at 262,144 after the change is in the package or in our records; the
-    48,000-token speeds in the page's main table are 131,072-window reads.
+    figures. The 48,000-token speeds in the page's main table are 131,072-window reads. For Inkling-Small no
+    long read at 262,144 after the change is in the package or in our records; for Qwen3.8-Flash-Next the 26
+    September run supplies them (point 15).
+15. **The 26 September run: two starts, one of them from an empty page cache.** In
+    `runs/2026-09-26_qwen3.8-flash-next-served-window/` the shipped setting ran first, on a server started with
+    none of the model's 89.99 GB in the page cache (`run.console.log`: 0.0 GB before the start, 43.54 GB after
+    the load). Its read 1 began at 43.54 GB and ended at 57.66 GB, and is the slow read (87.7 t/s, then 517.6 for
+    read 2). llama.cpp's default ran second, on a server started with 60.05 GB already resident, and its read 1
+    ran at 253.7 t/s, in line with its read 2 (255.7): the slowdown belongs to that one start, not to first
+    requests in general. The six later reads began with 57.66 to 60.06 GB resident; the file never became fully
+    resident. Only the 229,981-token reads planted three codes (`codes3_hits`); the others planted one
+    (`code_ok`). `resident_gb_before` and `resident_gb_after` are decimal GB of the three model shards held
+    in the page cache (the kernel's `mincore`, read by `tools/resident.py`); the model never became fully
+    resident (about 60 of 90 GB). `vram_mib_after` is the card after each read, not a peak. The server logs do
+    not print the batch settings; the progress lines show them, as restore points (983 = 3,035 - 4 - 2,048 on
+    the shipped rung, 2,519 = 3,035 - 4 - 512 on the default) and as logical steps of 4,096 and 2,048. These
+    reads ran with thinking off, the 20 September reads with it on.
 
 ## What is where
 
@@ -121,6 +136,11 @@ one JSON line per read.
   `Z13 GTT` is the laptop's graphics memory in use (MiB).
 - `runs/2026-09-21_minimax-m2.7-installed/needle48k.json`: three codes planted in a 43,679-token document,
   all returned, through the installed start script.
+- `runs/2026-09-26_qwen3.8-flash-next-served-window/`: Qwen3.8-Flash-Next at the 262,144 window it serves,
+  through a copy of its start script: `-b 4096 -ub 2048` (the shipped setting) on a server started with an
+  empty page cache, then `-b 2048 -ub 512` on one started with 60.05 GB of the file resident; one JSON row per read (`*.jsonl`: tokens, milliseconds, t/s, decode, page-cache residency
+  before and after, card after, the code check), each load's server log, and the driver's console output
+  (`run.console.log`: residency before each start, load time and card memory at load). Point 15.
 - `tools/`: the harnesses that produced these files, with private paths removed (placeholders in angle
   brackets name what stood there, for example `<llama.cpp build d3146f2b5>/llama-server`):
   `batch_sweep.sh` (21 September driver), `sweep_chain.sh`, `queue_runner.sh`, `series_probe.sh`,
@@ -129,9 +149,12 @@ one JSON line per read.
   (it gave each start script that had no batch setting one whose default is llama.cpp's own), `repro_ling_crash.py`
   (the standalone reproducer; it rebuilds the 3,007-token request against any running server),
   `bsweep_2026-09-20.sh` and its three run files, the DeepSeek `deepseek_*_2026-09-20.sh` files, and the M2.7
-  `MiniMax-M2.7_*` files. They call our start scripts, which are not in the package; the settings that matter
+  `MiniMax-M2.7_*` files, and for the 26 September run `Qwen3.8-Flash-Next_reads.py` (the four reads and their
+  code checks) and `resident.py` (page-cache residency, read-only). They call our start scripts, which are not
+  in the package; the settings that matter
   are in `derived/model_files.tsv`, `derived/builds.tsv` and the logs.
-- `derived/reads.tsv`: every read the page quotes from a llama-server log in the sweeps, one row each, parsed
+- `derived/reads.tsv`: every read the page quotes from a llama-server log in the sweeps and the 26 September
+  run (card memory there is "after read"), one row each, parsed
   from the logs (tokens, seconds, t/s, tokens generated, decode t/s, code checks, card MiB and which kind).
   MiniMax M2.7's readings and the two-machine runs keep theirs in their own JSON and result files.
 - `derived/model_files.tsv`: each model file's size and header fields (layers, experts), read from the GGUF
@@ -146,10 +169,11 @@ one JSON line per read.
 - Machine: one desktop, one NVIDIA GeForce RTX 5090 (32 GB), 188 GiB of RAM; for the two-machine runs, an ASUS
   ROG Flow Z13 laptop over Thunderbolt using llama.cpp's RPC backend.
 - Dates: 15 September (one depth read), 19 September (M2.7), 20 September (first pass, DeepSeek, M3 split
-  buffers, just after midnight), 21 September (everything else). File times in the logs are the machine's local
-  time.
+  buffers, just after midnight), 21 September (everything else), 26 September (Qwen3.8-Flash-Next at its served
+  window). File times in the logs are the machine's local time.
 - Temperature 0 on every sweep request; `max_tokens` 900 on sealed-code reads, 32 on stress prompts, 8 on the
-  16,011-token DeepSeek comparisons, 32 on the M2.7 harness, 400 on the follow-up requests.
+  16,011-token DeepSeek comparisons, 32 on the M2.7 harness, 400 on the follow-up requests, 120 with thinking off
+  on the 26 September reads.
 - Every model output shipped here comes from a model running locally on this machine. No hosted model's output
   is in the package.
 
@@ -157,10 +181,10 @@ one JSON line per read.
 
 Nothing was changed in any file except the items below. Counts are over the whole package.
 
-- **Paths:** 393 absolute paths in run files became `<REDACTED_PATH>/` plus the file's own name (a model file
-  name, a source file name, or a script name). In the tools, 43 paths became named placeholders such as
+- **Paths:** 395 absolute paths in run files became `<REDACTED_PATH>/` plus the file's own name (a model file
+  name, a source file name, or a script name). In the tools, 44 paths became named placeholders such as
   `<MODEL_DIR>`, `<OUTPUT_DIR>`, `<CUDA 12.8 libraries>` or `<llama.cpp build d3146f2b5>`.
-- **Addresses and ports:** 151 occurrences of the desktop's bridge address in run files and 5 in the tools became
+- **Addresses and ports:** 153 occurrences of the desktop's bridge address in run files and 6 in the tools became
   `<LOCAL>` (with the port, where one followed); one command-line port next to it became `<PORT>`; 5 laptop link
   addresses became `<LAPTOP>`, and one laptop host alias in a tool became `<LAPTOP>`. Loopback addresses
   (`127.0.0.1`) and their ports are left as they were.
@@ -170,16 +194,20 @@ Nothing was changed in any file except the items below. Counts are over the whol
   measurement line was deleted.
 - **Internal names:** 74 run files and 14 tools were renamed from internal short names to public model names,
   and 74 occurrences of those short names inside files were changed the same way; 11 queue-log entries lost an
-  internal prefix and a service port.
-- **Tools, by hand:** 83 edits deleted sentences and blocks that named private systems or configured the helper
+  internal prefix and a service port. For the 26 September run, 5 run files and 1 tool were renamed to carry
+  the public model name, and the tool's 2 mentions of its old name changed with it.
+- **Tools, by hand:** 84 edits deleted sentences and blocks that named private systems or internal studies, or configured the helper
   process (each deletion is marked in place, for example `[one sentence removed from this copy]`), removed a list
   of internal service names, and reworded one comment whose English verb tripped our own leak check.
 - **Response identifiers:** 3 fields (`id`, `system_fingerprint`, `created`) removed from one response.
-- **Punctuation:** 62 em dashes in our own harness text (15 in console logs and one result note, 47 in script
-  comments and messages) became colons, following the site's copy rule. None was in model output or in
-  llama.cpp's own log lines.
-- **Not shipped:** our start scripts and their settings files, internal notes and working papers, the private
-  reasoning recorded beside some results, and two small test logs about the helper process.
+- **Punctuation:** 66 em dashes in our own harness text (15 in console logs and one result note, 51 in script
+  comments, messages and docstrings) became colons, two of them commas where a colon would not read, following
+  the site's copy rule. None was in model output or in llama.cpp's own log lines. The package holds no en
+  dash.
+- **Not shipped:** our start scripts and their settings files (for the 26 September run: its copy of the start
+  script, its driver script and its settings file), internal notes and working papers, the private reasoning
+  recorded beside some results, two small test logs about the helper process, and the 26 September run's
+  process-id files.
 
 Leak check: the sweep our packaging rules require (internal paths, staging-folder names, the hostname and
 network names, the bridge and link addresses, the laptop's host names, operator keys, service names, and the

@@ -115,8 +115,9 @@ The run the old comment cites is `runs/2026-09-20_first-pass/Ling-3.0-flash_262k
 script was saved at 19:07 on 20 September; the corrected version at 14:16 on 21 September.
 
 Qwen3.8-Flash-Next and Inkling-Small, the same kind of comment above their batch setting, as both scripts
-stand (each last saved at 18:37 on 21 September). Lines 226 to 230 of the first and 129 to 133 of the second;
-the lines above them, which explain the change, are left out:
+stood from 18:37 on 21 September until their correction on 26 September (the text is kept in the backup each
+script got before that correction). Lines 226 to 230 of the first and 129 to 133 of the second; the lines above
+them, which explain the change, are left out:
 
 ```
 #
@@ -136,8 +137,37 @@ the lines above them, which explain the change, are left out:
 
 The speeds are the 131,072-window reads of 20 September (`runs/2026-09-20_first-pass/*_base.result` and
 `*_ub2048.result`). The card figures are the 262,144-window loads (`*_262k-confirm.result`), whose one
-3,000-token read each ran at 45.4 t/s (Qwen3.8-Flash-Next) and 263.6 t/s (Inkling-Small). Neither comment gives
-a speed at 262,144, and nothing in either script says why the setting stays at that window.
+3,000-token read each ran at 45.4 t/s (Qwen3.8-Flash-Next) and 263.6 t/s (Inkling-Small). Neither comment gave
+a speed at 262,144.
+
+Both comments were rewritten on 26 September. Inkling-Small's now reads, lines 133 to 135:
+
+```
+# Loaded and answered at the full served window (ctx 262144): 17,281 MiB, on a 3,033-token prompt read
+# at 263.6 t/s (187.9 t/s on a 2026-09-21 replay). The 337.9 above is a 131,072-window, 48K read. A long
+# read at 262144 with these flags has not been measured (corrected 2026-09-26).
+```
+
+Qwen3.8-Flash-Next's now carries that day's measurements at its served window
+(`runs/2026-09-26_qwen3.8-flash-next-served-window/`), lines 230 to 235, with the last line's pointer to our
+working folder removed:
+
+```
+# MEASURED at the full served window (ctx 262144), 2026-09-26, cache warm, these flags vs llama.cpp's
+# default -b 2048 -ub 512: ~3K 517.6 vs 255.7 t/s; 48,075 tokens 660.6 vs 240.2; 229,981 tokens 535.4
+# (429.6 s) vs 205.5 (1,119.3 s); 3/3 sealed codes on both; card 26,795 MiB at load (21,333 at the
+# default); speaking unchanged. The earlier 45.4 t/s was the FIRST request after a start, with the
+# CPU-side weights not yet in the page cache (reproduced: 87.7 t/s while ~14 GB paged in); measure the
+# second read. [pointer removed]
+```
+
+The comment states the cause of the 45.4 as fact; the page is narrower, because the page cache was not recorded
+on 20 September. Its "cache warm" means about 58 to 60 GB of the 90 GB file in memory, never all of it, and
+its "3/3 sealed codes on both" belongs to the 229,981-token pair, the only reads with three codes planted
+(`data/README.md` point 15). The run behind the new figures went through a copy of this script whose launch line sets
+`--n-gpu-layers 99 --n-cpu-moe 40 --fit off`, `--cache-type-k` and `--cache-type-v` from a setting whose default
+is q8_0, 24 threads and flash attention on auto; its card figure at load (26,795 MiB, against 26,561 on 20
+September with q8_0 set by hand) agrees with the q8_0 cache the run's notes record.
 
 The six models that fit on the card: the line each start script carries above its batch setting after the 21
 September sweep (all six keep llama.cpp's default), verbatim:

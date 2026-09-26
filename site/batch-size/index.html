@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</title>
-<meta name="description" content="A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 (32 GB) and 188 GiB of RAM, 19 to 21 September 2026. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default (-b 2048 -ub 512); where a script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. Two of those models were timed on long prompts only at half the window they serve, and at the full window one of them read short prompts far slower. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Each model had its own ceiling in card memory and window; one setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input. Includes the cost after the first read, two refused knobs, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), our own corrections, and the logs behind every figure.">
+<meta name="description" content="A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 (32 GB) and 188 GiB of RAM, 19 to 21 September 2026, with one model re-measured on 26 September. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default (-b 2048 -ub 512); where a script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. At the 262,144-token window it serves, Qwen3.8-Flash-Next, re-measured on 26 September with about 58 to 60 GB of its 90 GB file in memory, kept the gain (48,075 tokens at 660.6 t/s against 240.2 at the default); on a server started with none of the file in memory, the first request (3,035 tokens) began with 43.5 GB loaded and read at 87.7 t/s, against 517.6 for the next 3,019 tokens. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Each model had its own ceiling in card memory and window; one setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input. Includes the cost after the first read, two refused knobs, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), our own corrections, and the logs behind every figure.">
 <link rel="canonical" href="https://graphometer.ai/batch-size/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
@@ -160,7 +160,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; 19 to 21 September 2026 &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 188&nbsp;GiB RAM) &middot; llama.cpp at seven commits, one of them built twice &middot; 12 models with experts in system RAM, 6 that fit on the card</div>
+      <div class="eyebrow">Measured study &middot; 19 to 21 September 2026, one model re-measured 26 September &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 188&nbsp;GiB RAM) &middot; llama.cpp at seven commits, one of them built twice &middot; 12 models with experts in system RAM, 6 that fit on the card</div>
       <h1>llama.cpp's <em>batch size</em></h1>
       <p class="subtitle">Prompt reading 2.5 to 7.3 times faster than the
       default, up to 20 against an inherited <code>-ub 128</code>.</p>
@@ -175,9 +175,14 @@
       became <strong>2.5 to 7.3 times faster than at llama.cpp's
       default</strong>; where a script had inherited <code>-ub 128</code>,
       reading became 19.9 times faster on a 24,071-token prompt and 17.5 times
-      on a 3,658-token one. Two of them, Inkling-Small and Qwen3.8-Flash-Next,
-      were timed on long prompts only at half the window they serve, and at the
-      full window Flash-Next's short reads were far slower (section 04). With a
+      on a 3,658-token one. Qwen3.8-Flash-Next, re-measured at its full
+      262,144-token window on 26 September with about 58 to 60&nbsp;GB of its
+      90&nbsp;GB file in memory, kept the gain there (48,075 tokens at 660.6 t/s
+      against 240.2 at the default). On a server started with none of the file
+      in memory, the first request (3,035 tokens) began with 43.5&nbsp;GB loaded
+      and read at 87.7 t/s, against 517.6 for the next 3,019 tokens (section
+      04). Inkling-Small was timed on long prompts only at half the window it
+      serves. With a
       large enough token budget the planted code came back at every rung we
       checked, and decode on short answers moved less than 7 percent for every
       shipped value but one (same day, same window). Five
@@ -244,13 +249,14 @@
       given, unless it is marked arithmetic.</p>
       <table class="facts">
         <tr><th scope="row">Machine</th><td>One desktop: one NVIDIA GeForce RTX&nbsp;5090 (32&nbsp;GB), 188&nbsp;GiB of system RAM. Every server ran with <code>--threads 24 --threads-batch 24</code>, one request slot (<code>--parallel 1</code>) and flash attention on or auto, one model at a time.</td></tr>
-        <tr><th scope="row">The read</th><td>A synthetic ledger of numbered, near-identical lines (the generator is in the package), seed 20260920, sized with the server's own tokenizer to within 2 percent of 48,000 tokens (24,000 on Laguna S 2.1's 32,768-token window), with one sealed code at half depth and the question &ldquo;quote the sealed reference exactly. Answer with the code only.&rdquo; Temperature 0, <code>max_tokens</code> 900, a freshly loaded server, nothing cached. Reading speed is the server's own <code>timings.prompt_per_second</code>; decode is its <code>predicted_per_second</code>.</td></tr>
+        <tr><th scope="row">The read</th><td>A synthetic ledger of numbered, near-identical lines (the generator is in the package), seed 20260920, sized with the server's own tokenizer to within 2 percent of 48,000 tokens (24,000 on Laguna S 2.1's 32,768-token window), with one sealed code at half depth and the question &ldquo;quote the sealed reference exactly. Answer with the code only.&rdquo; Temperature 0, <code>max_tokens</code> 900, a freshly loaded server (usually as its first request, with the page cache not recorded; section 04), nothing in the prompt cache. Reading speed is the server's own <code>timings.prompt_per_second</code>; decode is its <code>predicted_per_second</code>.</td></tr>
         <tr><th scope="row">Pass rule</th><td>From 21 September, a non-empty answer had to contain the code itself; an empty answer passed for reading speed if the code was in the model's reasoning (section 08). The 20 September harness recorded only whether the code appeared in the answer or the reasoning, and the answer's length: 17 characters, the length of the code, in every passing row.</td></tr>
         <tr><th scope="row">19 September</th><td>MiniMax M2.7 with its own harness: one 3,658-token prompt at <code>-ub</code> 128, 512, 1024, 2048 and 4096 with every expert layer in RAM (131,072 window, q8_0 cache); then 43,909-token reads at 4096 with 62, 61, 60, 59 and 58 of its 62 expert layers in RAM; then its full 196,608 window. That prompt was a repeated paragraph, and this harness did not check the answer.</td></tr>
         <tr><th scope="row">20 September</th><td>Flags copied by hand from each start script, at a 131,072 window: Ling-3.0-flash, Inkling-Small and Qwen3.8-Flash-Next (the default and a candidate; 8192 as well on Inkling and Flash-Next), and DeepSeek V4 Flash with its own harness (16,011-token reads for the first comparisons, then 48,073). The three winners were then loaded at the served 262,144 window and sent one 3,000-token prompt each (sections 04 and 05), and DeepSeek's read 150,324 tokens there. This pass could not start Laguna S 2.1: the hand-copied <code>--n-gpu-layers 999</code> tried to put all 64,771.15&nbsp;MiB of its weights on the card.</td></tr>
         <tr><th scope="row">21 September</th><td>The remaining models, and Ling again, through their own start scripts at each script's served window. The scripts take the batch setting from the environment; a script that had none was first given one whose default is llama.cpp's own, so its baseline did not change, and nothing else was edited. Rungs: the script's own setting, then 2048, 4096 and 8192 (1024, 2048 and 4096 on the models that fit on the card and on Ornith-1.5-35B), stopping at the first rung that failed to load, lost the code, or read slower than the one before. Card memory was sampled every 2 to 5 seconds during each read.</td></tr>
         <tr><th scope="row">Stress check</th><td>21 September, the shipped settings of the other eleven models with experts in RAM (twelve runs: DeepSeek V4 Flash's Q8 and IQ3 files separately). Each: a fresh load whose first request was the exact 3,007-token prompt that crashed Ling (section 05), then 40 prompts of real mixed text from llama.cpp's own source tree (C, C++, CUDA, Python, Markdown), sized mostly around one and two micro-batches, <code>max_tokens</code> 32, with a restart and a saved prompt after any crash. Ling had its own check; the six models on the card were not stress-checked.</td></tr>
-        <tr><th scope="row">Card memory</th><td>Raw <code>nvidia-smi</code> MiB, desktop included. The 20 September runs recorded it once, after load; the 21 September runs recorded the peak during the read, which ran 0 to 465&nbsp;MiB above the load reading.</td></tr>
+        <tr><th scope="row">26 September</th><td>Qwen3.8-Flash-Next at the 262,144 window it serves, through a copy of its start script (<code>--n-cpu-moe 40</code>, <code>--fit off</code> and the q8_0 cache, as on 20 September): the shipped <code>-b 4096 -ub 2048</code> on a server started with none of the 90&nbsp;GB model file in the page cache, then llama.cpp's default on a server started with 60.05&nbsp;GB of it already there. Four fresh documents per load, of about 3,000, 3,000, 48,000 and 230,000 tokens (one code in each, three in the last), thinking off, with the file's share of the page cache read before and after each request (<code>mincore</code>).</td></tr>
+        <tr><th scope="row">Card memory</th><td>Raw <code>nvidia-smi</code> MiB, desktop included. The 20 September runs recorded it once, after load; the 21 September runs recorded the peak during the read, which ran 0 to 465&nbsp;MiB above the load reading; the 26 September run recorded it at load and after each read.</td></tr>
         <tr><th scope="row">Scripts before</th><td>Of the 25 start scripts on the machine before 20 September, 20 left both settings at llama.cpp's defaults. Five set them: one at <code>-b 64 -ub 32</code>, two at <code>-ub 128</code>, and two above the default, one of those on only two of its three window settings. (Our first-pass harness's header says four; the recount is in the package.)</td></tr>
       </table>
       <h3>The builds</h3>
@@ -321,10 +327,13 @@
       September, a repeated-paragraph prompt with no answer check; at
       llama.cpp's default 512 the same prompt read 100.8. <sup>e</sup> These
       &ldquo;now&rdquo; figures are 48,000-token reads at 131,072, half the
-      262,144-token window these scripts serve. At 262,144 DeepSeek read 150,324 tokens at
-      480.0 (below); Inkling-Small and Qwen3.8-Flash-Next read only 3,000-token
-      prompts there, Inkling at 263.6 and 187.9 t/s, Flash-Next at 45.4 and
-      112.3, and no deep read was re-measured (section 04).</p>
+      262,144-token window these scripts serve. At 262,144 DeepSeek read
+      150,324 tokens at 480.0 (below), and Qwen3.8-Flash-Next, re-measured on
+      26 September with about 58 to 60&nbsp;GB of its 90&nbsp;GB file in memory,
+      read 48,075 tokens at 660.6 t/s against 240.2 at the default (section
+      04). Inkling-Small read
+      only 3,000-token prompts there, at 263.6 and 187.9 t/s; its long reads at
+      that window were not re-measured.</p>
       <p><strong>Against llama.cpp's own default, the gain on long reads was
       2.5 to 7.3 times</strong>: from Qwen3-235B's 2.46 (285.8 to 703.3, with 4096 not
       shipped, section 13) to DeepSeek V4 Flash's 7.29, whose 48,000-token read
@@ -412,23 +421,37 @@
       Qwen3.5-122B, Mistral Small 4, Ornith-1.5-35B) return to llama.cpp's
       default above 131,072, where the bigger value was not measured, and
       Laguna S 2.1 drops from 8192 to 4096 above 32,768.</p>
-      <p><strong>The served window was checked for memory, not speed.</strong>
-      On 20 September Inkling-Small and Qwen3.8-Flash-Next each read one
-      3,000-token prompt at 262,144, and no deep read there followed, so their
-      section 03 speeds are from 131,072. At 262,144 Inkling-Small read 3,033
-      tokens at 263.6 t/s (187.9 when its shipped script replayed the crash
-      prompt on 21 September) and Qwen3.8-Flash-Next 3,041 at 45.4 (2,999 at
-      112.3 on the replay). Short first reads are slower in general: on the
-      seven loads here that read both lengths, a 3,000-token first request ran
-      at 49 to 78 percent of the same load's 48,000-token rate. Inkling's fit
-      that; Flash-Next's, 9 and 22 percent of its 511.7, do not. Its 20
-      September read spent 57.1 of its 67.0 seconds on the first 989 tokens and
-      9.7 on the next 2,048 (the replay, 19.7 on 947 and 6.8 on 2,048). A partly filled
-      micro-batch, which on our reading costs about what a full one does
-      (section 01), does not explain that, and the records do not show what
-      does. The script still ships 2048 at 262,144, our records do not say
-      why, and we do not know Flash-Next's reading speed at the window it
-      serves.</p>
+      <p><strong>Short first reads at the served window.</strong> On 20
+      September Inkling-Small and Qwen3.8-Flash-Next each read one 3,000-token
+      prompt at 262,144: Inkling 3,033 tokens at 263.6 t/s (187.9 when its
+      shipped script replayed the crash prompt on 21 September), Flash-Next
+      3,041 at 45.4 (2,999 at 112.3 on the replay). Short first reads are slower
+      in general: on the seven loads here that read both lengths, a 3,000-token
+      first request ran at 49 to 78 percent of the same load's 48,000-token
+      rate. Inkling's fit that; Flash-Next's, 9 and 22 percent of its 511.7, did
+      not. Its 20 September read spent 57.1 of 67.0 seconds on the first 989
+      tokens and 9.7 on the next 2,048, which a partly filled micro-batch does
+      not explain. Inkling-Small's long reads at 262,144 were not
+      re-measured.</p>
+      <p><strong>Flash-Next at its served window, 26 September.</strong> The
+      shipped server started with none of the 90&nbsp;GB model file in the page
+      cache and 43.5&nbsp;GB of it there after its load. Its first request,
+      3,035 tokens, read at 87.7 t/s while that grew to 57.7&nbsp;GB, again with
+      most of the time on the first 983 tokens (28.5 of 34.6 seconds); the next
+      3,019 tokens on the same server read at 517.6. The default's server
+      started with 60.05&nbsp;GB already in memory, and its first request read at
+      253.7, in line with its second at 255.7: a first request is not slow in
+      itself, and this one was slow while the file paged in. The two slow reads
+      above were also first requests after a start, though their page cache was
+      not recorded. With about 58 to 60&nbsp;GB of the file in memory (it never
+      became fully resident), the shipped <code>-b 4096 -ub 2048</code> against
+      llama.cpp's default read about 3,000 tokens at 517.6 against 255.7 t/s and
+      48,075 tokens at 660.6 against 240.2, each read returning its one code,
+      and 229,981 tokens in 429.6 seconds at 535.4 against 1,119.3 seconds at
+      205.5, with 3 of 3 codes on both: 2.02, 2.75 and 2.61 times, so the gain
+      holds at the window the script serves. The card held 26,795&nbsp;MiB at
+      load and at most 27,271 after a read, against 21,333 and 21,694; decode
+      was 12.3 to 22.6 t/s on both, on answers of 11 and 33 tokens.</p>
       <p><strong>Two files of one model need two values.</strong> The DeepSeek V4
       Flash IQ3 file, with 7 of its 43 expert layers on the card instead of in
       RAM, ships <code>-ub 4096</code> while the Q8 file ships 8192. At the
@@ -582,7 +605,7 @@
     <section>
       <div class="secnum">09</div>
       <h2>What a bigger micro-batch costs after the first read</h2>
-      <p>Everything above is a cold read, with nothing cached. After a read the
+      <p>Everything above reads a document the server had not seen, with nothing in its prompt cache. After a read the
       server keeps the prompt in its cache; the question is how much of the
       next request it reads again. For models whose cache cannot be rolled back token by
       token, or that use sliding-window attention, llama-server keeps restore
@@ -664,11 +687,14 @@
         doing.</li>
         <li><strong>Build one read you can check.</strong> A long prompt (we used
         48,000 tokens) with a code planted in the middle and a question asking
-        for it; temperature 0; a freshly started server; <code>max_tokens</code>
-        large enough for a thinking model (we used 900). Take
-        <code>timings.prompt_per_second</code> from the response, and look for
-        the code in the answer, not only in the reasoning. Our harness is in the
-        package.</li>
+        for it; temperature 0; a document the server has not seen;
+        <code>max_tokens</code> large enough for a thinking model (we used 900).
+        Take <code>timings.prompt_per_second</code> from the response, and look
+        for the code in the answer, not only in the reasoning. Time the second
+        read after a start as well: on the one start we recorded that began with
+        none of Qwen3.8-Flash-Next's file in memory, its first request read at
+        87.7 t/s while about 14&nbsp;GB of the file paged in, and the next at
+        517.6 (section 04). Our harness is in the package.</li>
         <li><strong>Sweep upward.</strong> Your current setting, then
         <code>-b 4096 -ub 2048</code>, <code>-b 4096 -ub 4096</code>,
         <code>-b 8192 -ub 8192</code>. Keep <code>-b</code> at least as large as
@@ -734,15 +760,20 @@
         September, each model's own script at its served window on 21 September.
         Ling's ratio spans both; GLM-5.3-Flash's spans two read lengths; M2.7's
         comes from a harness with no answer check.</li>
-        <li><strong>Speed at the served window.</strong> Inkling-Small and
-        Qwen3.8-Flash-Next were timed on short reads only at the 262,144 they
-        serve (section 04).</li>
+        <li><strong>Speed at the served window.</strong> Inkling-Small was timed
+        on short reads only at the 262,144 it serves; Qwen3.8-Flash-Next was
+        re-measured there on 26 September (section 04).</li>
         <li><strong>Run-to-run variation.</strong> The untuned DeepSeek 48,000-token
         read measured 72.3 t/s in one run and 83.3 in another with the same
         flags, after loads of 3 minutes 55 seconds and 3 seconds. We use 83.3,
         the less flattering baseline; single runs carry noise of that size.</li>
-        <li><strong>Cold reads, one request at a time.</strong> No prompt cache,
-        no parallel slots.</li>
+        <li><strong>First requests after a start.</strong> Most sweep reads were
+        the first request after a load, and the sweep did not record the page
+        cache. The 26 September run, which did, kept the gain with about 58 to
+        60&nbsp;GB of the 90&nbsp;GB file in memory: 2.02, 2.75 and 2.61 times at
+        about 3,000, 48,075 and 229,981 tokens (section 04).</li>
+        <li><strong>One request at a time.</strong> Nothing reused from the
+        prompt cache, no parallel slots.</li>
         <li><strong>A stress check is not a proof.</strong> Forty prompts per
         changed setting found nothing; the Ling fault passed 110.</li>
         <li><strong>Upstream report states</strong> are as we found them on 26
@@ -769,10 +800,10 @@
       that also records the crash, and the script shipped 4096 until the
       afternoon of 21 September. The runs cited for Inkling-Small and
       Qwen3.8-Flash-Next at 2048 (17,281 and 26,561&nbsp;MiB) did load and
-      answer, but each was one 3,000-token read; the comments give reading
-      speeds from 131,072 only, Flash-Next's 45.4 t/s at 262,144 appears in
-      none, and our records hold no deep read there since the change (section
-      04).</p>
+      answer, but each was one 3,000-token read; the comments gave reading
+      speeds from 131,072 only, and Flash-Next's 45.4 t/s at 262,144 appeared in
+      neither. Flash-Next's long reads at that window were first measured on 26
+      September, and both comments were corrected that day (section 04).</p>
       <h3>An &ldquo;experts on the card&rdquo; test that moved no experts</h3>
       <p>Our records said moving DeepSeek V4 Flash's experts onto the card was
       measured and bought nothing (255.1 against 260.8 t/s). Those runs used
@@ -832,8 +863,9 @@
         <li><strong>The runs</strong> (<code>data/runs/</code>): result files,
         server logs and card-memory samples for every run on this page.</li>
         <li><strong>The tools</strong> (<code>data/tools/</code>): the sweep
-        drivers, the stress and turn probes, the Ling diagnostics and the
-        standalone crash reproducer, with private paths removed.</li>
+        drivers, the stress and turn probes, the Ling diagnostics, the
+        standalone crash reproducer, and the served-window read harness with its
+        page-cache reader, with private paths removed.</li>
         <li><strong>Derived tables</strong> (<code>data/derived/</code>): the
         server-log reads on this page in one table, the model files and their headers, the
         builds, the start-script census, and the source lines quoted above.</li>
@@ -847,7 +879,7 @@
         <tr><th scope="row">2026-09-19</th><td>MiniMax M2.7: the micro-batch ladder, the placement ladder at 4096, the 196,608-window check.</td></tr>
         <tr><th scope="row">2026-09-20</th><td>First pass with hand-copied flags (Ling, Inkling, Flash-Next; Laguna failed to start); the DeepSeek V4 Flash sweep, empty-answer pass and 150,324-token read; Ling's crashed full-window load; MiniMax M3 split buffers.</td></tr>
         <tr><th scope="row">2026-09-21</th><td>The remaining models and Ling through their own scripts; the Ling crash reproduced, diagnosed and fixed; the stress checks; the DeepSeek IQ3 values; the two-machine sweep and turn probes.</td></tr>
-        <tr><th scope="row">2026-09-26</th><td>Upstream report states checked; file headers and build records read for this page.</td></tr>
+        <tr><th scope="row">2026-09-26</th><td>Qwen3.8-Flash-Next re-measured at its served window, with the model file's page-cache residency recorded; upstream report states checked; file headers and build records read for this page.</td></tr>
       </table>
     </section>
 

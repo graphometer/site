@@ -20,14 +20,14 @@ All main-table results are measured on September 15, 2026, one deep request per 
 | Other figure or claim | File / field / derivation |
 |---|---|
 | Nine models; ten configurations; nine desktop-only and one split | First ten rows of `CONTEXT_256K_MEASUREMENTS.tsv`; two DeepSeek configurations share the model family but differ in quantization and placement; commands in `context256_bodies.sh` and the server logs |
-| Read range 150,475–231,065; peak range 8,473–31,068 MiB; short answers 25–33 tokens | Min/max of the ten main rows above, not the extra 131,072 row |
+| Read range 150,475 to 231,065; peak range 8,473 to 31,068 MiB; short answers 25 to 33 tokens | Min/max of the ten main rows above, not the extra 131,072 row |
 | 60.8 s shortest; 6,580.7 s / 109.7 min longest | `logs256/gemma26_262144.deep.json`: `prompt_ms=60756.249`; `logs256/dsv4split_262144.deep.json`: `prompt_ms=6580695.006`; divide by 1000 or 60000, round to one decimal |
 | 262,144 meaning of 256K; 202,752 GLM window | TSV `n_ctx`; `[result]` lines corroborate served capacity; 202,752 is the requested window, confirmed by the result; the launch notes call it the ceiling, but no failed attempt above it is recorded |
 | Three codes at about 5%, 50%, 95%; one deep trial each | `deep_recall_probe.py`: `CODES`, `build()` marks by entry index, `QUESTION`; `context256_rung.sh`: one deep request per invocation |
 | Every code answer in exact order | Each main-row deep response `choices[0].message.content`, checked against `CODES`; no extra words |
 | Sampling temperature 0, nonstreaming | `deep_recall_probe.py`: request object; requests override launch defaults |
 | One slot; 24 compute and batch threads; MTP maximum 6 and minimum draft probability 0.75 | `context256_bodies.sh` COMMON and per-model argv; server logs `[cmd]`; drafts in Qwen response `timings.draft_n` and `draft_n_accepted` |
-| Quantizations, files, expert-layer counts, RPC split 18,25 and layers 8–17, cache and placement options | Server logs `[cmd]`; derived `CONFIGURATIONS.md`; filenames identify quantization. `n-cpu-moe` is an expert-layer count, not an individual-expert count. |
+| Quantizations, files, expert-layer counts, RPC split 18,25 and layers 8 to 17, cache and placement options | Server logs `[cmd]`; derived `CONFIGURATIONS.md`; filenames identify quantization. `n-cpu-moe` is an expert-layer count, not an individual-expert count. |
 | Flash-Next: 99 expert layers requested on CPU; fit off | `logs256/flashnext_262144.log` `[cmd]`: `--n-cpu-moe 99 --fit off`; no claim that 99 covers every expert layer |
 | Most configurations kept expert weights in system RAM | Eight of the ten main commands use `--n-cpu-moe`, `-cmoe`, or CPU expert-tensor overrides; `logs256/*.log` `[cmd]`. Card-use ranges are sampled `nvidia-smi` readings, not total model memory. |
 | Build hashes | `build-records.tsv`, derived from original deep response build identifiers before identifier-field removal; no inferred later build |
@@ -41,6 +41,17 @@ All main-table results are measured on September 15, 2026, one deep request per 
 | GLM Full setup note: 131,072, 93 versus 92 expert layers | `later/GLM-4.7-Full-config-excerpt.txt`: 128K comments and all-expert note; 128 × 1024 = 131,072 (arithmetic). Local configuration note, not a raw measured recall row. |
 | MiniMax M3: 262,144, Q2_K_L, q8_0, experts on CPU (cmoe in each test label), micro-batches 2048 / 1024 / 512; buffers 20,572,169,216 / 10,286,650,368 / 5,143,890,944 bytes | `later/MSA_256K.console.log`: headers and corresponding failure lines. September 2026 is collection provenance; no exact timestamp in file. |
 | 32 GB card / 188 GiB desktop RAM / 128 GB laptop unified memory; hardware identities | Bench description supplied with the study, not capacity measurements in the logs. The page labels these hardware descriptions. |
-| September 15–21 study span / September 26 publication | Main response `created` timestamps and dated sweep provenance; later result provenance in README; publication metadata is editorial. |
+| September 15 to 21 study span / September 26 publication | Main response `created` timestamps and dated sweep provenance; later result provenance in README; publication metadata is editorial. |
 
 The title, subtitle, card copy and feed repeat only these scoped counts, ranges and converted times. No later duration is extrapolated to another row. The GLM excerpt includes an original timing figure not repeated on the page; it remains source context, not a new measured result adopted here.
+
+## Added 2026-09-26 (PM): Qwen3.8-Flash-Next at 262,144, two batch settings (fixed after the pre-publish check)
+
+| Figure on the page | File | Field |
+|---|---|---|
+| 229,981 tokens, 535.4 t/s, 429.6 s (4096 / 2048); 3 of 3 codes | `flashnext-fullwindow/shipped_b4096_ub2048.jsonl`, row 4 | `prompt_n`, `prefill_tps`, `codes3_hits`; 429.6 s = `prompt_ms` 429,586 / 1000 |
+| 229,981 tokens, 205.5 t/s, 1,119.3 s (2048 / 512); 3 of 3 codes | `flashnext-fullwindow/default_b2048_ub512.jsonl`, row 4 | same fields; 1,119.3 s = `prompt_ms` 1,119,327 / 1000 |
+| 3,035 tokens at 87.7 t/s, the first request on a server started with none of the file in memory; the file's share in memory 43.5 to 57.7 GB during it; the next request, 3,019 tokens at 517.6 | `flashnext-fullwindow/shipped_b4096_ub2048.jsonl`, rows 1 and 2; `flashnext-fullwindow/run.console.log`, first line (0 bytes resident before the start) | `prompt_n`, `prefill_tps`, `resident_gb_before` 43.54, `resident_gb_after` 57.66 |
+| About 60 GB of the 90 GB file in memory before both long reads | both JSONL files, row 4; `run.console.log`, first line (three shards, 89,986,353,824 bytes) | `resident_gb_before` 59.48 and 60.06 |
+| Placement: 40 expert layers requested on CPU, fit off, 8-bit (`q8_0`) cache, for both rows | `flashnext-fullwindow/launch-flags.txt` (the launch copy's flags, paths omitted) | the run's own notes record the same: ctx 262144, q8_0 KV, `--n-cpu-moe 40` |
+| 26,795 and 21,333 MiB at load | `flashnext-fullwindow/run.console.log` (the "healthy in" line of each start) | `nvidia-smi` memory used, read once the server answered |
