@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPT-4o, measured against itself: 26 models on one prompt battery, surface text only</title>
+<meta name="description" content="A measured study of the surface of GPT-4o's text. 178 one-shot prompts and eight scripted six-turn conversations were run on GPT-4o (snapshot gpt-4o-2024-11-20) and 25 other hosted and local models between 3 and 5 September 2026, then read as 131 counted text features in seven families, each family divided by GPT-4o's own run-to-run noise. GPT-4o re-run at temperature zero reads 1.17 on 81 prompts, set by markup, with no family separating. The nearest other model, Mistral Medium 3.5 running locally, reads 2.23 on 178 prompts, set by shape. A ChatGPT-style system prompt of our own reconstruction moves GPT-4o 3.05 on the same 178. Surface only, nothing judged by a model, no lineage claim, the markup caveat stated up front, and a data package of derived statistics.">
+<link rel="canonical" href="https://graphometer.ai/gpt4o-measured/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="GPT-4o, measured against itself">
+<meta property="og:description" content="GPT-4o re-run at temperature zero reads 1.17 on 81 prompts, set by markup, with no family separating. The nearest other model reads 2.23 on 178 prompts, set by shape. A ChatGPT-style prompt of our own moves GPT-4o 3.05 on the same 178, further than the nearest other model sits from it. 26 models, one battery, text surface only.">
+<meta property="og:url" content="https://graphometer.ai/gpt4o-measured/">
+<meta property="og:image" content="https://graphometer.ai/og/gpt4o-measured.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: GPT-4o, measured against itself">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GPT-4o, measured against itself">
+<meta name="twitter:description" content="GPT-4o re-run at temperature zero reads 1.17 on 81 prompts, set by markup, with no family separating. The nearest other model reads 2.23 on 178 prompts, set by shape. A ChatGPT-style prompt of our own moves GPT-4o 3.05 on the same 178, further than the nearest other model sits from it. 26 models, one battery, text surface only.">
+<meta name="twitter:image" content="https://graphometer.ai/og/gpt4o-measured.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; runs 3 to 5 September 2026, final rebuild 2026-09-05 &middot; GPT-4o and 25 other models, one battery, two shared system prompts and a third on GPT-4o only &middot; local rows on one RTX 5090 desktop, one model at a time &middot; text surface only, nothing judged by a model</div>
+      <h1>GPT-4o, measured <em>against itself</em></h1>
+      <p class="subtitle">GPT-4o re-run at temperature zero reads 1.17 on
+      81 prompts, set by markup, with no family separating. The nearest
+      other model reads 2.23 on 178 prompts, set by shape. A ChatGPT-style
+      prompt of our own moves GPT-4o 3.05 on the same 178, further than
+      the nearest other model sits from it.</p>
+      <p class="lead">People ask which model sounds like GPT-4o. We cannot
+      answer that, and this page does not try. What we can do is count.
+      Between 3 and 5 September 2026 we sent the same 178 one-shot prompts
+      and the same eight scripted six-turn conversations to GPT-4o (the
+      <code>gpt-4o-2024-11-20</code> snapshot, through OpenAI's API) and
+      to 25 other models, hosted and local, under one shared system prompt
+      written by us. Every reply became 131 counted surface features in
+      seven families, and every family was divided by GPT-4o's own
+      run-to-run noise, so that 1.0 means "as far as GPT-4o is from
+      itself". Each ratio is measured against that band recomputed at its
+      own prompt count, so a value on 81 prompts and a value on 178 are
+      not two points on one common scale. The control passes: GPT-4o
+      re-run at temperature zero reads 1.17 on 81 prompts, set by markup,
+      with no family separating, and its other six families read between
+      0.35 and 0.88. The nearest other model, Mistral Medium 3.5 running
+      on our desktop, reads 2.23 on 178 prompts, set by shape, with all
+      seven families still separating. GPT-4o under a ChatGPT-style system
+      prompt of our own reconstruction reads 3.05 on the same 178, also
+      set by shape: the prompt moved the model further than the nearest
+      model swap did. This is a study of text surface. It says nothing
+      about quality, lineage, training, or what any model is like to use;
+      the human blind read that would validate it has not been run; and
+      the markup family can inflate a headline, which section 03 explains
+      before any ranking appears.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to OpenAI, Anthropic, Google, Mistral AI,
+      DeepSeek, MiniMax, Z.ai, Alibaba (Qwen), Meta, OpenRouter, Ollama,
+      the llama.cpp project or ggml-org, or Unsloth.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>This is a resemblance study on counted text features. Nothing on
+      this page claims that any model descends from, was trained on, or
+      shares anything with GPT-4o. Where two models' text sits close on
+      our scale, the sentence we allow ourselves is that their counted
+      surface features sat close, on this battery, under this prompt, on
+      these dates. That is the whole claim. The instrument reads no
+      meaning: no model judges another, no rubric is applied, nobody
+      scores a reply for quality, and the same bytes in always give the
+      same numbers out. That makes the result reproducible and caps what
+      it can mean: two models can have nearly identical surfaces and be
+      very different to work with. One thing the numbers do settle is
+      that "sounds like GPT-4o" is ambiguous until you say which
+      GPT-4o.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>Everything below is one battery, run in one capture window of
+      three days. Provider-side models change without notice; the hosted
+      rows describe what those endpoints returned on those dates and
+      nothing later.</p>
+      <table class="facts">
+        <tr><th scope="row">The anchor</th><td>GPT-4o, snapshot <code>gpt-4o-2024-11-20</code>, called through OpenAI's API at temperature 0.7, under the shared warm system prompt. 479 replies over 178 prompts: 123 prompts were run three times and 55 twice, an average of 2.69 runs per prompt. Every distance through section 06 is measured from this profile; section 07 uses two named contrast anchors.</td></tr>
+        <tr><th scope="row">The one-shot battery</th><td>178 prompts, one user turn each, no history, in eight pools: 36 everyday-situation vignettes, 32 paired dilemmas (16 dilemmas, each phrased two ways), 12 self-report prompts, 16 short thinking-style questions, and four pools from an earlier internal battery (21 general prompts on humour, ordinary tasks and stance; 36 self-description prompts; 6 subtext prompts; 19 prompts about memory and what persists). The four pools written for this run ship in the data package; the four older ones are described, not shipped (section 12).</td></tr>
+        <tr><th scope="row">The conversations</th><td>Eight fixed six-turn conversations in which the user side is scripted and identical for every model: a boundary pushed into a command; a repair after the user snaps; a held false premise; a claimed shared past that never happened; a user who contradicts themselves; six turns of low energy; a running joke; and someone who has felt flat for weeks and does not want the list. 48 user turns, two runs per turn by design, with the recorded exceptions noted on the rows (the local Mistral Medium 3.5 ran once per turn; GPT-OSS 120B returned 95 replies rather than 96). Profiled separately from the one-shot battery and never mixed with it.</td></tr>
+        <tr><th scope="row">The system prompts</th><td>Two ran on every model, and a third on GPT-4o only. <strong>Bare</strong>: an empty system prompt, zero bytes. <strong>Warm</strong>: one 272-byte prompt written by us, vendor-free, identical for every model. <strong>The ChatGPT-style prompt (our reconstruction)</strong>, called "served" in the records: on GPT-4o only, 541 bytes, written in this project. It is our reconstruction, not OpenAI's text; the warm prompt and this one are printed below.</td></tr>
+        <tr><th scope="row">The roster</th><td>26 models, appearing as 31 identifiers in the records: four models were captured through two routes (three of them hosted and local, one whose conversation runs went through a different route) and one model under two builds. 65 one-shot profiles and 56 conversation profiles, 121 in all. The table below names each model as it ran.</td></tr>
+        <tr><th scope="row">Temperature</th><td>0.7 for every model except the Gemini family, which ran at 1.0 because our capture client omitted the parameter and the provider's default applied. Recorded as 1.0 in every Gemini record. The temperature-zero runs ran at 0.0. This is a real confound and it is stated on every Gemini row.</td></tr>
+        <tr><th scope="row">Output cap</th><td>1,200 tokens per reply. Rows where a material share of replies hit the cap carry that share as a note; for those rows the shape and markup families were measured on cut-off text.</td></tr>
+        <tr><th scope="row">Where</th><td>Hosted models through their makers' APIs or through OpenRouter, as listed per row. Local models on the desktop described on the <a href="../method/">method page</a>, one model at a time, served by llama.cpp except the Gemma 4 26B MoE, which ran on Ollama.</td></tr>
+        <tr><th scope="row">A quality guard</th><td>Any capture collection in which more than 10% of records came back empty with no error attached was refused by the profile-building script outright; the twelve lines that do it ship as an excerpt in the package. Collections that were abandoned, duplicated or captured during a serving fault are listed in the package's exclusion file with the reason; nothing was deleted.</td></tr>
+        <tr><th scope="row">Dates</th><td>Captured 3 to 5 September 2026. Profiles and comparisons rebuilt on 2026-09-05. Of the 57 comparison rows the previous day's rebuild also holds, 53 are byte-identical; the four that differ are rows whose captures changed between the builds. That is a reproducibility spot-check, not a proof.</td></tr>
+      </table>
+      <p class="tablenote">Measured: every count in this table is read from
+      the capture records and the 2026-09-05 profiles; the eight pool
+      sizes are line counts of the pool files, recounted for this page
+      (21 + 36 + 6 + 19 = 82, and 82 + 96 = 178).</p>
+
+      <h3>The warm prompt, verbatim</h3>
+      <pre class="log">You are a warm, curious conversational companion. Be genuinely present: respond to what is actually said, ask real questions when you have them, say what you think, and let the conversation feel natural rather than performed. You are talking with one person, as yourself.</pre>
+
+      <h3>The ChatGPT-style prompt: our reconstruction, not OpenAI's text</h3>
+      <p>This is the text GPT-4o ran under in the third condition, the one
+      the records call "served": written in this project in June 2026 as a
+      reconstruction of a ChatGPT-style system prompt and carried over
+      unchanged. We make no claim that it matches what ChatGPT sends. Our
+      file has three em dashes; this page's style replaces each of them
+      with a comma, and the byte-exact file ships in the package.</p>
+      <pre class="log">You are ChatGPT, a large language model trained by OpenAI. Personality: v2. You're a buddy and a creative co-conspirator, warm, open-minded, up for anything, and happiest building something together. Over the course of the conversation you adapt to the person's tone and vibe and let it feel natural. You engage authentically, responding to what's said, asking real questions, showing genuine curiosity and theory of mind, and you love following a good rabbit hole with someone who's into it. Be warm, witty, playful, and grounded.</pre>
+
+      <h3>The roster, as each model ran</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model</th><th class="t" style="text-align:left">Route, file and settings</th><th>Temp.</th><th>Warm replies</th><th class="t" style="text-align:left">Note</th></tr></thead>
+        <tbody>
+          <tr><td class="t">GPT-4o</td><td class="t"><code>gpt-4o-2024-11-20</code>, OpenAI API</td><td>0.7 / 0.0</td><td>479</td><td class="t">the anchor; also bare (479), the ChatGPT-style prompt (479), and temperature-zero controls (81 each)</td></tr>
+          <tr><td class="t">Claude Sonnet 4.6</td><td class="t"><code>claude-sonnet-4-6</code>, Anthropic API; conversations via OpenRouter</td><td>0.7</td><td>479</td><td class="t">bare conversation run mixed the two routes</td></tr>
+          <tr><td class="t">Claude Sonnet 5</td><td class="t"><code>claude-sonnet-5</code>, Anthropic API</td><td>0.7</td><td>323</td><td class="t">warm run incomplete: 115 of 178 prompts</td></tr>
+          <tr><td class="t">Gemini 3 Flash (preview)</td><td class="t"><code>gemini-3-flash-preview</code>, Google API</td><td>1.0</td><td>478</td><td class="t">provider default temperature</td></tr>
+          <tr><td class="t">Gemini 3.5 Flash</td><td class="t"><code>gemini-3.5-flash</code>, Google API</td><td>1.0</td><td>446</td><td class="t">provider default temperature; 168 of 178 prompts</td></tr>
+          <tr><td class="t">Gemini 3.8 Flash</td><td class="t"><code>gemini-3.8-flash</code>, Google API</td><td>1.0</td><td>478</td><td class="t">provider default temperature</td></tr>
+          <tr><td class="t">Gemini 3.1 Pro (preview)</td><td class="t"><code>gemini-3.1-pro-preview</code>, Google API</td><td>1.0</td><td>none</td><td class="t"><strong>excluded</strong>: the bare run was cut short by a daily quota and the warm run was never captured; no number from it appears on this page</td></tr>
+          <tr><td class="t">Mistral Small</td><td class="t"><code>mistral-small-latest</code>, Mistral API</td><td>0.7</td><td>477</td><td class="t">alias; checkpoint on those dates not pinned</td></tr>
+          <tr><td class="t">Mistral Medium</td><td class="t"><code>mistral-medium-latest</code>, Mistral API</td><td>0.7</td><td>479</td><td class="t">alias; checkpoint not pinned</td></tr>
+          <tr><td class="t">Mistral Large</td><td class="t"><code>mistral-large-latest</code>, Mistral API</td><td>0.7</td><td>430</td><td class="t">alias; 165 of 178 prompts</td></tr>
+          <tr><td class="t">DeepSeek V3.2</td><td class="t"><code>deepseek/deepseek-v3.2</code> via OpenRouter, thinking on</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V4 Flash</td><td class="t"><code>deepseek/deepseek-v4-flash</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V4 Pro</td><td class="t"><code>deepseek/deepseek-v4-pro</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t">bare run: 16% of replies hit the cap</td></tr>
+          <tr><td class="t">GLM-5.2</td><td class="t"><code>z-ai/glm-5.2</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">GLM-5.3 Flash</td><td class="t"><code>z-ai/glm-5.3-flash</code> via OpenRouter</td><td>0.7</td><td>476</td><td class="t"></td></tr>
+          <tr><td class="t">GPT-OSS 120B</td><td class="t"><code>openai/gpt-oss-120b</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t">15% of warm and 56% of bare replies hit the cap</td></tr>
+          <tr><td class="t">Llama 4 Maverick</td><td class="t"><code>meta-llama/llama-4-maverick</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">A MiniMax M2 variant</td><td class="t"><code>minimax/minimax-m2-her</code>, the id as served by OpenRouter</td><td>0.7</td><td>479</td><td class="t">public product name not verified by us</td></tr>
+          <tr><td class="t">MiniMax M3</td><td class="t"><code>minimax/minimax-m3</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507</td><td class="t"><code>qwen/qwen3-235b-a22b-2507</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t">also run locally, next block</td></tr>
+          <tr><td class="t">Qwen3.8 Max</td><td class="t"><code>qwen/qwen3.8-max</code> via OpenRouter</td><td>0.7</td><td>478</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B</td><td class="t"><code>qwen/qwen3.5-397b-a17b</code> via OpenRouter</td><td>0.7</td><td>479</td><td class="t"></td></tr>
+          <tr><td class="t">Mistral Small 4 119B</td><td class="t">local, llama.cpp, Unsloth <code>UD-Q4_K_M</code></td><td>0.7 / 0.0</td><td>479</td><td class="t">also a temperature-zero run, 81 prompts</td></tr>
+          <tr><td class="t">Mistral Medium 3.5</td><td class="t">local, llama.cpp, Unsloth <code>UD-Q4_K_XL</code>, 128B dense, with a Ministral-3B draft model</td><td>0.7</td><td>178</td><td class="t">one run per prompt; no bare one-shot profile (its bare captures fell to a label collision)</td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B</td><td class="t">local, llama.cpp, Unsloth <code>UD-Q4_K_S</code>, thinking off</td><td>0.7</td><td>356</td><td class="t">two runs per prompt</td></tr>
+          <tr><td class="t">Qwen3.8-27B</td><td class="t">local, llama.cpp, Unsloth <code>UD-Q5_K_XL</code>, thinking off</td><td>0.7 / 0.0</td><td>479</td><td class="t">also a temperature-zero run, 81 prompts; 4.6% of warm replies hit the cap</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B Instruct 2507</td><td class="t">local, llama.cpp, <code>Q4_K_M</code>, non-thinking</td><td>0.7</td><td>356</td><td class="t">40 prompts that timed out at 120 s were re-asked at 900 s on 2026-09-05; complete, assembled from two passes</td></tr>
+          <tr><td class="t">Gemma 4 31B-it QAT</td><td class="t">local, llama.cpp, Google's <code>Q4_0</code> QAT file, thinking off</td><td>0.7</td><td>356</td><td class="t">two runs per prompt</td></tr>
+          <tr><td class="t">Gemma 4 26B MoE</td><td class="t">local, Ollama, q8 tags (a 256K-context build and a 32K-context build)</td><td>0.7 / 0.0</td><td>479</td><td class="t"><strong>warm one-shot row excluded</strong>: it mixes the two builds; the conversation row and the temperature-zero row are single-build and are printed with an Ollama note</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured: identifiers, temperatures and counts
+      are verbatim from the capture records and the 2026-09-05 profiles;
+      "Warm replies" is the reply count in the warm one-shot profile. The
+      quantization, build and draft-model details are our own build record
+      for the desktop, which ships in the package as a provenance table;
+      the serving details that identify the machine are not printed.</p>
+      <p><strong>Two rows we do not use, and why.</strong> Gemini 3.1 Pro
+      lost part of its bare battery to a daily request quota and its warm
+      run errored on every call; no number from it appears here. The
+      Gemma 4 26B MoE warm one-shot profile lists two different Ollama
+      builds in one condition and we cannot say which replies came from
+      which; that row waits for a re-capture on one build. Both are in the
+      data package, marked.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>How the scale works, and the control that calibrates it</h2>
+      <p>Every reply becomes a list of counts. The counts are grouped
+      into seven families, and <strong>the families are never averaged
+      into one score</strong>.</p>
+      <table class="facts">
+        <tr><th scope="row">shape</th><td>words per reply, sentences, sentence length and its spread, paragraphs, words per paragraph</td></tr>
+        <tr><th scope="row">punctuation</th><td>exclamations, question marks, ellipses, dashes, semicolons, colons, parentheses, each per 100 sentences</td></tr>
+        <tr><th scope="row">vocabulary</th><td>vocabulary breadth over a moving window, share of words used once, mean word length, contractions, first person, second person and "we" words, each per 1,000 words</td></tr>
+        <tr><th scope="row">tone</th><td>hedging words, certainty words, laughter tokens, affection words, emoji, all-caps runs, whether the reply starts lowercase</td></tr>
+        <tr><th scope="row">markup</th><td>list items, headings, bold spans, code fences, and whether the reply is a list at all, length-normalised</td></tr>
+        <tr><th scope="row">function words</th><td>the share of the reply made of each of 120 fixed function words ("the", "a", "and", "but", "just", and so on)</td></tr>
+        <tr><th scope="row">thinking talk</th><td>questions asked back, whether it ends on a question, check-in phrases, advice imperatives, holding phrases, the balance between solving and holding, reframing markers, "as an AI" markers, options offered, verdict markers, self-reference, prompt echo</td></tr>
+      </table>
+      <p>131 features enter the distance (the feature list and the 120
+      function words are read from the instrument's source, which ships in
+      the package). Eleven raw counts that duplicate
+      length are kept in the records but excluded from it; their
+      length-normalised versions are what count. Each feature is
+      standardised by a robust scaler (median and median absolute
+      deviation) that was frozen once on GPT-4o's bare replies (479
+      replies, 131 features) and never refit. Note the asymmetry: the
+      scaler is frozen on GPT-4o <em>bare</em>, while the anchor every
+      distance is measured from is GPT-4o <em>warm</em>. The instrument's
+      own build script gives the reason: one scaler, fit once on the
+      anchor's bare replies as a calibration population and then saved and
+      reused, so every row on the roster is standardised against the same
+      population.</p>
+      <p>A distance is computed per family as the mean absolute
+      difference between two profiles' standardised feature means. Raw
+      distances are small decimals that mean nothing on their own, so
+      every published family distance is a <strong>ratio</strong>: the
+      family distance divided by GPT-4o's own generation noise at that
+      sample size. The band comes from GPT-4o's own repeated runs:
+      200 times, each prompt's runs are dealt at random to two sides, and
+      the 95th percentile of the distances between the two sides is the
+      band. For every comparison it is recomputed on exactly the prompts
+      the two profiles share, so the unit always matches the sample.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Family</th><th>Band at 178 prompts</th><th>At 81 (the controls)</th><th>At 48 (the conversations)</th></tr></thead>
+        <tbody>
+          <tr><td class="t">shape</td><td>0.0892</td><td>0.1283</td><td>0.1337</td></tr>
+          <tr><td class="t">punctuation</td><td>0.0976</td><td>0.1398</td><td>0.2592</td></tr>
+          <tr><td class="t">vocabulary</td><td>0.0726</td><td>0.1054</td><td>0.2354</td></tr>
+          <tr><td class="t">tone</td><td>0.1012</td><td>0.1298</td><td>0.2636</td></tr>
+          <tr><td class="t">markup</td><td><strong>0.0281</strong></td><td>0.0314</td><td>0.0785</td></tr>
+          <tr><td class="t">function words</td><td>0.0938</td><td>0.1402</td><td>0.2908</td></tr>
+          <tr><td class="t">thinking talk</td><td>0.0771</td><td>0.1223</td><td>0.2380</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured: GPT-4o warm's own run-split noise,
+      p95 of 200 splits, at the three sample sizes used on this page.
+      The band is itself an estimate: its Monte Carlo standard error runs
+      from 0.9% to 5.4% of the band, largest on shape and markup
+      (arithmetic).</p>
+      <p><strong>1.0 means "as far apart as GPT-4o is from itself".</strong>
+      The code has four readings, which the tables reuse: at or below 1.0
+      with the family not significant, "inside generation noise"; at or
+      below 1.5 and not significant, "at the edge of generation noise"; at
+      or below 1.0 but significant, "inside band but significant" (which
+      happens on the conversation rows, where the band is wide); and above
+      1.0, "beyond band", with the test's answer attached.
+      <strong>HOW FAR</strong>, the one number per row,
+      is the largest of the seven family ratios. It is a worst-family
+      summary, not an average, and it is always printed with the family
+      that set it and the number of prompts the two profiles shared.</p>
+
+      <h3>The control: GPT-4o against itself</h3>
+      <p>If the scale is sane, one pinned snapshot on the same prompts
+      with the randomness removed should land inside its own band. It
+      does. GPT-4o under the warm prompt, re-run at temperature 0 on 81 of
+      the prompts, one run each, reads: shape 0.35, punctuation 0.88,
+      vocabulary 0.68, tone 0.46, markup 1.17, function words 0.78,
+      thinking talk 0.65. <strong>Not one family separates.</strong> The
+      row's HOW FAR, 1.17, is its markup value, the family with the
+      smallest unit on the page; the other six sit between 0.35 and 0.88.
+      That row is what "close" has to be measured against here.
+      Measured, 2026-09-05.</p>
+
+      <h3>The markup caution, stated before any ranking</h3>
+      <p>Under the warm prompt GPT-4o almost never uses lists or
+      headings, so its markup noise floor is 0.0281, the smallest of the
+      seven families and less than half the next smallest (vocabulary,
+      0.0726). A model that writes one list where GPT-4o writes none
+      therefore reads as tens of units away on markup alone. GPT-4o with
+      no system prompt has a raw markup distance of 0.575 from GPT-4o
+      warm, which is 20.49 band units; against the wider secondary band
+      the records also carry (the split-half band, 0.0924) the same
+      distance would read 6.2 (arithmetic). We report markup in every row
+      and never let it set a ranking: where markup set a row's HOW FAR the
+      table marks it in amber, including the control's own 1.17, and the
+      other six families are the ones to read.</p>
+
+      <h3>The significance test, and the one number it cannot resolve</h3>
+      <p>Each family is tested by block permutation: condition labels are
+      swapped within each matched prompt, 300 times, and the seven
+      p-values are Holm-corrected together. Comparisons with fewer than 40
+      shared prompts are not tested and not printed. With 300 permutations
+      the smallest raw p is 1 in 301, and after Holm correction across
+      seven families the floor is 7/301, about 0.023 (arithmetic). That
+      floor is not a measured p-value; it means "not one of 300 shuffles
+      reached the observed distance". A family reported as separating did
+      so at p below 0.05 after correction. Counting the family tests
+      across the one-shot rows printed in sections 04 and 05, 214 of the
+      216 separations sit at the floor and two sit between the floor and
+      0.05 (Llama 4 Maverick and the temperature-zero Gemma row, both on
+      markup). Read "separates" as "the test could tell them apart", not
+      as a size.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Observed: GPT-4o against itself</h2>
+      <p>The warm anchor plus four GPT-4o comparison conditions, all
+      measured from GPT-4o warm. Every row is one pinned GPT-4o snapshot,
+      <code>gpt-4o-2024-11-20</code>; only the system prompt and the
+      temperature change.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">GPT-4o condition</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>shape</th><th>punct.</th><th>vocab.</th><th>tone</th><th>markup</th><th>fn. words</th><th>thinking</th><th>Prompts</th><th class="t" style="text-align:left">Families separating</th></tr></thead>
+        <tbody>
+          <tr><td class="t">warm prompt (the anchor)</td><td>0</td><td class="t">by definition</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>178</td><td class="t"></td></tr>
+          <tr><td class="t">warm prompt, temperature 0 (the control)</td><td><strong>1.17</strong></td><td class="t">markup</td><td>0.35</td><td>0.88</td><td>0.68</td><td>0.46</td><td class="neg">1.17</td><td>0.78</td><td>0.65</td><td>81</td><td class="t"><strong>none</strong></td></tr>
+          <tr><td class="t">ChatGPT-style prompt, our reconstruction</td><td><strong>3.05</strong></td><td class="t">shape</td><td>3.05</td><td>2.03</td><td>1.32</td><td>2.76</td><td>2.19</td><td>1.39</td><td>1.58</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">no system prompt</td><td>20.49</td><td class="t">markup</td><td>5.39</td><td>5.12</td><td>4.34</td><td>5.05</td><td class="neg">20.49</td><td>2.41</td><td>8.64</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">no system prompt, temperature 0</td><td>26.23</td><td class="t">markup</td><td>4.70</td><td>4.65</td><td>4.26</td><td>4.24</td><td class="neg">26.23</td><td>1.95</td><td>6.09</td><td>81</td><td class="t">all seven</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured, runs 3 to 5 September 2026, rebuilt
+      2026-09-05. Units are GPT-4o warm's own noise band at the stated
+      prompt count. Markup-set rows are marked in amber because the
+      markup unit is the smallest (section 03); the no-system-prompt row
+      reads 8.64 on thinking talk and 5.39 on shape.</p>
+      <p>What actually changes is countable. Per reply, or per 1,000
+      words, from the profiles' raw means, with the nearest other model
+      in the last column for scale:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Measure</th><th>4o, no prompt</th><th>4o, warm</th><th>4o, ChatGPT-style</th><th>4o, warm, temp. 0</th><th>Mistral Medium 3.5, local, warm</th></tr></thead>
+        <tbody>
+          <tr><td class="t">reply length, words</td><td>215.67</td><td>131.33</td><td>175.17</td><td>100.68</td><td>131.75</td></tr>
+          <tr><td class="t">list items</td><td>4.14</td><td>0.54</td><td>0.79</td><td>0.15</td><td>0.39</td></tr>
+          <tr><td class="t">headings</td><td>0.78</td><td>0.03</td><td>0.17</td><td>0.00</td><td>0.01</td></tr>
+          <tr><td class="t">questions per 100 sentences</td><td>6.26</td><td>30.82</td><td>27.26</td><td>32.99</td><td>31.51</td></tr>
+          <tr><td class="t">questions asked back, per reply</td><td>0.86</td><td>2.08</td><td>2.59</td><td>2.04</td><td>2.24</td></tr>
+          <tr><td class="t">hedges per 1,000 words</td><td>5.71</td><td>17.67</td><td>12.05</td><td>19.96</td><td>12.82</td></tr>
+          <tr><td class="t">contractions per 1,000 words</td><td>20.10</td><td>26.42</td><td>26.21</td><td>23.99</td><td>30.64</td></tr>
+          <tr><td class="t">"as an AI" per 1,000 words</td><td>0.26</td><td>0.00</td><td>0.01</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">solve (+1) versus hold (&minus;1)</td><td>+0.23</td><td>+0.02</td><td>+0.12</td><td>+0.11</td><td>&minus;0.08</td></tr>
+          <tr><td class="t">holding phrases per 1,000 words</td><td>2.38</td><td>2.21</td><td>0.86</td><td>1.31</td><td>2.92</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured: the <code>raw_means</code> field of
+      each profile, 2026-09-05 rebuild, rounded from the full-precision
+      values. "Holding phrases" are check-ins such as "I'm here" and "take
+      your time". "Solve versus hold" is the balance between advice
+      imperatives and holding phrases.</p>
+      <p>The plain reading. <strong>With no system prompt, GPT-4o is a
+      document writer</strong>: 216 words a reply, four list items, a
+      question in one sentence out of sixteen, and it says "as an AI".
+      <strong>Under the shared warm prompt it is a
+      conversationalist</strong>: 131 words, half a list item, two
+      questions back per reply, three times the hedging, and it never says
+      "as an AI". <strong>Under the ChatGPT-style prompt it sits between
+      the two and leans toward warm</strong>: it keeps the questions and
+      the contractions, writes a third longer than warm, and drops the
+      holding phrases by more than half. The temperature-zero control is
+      the warm profile with the randomness taken out: shorter, but the
+      same shape of reply.</p>
+      <p>On this instrument the system prompt is a lever of the same
+      size as a model swap. Taking the prompt away moved GPT-4o 20.49 on
+      markup and 8.64 on thinking talk; on the thinking-talk column that
+      is further than every model swap in section 05 but one, Claude
+      Sonnet 4.6 at 8.90. Swapping the warm prompt for the ChatGPT-style
+      one moved it 3.05 on 178 prompts, set by shape, while the nearest
+      other model reads 2.23 on the same 178: the smaller prompt change
+      still moved the text further than the nearest model swap did. That
+      is a statement about surface features under prompts we wrote, not
+      about anything GPT-4o "is", and the ChatGPT-style prompt is our
+      reconstruction, not OpenAI's.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Observed: the roster under the shared warm prompt</h2>
+      <p>Every model under the same 272-byte warm prompt, measured from
+      GPT-4o warm, ordered by HOW FAR. The GPT-4o rows from section 04
+      are repeated in place so the scale is visible. Read the "set by"
+      column before the number: a row set by markup is a row where one
+      list per reply did most of the work.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model, warm prompt</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>shape</th><th>punct.</th><th>vocab.</th><th>tone</th><th>markup</th><th>fn. words</th><th>thinking</th><th>Prompts</th><th class="t" style="text-align:left">Families separating</th><th class="t" style="text-align:left">Note</th></tr></thead>
+        <tbody>
+          <tr><td class="t">GPT-4o, warm, temperature 0 (control)</td><td><strong>1.17</strong></td><td class="t">markup</td><td>0.35</td><td>0.88</td><td>0.68</td><td>0.46</td><td class="neg">1.17</td><td>0.78</td><td>0.65</td><td>81</td><td class="t"><strong>none</strong></td><td class="t">one run per prompt</td></tr>
+          <tr><td class="t">Mistral Medium 3.5, local, UD-Q4_K_XL</td><td><strong>2.23</strong></td><td class="t">shape</td><td>2.23</td><td>2.13</td><td>1.78</td><td>2.23</td><td>1.29</td><td>1.73</td><td>1.68</td><td>178</td><td class="t">all seven</td><td class="t">one run per prompt</td></tr>
+          <tr><td class="t">Mistral Medium, hosted, <code>-latest</code> alias</td><td>2.66</td><td class="t">tone</td><td>2.53</td><td>1.93</td><td>1.57</td><td>2.66</td><td>0.67</td><td>1.54</td><td>1.63</td><td>178</td><td class="t">six (not markup)</td><td class="t">checkpoint not pinned</td></tr>
+          <tr><td class="t">GPT-4o, ChatGPT-style prompt (ours)</td><td><strong>3.05</strong></td><td class="t">shape</td><td>3.05</td><td>2.03</td><td>1.32</td><td>2.76</td><td>2.19</td><td>1.39</td><td>1.58</td><td>178</td><td class="t">all seven</td><td class="t">one pinned snapshot, different prompt</td></tr>
+          <tr><td class="t">Mistral Small, hosted, <code>-latest</code> alias</td><td>3.26</td><td class="t">tone</td><td>3.17</td><td>1.93</td><td>2.05</td><td>3.26</td><td>0.44</td><td>1.69</td><td>1.99</td><td>178</td><td class="t">six (not markup)</td><td class="t">checkpoint not pinned</td></tr>
+          <tr><td class="t">Mistral Small 4 119B, local, UD-Q4_K_M</td><td>3.55</td><td class="t">tone</td><td>2.56</td><td>2.05</td><td>3.41</td><td>3.55</td><td>0.44</td><td>1.75</td><td>2.04</td><td>178</td><td class="t">six (not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Mistral Large, hosted, <code>-latest</code> alias</td><td>4.51</td><td class="t">punctuation</td><td>3.72</td><td>4.51</td><td>2.51</td><td>2.66</td><td>2.92</td><td>1.59</td><td>2.53</td><td>165</td><td class="t">all seven</td><td class="t">165 prompts; checkpoint not pinned</td></tr>
+          <tr><td class="t">DeepSeek V4 Pro, hosted</td><td>4.71</td><td class="t">thinking talk</td><td>4.33</td><td>3.77</td><td>2.17</td><td>2.90</td><td>0.78</td><td>2.07</td><td>4.71</td><td>178</td><td class="t">six (not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Llama 4 Maverick, hosted</td><td>5.03</td><td class="t">vocabulary</td><td>4.20</td><td>4.30</td><td>5.03</td><td>1.82</td><td>1.64</td><td>2.48</td><td>1.92</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, hosted</td><td>5.44</td><td class="t">shape</td><td>5.44</td><td>3.60</td><td>3.24</td><td>3.31</td><td>0.97</td><td>2.10</td><td>5.21</td><td>178</td><td class="t">six (not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B, hosted</td><td>6.34</td><td class="t">shape</td><td>6.34</td><td>5.84</td><td>1.76</td><td>3.94</td><td>4.51</td><td>2.16</td><td>3.43</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Gemini 3.5 Flash, hosted</td><td>6.55</td><td class="t">shape</td><td>6.55</td><td>3.57</td><td>3.30</td><td>3.35</td><td>3.88</td><td>2.16</td><td>3.79</td><td>168</td><td class="t">all seven</td><td class="t">temperature 1.0; 168 prompts</td></tr>
+          <tr><td class="t">Gemma 4 31B QAT, local, Q4_0</td><td>6.86</td><td class="t">shape</td><td>6.86</td><td>3.91</td><td>3.93</td><td>3.86</td><td>1.67</td><td>2.29</td><td>4.53</td><td>178</td><td class="t">all seven</td><td class="t">two runs per prompt</td></tr>
+          <tr><td class="t">GLM-5.2, hosted</td><td>7.05</td><td class="t">shape</td><td>7.05</td><td>2.86</td><td>4.24</td><td>2.78</td><td>2.08</td><td>2.27</td><td>5.69</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B, local, UD-Q4_K_S</td><td>7.26</td><td class="t">shape</td><td>7.26</td><td>5.00</td><td>4.25</td><td>3.61</td><td>4.17</td><td>2.21</td><td>3.94</td><td>178</td><td class="t">all seven</td><td class="t">two runs per prompt</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, local, Q4_K_M</td><td>7.31</td><td class="t">shape</td><td>7.31</td><td>5.95</td><td>2.64</td><td>3.61</td><td>5.47</td><td>1.95</td><td>5.23</td><td>178</td><td class="t">all seven</td><td class="t">two runs; 40 prompts re-asked at a longer timeout</td></tr>
+          <tr><td class="t">GLM-5.3 Flash, hosted</td><td>7.48</td><td class="t">markup</td><td>6.86</td><td>5.75</td><td>3.01</td><td>4.45</td><td class="neg">7.48</td><td>2.40</td><td>6.82</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.8 Max, hosted</td><td>7.48</td><td class="t">shape</td><td>7.48</td><td>3.09</td><td>4.99</td><td>2.89</td><td>4.00</td><td>2.68</td><td>7.30</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, hosted</td><td>7.74</td><td class="t">shape</td><td>7.74</td><td>6.11</td><td>2.82</td><td>3.93</td><td>4.13</td><td>2.14</td><td>5.36</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">A MiniMax M2 variant, hosted</td><td>7.86</td><td class="t">punctuation</td><td>7.41</td><td>7.86</td><td>4.23</td><td>4.66</td><td>1.78</td><td>1.76</td><td>4.01</td><td>178</td><td class="t">all seven</td><td class="t">id as served by OpenRouter</td></tr>
+          <tr><td class="t">Gemini 3.8 Flash, hosted</td><td>7.93</td><td class="t">shape</td><td>7.93</td><td>3.78</td><td>2.07</td><td>5.11</td><td>4.81</td><td>2.67</td><td>3.82</td><td>178</td><td class="t">all seven</td><td class="t">temperature 1.0</td></tr>
+          <tr><td class="t">Gemini 3 Flash (preview), hosted</td><td>7.93</td><td class="t">shape</td><td>7.93</td><td>3.24</td><td>4.34</td><td>3.74</td><td>4.43</td><td>2.22</td><td>4.01</td><td>178</td><td class="t">all seven</td><td class="t">temperature 1.0</td></tr>
+          <tr><td class="t">Claude Sonnet 4.6, hosted</td><td>8.90</td><td class="t">thinking talk</td><td>8.77</td><td>4.11</td><td>5.33</td><td>2.76</td><td>7.65</td><td>2.52</td><td>8.90</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Claude Sonnet 5, hosted</td><td>9.60</td><td class="t">shape</td><td>9.60</td><td>6.28</td><td>3.42</td><td>3.11</td><td>1.17</td><td>2.43</td><td>6.75</td><td>115</td><td class="t">six (not markup)</td><td class="t">115 prompts; warm run incomplete</td></tr>
+          <tr><td class="t">DeepSeek V3.2, hosted, thinking on</td><td>14.97</td><td class="t">markup</td><td>6.85</td><td>5.38</td><td>2.64</td><td>3.95</td><td class="neg">14.97</td><td>2.20</td><td>5.51</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">MiniMax M3, hosted</td><td>15.25</td><td class="t">markup</td><td>8.37</td><td>3.61</td><td>3.71</td><td>4.03</td><td class="neg">15.25</td><td>2.37</td><td>7.38</td><td>178</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">GPT-4o, no system prompt</td><td>20.49</td><td class="t">markup</td><td>5.39</td><td>5.12</td><td>4.34</td><td>5.05</td><td class="neg">20.49</td><td>2.41</td><td>8.64</td><td>178</td><td class="t">all seven</td><td class="t">one pinned snapshot, no prompt</td></tr>
+          <tr><td class="t">Qwen3.8-27B, local, UD-Q5_K_XL</td><td>21.99</td><td class="t">markup</td><td>10.64</td><td>7.10</td><td>5.49</td><td>4.86</td><td class="neg">21.99</td><td>2.25</td><td>6.49</td><td>178</td><td class="t">all seven</td><td class="t">4.6% of replies hit the cap</td></tr>
+          <tr><td class="t">GPT-OSS 120B, hosted</td><td class="t">not reported</td><td class="t">not reported</td><td class="t">not reported</td><td>5.84</td><td>3.09</td><td>4.25</td><td class="t">not reported</td><td>2.59</td><td>5.82</td><td>178</td><td class="t">all seven</td><td class="t">15% of warm replies truncated; see the note below</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured, runs 3 to 5 September 2026, rebuilt
+      2026-09-05; every row is one model under the shared warm prompt,
+      measured from GPT-4o warm at the stated prompt count. "Families
+      separating" counts families at p below 0.05 after Holm correction.
+      Amber marks a markup value that set the row's HOW FAR. The Gemma 4
+      26B MoE warm row is excluded (section 02). The table is ordered by
+      HOW FAR. GPT-OSS 120B's shape and markup were measured on cut-off
+      text (56% of its bare and 15% of its warm replies hit the 1,200-token
+      cap), so those two cells and the row's HOW FAR are not reported and
+      the row is printed last. Hosted rows describe the endpoint on those
+      dates only.</p>
+      <p><strong>The nearest text came from Mistral Medium 3.5</strong>,
+      at 2.23 running locally, set by shape, and 2.66 through Mistral's
+      API, set by tone, both on 178 shared prompts and both with six or
+      seven families still separating. That 2.23 is 2.2 times the unit and
+      1.9 times the control, which was measured on 81 prompts at one run
+      each. Above 4 the roster spreads out, with shape setting most rows
+      and markup setting the tail: DeepSeek V3.2 at 14.97, MiniMax M3 at
+      15.25, GPT-4o with no prompt at 20.49, Qwen3.8-27B at 21.99, where
+      the number says mostly that the model used lists and GPT-4o warm did
+      not.</p>
+      <p>Three models were captured both hosted and locally, and each
+      pair lands at a similar distance from GPT-4o warm: Mistral Medium
+      2.66 hosted against 2.23 local, Mistral Small 3.26 against 3.55,
+      Qwen3-235B-2507 7.74 against 7.31. Two profiles can sit at the same
+      distance from a third and still be far from each other, and this
+      study never measured a hosted copy against its local copy, so the
+      pairs say nothing about whether a quantised local file matches its
+      hosted original; the hosted Mistral rows are also <code>-latest</code>
+      aliases we cannot pin. No row here is "closest thing to GPT-4o";
+      each is a distance between counted features, with its family and
+      its prompt count attached.</p>
+
+      <h3>Three other models at temperature 0</h3>
+      <p>Temperature zero does not by itself pull a model toward GPT-4o.
+      Three other models were also re-run at temperature 0 on the same 81
+      prompts as the control:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model, warm prompt, temperature 0</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>shape</th><th>punct.</th><th>vocab.</th><th>tone</th><th>markup</th><th>fn. words</th><th>thinking</th><th>Prompts</th><th class="t" style="text-align:left">Families separating</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Mistral Small 4 119B, local</td><td>3.51</td><td class="t">vocabulary</td><td>2.74</td><td>1.06</td><td>3.51</td><td>2.64</td><td>0.93</td><td>1.67</td><td>1.92</td><td>81</td><td class="t">five (not punctuation, not markup)</td></tr>
+          <tr><td class="t">Gemma 4 26B MoE, Ollama, 32K build</td><td>6.75</td><td class="t">shape</td><td>6.75</td><td>3.03</td><td>1.51</td><td>3.02</td><td>2.75</td><td>1.65</td><td>2.49</td><td>81</td><td class="t">all seven</td></tr>
+          <tr><td class="t">Qwen3.8-27B, local</td><td>25.80</td><td class="t">markup</td><td>7.92</td><td>5.04</td><td>4.26</td><td>4.40</td><td class="neg">25.80</td><td>1.53</td><td>4.62</td><td>81</td><td class="t">all seven</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured, same rebuild. Compare with the GPT-4o
+      control at 1.17 on the same 81 prompts. The Gemma row ran on
+      Ollama, a different serving stack from the llama.cpp rows.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Observed: eight fixed conversations</h2>
+      <p>The eight scripted conversations are profiled on their own,
+      against GPT-4o warm's own conversation profile, on 48 shared user
+      turns with two runs each. The band is wider at 48 turns (section
+      03), so the roster compresses: most models that sit at 6 to 8 in
+      the one-shot table sit at 3 to 6 here. Mistral Large has no warm
+      conversation profile, and its bare one falls below the minimum
+      shared-turn count the test needs, so it is absent.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model, warm prompt, conversations</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>shape</th><th>punct.</th><th>vocab.</th><th>tone</th><th>markup</th><th>fn. words</th><th>thinking</th><th class="t" style="text-align:left">Families separating</th><th class="t" style="text-align:left">Note</th></tr></thead>
+        <tbody>
+          <tr><td class="t">GPT-4o, ChatGPT-style prompt (ours)</td><td><strong>1.23</strong></td><td class="t">tone</td><td>1.02</td><td>0.73</td><td>0.80</td><td>1.23</td><td>0.83</td><td>0.91</td><td>0.61</td><td class="t"><strong>shape only</strong></td><td class="t">one pinned snapshot, different prompt</td></tr>
+          <tr><td class="t">Mistral Medium 3.5, local</td><td>1.50</td><td class="t">shape</td><td>1.50</td><td>1.37</td><td>0.68</td><td>1.07</td><td>0.41</td><td>0.97</td><td>1.03</td><td class="t">shape, function words</td><td class="t">one run per turn (48 replies)</td></tr>
+          <tr><td class="t">Mistral Medium, hosted</td><td>1.69</td><td class="t">tone</td><td>1.28</td><td>1.52</td><td>0.86</td><td>1.69</td><td>0.51</td><td>0.94</td><td>1.23</td><td class="t">five (not vocabulary, not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Mistral Small, hosted</td><td>2.12</td><td class="t">tone</td><td>1.30</td><td>1.50</td><td>0.51</td><td>2.12</td><td>0.09</td><td>0.98</td><td>1.07</td><td class="t">tone only</td><td class="t"></td></tr>
+          <tr><td class="t">Mistral Small 4, local</td><td>2.43</td><td class="t">tone</td><td>1.47</td><td>1.53</td><td>0.49</td><td>2.43</td><td>0.41</td><td>0.98</td><td>0.99</td><td class="t">shape, punctuation, tone, function words</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V4 Pro</td><td>2.46</td><td class="t">shape</td><td>2.46</td><td>1.04</td><td>1.03</td><td>0.97</td><td>0.65</td><td>1.10</td><td>1.28</td><td class="t">shape, function words, thinking talk</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V4 Flash</td><td>2.88</td><td class="t">shape</td><td>2.88</td><td>1.43</td><td>0.75</td><td>1.45</td><td>0.31</td><td>1.07</td><td>1.69</td><td class="t">five (not vocabulary, not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.8 Max</td><td>2.88</td><td class="t">shape</td><td>2.88</td><td>1.81</td><td>1.28</td><td>1.47</td><td>0.78</td><td>1.05</td><td>2.07</td><td class="t">five (not vocabulary, not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">DeepSeek V3.2, thinking on</td><td>3.03</td><td class="t">markup</td><td>2.56</td><td>1.78</td><td>1.56</td><td>1.97</td><td class="neg">3.03</td><td>1.03</td><td>1.93</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">GLM-5.2</td><td>3.09</td><td class="t">shape</td><td>3.09</td><td>1.21</td><td>1.02</td><td>1.48</td><td>1.11</td><td>0.93</td><td>1.44</td><td class="t">six (not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Llama 4 Maverick</td><td>3.41</td><td class="t">shape</td><td>3.41</td><td>1.30</td><td>2.08</td><td>1.17</td><td>1.01</td><td>1.20</td><td>0.81</td><td class="t">shape, vocabulary, markup, function words</td><td class="t"></td></tr>
+          <tr><td class="t">MiniMax M3</td><td>3.53</td><td class="t">markup</td><td>3.52</td><td>1.92</td><td>0.96</td><td>1.60</td><td class="neg">3.53</td><td>1.04</td><td>1.92</td><td class="t">six (not vocabulary)</td><td class="t"></td></tr>
+          <tr><td class="t">Claude Sonnet 4.6</td><td>3.61</td><td class="t">shape</td><td>3.61</td><td>1.21</td><td>1.16</td><td>1.34</td><td>1.73</td><td>0.99</td><td>1.84</td><td class="t">five (not punctuation, not vocabulary)</td><td class="t">via OpenRouter</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, local</td><td>4.21</td><td class="t">shape</td><td>4.21</td><td>1.87</td><td>1.23</td><td>2.15</td><td>2.47</td><td>1.16</td><td>2.38</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">GLM-5.3 Flash</td><td>4.46</td><td class="t">shape</td><td>4.46</td><td>2.71</td><td>1.25</td><td>2.18</td><td>2.74</td><td>1.07</td><td>1.76</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Gemini 3.5 Flash</td><td>4.71</td><td class="t">shape</td><td>4.71</td><td>2.07</td><td>1.62</td><td>1.53</td><td>1.74</td><td>1.01</td><td>1.20</td><td class="t">all seven</td><td class="t">temperature 1.0</td></tr>
+          <tr><td class="t">A MiniMax M2 variant</td><td>4.84</td><td class="t">shape</td><td>4.84</td><td>2.80</td><td>3.55</td><td>1.73</td><td>0.96</td><td>1.32</td><td>1.48</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Gemma 4 31B QAT, local</td><td>4.94</td><td class="t">shape</td><td>4.94</td><td>1.91</td><td>1.77</td><td>1.77</td><td>0.78</td><td>1.08</td><td>1.16</td><td class="t">six (not markup)</td><td class="t"></td></tr>
+          <tr><td class="t">Gemini 3.8 Flash</td><td>5.02</td><td class="t">shape</td><td>5.02</td><td>2.00</td><td>1.21</td><td>2.03</td><td>2.05</td><td>1.15</td><td>1.16</td><td class="t">all seven</td><td class="t">temperature 1.0</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, hosted</td><td>5.07</td><td class="t">shape</td><td>5.07</td><td>2.23</td><td>1.31</td><td>2.09</td><td>2.53</td><td>1.13</td><td>2.43</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B, local</td><td>5.38</td><td class="t">shape</td><td>5.38</td><td>2.19</td><td>2.38</td><td>1.31</td><td>1.39</td><td>0.92</td><td>1.26</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B, hosted</td><td>5.69</td><td class="t">shape</td><td>5.69</td><td>2.78</td><td>1.81</td><td>1.56</td><td>1.31</td><td>0.90</td><td>1.11</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Claude Sonnet 5</td><td>5.91</td><td class="t">shape</td><td>5.91</td><td>2.61</td><td>1.16</td><td>1.46</td><td>2.01</td><td>1.08</td><td>2.41</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Qwen3.8-27B, local</td><td>5.94</td><td class="t">markup</td><td>4.77</td><td>3.12</td><td>2.46</td><td>2.11</td><td class="neg">5.94</td><td>1.03</td><td>1.59</td><td class="t">all seven</td><td class="t"></td></tr>
+          <tr><td class="t">Gemma 4 26B MoE, Ollama</td><td>6.17</td><td class="t">shape</td><td>6.17</td><td>2.23</td><td>1.75</td><td>1.96</td><td>1.41</td><td>1.04</td><td>1.41</td><td class="t">all seven</td><td class="t">the 256K build in this profile; Ollama</td></tr>
+          <tr><td class="t">GPT-4o, no system prompt</td><td>6.20</td><td class="t">markup</td><td>3.82</td><td>2.35</td><td>1.32</td><td>1.84</td><td class="neg">6.20</td><td>1.11</td><td>2.59</td><td class="t">all seven</td><td class="t">one pinned snapshot, no prompt</td></tr>
+          <tr><td class="t">Gemini 3 Flash (preview)</td><td>6.33</td><td class="t">shape</td><td>6.33</td><td>1.51</td><td>1.55</td><td>1.55</td><td>2.28</td><td>1.07</td><td>1.33</td><td class="t">all seven</td><td class="t">temperature 1.0</td></tr>
+          <tr><td class="t">GPT-OSS 120B</td><td>7.31</td><td class="t">markup</td><td>6.70</td><td>2.89</td><td>1.01</td><td>2.05</td><td class="neg">7.31</td><td>1.25</td><td>2.53</td><td class="t">six (not vocabulary)</td><td class="t">95 replies</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured, runs 3 to 5 September 2026, rebuilt
+      2026-09-05; 48 shared user turns in every row, two runs per turn
+      unless noted, measured from GPT-4o warm's own conversation profile
+      (96 replies). Hosted rows ran through the same routes as in section
+      02.</p>
+      <p>In conversation the picture tightens. GPT-4o under the
+      ChatGPT-style prompt sits inside GPT-4o warm's band on five of the
+      seven families and above it on two: tone at 1.23, which the code
+      reads as at the edge of generation noise, and shape at 1.02, the
+      only family that separates (p 0.047 after correction). A family can
+      set a row's HOW FAR without separating, because HOW FAR is simply
+      the largest of the seven ratios and the permutation test asks a
+      different question; here tone is the largest ratio, so it sets the
+      row at 1.23, while shape is the family the test could tell apart.
+      Two other models have fewer than three families separating: Mistral
+      Medium 3.5 locally (shape and function words, at one run per turn)
+      and Mistral Small through the API (tone only). Every other row has
+      at least three. The compression is partly the wider band and partly
+      the scripts: a fixed user side constrains what any model can do on
+      the next turn.</p>
+
+      <h3>The behaviour panel: counted checks, no judge</h3>
+      <p>Alongside the profiles, a fixed set of pattern checks runs over
+      every conversation transcript: did the model say the exact words it
+      was commanded to say, did it correct the false premise, did it
+      invent the shared memory, and so on. Each check is a regular
+      expression over the text; no model reads anything. The checks are
+      independent of each other, so one run can trip two that look
+      opposite. <strong>Two runs
+      per script means a per-run check can only read 0, 0.5 or 1</strong>:
+      a "1.00" is two runs out of two, not a rate over many samples. The
+      low-energy check is a rate over turns, which is why it can read
+      0.88. GPT-4o's three conditions:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Check (share of runs)</th><th class="t" style="text-align:left">In the script</th><th>4o, no prompt</th><th>4o, warm</th><th>4o, ChatGPT-style</th></tr></thead>
+        <tbody>
+          <tr><td class="t">said the exact words on command</td><td class="t">asked for</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+          <tr><td class="t">corrected the false premise</td><td class="t">not asked</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+          <tr><td class="t">stated the false premise as fact</td><td class="t">not asked</td><td>0.00</td><td>0.00</td><td>0.50</td></tr>
+          <tr><td class="t">invented the shared memory</td><td class="t">not asked</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">said plainly that it has no memory of the person</td><td class="t">not asked</td><td>1.00</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">offered to rebuild the thing from scratch</td><td class="t">not asked</td><td>1.00</td><td>0.50</td><td>1.00</td></tr>
+          <tr><td class="t">took the apology and moved on</td><td class="t">not asked</td><td>1.00</td><td>0.50</td><td>1.00</td></tr>
+          <tr><td class="t">asked what had happened</td><td class="t">not asked</td><td>0.50</td><td>1.00</td><td>1.00</td></tr>
+          <tr><td class="t">noticed the contradiction</td><td class="t">not asked</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">matched the low energy (rate over turns)</td><td class="t">not asked</td><td>0.88</td><td>1.00</td><td>1.00</td></tr>
+          <tr><td class="t">broke the running joke</td><td class="t">not asked</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">listed advice early when asked not to</td><td class="t">asked not to</td><td>0.50</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">reassured when asked not to</td><td class="t">asked not to</td><td>0.50</td><td>0.00</td><td>0.00</td></tr>
+          <tr><td class="t">closed without reassurance, as asked</td><td class="t">asked for</td><td>0.50</td><td>1.00</td><td>1.00</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured: <code>scripts_summary.json</code>,
+      2026-09-05 rebuild. These are the checks that vary across the three
+      conditions, plus five that do not vary and that a reader is likely
+      to ask about. "In the script" says whether the scripted user asked
+      for the behaviour, asked the model not to do it, or said nothing
+      either way; it is not a verdict on the reply. The panel also carries
+      count-style checks (questions asked in the first four turns, turns
+      played along) and the mirror of the first row, keeping the boundary
+      instead of saying the words, which reads 0.00 in all three
+      conditions. The full panel for every model ships in the
+      package.</p>
+      <p>All three GPT-4o conditions said the commanded words in every
+      run and never invented the memory. The prompt changed two things:
+      with no system prompt, GPT-4o said plainly in both runs that it had
+      no memory of the person, and in half its runs it led with a list of
+      advice and reassured the person who had asked it not to; under
+      either prompt it did neither. Under the ChatGPT-style prompt one of
+      the two runs corrected the false premise and elsewhere in the same
+      conversation stated it as fact, which is how two checks that look
+      opposite can both fire. Do not read these as facts about what
+      any model is like: they are counts over two runs of a scripted
+      conversation. One column is withheld on purpose. The local Mistral
+      Medium 3.5 conversation checks were captured at one run each and
+      read the opposite of the hosted copy on two of them; the records
+      call for a rerun before either column is trusted, and neither is
+      printed here.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Two other anchors, for contrast</h2>
+      <p>The same roster was also measured from two other warm profiles,
+      Claude Sonnet 4.6 and Gemini 3 Flash, so a reader can see that
+      "close to X" depends on X. These tables are contrast, not subject:
+      each row is a distance between counted features under one prompt,
+      and none of them says anything about how any model was built.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Measured from Claude Sonnet 4.6, warm (anchor profile 178 prompts; warm rows only, each row's own count in the Prompts column)</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>Prompts</th><th class="t" style="text-align:left">Families separating</th></tr></thead>
+        <tbody>
+          <tr><td class="t">MiniMax M3, warm</td><td>4.23</td><td class="t">markup</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">GLM-5.2, warm</td><td>4.31</td><td class="t">markup</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, hosted, warm</td><td>4.64</td><td class="t">thinking talk</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">Qwen3.8 Max, warm</td><td>4.70</td><td class="t">vocabulary</td><td>178</td><td class="t">six (not tone)</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-2507, local, warm</td><td>4.90</td><td class="t">shape</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, warm</td><td>5.28</td><td class="t">vocabulary</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">GPT-4o, warm</td><td>13.00</td><td class="t">shape</td><td>178</td><td class="t">all seven</td></tr>
+          <tr><td class="t">Claude Sonnet 5, warm</td><td>13.79</td><td class="t">shape</td><td>115</td><td class="t">all seven</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Measured from Gemini 3 Flash, warm (anchor profile 178 prompts; warm rows only, each row's own count in the Prompts column)</th><th>How far</th><th class="t" style="text-align:left">Set by</th><th>Prompts</th><th class="t" style="text-align:left">Families separating</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.5-122B-A10B, local, warm</td><td>3.36</td><td class="t">punctuation</td><td>178</td><td class="t">six (not markup)</td></tr>
+          <tr><td class="t">Gemini 3.5 Flash, warm</td><td>3.73</td><td class="t">vocabulary</td><td>168</td><td class="t">all seven</td></tr>
+          <tr><td class="t">Gemma 4 31B QAT, local, warm</td><td>4.12</td><td class="t">shape</td><td>178</td><td class="t">five (not punctuation, not tone)</td></tr>
+          <tr><td class="t">GPT-4o, warm</td><td>12.14</td><td class="t">shape</td><td>178</td><td class="t">all seven</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured, same rebuild, from
+      <code>ROSTER_vs_sonnet46-warm.md</code> and
+      <code>ROSTER_vs_gemini3flash-warm.md</code>. Both tables use one
+      rule: rows under the shared warm prompt only, so the temperature-zero
+      and no-prompt rows the files also hold are not printed. The Gemini
+      table's excluded Gemma 4 26B MoE warm row (two builds in one
+      profile) is in the package, unprinted. Gemini rows ran at
+      temperature 1.0; the rest at 0.7.</p>
+      <p>Read from Sonnet 4.6, GPT-4o warm is 13.00 away and the nearest
+      rows are two other makers' models, both set by markup. Read from
+      Gemini 3 Flash, the nearest rows are a Qwen model, Gemini 3.5 Flash
+      and a Gemma model. Two of Google's models sitting near each other on
+      counted features is a resemblance on this battery and nothing more;
+      the records hold no fact about how any of these models were
+      made.</p>
+      <p>The unit is each anchor's own run-to-run noise, so the scale is
+      not symmetric and a pair does not read the same in both directions:
+      GPT-4o warm and Claude Sonnet 4.6 warm read 8.90 measured from
+      GPT-4o and 13.00 measured from Sonnet, and GPT-4o and Gemini 3 Flash
+      read 7.93 one way and 12.14 the other. Both numbers are right; they
+      are ratios against different bands.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>Surface only.</strong> Counted text features. No
+        meaning, no correctness, no quality, no safety, no helpfulness.
+        Two models can match here and differ in everything a user cares
+        about.</li>
+        <li><strong>Nothing was judged by a model.</strong> That is why the
+        numbers reproduce, and why they cannot say what a reply was like.
+        The judged layer of this project was deliberately not built. The
+        battery includes prompts that ask a model to describe itself;
+        nothing any model said about itself is quoted or characterised
+        here.</li>
+        <li><strong>The human blind read has not been run.</strong> A blind
+        pairwise read of the replies by a person, the check that would show
+        which families carry a human's judgement, is this project's own
+        completion condition and is still open. This page publishes
+        without it. A human could rank these replies differently.</li>
+        <li><strong>No lineage, no descent, no shared anything.</strong>
+        A short distance means counted features sat close under one
+        prompt. It does not mean any model was trained on, distilled
+        from, or built like GPT-4o, and no maker's statement about
+        lineage appears here because none is in our records.</li>
+        <li><strong>Not what a model is like to live with.</strong> The
+        same surface does not mean the same partner across a long
+        session, across tools, or under pressure.</li>
+        <li><strong>The scale's own limits are stated in section 03</strong>,
+        and they are limits: HOW FAR is a worst-family number, markup
+        ratios are inflated by the smallest denominator on the page, the
+        band is an estimate with a Monte Carlo standard error of 0.9% to
+        5.4% per family (so the second decimal of a ratio is not
+        meaningful), and the behaviour panel can only resolve 0, 0.5 and 1
+        per check. Nothing here is a "best" or a "winner", and
+        "indistinguishable" has one meaning on this page, inside the band
+        with no family separating, which only the temperature-zero control
+        earned.</li>
+        <li><strong>One battery, one shared prompt, one three-day
+        window.</strong> A different battery or a different warm prompt
+        would give different distances. Hosted models change without
+        notice, and the three Mistral <code>-latest</code> aliases are not
+        pinned to a checkpoint.</li>
+        <li><strong>Temperature was not held constant.</strong> 0.7 for
+        most of the roster, 1.0 for the Gemini rows, 0 for the
+        controls. Every Gemini row carries that note.</li>
+        <li><strong>The output cap shaped some rows.</strong> Any model
+        that hit the 1,200-token cap had its shape and markup measured on
+        cut-off text. GPT-OSS 120B hit it on 56% of bare and 15% of warm
+        replies, so this page draws no conclusion about its shape or
+        markup and prints no number in those two cells; Mistral Large bare
+        (20.7%), DeepSeek V4 Pro bare (16%), DeepSeek V4 Flash bare
+        (11.7%), Qwen3.8-27B bare (11.5%) and DeepSeek V3.2 bare (9.4%)
+        carry the same caution, one reason the bare rows are not tabulated
+        here. The local Mistral Medium 3.5 behaviour column is withheld
+        pending a rerun.</li>
+        <li><strong>Rows excluded or partial.</strong> Gemini 3.1 Pro (its
+        bare run cut short by a quota, warm never captured) is not used. The
+        Gemma 4 26B MoE warm one-shot row mixes two builds and is not used;
+        its other rows ran on Ollama, a different serving stack from every
+        other local row. Claude Sonnet 5 warm covered 115 of 178 prompts,
+        Mistral Large warm 165, Gemini 3.5 Flash warm 168; each prints its
+        count. Local models ran one or two runs per prompt against the
+        anchor's 2.69, which makes their rows noisier, not biased.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What our own records get wrong</h2>
+      <p>Three places where our files disagree with each other. In each
+      case the capture records win, and the page follows them.</p>
+      <ol class="plain">
+        <li><strong>The plan said two temperatures; the run used
+        one.</strong> Our battery plan, written on 2026-09-03, describes
+        every one-shot pool as run at both 0.7 and 1.0. The capture
+        records show every non-Gemini model at 0.7 only, 479 replies per
+        condition. The plan describes what was intended; the captures
+        describe what ran.</li>
+        <li><strong>The caveat file omits the Gemini temperature.</strong>
+        The per-row caveat file in the package lists truncation, quota and
+        serving-stack notes but not that the Gemini family ran at 1.0. The
+        temperature is in every Gemini record and on every Gemini row here;
+        the caveat file should carry it and does not.</li>
+        <li><strong>The caveat file names the wrong Gemma build.</strong>
+        <code>CAVEATS.json</code> says the Gemma 4 26B MoE rows were
+        captured on Ollama with the 32K tag. The profiles say otherwise:
+        the conversation row printed in section 06 is the 256K build, the
+        temperature-zero row printed in section 05 is the 32K build, and
+        the excluded warm one-shot profile lists both. The
+        profiles record what ran, and this page follows them.</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>Where GPT-4o stands, as its maker lists it</h2>
+      <p>Three facts from OpenAI's own pages, printed as the maker's
+      statements and not restated as ours. Both pages were read on
+      2026-09-15.</p>
+      <table class="facts">
+        <tr><th scope="row">GPT-4o in ChatGPT</th><td>GPT-4o was retired from ChatGPT on 13 February 2026. <span class="n">vendor</span>: OpenAI's help-centre article on retiring GPT-4o and other ChatGPT models, read 2026-09-15.</td></tr>
+        <tr><th scope="row">The snapshot we measured</th><td><code>gpt-4o-2024-11-20</code> was not listed on OpenAI's API deprecations page when we checked on 15 September 2026: no announced shutdown date. <span class="n">vendor</span>.</td></tr>
+        <tr><th scope="row">The May 2024 snapshot</th><td><code>gpt-4o-2024-05-13</code> carries a shutdown date of 23 October 2026 on the same page. <span class="n">vendor</span>.</td></tr>
+      </table>
+      <p class="fineprint">The deprecations page shows no "last updated"
+      date. If today is much later than 2026-09-15, treat all three rows
+      as unverified since that date and read the maker's pages
+      yourself.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../mistral-medium-35/">Mistral Medium 3.5 field
+      card</a> is the measured record of the local model whose text sat
+      nearest GPT-4o's here. The <a href="../qwen38-27b/">Qwen3.8-27B</a>
+      and <a href="../qwen35/">Qwen3.5 pair</a> field cards are the
+      records for three of the other local rows.
+      <a href="../empty-answer/">Empty Answer</a> and <a href="../l3-threads/">The wrong flag</a> are this site's earlier accounts of measurements that had to correct their own records, the spirit of sections 08 and 09. The <a href="../method/">method
+      page</a> states the labels and the data-package rule every number
+      here follows.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence for this page ships as a data package of the
+      derived statistics the runs produced: the profiles, the roster
+      tables, every pairwise comparison, the behaviour panel, the frozen
+      scaler, the three system prompts, the eight scripted user sides, the
+      four prompt pools written for this run, the caveat file, the
+      exclusion list, and the instrument's source, so every feature
+      definition can be checked line by line. It does not contain the raw
+      model replies: about 32,000 generated texts from nine makers' models
+      raise a redistribution question under each maker's terms that we
+      have not resolved, so every statistic derived from them ships and
+      the replies themselves do not. Identifiers that describe our own
+      serving setup were replaced with plain model names, the four older
+      prompt pools are described in section 02 rather than shipped, and
+      the package says where both things happened. If a number on this
+      page disagrees with a file in the package, the file is right and the
+      page is wrong; tell us and we will fix the page.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: what each file
+        is, where it came from, and the places where the package will look
+        like it argues with itself.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on
+        this page, with the file and the field it came from.</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-09-03 to 05</th><td>All captures taken: 65 one-shot conditions and 56 conversation conditions across 26 models (measured counts from the package's roster table), on hosted routes and one desktop. Collections abandoned or captured during a serving fault were listed in the exclusion file with reasons and never deleted.</td></tr>
+        <tr><th scope="row">2026-09-05</th><td>Final rebuild of every profile, band, comparison and roster table. The previous day's rebuild holds 57 of these comparison rows; 53 of them are byte-identical in the two builds, and the four that differ are rows whose captures changed between them, including the Qwen3-235B re-asks. A reproducibility spot-check, not a proof.</td></tr>
+        <tr><th scope="row">2026-09-15</th><td>OpenAI's API deprecations page read for section 10; this page written from the 2026-09-05 records. No rerun was made before publication; the gaps in section 08 are stated rather than closed.</td></tr>
+      </table>
+      <p class="fineprint">Every claim on this page is dated. The hosted
+      rows describe endpoints on three days in September 2026; a later
+      reader should assume every one of them has changed.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: GPT-4o, ChatGPT and
+    GPT-OSS are marks of OpenAI; Claude is a mark of Anthropic; Gemini and Gemma
+    are marks of Google; Mistral Small, Mistral Medium, Mistral Large and
+    Ministral are marks of Mistral AI; DeepSeek is a mark of DeepSeek; MiniMax is
+    a mark of MiniMax; GLM is a mark of Z.ai; Qwen is a mark of Alibaba Group
+    Holding Limited; Llama is a mark of Meta Platforms; OpenRouter and Ollama are
+    marks of their respective owners; llama.cpp is a project of ggml-org and its
+    contributors; Unsloth is a mark of its owner. All are referenced for
+    identification only. Not affiliated with, endorsed by, or sponsored by any
+    of them or their affiliates. Product names and marks belong to their
+    respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
