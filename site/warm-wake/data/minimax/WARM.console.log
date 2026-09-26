@@ -1,0 +1,25 @@
+=== PHASE 1: seed 96000 tokens and save the slot ===
+>> starting server (seed) -- -ub 4096 --n-cpu-moe 59 --slot-save-path <REDACTED_PATH>
+   healthy in 5s
+seeding ~96000 tokens (cold read : this is the slow one) ...
+  cold: 85763 tokens in 147.49s (589.5 t/s)
+  save: n_saved=85778 n_written=11573855516 save_ms=3050.971 wall=3.05s
+  slot file: <REDACTED_PATH> = 11573855516 bytes (10.78 GiB)
+
+NOW RESTART THE SERVER (same flags, same --slot-save-path), then run:
+  python3 m27_warm_prove.py check --url http://127.0.0.1:8131 --state-dir <REDACTED_PATH>
+>> stopping server (pid=<PID>)
+   stopped
+
+=== PHASE 2: a REAL restart, then restore and test reuse ===
+>> starting server (check) -- -ub 4096 --n-cpu-moe 59 --slot-save-path <REDACTED_PATH>
+   healthy in 5s
+  restore: n_restored=85778 restore_ms=2171.784 wall=2.19s
+  identical request after restore: 2.17s (server counted 1 tokens as NEW work)
+
+  VERDICT: REUSED ✅ : 85778 tokens survived the restart; only 1 recomputed.
+>> stopping server (pid=<PID>)
+   stopped
+
+slot file left in <REDACTED_PATH> for inspection; remove it when done:
+11G	<REDACTED_PATH>

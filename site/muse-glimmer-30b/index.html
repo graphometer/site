@@ -225,7 +225,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card &middot; measured 2026-08-16 on one RTX 5090 &middot; one dense 30B, Meta's own 4-bit build and its DFlash drafter, greedy decoding, one request at a time</div>
+      <div class="eyebrow">Field card &middot; measured 2026-08-16 on one RTX 5090 &middot; one dense 30B, Meta's own 4-bit build and its DFlash drafter, greedy decoding, one request at a time &middot; comparison note corrected 2026-09-26</div>
       <h1>Muse Glimmer 30B: <em>trained at 16, asked for 3</em></h1>
       <p class="subtitle">Meta trained its DFlash drafter to produce a
       block of 16 tokens per pass and prints that number in its
@@ -651,7 +651,10 @@ common_speculative_impl_draft_dflash: requested draft size (n_max=16, n_min=0) e
       <p>The comparison this site can make from its own records: the
       <a href="../qwen38-27b/">Qwen3.8-27B</a> measured on this same card two
       days earlier declares 262,144 tokens native and <strong>did not
-      fit</strong> that context here, topping out at 131,072. Muse Glimmer's
+      fit</strong> that context on this card at an f16 cache, topping out at
+      131,072 with the draft head on or off; a 2026-09-17 run served the
+      full window on that card with an 8-bit cache and the draft head off,
+      see that card's dated update. Muse Glimmer's
       whole declared context fits with room for the drafter. Those are two
       different models with two different attention layouts, quantizations
       and dates, and the sentence is a fact about what fit on one card, not
@@ -1019,7 +1022,9 @@ common_speculative_impl_draft_dflash: requested draft size (n_max=16, n_min=0) e
         model whose card is built around agentic use.</li>
         <li><strong>No hosted comparison.</strong> Local endpoint only.</li>
       </ul>
-      <p class="fineprint">Every claim on this page is dated 2026-08-16.
+      <p class="fineprint">Every claim on this page is dated 2026-08-16,
+      except the Qwen3.8-27B comparison in section 05, which includes a
+      2026-09-17 serve described on that card.
       Community quantizations get re-cut, vendors update templates, and
       llama.cpp changes defaults; the default at the centre of section 03 is
       one that could move, and if it does, the finding stops reproducing

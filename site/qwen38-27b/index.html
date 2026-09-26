@@ -162,7 +162,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card &middot; released 2026-08-14 about 11:00 EDT, measured the same evening &middot; one dense 27B, one community Q5-class quant, one RTX 5090, thinking off for the speed runs</div>
+      <div class="eyebrow">Field card &middot; released 2026-08-14 about 11:00 EDT, measured the same evening &middot; one dense 27B, one community Q5-class quant, one RTX 5090, thinking off for the speed runs &middot; context ceiling corrected 2026-09-26</div>
       <h1>Qwen3.8-27B: <em>day zero</em></h1>
       <p class="subtitle">An early look on release day, measured on one
       desktop: one model family with two licenses (this 27B is genuine
@@ -345,13 +345,28 @@
       repetition for prefill. No interval is computed and none is implied.
       This is a diagnostic ladder, not a benchmark.</p>
 
-      <h3>The full native context does not fit this card</h3>
+      <h3>The full native context does not fit this card at an f16 cache</h3>
       <p>262,144 tokens would want roughly 16&nbsp;GiB of key-value cache
       on top of roughly 19&nbsp;GiB of weights, and the card holds
-      32,607&nbsp;MiB. <strong>131,072 is the ceiling on this machine, not a
-      limit of the model.</strong> The 262,144 figure in the configuration
+      32,607&nbsp;MiB. <strong>131,072 is the ceiling on this machine for an
+      f16 cache, draft head on or off, not a limit of the model; corrected
+      below.</strong> The 262,144 figure in the configuration
       is a property of the model, and it is not a statement about what a
       32&nbsp;GB desktop card will allocate.</p>
+      <div class="note">
+        <span class="label">Update &middot; 2026-09-26 &middot; a wider window was served here</span>
+        <p>On 2026-09-17 this same model was served at the full 262,144
+        tokens on this same card, with an 8-bit (<code>q8_0</code>)
+        key-value cache and the built-in draft head (MTP) forced off,
+        because the draft's own context needs room that a 256K cache does
+        not leave beside it. No raw log of that run survives; the record is a
+        measured-rung note written into the start script and a same-day
+        lab note, so no speed or memory figure from it is printed here.
+        At an f16 cache, 131,072 remains the ceiling on this card either
+        way. The 2026-09-17 serve used an 8-bit cache; with that cache the
+        draft head still did not fit beside the 256K window, so it was
+        forced off.</p>
+      </div>
 
       <h3>What this costs on a smaller card</h3>
       <p>Every number here is from a 32,607&nbsp;MiB card. A 24&nbsp;GB card
@@ -677,7 +692,9 @@
         quantization does to any number on this page, and no comparison
         against the official FP8 weights or the unquantized model.</li>
         <li><strong>One card, one placement.</strong> No 24&nbsp;GB card was
-        tested, no partial offload, no alternate cache type, no batch or
+        tested, no partial offload, no alternate cache type in the
+        2026-08-14 ladder; a q8_0 serve on 2026-09-17 is the dated note in
+        section 04, no batch or
         <code>--parallel</code> sweep.</li>
         <li><strong>No hosted twin.</strong> We measured the 2.4T sibling
         against a hosted route on 2026-08-13, but for this 27B we have only
@@ -694,7 +711,8 @@
         fault of the model or the route. We proved the route with a direct
         client instead, and we say that rather than reporting a pass.</li>
       </ul>
-      <p class="fineprint">Every claim on this page is dated 2026-08-14.
+      <p class="fineprint">Every claim on this page is dated 2026-08-14,
+      except the context note in section 04.
       Community quantizations are re-cut, runtimes change defaults, and the
       flag at the center of section 05 has already changed its default twice.
       If today is much later than that date, treat the version-specific

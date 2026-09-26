@@ -1,0 +1,29 @@
+[load] inkling_ub8192 model=Inkling-Small ctx=131072 vram=18130 MiB load=5s args='--batch-size 8192 --ubatch-size 8192'
+Traceback (most recent call last):
+  File "<stdin>", line 23, in <module>
+  File "<REDACTED_PATH>", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 1348, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 1457, in getresponse
+    response.begin()
+  File "<REDACTED_PATH>", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 305, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response

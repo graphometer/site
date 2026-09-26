@@ -152,7 +152,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · runs 2026-08-06 · files re-read 2026-08-08</div>
+      <div class="eyebrow">Field card · runs 2026-08-06 · files re-read 2026-08-08 · a longer prompt added 2026-09-16</div>
       <h1>Field card: <em>Mistral Medium 3.5</em></h1>
       <p class="lead">Mistral Medium 3.5 is Mistral AI's dense 128B-class
       model, their flagship per the card, open-weight since late April.
@@ -175,7 +175,7 @@
       model files themselves, and where a fact is a vendor's claim rather
       than our measurement, we say so.</p>
       <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to Mistral AI or Unsloth.</div>
+      endorsed by, or connected to Mistral AI, Unsloth, or ASUS.</div>
     </div>
 
     <section>
@@ -191,7 +191,7 @@
         <tr><th scope="row">Dense, verified</th><td>There is not a single expert tensor in the file: no expert counts, no routing, all 88 blocks carrying the same nine tensors. Dense means every parameter works on every token, which is the whole story of section 03.</td></tr>
         <tr><th scope="row">Total parameters</th><td>"128B" is the vendor's name for it. We summed the shapes of all 795 tensors: the served text model is <span class="n">125,025,988,608</span> (125.03 billion). A separate 2.68-billion-parameter vision tower sits on disk unloaded; together they round to 128 billion.</td></tr>
         <tr><th scope="row">Attention</th><td>96 query heads, 8 key-value heads (grouped-query), head dimension 128, across 88 blocks.</td></tr>
-        <tr><th scope="row">Context window</th><td><span class="asstated">The file declares 262,144 tokens (the card markets 256K), via YaRN position scaling.</span> We run 32,768 by default and have benchmarked 65,536 once; the largest prompt we have actually sent is 12,367 tokens.</td></tr>
+        <tr><th scope="row">Context window</th><td><span class="asstated">The file declares 262,144 tokens (the card markets 256K), via YaRN position scaling.</span> We run 32,768 by default and have benchmarked 65,536 once; the largest prompt we have actually sent on this deployment is 12,367 tokens. Section 09 carries a longer prompt sent to this model on a different deployment.</td></tr>
         <tr><th scope="row">Vocabulary</th><td>131,072 tokens, 269,443 merge rules. Two entries in that table turn out to matter a great deal; section 04 is about them.</td></tr>
         <tr><th scope="row">Modality</th><td>Text and image input per the card. As served here it is text-only: the vision projector is a separate file we never load, and no image work appears on this page.</td></tr>
         <tr><th scope="row">License</th><td>Open-weight under Mistral's Modified MIT License. It is close to MIT but not MIT: the grant falls away for companies above a stated revenue threshold, so read the actual terms for your intended use.</td></tr>
@@ -546,10 +546,10 @@
       <ul class="plain">
         <li><strong>Vision: never loaded.</strong> The projector sits on
         disk, checksummed and untouched.</li>
-        <li><strong>Long context: barely touched.</strong> The file
+        <li><strong>Long context: barely touched, on this deployment.</strong> The file
         declares 262,144 tokens; we ship 32K, benchmarked 64K once, and
-        have never sent a prompt above 12,367 tokens. Retrieval was tested
-        once, with one needle, at that size.</li>
+        have never sent a prompt above 12,367 tokens on this deployment.
+        Retrieval was tested once, with one needle, at that size.</li>
         <li><strong>Output equivalence with and without the draft</strong>
         rests on the verify-then-accept mechanism and the verified
         identical tokenizer, not on a controlled diff (section 04).</li>
@@ -561,10 +561,11 @@
         agent session, edit minimally, and decline to fabricate. It is
         not a pass rate, and it says nothing about large codebases, other
         languages, or repeatability.</li>
-        <li><strong>One backend, one quant, one machine.</strong> Only
-        llama.cpp, only UD-Q4_K_XL (alternatives were rejected on paper,
-        not measured), single requests only, and the timed session ran a
-        four-slot configuration we do not ship.</li>
+        <li><strong>One backend.</strong> The runs above are one quant,
+        UD-Q4_K_XL, on one machine; a Q3_K_S run on two machines is the
+        dated note below, not a replacement of those readings. Single
+        requests only, and the timed session ran a four-slot configuration
+        we do not ship.</li>
         <li><strong>No benchmark score of ours exists.</strong> Mistral's
         published figures (77.6 percent SWE-Bench Verified among them) are
         Mistral's, for the official model, not for this quant on this
@@ -573,6 +574,28 @@
         name an 8B draft as the upgrade path if acceptance proved high. It
         did. Nobody has tried it yet.</li>
       </ul>
+      <div class="note">
+        <span class="label">Update &middot; 2026-09-16 &middot; a longer prompt, a different deployment</span>
+        <p>On 2026-09-16 a 32,509-token prompt was sent to this model:
+        Q3_K_S split across the desktop and the Z13 laptop, an ASUS laptop,
+        over RPC, with a vocabulary-patched draft. Prefill ran 1,027.07 s
+        (31.65 tokens per second); the reply ran 331 tokens at 2.824 tokens
+        per second, build <span class="n">b10919-d3146f2b5</span>. That is
+        a different target quantization and a two-machine placement, not a
+        different draft. The draft is the vocabulary-patched Ministral 3 3B
+        Q4_K_M this page already uses, here at draft length 7 rather than
+        16. Context was 131,072, both caches q8_0, layers split 16 on the
+        desktop and 72 on the laptop over RPC, draft on the desktop only,
+        one request, no cached prompt tokens. The token counts and the
+        times below are the shipped JSON. The placement and the draft file
+        are the launch record, which is not in that JSON. The UD-Q4_K_XL
+        readings above stand as dated readings of that configuration. The
+        two sentences that said no larger prompt had been sent were the
+        ones that were false, and they are scoped to this deployment above.
+        The result JSON, redacted, ships as
+        <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>,
+        mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>.</p>
+      </div>
     </section>
 
     <section>
@@ -621,7 +644,8 @@
         checksums recorded at download.</li>
         <li>The runtime: mainline llama.cpp at commit
         <span class="n">5f55650a</span>, CUDA 12.8.</li>
-        <li>Every measured number stands on dated project records: the
+        <li>The measurements above this page's 2026-09-16 note stand on
+        dated project records: the
         15-rung ladder table and its per-rung server logs, the battery
         results with request bodies, the timed agent session's server log
         and its counterpart for the comparison model, the bake-off's
@@ -630,6 +654,12 @@
         are project records rather than public files today; they are named
         here so that every number on this page has a dated, recorded home
         that can be produced if questioned.</li>
+        <li>A 2026-09-16 run of this model at 32,509 tokens, Q3_K_S split
+        across the desktop and the Z13 laptop, an ASUS laptop, over RPC,
+        with a vocabulary-patched draft: the redacted result JSON ships as
+        <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>,
+        mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>, unlike the
+        project records named above.</li>
       </ul>
     </section>
 
@@ -647,10 +677,12 @@
     <p>Built by a human steward with heavy AI assistance; every public claim is
     checked against recorded evidence.</p>
     <p>Copyright 2026 Grant Williams. Independent work: Mistral, Mistral
-    Medium 3.5, and Ministral are referenced for identification only; not
-    affiliated with, endorsed by, or sponsored by Mistral AI, Unsloth, or
-    their affiliates. Product names and marks belong to their respective
-    owners. This site is static. No scripts, no tracking, no cookies.</p>
+    Medium 3.5, and Ministral are referenced for identification only. ASUS
+    and the Z13 name are marks of ASUS, referenced for identification only.
+    Not affiliated with, endorsed by, or sponsored by Mistral AI, Unsloth,
+    ASUS, or their affiliates. Product names and marks belong to their
+    respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
     <div class="foot-links"><a href="../">Graphometer</a></div>
   </div>
 </footer>

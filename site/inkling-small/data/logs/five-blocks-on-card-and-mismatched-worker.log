@@ -1,0 +1,59 @@
+=== RUN 2: NCMOE 37 (5 blocks' experts on the card) ===
+launcher pid <PID> (ncmoe 37 ctx 131072 kv f16 effort default); waiting for /health on 127.0.0.1:8136
+healthy after 6 s
+=== placement (<REDACTED_PATH>)
+=== VRAM after load: 26870 MiB
+=== measure
+[cold short (effort none)] prompt 32 tok 0.8 s = 38.1 t/s | decode 82 tok = 13.52 t/s | wall 6.8 s | thought 0 chars | tool_calls 0
+        reply (383 chars): At dawn, the harbour town stirs to life as mist rolls over the glassy water, illuminating weathered wooden boats and pastel facades in soft gold light. Seagulls glide above the still docks while the air fills with
+[same again (resident?)] prompt 32 tok 0.9 s = 35.7 t/s | decode 70 tok = 13.73 t/s | wall 5.9 s | thought 0 chars | tool_calls 0
+        reply (339 chars): The harbour town wakes in silver light, its weathered fishing boats bobbing gently beside pastel cottages as a cool mist drifts across the water. Gulls circle overhead while the first tide of the day rustles softl
+[thinking ON (medium)] prompt 34 tok 0.9 s = 37.1 t/s | decode 332 tok = 13.64 t/s | wall 25.2 s | thought 1194 chars | tool_calls 0
+        reply (366 chars): The old harbor town stirs awake beneath a rose-gold dawn, with mist curling around weathered fishing boats and gulls crying over quiet water. Salt air mingles with the faint scent of roasting coffee as shuttered s
+[tool call (effort none)] prompt 73 tok 2.3 s = 31.1 t/s | decode 18 tok = 13.63 t/s | wall 3.6 s | thought 0 chars | tool_calls 1
+        reply (0 chars): 
+        tool_call: {"name": "get_weather", "arguments": "{\"city\":\"Lisbon\"}"}
+[depth~2000] prompt 1950 tok 14.3 s = 136.2 t/s | decode 12 tok = 13.01 t/s | wall 15.2 s | thought 0 chars | tool_calls 0
+        reply (18 chars): MARLIN-2000-COBALT
+        recall: OK
+[depth~8000] prompt 7641 tok 43.4 s = 176.1 t/s | decode 12 tok = 13.28 t/s | wall 44.2 s | thought 0 chars | tool_calls 0
+        reply (18 chars): MARLIN-8000-COBALT
+        recall: OK
+=== VRAM after probes: 26954 MiB
+server left running on 127.0.0.1:8136 (pid <PID>)
+server stopped · card 1020 MiB
+=== RUN 3: experts-on-<LAPTOP> placement (NCMOE 20 + blocks 20-41 experts on RPC0) ===
+launcher pid <PID> (ncmoe 20 ctx 131072 kv f16 effort default); waiting for /health on 127.0.0.1:8136
+healthy after 122 s
+=== placement (<REDACTED_PATH>)
+=== VRAM after load: 11814 MiB
+=== measure
+Traceback (most recent call last):
+  File "<REDACTED_PATH>/measure_inkling.py", line 21, in <module>
+    r, w = chat(q, 300); rep("cold short (effort none)", r, w)
+           ^^^^^^^^^^^^
+  File "<REDACTED_PATH>/measure_inkling.py", line 12, in chat
+    t0 = time.time(); r = json.load(urllib.request.urlopen(req, timeout=36000)); return r, time.time() - t0
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "<REDACTED_PATH>", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 500: Internal Server Error
+=== VRAM after probes: 11821 MiB
+server left running on 127.0.0.1:8136 (pid <PID>)
+server stopped · card 1024 MiB
+TUNE DONE 23:04:55
