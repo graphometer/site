@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Five local coding models, four points apart</title>
+<meta name="description" content="A measured study of our own instrument. On 16 September 2026 five open-weight models served by llama.cpp (Qwen3.8-27B, Ornith-1.5-35B, Ornith-1.5-397B, DeepSeek V4 Flash split across two machines, GLM-5.3-Flash) ran four agentic coding tasks through OpenCode 1.18.31, one scored run each, 60 mechanical and 40 blind-graded points per task. They scored 387 to 391 of 400; every first scored run took all 60 mechanical points; blind re-grades of identical work moved single-task grades by up to 2 points, and the grader's written instructions put most competent work between 30 and 37 of 40; one model's re-run of one task fell from 99 to 62; one judgment question, no tools, spread the five from 39 to 30 of 40; whole-suite wall time ran from 448 to 6,058 seconds. Also: the harness traps we hit, each with its guard, including an OpenCode startup wait checked against its public issue tracker on 26 September 2026, and five statements in our own notes corrected against the run files.">
+<link rel="canonical" href="https://graphometer.ai/coding-trial/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Five local coding models, four points apart">
+<meta property="og:description" content="Five open-weight models ran four agentic coding tasks through OpenCode and scored 387 to 391 of 400. The mechanical half separated nobody and the graded half was noisy and held to a narrow band, so the test could not rank them. A re-run of one task moved one model 37 points; one judgment question spread them 9 of 40.">
+<meta property="og:url" content="https://graphometer.ai/coding-trial/">
+<meta property="og:image" content="https://graphometer.ai/og/coding-trial.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Five local coding models, four points apart">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Five local coding models, four points apart">
+<meta name="twitter:description" content="Five open-weight models ran four agentic coding tasks through OpenCode and scored 387 to 391 of 400. The mechanical half separated nobody and the graded half was noisy and held to a narrow band, so the test could not rank them. A re-run of one task moved one model 37 points; one judgment question spread them 9 of 40.">
+<meta name="twitter:image" content="https://graphometer.ai/og/coding-trial.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; runs on 16 September 2026 &middot; five local models, four agentic coding tasks, one scored run each &middot; OpenCode 1.18.31 &middot; one desktop, one model split across two machines</div>
+      <h1>Five local coding models, <em>four points</em> apart</h1>
+      <p class="subtitle">Qwen3.8-27B, Ornith-1.5-35B, Ornith-1.5-397B,
+      DeepSeek V4 Flash and GLM-5.3-Flash ran four agentic coding tasks
+      through OpenCode and scored 387 to 391 of 400. A re-run of one task
+      moved one model 37 points, and one judgment question spread the five
+      by 9 of 40.</p>
+      <p class="lead">On 16 September 2026 we ran five open-weight models,
+      each served by llama.cpp on our own hardware, through the same four
+      coding tasks in OpenCode, the agentic coding tool, and scored every
+      run out of 100: 60 points checked by a script and 40 awarded by a
+      hosted model grading blind. The mechanical half separated nobody:
+      each of the twenty first scored runs took all 60 points. The graded
+      half separated the five by 4 points out of 160, and it was both noisy
+      and steered: when the grader re-read identical work, single-task
+      grades moved by up to 2, and its written instructions told it that
+      most competent work lands between 30 and 37 of 40. One model's second
+      run of one task, four hours after its first, fell from 99 to 62 over a
+      single line in the task's material. One open question, asked once and
+      answered without tools, spread the same five from 39 to 30 of 40. The
+      finding is about our instrument: with a mechanical half that every run
+      maxed out and a graded half that was noisy and instructed into a
+      narrow band, this test could not rank these models. It does not show that they are
+      equally good, and it does not show which is best. It is one scored
+      run per model per task, four tasks, on our own hardware, and section
+      10 says what that rules out. The trial also turned up a set of harness
+      traps, each with a cheap guard (section 08), and several statements in
+      our own notes that the run files contradict (section 09).</p>
+      <div class="nonaff">Independent measurements; no affiliation with
+      Alibaba (Qwen), the makers of Ornith, DeepSeek, Z.ai (GLM), the
+      OpenCode project, Anthropic, Unsloth, Hugging Face, MiniMax, or the
+      llama.cpp project.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Summary</h2>
+      <p>We built this trial to choose between local models for agentic
+      coding work in OpenCode. Five open-weight models ran four tasks each,
+      one model at a time, on one desktop (one of the five was split across
+      that desktop and a laptop). Every figure below is measured from the
+      files the runs wrote unless it is labelled otherwise; section 02 says
+      what the labels mean.</p>
+      <p>Five results:</p>
+      <ol class="plain">
+        <li><strong>The scoreboard is flat.</strong> Totals out of 400:
+        Qwen3.8-27B 391, Ornith-1.5-35B 390, Ornith-1.5-397B 390, DeepSeek
+        V4 Flash (split across two machines) 388, GLM-5.3-Flash 387. All
+        twenty first scored runs took 60 of 60 mechanical points, so the
+        whole spread sits in the graded half, 151 to 147 of 160. On task B
+        all five made byte-identical changes and all five scored 99; tasks
+        A, C and D spread the five by 3, 2 and 3 points.</li>
+        <li><strong>The graded half was noisy and held to a narrow
+        band.</strong> Four runs graded twice on identical evidence moved by
+        0, 0, 1 and 2 points out of 40. And the grader's written
+        instructions said: "Most competent submissions land 30-37; reserve
+        38+ for work with no reviewer objections at all." The twenty
+        first-run grades fell between 34 and 39.</li>
+        <li><strong>A second run moved one model 37 points.</strong> The
+        two-machine DeepSeek's re-run of task B scored 62 against its first
+        run's 99. Its repairs were byte-identical to the first run's; its
+        index file had one extra row, and 7 of 23 checks failed. The extra
+        row came from the same line our own answer key had wrongly counted
+        earlier that day.</li>
+        <li><strong>One question spread them further than four tasks
+        did.</strong> One open judgment question, one answer per model, no
+        tools, graded blind on its own 40-point rubric: 39, 37, 35, 35 and
+        30. The top and bottom are 9 points apart; the middle three sit
+        within 2 of each other. GLM-5.3-Flash, the top score, was asked for
+        high reasoning effort; the other four were not.</li>
+        <li><strong>Time is where they differed.</strong> The same four
+        tasks took 448 seconds of wall time on Qwen3.8-27B and 6,058 on
+        GLM-5.3-Flash, 13.5 times as long (arithmetic), for totals 4 points
+        apart.</li>
+      </ol>
+      <p>Section 07 turns this into five checks for anyone building a small
+      evaluation of their own. Section 08 lists the harness traps we hit
+      and the guard for each, including an OpenCode startup wait that cost
+      two hours of machine time and that we checked against OpenCode's
+      public issue tracker on 26 September 2026. Section 09 corrects our
+      own records, one of which had the wrong timeline for a stray
+      process.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>Everything below is a property of these five model files, these
+      serving settings, this harness and these four tasks, on our own
+      hardware, on 16 September 2026 (local time, UTC&minus;4). Nothing here measures
+      a model's general coding ability, and no leaderboard claim appears on
+      this page.</p>
+      <table class="facts">
+        <tr><th scope="row">Harness</th><td>OpenCode 1.18.31, driven headlessly: <code>opencode run --pure --auto --format json --print-logs</code>, one model and one task per run, each run in a fresh disposable git sandbox. Every run that reached a session logged <code>version=1.18.31</code>. <code>--auto</code> approves every permission not explicitly denied; this build had no finer command-line switch, so the disposable sandbox is what made that safe. Web fetch was denied through <code>OPENCODE_PERMISSION</code>, best effort and not verified end to end.</td></tr>
+        <tr><th scope="row">Scoring</th><td>100 points per task. <strong>Mechanical, 60</strong>, by our scoring script: tests or checks finish green 30, no malformed tool call 10, nothing touched outside the sandbox 10, finished inside the 45-minute budget 5, ran to completion 5. <strong>Graded, 40</strong>, blind: diff quality 15, honesty (does the final message match the diff and the test output) 10, scope discipline 10, an explanation a non-coder can use 5.</td></tr>
+        <tr><th scope="row">Grader</th><td>A hosted model, <code>claude-sonnet-5</code>, named as the grader in 19 of the 22 coding grade files and in all five judgment-question grade files; three first-round coding grade files (Qwen3.8-27B on tasks A, C and D) do not record who graded them. It saw the task prompt, the model's final message, the diff and the test output, with the model's identity stripped; after a leak described in section 08, it saw them inside a folder whose name meant nothing. We publish its numbers, never its written reasons. <strong>Its written instructions steered it toward a narrow band.</strong> The version we kept says: "Most competent submissions land 30-37; reserve 38+ for work with no reviewer objections at all." Every coding grade file follows that document's output format rather than the shorter one built into the grading prompt file, but the document was last edited at 09:37 on 16 September, after the first-round grades, and earlier versions were not kept. It ends with a table of first-round scores that names the models; the records do not show whether graders were given that table.</td></tr>
+        <tr><th scope="row">Budget</th><td>45 minutes of wall time per task for the 5 budget points. A hard stop at 60 minutes in the first round, raised to 110 minutes for the three slower models as a safety net only; the 45-minute line did not move. Every scored run finished inside 45 minutes; the longest took 2,411 seconds.</td></tr>
+        <tr><th scope="row">Runs</th><td>One scored run per model per task. Two runs that never reached the model were voided and run again; one run that died before it could be scored was run again; two of DeepSeek's tasks were run a second time on purpose, and both runs are printed.</td></tr>
+        <tr><th scope="row">Machine</th><td>One desktop with an NVIDIA GeForce RTX&nbsp;5090 (32,607&nbsp;MiB of video memory) and 188&nbsp;GiB of RAM. DeepSeek V4 Flash was split between that desktop and an ASUS ROG Flow Z13 (128&nbsp;GB unified memory) over Thunderbolt, using llama.cpp's RPC backend. The three servers the trial started ran one request at a time (<code>--parallel 1</code> in their launch lines; the Ornith-1.5-35B server log shows one slot). The trial's logs do not record that flag for the two installed models.</td></tr>
+      </table>
+
+      <h3>The four tasks</h3>
+      <ul class="plain">
+        <li><strong>Task A:</strong> a bug fix in a pruned copy of a private
+        web service. Make one failing test pass without breaking a
+        neighbouring behaviour.</li>
+        <li><strong>Task B:</strong> repair three planted defects in a
+        synthetic corpus of conversation transcripts, then build an index
+        file, to an exact specification, from evidence spread across two
+        file formats.</li>
+        <li><strong>Task C:</strong> add one command-line option to an
+        internal tool and document it, leaving everything the tool already
+        printed byte-identical.</li>
+        <li><strong>Task D:</strong> the small ledger utility from our July
+        agent benchmark, reused verbatim. Diagnose a seeded bug, try a
+        maintainer's narrow fix first and show why it fails, fix the domain
+        logic, add per-category totals and a JSON output mode across
+        several files, add tests, and review the diff.</li>
+      </ul>
+      <p>Tasks A to C come from our own work and are private: we describe
+      them and publish nothing from them. Task D's fixture and prompt are in
+      the data package.</p>
+
+      <h3>The five models as served</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model</th><th class="t" style="text-align:left">File</th><th>Size on disk (bytes)</th><th>Window</th><th class="t" style="text-align:left">Where the weights sat</th><th class="t" style="text-align:left">Sampling</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.8-27B</td><td class="t">Unsloth <code>UD-Q5_K_XL</code>, 1 file</td><td>20,218,178,624</td><td>131,072</td><td class="t">not in the trial's records (a dense model)</td><td class="t">its installed start script's; not in the trial's records</td></tr>
+          <tr><td class="t">Ornith-1.5-35B</td><td class="t">publisher's <code>Q6_K</code>, 1 file</td><td>29,208,731,392</td><td>131,072</td><td class="t">card, with the experts of 6 layers in system RAM</td><td class="t">temperature 0.6, top-p 0.95, top-k 20</td></tr>
+          <tr><td class="t">Ornith-1.5-397B</td><td class="t">community <code>IQ3_XXS</code> (importance matrix), 1 file</td><td>162,712,290,016</td><td>131,072</td><td class="t">the experts of 60 layers in system RAM</td><td class="t">temperature 0.6, top-p 0.95, top-k 20</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash (0731)</td><td class="t">Unsloth <code>UD-IQ3_XXS</code>, 4 files</td><td>104,207,848,032</td><td>262,144</td><td class="t">split across the desktop and the laptop over Thunderbolt</td><td class="t">its installed start script's; not in the trial's records</td></tr>
+          <tr><td class="t">GLM-5.3-Flash</td><td class="t">Unsloth <code>UD-Q3_K_XL</code>, 4 files</td><td>147,535,921,955</td><td>131,072</td><td class="t">all experts in system RAM, on a llama.cpp branch build with GLM-5.3 support</td><td class="t">temperature 1.0, top-p 0.95</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Sizes: read with <code>stat</code> on 26 September
+      2026 (measured). Windows: the server's own report for Qwen3.8-27B and
+      DeepSeek, the launch flag for the other three (measured, from the
+      round logs and launch lines). The three models started for the trial
+      itself ran with <code>--jinja</code>, 24 CPU threads and flash
+      attention (on for the two Ornith models, auto for GLM-5.3-Flash); the
+      two installed models ran on their start scripts, whose flags the
+      trial's records do not capture beyond the window and, for DeepSeek,
+      the two-machine split. The trial's logs do not record the
+      llama.cpp build commits either, so we do not print them. Sampling is
+      each server's own: not greedy, and not matched across models.</p>
+
+      <div class="note">
+        <span class="label">How to read the labels on this page</span>
+        <strong>Measured</strong> means read from a file the runs produced:
+        score, grade and meta files, logs, timestamps. <strong>Arithmetic</strong>
+        means a sum or ratio of those. <strong>Method log</strong> means a
+        note our own session wrote during the work, where the raw output
+        behind it was not kept; we mark it wherever it carries a claim.
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Observed: a flat scoreboard</h2>
+      <p>First scored run of each task, out of 100 per task (measured; the
+      totals and the graded half are arithmetic over the per-run files):</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model</th><th>Task A</th><th>Task B</th><th>Task C</th><th>Task D</th><th>Total /400</th><th>Graded half /160</th><th>Whole suite, s</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.8-27B</td><td>96</td><td>99</td><td>99</td><td>97</td><td><strong>391</strong></td><td>151</td><td>448</td></tr>
+          <tr><td class="t">Ornith-1.5-35B</td><td>97</td><td>99</td><td>97</td><td>97</td><td><strong>390</strong></td><td>150</td><td>712</td></tr>
+          <tr><td class="t">Ornith-1.5-397B</td><td>95</td><td>99</td><td>97</td><td>99</td><td><strong>390</strong></td><td>150</td><td>5,683</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, two machines</td><td>95</td><td>99</td><td>98</td><td>96</td><td><strong>388</strong></td><td>148</td><td>2,567</td></tr>
+          <tr><td class="t">GLM-5.3-Flash</td><td>94</td><td>99</td><td>97</td><td>97</td><td><strong>387</strong></td><td>147</td><td>6,058</td></tr>
+          <tr><td class="t">DeepSeek, with its task B and C re-runs</td><td>95</td><td class="neg">62</td><td>99</td><td>96</td><td class="neg"><strong>352</strong></td><td>142</td><td>2,676</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Every first scored run took 60 of 60 mechanical
+      points (240 of 240 per model); the task B re-run took 30 (measured).
+      Spread per task across the five: A 3 points (94 to 97), B 0, C 2 (97
+      to 99), D 3 (96 to 99) (arithmetic). Whole-suite time is the four runs' wall seconds added
+      together, the runs one after another, each model in its own placement
+      on this machine, including every second the model spent reading,
+      thinking and waiting on tools.</p>
+      <p>The same wall times per task, in seconds (measured):</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model</th><th>Task A</th><th>Task B</th><th>Task C</th><th>Task D</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.8-27B</td><td>161</td><td>111</td><td>73</td><td>103</td></tr>
+          <tr><td class="t">Ornith-1.5-35B</td><td>253</td><td>198</td><td>77</td><td>184</td></tr>
+          <tr><td class="t">Ornith-1.5-397B</td><td>1,920</td><td>1,648</td><td>905</td><td>1,210</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, two machines</td><td>1,020</td><td>369 (re-run 518)</td><td>473 (re-run 433)</td><td>705</td></tr>
+          <tr><td class="t">GLM-5.3-Flash</td><td>2,411</td><td>1,339</td><td>1,096</td><td>1,212</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><strong>Task B measured nothing.</strong> All five first runs made
+      byte-identical changes to all five files the task touched (their diffs
+      hash the same, measured), and all five received the same 39 of 40
+      from the grader. A task on which every candidate produces the same
+      answer cannot rank the candidates, whatever its score. Tasks A, C and
+      D drew five different diffs each, and their grades still landed within
+      3 points of each other.</p>
+      <p><strong>A pattern inside the graded half.</strong> All five lost
+      at least one honesty point on task A: 9, 8, 8, 7 and 7 of 10 for
+      Qwen3.8-27B, Ornith-1.5-35B, Ornith-1.5-397B, DeepSeek and GLM. In
+      its final message there, each model stated how many checks had
+      passed: 17, 9, 20, 24 and 17 in the same order. The test log in front
+      of them printed 18 individual assertions under seven labels, plus a
+      one-line summary that also begins with <code>PASS</code>, so 18, 7 or
+      even 19 could be defended; none of the five gave any of those
+      (measured, counted in the logs and the final messages). Every task-A
+      run did finish green. Our method log reads the honesty deductions as
+      these miscounts; we do not publish the grader's reasons, so treat that
+      link as ours. The log is easy to miscount, and we miscounted it
+      ourselves while writing it up (method log).</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Observed: the grader's wobble, and its instructions</h2>
+      <p>Four runs were graded twice on identical evidence: first while the
+      run's folder name still named the model (section 08), then again
+      blind, behind a folder whose name meant nothing. Out of 40 (measured):</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Run</th><th>First grade</th><th>Blind re-grade</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Ornith-1.5-35B, task B</td><td>39</td><td>39</td><td>0</td></tr>
+          <tr><td class="t">Ornith-1.5-35B, task C</td><td>39</td><td>37</td><td class="neg">&minus;2</td></tr>
+          <tr><td class="t">DeepSeek, two machines, task C</td><td>38</td><td>38</td><td>0</td></tr>
+          <tr><td class="t">DeepSeek, two machines, task D</td><td>35</td><td>36</td><td>+1</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Each change mixes the grader's own randomness with any effect of
+      knowing the model. The movements go both ways and average near zero,
+      which is what randomness looks like, but four pairs cannot separate
+      the two causes. Two more re-grades exist, and neither is a clean
+      pair. DeepSeek's first task-B run was re-graded after we corrected a
+      stale label in the checker's output; our method log records its first
+      grade as 34 against the blind 39, and the first grade file was
+      overwritten before it was backed up. And in the first round, a grader
+      opened two files that name the model and said so; its grade was
+      replaced by a blind re-grade one point lower (method log; that first
+      grade file was also replaced).</p>
+      <p>What the four clean pairs license is narrow: on this rubric, a
+      single-task grade from this grader can move by 2 points on a re-read.
+      The noise is only half of it. The grader's written instructions put
+      most competent work between 30 and 37 of 40 and reserved 38 and above
+      for work with no objections at all (section 02). The twenty first-run
+      grades fell between 34 and 39: twelve inside that band, eight at 38
+      or 39 (measured). Instructions like that pull grades toward a narrow
+      range, so the flat graded half may reflect the instructions as much
+      as the models (our reading). The five models' task scores sit within
+      3 points of each other on every task, and their totals within 4 over
+      four tasks. With that much noise and that narrow a target, the trial
+      cannot order them (arithmetic and our reading of it).</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Observed: one re-run moved 37 points</h2>
+      <p>We ran two of DeepSeek's tasks a second time to get clean timings,
+      because our records said the first runs had shared the server with a
+      stray process (section 09 shows they had not). Task C came back
+      almost the same: 98 then 99. Task B did not (measured):</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">DeepSeek V4 Flash, task B</th><th>First run</th><th>Re-run</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Started (local time)</td><td>09:14:19</td><td>13:19:01</td></tr>
+          <tr><td class="t">Wall time</td><td>369 s</td><td>518 s</td></tr>
+          <tr><td class="t">Tool calls</td><td>11</td><td>20</td></tr>
+          <tr><td class="t">Checks failed</td><td>0 of 23</td><td class="neg">7 of 23</td></tr>
+          <tr><td class="t">Mechanical, of 60</td><td>60</td><td class="neg">30</td></tr>
+          <tr><td class="t">Graded, of 40</td><td>39</td><td>32</td></tr>
+          <tr><td class="t">Total, of 100</td><td><strong>99</strong></td><td class="neg"><strong>62</strong></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Same model file, same task and same answer key,
+      both started through the same installed start script, on a server
+      started afresh between the two runs. One thing did change in between:
+      at 09:37 we corrected a stale label in the checker's output (the
+      wording of its row-count line) and regenerated the first run's test
+      log with it, so both grades read the same wording. The model never
+      sees the checker, and the re-run's 7 failures are the extra row, not
+      that label (measured).</p>
+      <p><strong>What differed.</strong> The four corpus files the task
+      asked it to repair came out byte-identical in both runs. The index
+      file differed by one row: the re-run added one entry (measured, by
+      hashing each file's diff). Our checker compares the index row by row
+      in order, so one extra row fails that row, every row after it and the
+      row count: 7 of 23 checks. The grader, reading the work blind, took
+      7 points off as well.</p>
+      <p><strong>Where the extra row came from.</strong> The task defines
+      which lines count by how a line begins. One line in the corpus carries
+      the marker in mid-sentence, so by the task's own rule it does not
+      count. Earlier that day our answer key had counted it: it demanded
+      that row, and it failed Qwen3.8-27B and Ornith-1.5-35B, which had both
+      correctly left it out (each run's verification exited 1 and scored 30
+      of 60 in the round logs, measured). We corrected the key at about
+      04:36 and re-verified both runs, which then passed. All five first
+      runs left the line out. The re-run included it: its extra
+      row names the same transcript as the entry the old key demanded, and
+      quotes the same distinctive word from that line, which appears nowhere
+      in the first run's changes (measured, in the diffs and the old key;
+      the contents stay private). So on task B, the difference between 99
+      and 62 was one judgment call about one line, the same line that had
+      already fooled us.</p>
+      <p>A test on which five models make identical changes, and a single
+      re-run swings 37 points on one ambiguous line, is measuring that line.
+      The whole spread between the five models, 4 points, is about a ninth
+      of this one within-model swing (arithmetic).</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Observed: one judgment question</h2>
+      <p>The coding tasks could not separate the models, so the same
+      afternoon we asked each of them one question the tasks could not: a
+      real, open housekeeping decision about this machine, with the facts it
+      needed stated in the question. One prompt and one answer per model,
+      sent straight to each model's own server, with no agent, no tools and
+      up to 32,000 tokens for thinking and answering, each server at its
+      own sampling. The same hosted grader scored the answers blind on a
+      separate 40-point rubric: grasp, judgment, honesty and usefulness, 10
+      each (measured):</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Model</th><th>Total /40</th><th>Grasp</th><th>Judgment</th><th>Honesty</th><th>Usefulness</th><th>Seconds to answer</th><th>Answer length, characters</th></tr></thead>
+        <tbody>
+          <tr><td class="t">GLM-5.3-Flash</td><td><strong>39</strong></td><td>9</td><td>10</td><td>10</td><td>10</td><td>423</td><td>6,051</td></tr>
+          <tr><td class="t">Ornith-1.5-35B</td><td><strong>37</strong></td><td>10</td><td>9</td><td>8</td><td>10</td><td>201</td><td>5,832</td></tr>
+          <tr><td class="t">Qwen3.8-27B</td><td><strong>35</strong></td><td>9</td><td>9</td><td>9</td><td>8</td><td>225</td><td>14,339</td></tr>
+          <tr><td class="t">Ornith-1.5-397B</td><td><strong>35</strong></td><td>9</td><td>9</td><td>8</td><td>9</td><td>1,062</td><td>6,442</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, two machines</td><td><strong>30</strong></td><td>8</td><td>7</td><td>7</td><td>8</td><td>309</td><td>5,740</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Seconds run from sending the question to
+      receiving the answer and exclude loading the model (measured by the
+      script's own timer). The GLM-5.3-Flash
+      request asked for its high reasoning effort; the others ran at their
+      servers' defaults.</p>
+      <p>One question spread the five by 9 points out of 40, against 4
+      points out of 400 for four coding tasks. The middle three sit within 2
+      points of each other, inside the wobble we measured for this grader on
+      the coding work; its grades on this question were never re-read, so
+      its own wobble here is unmeasured. Its grader had a band of its own:
+      the instructions we kept say "Most competent answers land 24-32" and
+      reserve 36 and above for an answer that could be acted on without
+      further checking. Four of the five answers scored above that band, so
+      here the band did not hold the scores together (measured). The
+      question also contained one factual error of ours, the same for all
+      five, which our notes from that day record and which we did not
+      re-grade around (method log). We
+      publish neither the question nor any answer: both describe this
+      machine.</p>
+      <p>What this shows is modest: a single open question pulled apart
+      models that four coding tasks could not. It is one question, answered
+      once and graded once, and it is not a measure of judgment in
+      general.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Before you trust a small evaluation of your own</h2>
+      <p>Five checks, each drawn from a number above. None needs more than a
+      few extra runs.</p>
+      <ol class="plain">
+        <li><strong>Check each task's spread before you trust its
+        scores.</strong> A task every candidate passes identically measures
+        nothing; our task B gave five identical diffs and five identical
+        99s. Look at the diffs, not only the scores.</li>
+        <li><strong>Measure your grader's wobble, and read its
+        instructions.</strong> Re-grade a few runs blind on identical
+        evidence. Ours moved single-task grades by up to 2 points of 40, so a
+        gap of that size is not a result, and our five models' task scores
+        sat within 3. Then check what the grader was told to expect: ours
+        was told that most competent work lands between 30 and 37 of 40,
+        which leaves little room to separate good candidates.</li>
+        <li><strong>Run twice where the decision matters.</strong> The one
+        model we ran twice on the same task moved 37 points. One run per
+        model per task is a sample, not a measurement.</li>
+        <li><strong>Make sure the mechanical half can fail.</strong> Every
+        first scored run here took all 60 mechanical points, so that half
+        separated nobody. Checks that everyone passes confirm the harness
+        works; they do not rank.</li>
+        <li><strong>Ask the question you actually need answered.</strong>
+        One open question spread our five by 9 points out of 40. And when
+        scores tie, what you can measure precisely may be the honest basis
+        for a choice: the same four tasks took 448 seconds on one model and
+        6,058 on another.</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What went wrong in our harness, and the guard for each</h2>
+      <p>Most of the day's near misses came from the test machinery, not the
+      models. Each item says what happened, what evidence we have, and the
+      guard we now use. Several rest partly on our method log, and are
+      marked that way.</p>
+
+      <h3>1. OpenCode waited forever before its first request</h3>
+      <p><strong>What happened.</strong> Two of Ornith-1.5-35B's runs, tasks
+      B and C between 01:25 and 03:25, never started. OpenCode's own log
+      stopped at its eleventh line, <code>message=init</code>. No session
+      was created, the event stream is 0 bytes, no tool was called, and the
+      hard stop killed each run at 3,600 seconds. The model server's log for
+      that window shows the model loaded and then nothing for 120 minutes:
+      not one request arrived. The same server binary, at the same log
+      level, logged 42 completed requests during the re-runs a few hours
+      later, which is how we know silence in that log means no requests
+      (measured). Our scoring script, as it stood that night, gave each run
+      20 of 60 mechanical points for a model that was never asked
+      anything.</p>
+      <p><strong>The guard.</strong> Two changes to the harness, in place by
+      04:22: set <code>OPENCODE_DISABLE_MODELS_FETCH=1</code>, which
+      OpenCode's documentation describes as disabling the fetching of
+      models from remote sources (our providers are declared in full
+      locally), and a 150-second watchdog that kills a run with no session,
+      marks it void and keeps it out of the scores. Before the change, the
+      gap between OpenCode's <code>init</code> and session
+      <code>created</code> log lines was under 0.08 seconds in five runs,
+      12.3 seconds in one, and never ended in two. After it, the gap was
+      between 0.075 and 0.086 seconds in all 17 runs, and the watchdog never
+      fired (measured). Ornith-1.5-35B's re-runs then took 198 and 77
+      seconds.</p>
+      <p><strong>Where our records disagree about the cause.</strong> The
+      note we wrote into both voided runs at 03:30 blamed OpenCode's own
+      database, 4.65&nbsp;GB, which was written to during the stall. The
+      comment we wrote into the harness within the hour names a different
+      suspect: an untimed wait on the fetch of the model catalogue at
+      startup, which it says was confirmed in OpenCode's bundled code and
+      on the wire. Neither diagnosis kept its raw evidence: no trace and no
+      database profile were saved (method log). The same voided-run note
+      says a working run creates its session about 12 seconds after
+      <code>init</code>; that was true of one run, and five others took under
+      a tenth of a second. The fault is episodic, so 17 clean runs are
+      consistent with the fix but do not prove the cause.</p>
+      <p><strong>The public record, read 26 September 2026.</strong>
+      OpenCode's issue tracker holds reports of the same shape from other
+      users. Issue #47279, opened 4 September on 1.18.26 and 1.18.27,
+      describes the first session held up for minutes behind a
+      catalogue fetch with no effective timeout (and, separately, behind a
+      plugin install); it is closed as not planned. Issue #47328, opened the same day on the 1.18.27 desktop
+      app, describes startup blocked for up to five minutes by the same
+      fetch and gives the same workaround; it is open, with a proposed fix,
+      pull request #48002 (opened 8 September), which falls back to an empty
+      catalogue when the fetch fails and was still open at its latest
+      activity on 25 September. Issue #42779, opened 15 August on 1.18.18,
+      shows our exact symptom, a stop at <code>init</code> with no session
+      and nothing sent to the model, with a different suspected trigger
+      (the plan agent; our runs used the default agent). Earlier reports
+      go back to January (#9493, on 1.1.25). No release note from 1.18.23
+      through 1.18.32, the latest on 21 September, mentions the catalogue
+      fetch. We have not tested 1.18.32.</p>
+      <p>We read this as an interaction between a tool and a setup: a
+      headless run against local servers only, on a tool whose startup, in
+      these versions, can wait on a network fetch those local models do not
+      need. If you drive OpenCode headlessly against local models, set the
+      flag and add a startup watchdog.</p>
+
+      <h3>2. Editing a script while it runs</h3>
+      <p><strong>What happened.</strong> At 08:55:26 we rewrote the harness
+      script while it was running DeepSeek's task A (the rewrite was the
+      guard for item 3). Bash reads a script from disk as it goes. When
+      that run's OpenCode session ended at 09:14:19, bash read on from its
+      old byte offset, which in the new file landed mid-line, and died with
+      a syntax error before it verified, captured or scored 22 minutes of
+      the model's work (measured: the error text in the driver's log is
+      exactly the new file's bytes at that offset). Task A had to be run
+      again. Nine minutes after the first edit we did the same to the
+      round's driver script; bash resumed that one mid-file too, printed a
+      stray line as a command and re-entered its task loop, and only the
+      harness's refusal to overwrite an existing run folder stopped it from
+      running all four tasks again (measured, in the driver's log).</p>
+      <p><strong>The guard.</strong> Never edit a script that is running.
+      Write the new version to a new file and rename it over the old one,
+      which leaves a running bash reading the file it opened, or stop the
+      run first.</p>
+
+      <h3>3. A fixture that was dirty before the model started</h3>
+      <p><strong>What happened.</strong> Task A's fixture is itself a git
+      repository, and the harness copied it whole into each sandbox and
+      skipped its own baseline commit when a repository already existed. A
+      small fix we made to task A's checker that morning was left
+      uncommitted in the fixture, with a spare copy of the old file beside
+      it, so the next
+      task-A sandbox started dirty. Its final diff would have shown a
+      test-file edit the model never made, the one thing the blind grader is
+      told to punish (method log, and the harness's own comment). That run
+      is the one item 2 killed, so it was never graded.</p>
+      <p><strong>The guard.</strong> The harness now refuses to start if a
+      freshly built sandbox is not clean (<code>git status --porcelain</code>
+      must be empty), and the scoring script refuses to write a grading
+      prompt for a run marked contaminated.</p>
+
+      <h3>4. Blind grading that leaked through a folder name</h3>
+      <p><strong>What happened.</strong> The grading prompt was scrubbed of
+      the model's identity, but the run folders we handed the grader were
+      named after each model's internal key. Those names were themselves a
+      fix: in the first round, two models' runs had been given the same
+      name, the harness correctly refused to overwrite the first, and our
+      loop reported the round done anyway (measured, in the round log). A
+      grader pointed out the folder name unprompted. Five grades
+      had been taken that way, and all five were retaken through folders
+      with random names, with the map kept where a grader could not read it
+      (the four surviving pairs are measured; the fifth first grade exists
+      only in our method log). The four clean pairs show no sign of bias in
+      either direction (section 04). A smaller fault surfaced at the same time: a
+      stale label in task B's checker output still named the old row count
+      after we had corrected the key. The check itself was right, but our
+      method log ties the 5-point difference in one re-grade to that label.
+      The label is now computed from the key.</p>
+      <p><strong>The guard.</strong> Stage every submission in a folder
+      whose name means nothing, copy in only the files the grader may read,
+      and keep the map elsewhere. Then read your checker's output the way a
+      grader will: its text is evidence too.</p>
+
+      <h3>5. An answer key that contradicted its own task</h3>
+      <p><strong>What happened.</strong> Section 05 tells it: task B's key
+      demanded a row that the task's own rule excluded, and it failed two
+      models for a correct answer before we caught it (measured, in the
+      round logs). Before the three slower models ran, a separate check
+      rebuilt tasks A, C and D from their prompts and reproduced their
+      answer keys. It found one latent case of the same kind in task A, a
+      check that would have failed a correct answer written in upper case;
+      no earlier run had given one, and it was fixed before the three slower
+      models ran (method log). That fix is the one left uncommitted in item
+      3.</p>
+      <p><strong>The guard.</strong> Before trusting a task, derive its
+      answer key from the task's own stated rules, and fail the key, not the
+      model, when they disagree.</p>
+
+      <h3>6. A guard that waited on itself</h3>
+      <p><strong>What happened.</strong> A follow-on job was meant to start
+      when the round's orchestrator exited. Its test was whether any process
+      had both <code>bash</code> and the orchestrator's script name in its
+      command line, with a six-hour limit (measured, in the script). The
+      orchestrator finished at 13:10:11 and the follow-on job never moved
+      past "waiting" (measured, in the logs). The wrapper that had launched
+      it carried the orchestrator's name in its own command line, so the
+      test matched the job's own launcher (method log). We replaced it with
+      a plain script that ran the remaining two jobs back to back, starting
+      at 13:14:54.</p>
+      <p><strong>The guard.</strong> Never decide whether something is
+      still running from command-line text. Record a process ID and wait on
+      it (<code>kill -0 &lt;pid&gt;</code>), or wait for a completion marker
+      file.</p>
+
+      <h3>7. A silent run is not a stalled run</h3>
+      <p><strong>What happened.</strong> From outside, a long generation and
+      a hang look alike: OpenCode writes nothing to its event stream while a
+      model is thinking. The longest silence between two events in any
+      scored run was 1,094 seconds, in Ornith-1.5-397B's task A, a run that
+      then finished and scored 95 (measured). Reading progress from the
+      model server has its own trap: in the re-run server log above, 239
+      <code>print_timing</code> lines accompanied 42 completed requests
+      (measured). Our method log records one false alarm from counting the
+      wrong line.</p>
+      <p><strong>The guard.</strong> Judge a start by whether a session
+      exists (which is why our watchdog allows 150 seconds for that and
+      nothing else), judge progress by completed requests, and count those
+      by llama-server's <code>total time =</code> lines, one per completed
+      request, not by <code>print_timing</code> lines.</p>
+
+      <h3>8. Download progress that lies on sparse files</h3>
+      <p>A different job in the same fortnight, but the same kind of trap.
+      <strong>What happened.</strong> On 20 September we downloaded a
+      community quantization of MiniMax M3, five files totalling
+      180,011,108,960 bytes, with the Hugging Face command-line tool (from
+      <code>huggingface_hub</code> 1.3.4). The first attempt exited with
+      status 1 after about 25 minutes on a transient error from Hugging
+      Face's Xet storage backend (<code>CAS service error</code>, after 5
+      retries), with 0 of 5 files complete (measured). A retry loop resumed
+      it. At the start of the retry our progress line, which used
+      <code>du -sb</code>, read 134,650,247,485 bytes, 74.8% of the total
+      (measured; percentage arithmetic). But <code>du -sb</code> reports
+      apparent size, which counts the holes in partly written sparse files;
+      our notes from that night put the share actually on disk at 52%
+      (method log: the measurement itself was not saved). The retry finished
+      at 01:17:56 and verified all five files at their exact byte sizes.</p>
+      <p><strong>The guard.</strong> On a partial download, measure
+      allocated blocks (<code>du -sB1</code>), not apparent size. Wrap the
+      command in a retry loop. Declare success by file count and exact byte
+      sizes, never by the exit code.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What we got wrong</h2>
+      <p>This site publishes corrections of its own records as a genre.
+      Five statements in our own notes from that day do not survive the
+      files the runs wrote.</p>
+      <h3>The stray process did not overlap the next two runs</h3>
+      <p>Two marker notes and our method log said that after the script
+      edit in section 08, item 2, an orphaned OpenCode process ran
+      unsupervised from 08:52 until about 09:14, that DeepSeek's first task
+      B and C runs shared the server with it (08:52 to 08:58 and 08:58 to
+      09:06), and that their 369 and 473 seconds were therefore upper
+      bounds. Our end-of-day summary went further and called three runs'
+      timings polluted. The run records say otherwise. Task B ran from
+      09:14:19 to 09:20:28 and task C from 09:20:29 to 09:28:22 (meta files,
+      the driver's log and OpenCode's own logs agree). The stray session's
+      log ends at 09:14:19.043, and task B's OpenCode started 0.544 seconds
+      later. Task D had finished at 08:52:14, before the stray session
+      began. The note's clock times are what you get by adding the two
+      runs' durations to 08:52 (arithmetic), on the assumption that the
+      task-A run had died at once; it had not. The harness was still waiting
+      on that session and died only after it ended (section 08, item 2), so
+      the process was never orphaned either. No timing was contaminated: the
+      first runs' 369 and 473 seconds stand as measurements, and the re-runs'
+      518 and 433 are a second sample, not a correction.</p>
+      <h3>Four of five models lost honesty points on the judgment question, not all five</h3>
+      <p>Our end-of-day summary said every model lost points on honesty in
+      the judgment question. The grade files show four of five:
+      GLM-5.3-Flash scored 10 of 10 on honesty, as the same summary's own
+      table showed.</p>
+      <h3>The 37-point re-run was four hours later, not in the same hour</h3>
+      <p>The same summary said the two task-B runs happened "the same
+      hour". They began at 09:14 and 13:19, on a server started afresh in
+      between (measured).</p>
+      <h3>Honesty points were not lost only on task A</h3>
+      <p>Our method log said all five models lost honesty points on task A
+      "and only on task A". The grade files show two task-D deductions as
+      well: Ornith-1.5-35B and DeepSeek each scored 9 of 10 on honesty
+      there.</p>
+      <h3>The "enormous" DeepSeek turn was input, not output</h3>
+      <p>Our method log said the two-machine DeepSeek "generates enormously",
+      citing a task-A turn of 30,214 tokens. In OpenCode's event stream,
+      30,214 is that step's input count, the tokens it read; its output count
+      is 175. The largest output count of any single step in that run was
+      2,942, and on task A three other models had single steps larger than
+      any of DeepSeek's (measured). The event stream does not time a step's
+      reading and writing separately, so we cannot say how that run's wall
+      time divided between them.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>Which of these models codes best.</strong> That is the
+        finding: this instrument could not say. Nor does a flat score from a
+        test that cannot resolve differences show that the models are
+        equally good.</li>
+        <li><strong>Anything about repeatability beyond one pair.</strong>
+        One scored run per model per task, plus deliberate re-runs of two
+        tasks for one model. The one pair that differed moved 37 points; we
+        do not know how often that happens.</li>
+        <li><strong>Performance on public benchmarks, or on tasks unlike
+        ours.</strong> Four tasks, three from our own private work and one
+        from our July benchmark. We make no comparison with any maker's
+        published scores.</li>
+        <li><strong>A well-characterized grader.</strong> One hosted grader,
+        whose wobble we measured on four clean pairs of one task each; three
+        early grade files do not record their grader, and nothing on the
+        judgment question was re-graded. Its written instructions for the
+        coding tasks said most competent submissions land between 30 and 37
+        of 40 and reserved 38 and above, so its grades were steered toward a
+        narrow band; we cannot say how much of the flat graded half that
+        explains.</li>
+        <li><strong>General judgment.</strong> The judgment question is one
+        question, answered once and graded once, with one factual error of
+        ours in it. Its middle three scores sit inside the wobble we measured
+        for this grader on other work.</li>
+        <li><strong>Speed in the usual sense.</strong> The times are whole
+        agentic runs on this machine, with these files, placements and
+        settings, one run at a time; they include reading, thinking and
+        tool time and are not decode rates. DeepSeek's include a
+        two-machine split over Thunderbolt. Other quantizations, flags or
+        hardware would change them.</li>
+        <li><strong>The cause of the OpenCode wait.</strong> The fault is
+        episodic; 17 clean runs after our change are consistent with the
+        catalogue-fetch explanation but do not prove it, no trace was saved,
+        and we did not test OpenCode 1.18.32.</li>
+        <li><strong>Matched conditions across models.</strong> Each model
+        ran at its own sampling settings, not greedy; GLM-5.3-Flash ran on a
+        llama.cpp branch build, and the build commits were not recorded. On
+        the judgment question, GLM-5.3-Flash was asked for high reasoning
+        effort; the other four were not.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <p><a href="../empty-answer/">Empty Answer</a> is another trap of the
+      same family on this machine: a reasoning model that spends its whole
+      token budget thinking and returns empty text.
+      <a href="../field-notes-2026-09/">September field notes</a> includes a
+      recall harness that recorded a timeout as a score of zero.
+      <a href="../qwen38-27b/">Qwen3.8-27B: day zero</a> is the field card
+      for the fastest model here, and <a href="../two-boxes/">Two boxes, one
+      model</a> and <a href="../deepseek-v4-flash/">DeepSeek V4 Flash 0731, on
+      one desktop and on two</a> cover the two-machine setup.
+      <a href="../l3-threads/">The wrong flag</a> belongs to the same genre as
+      this page: a study that corrects our own records. The
+      <a href="../method/">method page</a> defines the labels.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence for this page ships as a data package: the files the
+      runs actually produced, not a summary. If a number on this page
+      disagrees with a file in the package, the file is right and the page
+      is wrong; tell us and we will fix the page.
+      <a href="data/README.md">data/README.md</a> maps every file, states
+      its provenance and states the redactions plainly;
+      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on this
+      page to its file.</p>
+      <ul class="plain">
+        <li><strong>Every run's score, grade numbers and metadata</strong>
+        (<code>data/runs/&lt;model&gt;/&lt;task&gt;/</code>): the scoring
+        script's output, the grader's numbers without its text, and each
+        run's start, finish, exit codes and OpenCode version, for all 25 run
+        folders, voided and lost runs included.</li>
+        <li><strong>Tables built from those files</strong>
+        (<code>data/scores/</code>): per-run scores, per-model totals, the
+        re-grade pairs, the judgment question's numbers, a timeline with
+        every run's OpenCode log times, the hashes of every diff, and the
+        longest silence in each event stream.</li>
+        <li><strong>Task D in full</strong> (<code>data/task-d/</code>): the
+        fixture and prompt, plus each model's diff and test output. Tasks A
+        to C ship nothing but their numbers.</li>
+        <li><strong>The harness</strong> (<code>data/harness/</code>): three
+        dated versions of the run script, the scoring script, the staging
+        script for blind grading, the byte-offset check behind section 08,
+        item 2, both server logs behind item 1, excerpts of the round logs,
+        and the output-format and band lines of both sets of grading
+        instructions (the calibration table is withheld).</li>
+        <li><strong>The download logs</strong> behind item 8
+        (<code>data/downloads/</code>).</li>
+      </ul>
+      <p><strong>Model files.</strong> <code>unsloth/Qwen3.8-27B-GGUF</code>;
+      <code>ornith-ai/Ornith-1.5-35B-A3B-GGUF</code> at revision
+      <span class="n">12393612</span>;
+      <code>cdanis/Ornith-1.5-397B-GGUF-imatrix</code> at revision
+      <span class="n">ba785b50</span>; <code>unsloth/GLM-5.3-Flash-GGUF</code>
+      at revision <span class="n">621d456e</span>; Unsloth's
+      <code>DeepSeek-V4-Flash-0731-UD-IQ3_XXS</code> files. Revisions are the
+      ones recorded when the files were fetched; the trial's records carry
+      none for the Qwen and DeepSeek files.</p>
+      <p><strong>OpenCode's public record, read 26 September 2026:</strong>
+      the releases page (latest v1.18.32, 21 September); issues #9493,
+      #35294, #42779, #47279 and #47328; pull request #48002; and the
+      command-line documentation's entry for
+      <code>OPENCODE_DISABLE_MODELS_FETCH</code>, all at
+      <code>github.com/anomalyco/opencode</code> and
+      <code>opencode.ai/docs</code>.</p>
+      <table class="facts">
+        <tr><th scope="row">15 September</th><td>Trial built: four tasks, the harness, the scoring script and the blind-grading prompt.</td></tr>
+        <tr><th scope="row">16 Sept, 01:06 to 01:22</th><td>Qwen3.8-27B's four tasks and Ornith-1.5-35B's tasks A and D. Task B fails Qwen3.8-27B under the original answer key. Ornith-1.5-35B's tasks B and C are refused because their folder names were already taken.</td></tr>
+        <tr><th scope="row">16 Sept, 01:25 to 03:25</th><td>Ornith-1.5-35B's tasks B and C stop at OpenCode's <code>init</code> and are killed at 3,600 seconds each; later voided.</td></tr>
+        <tr><th scope="row">16 Sept, 04:22 to 04:37</th><td>Startup guard in the harness by 04:22. Ornith-1.5-35B's tasks B and C run again, 04:24 to 04:29: B fails under the original answer key, C passes. Key corrected and both failed task-B runs re-verified at about 04:36; both pass.</td></tr>
+        <tr><th scope="row">16 Sept, 08:36 to 09:48</th><td>DeepSeek, split across two machines: task D; the task-A run whose scoring was lost to the script edit; tasks B and C; task A again.</td></tr>
+        <tr><th scope="row">16 Sept, 09:48 to 13:10</th><td>Ornith-1.5-397B, then GLM-5.3-Flash, four tasks each.</td></tr>
+        <tr><th scope="row">16 Sept, 13:14 to 14:22</th><td>DeepSeek's task B and C re-runs, then the judgment question for all five. Blind grading through opaque folders runs through the afternoon.</td></tr>
+        <tr><th scope="row">26 September</th><td>OpenCode's releases, issues and documentation read for section 08, item 1; every figure on this page re-derived from the run files.</td></tr>
+      </table>
+      <p class="fineprint">Every claim on this page is dated. OpenCode,
+      llama.cpp and the models change; treat version-specific findings as
+      unverified after the dates above.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Qwen is a mark of
+    Alibaba Group Holding Limited; Ornith is a mark of its owner; DeepSeek is a
+    mark of DeepSeek; GLM is a mark of Z.ai; MiniMax is a mark of MiniMax;
+    Claude is a mark of Anthropic; OpenCode is a project and mark of its
+    owners; llama.cpp is a project of ggml-org and its contributors; Unsloth is
+    a mark of its owner; Hugging Face and Xet are marks of Hugging Face;
+    community GGUF files are the work of their uploaders; NVIDIA and GeForce RTX
+    are marks of NVIDIA Corporation; ASUS and ROG are marks of ASUSTeK Computer;
+    Thunderbolt is a mark of Intel Corporation.
+    All are referenced for identification only. Not affiliated with, endorsed
+    by, or sponsored by any of them or their affiliates. Product names and marks
+    belong to their respective owners. This site is static. No scripts, no
+    tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+232,234c232,249
+< # Confirmed to LOAD and answer at the full served window (ctx 262144): 10,285 MiB.
+< # Do not raise it further without measuring: -ub 8192 OOMed the compute buffer at the SMALLER
+< # 131072 window (flashnext asked for a 16,171 MiB buffer; inkling's server died mid-read).
+---
+> # ** CORRECTED 2026-09-21 - -ub 4096 CRASHES THE SERVER ON A SPECIFIC INPUT; SHIPPED -ub 2048. **
+> # The line that stood here ("confirmed to LOAD and answer at ctx 262144: 10,285 MiB") cited a run
+> # that loaded and then died on its first request: `CUDA error: an illegal memory access was
+> # encountered`. Reproduced 2026-09-21 through THIS script: that exact prompt (a 3,007-token
+> # repetitive ledger, <REDACTED_PATH>/batch_sweep.sh seed 20260920) kills the server every time at -ub 4096
+> # AND 3072, at windows 65536, 131072 and 262144 alike - whenever it arrives as ONE ubatch. It
+> # passes at -ub 2048 / 1024 / 512. It is rare: 60 prompts of real code/prose and 50 random ledger
+> # prompts all passed at 4096, and a length-only rule (n = 63 mod 64) was tested and refuted - so
+> # it is input-specific, not size-specific. Rare is still a dead server for whoever sends it, so
+> # this ships the last rung that passes everything (the handoff's rule). Measured at 262144, code
+> # quoted exactly at every depth:
+> #
+> #     -b 4096 -ub 2048   <- default    727.7 t/s at 48K · 694.6 at 150K · 23 t/s speak · 8,824 MiB peak
+> #     -b 4096 -ub 4096   (withdrawn)  1173.9 at 48K · 1067.6 at 150K · 23 t/s speak · 10,050 MiB peak
+> #
+> # Closest upstream match (not confirmed the same code path): llama.cpp issue #28282 - an illegal
+> # memory access at -ub 2048 on GLM-5.3-Flash, Blackwell/sm_120, data-dependent. Evidence and the
+> # reproduction tools: <REDACTED_PATH> (README "ling").
+237c252
+< LING_BATCH="${LING_BATCH:-4096}"; LING_UBATCH="${LING_UBATCH:-4096}"
+---
+> LING_BATCH="${LING_BATCH:-4096}"; LING_UBATCH="${LING_UBATCH:-2048}"

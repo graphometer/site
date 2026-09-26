@@ -1,0 +1,42 @@
+# 4-bit no-draft run, 2026-09-13: UD-Q4_K_XL across the desktop and the laptop,
+# 5 whole layers on the card, 14 with experts in desktop RAM, 24 on the laptop, 128K window.
+# Extract. Omitted from the source file: an unrelated Qwen3.5-397B run that shared the
+# same session, a file-transfer progress dump, and one free-disk line. The shard byte
+# sizes and the whole DeepSeek section are kept verbatim apart from the redactions.
+# 
+5257408 DeepSeek-V4-Flash-0731-UD-Q4_K_XL-00001-of-00005.gguf
+48935523072 DeepSeek-V4-Flash-0731-UD-Q4_K_XL-00002-of-00005.gguf
+48980787136 DeepSeek-V4-Flash-0731-UD-Q4_K_XL-00003-of-00005.gguf
+49999168416 DeepSeek-V4-Flash-0731-UD-Q4_K_XL-00004-of-00005.gguf
+7174505088 DeepSeek-V4-Flash-0731-UD-Q4_K_XL-00005-of-00005.gguf
+
+=== DSV4 Q4_K_XL split: 5 whole on card, 14 in RAM, 24 on the Z13, 128K ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 213 s
+=== placement (from <REDACTED_PATH>) ===
+0.52.204.090 I load_tensors:   CPU_Mapped model buffer size = 46123.20 MiB
+0.52.204.091 I load_tensors:   CPU_Mapped model buffer size = 19257.43 MiB
+0.52.204.093 I load_tensors:        CUDA0 model buffer size = 23122.94 MiB
+0.52.204.094 I load_tensors: RPC0[<LAPTOP>] model buffer size = 78549.75 MiB
+3.30.057.649 I llama_kv_cache:      CUDA0 KV buffer size =    15.00 MiB
+3.30.067.576 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    17.25 MiB
+3.30.068.063 I llama_kv_cache:      CUDA0 KV buffer size =   288.00 MiB
+3.30.089.971 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =   384.00 MiB
+3.30.090.531 I llama_kv_cache:      CUDA0 KV buffer size =     9.00 MiB
+3.30.130.433 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    11.00 MiB
+3.30.131.063 I llama_kv_cache:      CUDA0 KV buffer size =    72.00 MiB
+3.30.135.830 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    96.00 MiB
+=== probe ===
+[short] prompt 21 tok in 2.8 s = 7.4 t/s | decode 200 tok = 10.59 t/s | wall 21.7 s
+        reply: 
+[depth~8000] prompt 7841 tok in 53.9 s = 145.4 t/s | decode 42 tok = 12.78 t/s | wall 57.3 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+26461 MiB
+server left running on 127.0.0.1:8199 (stop with <REDACTED_PATH>)
+RUN8 EXIT=0
+=== warm fresh-prompt probe ===
+[fresh~8000] prompt 8210 tok in 47.4 s = 173.0 t/s | decode 160 tok = 13.02 t/s | wall 59.9 s
+        reply: 
+        recall: MISSED

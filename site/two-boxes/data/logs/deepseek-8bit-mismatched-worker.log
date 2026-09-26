@@ -1,0 +1,45 @@
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 414 s
+=== placement (from <REDACTED_PATH>) ===
+3.36.780.199 I load_tensors:   CPU_Mapped model buffer size = 45907.25 MiB
+3.36.780.206 I load_tensors:   CPU_Mapped model buffer size = 25898.35 MiB
+3.36.780.209 I load_tensors:        CUDA0 model buffer size = 23176.18 MiB
+3.36.780.211 I load_tensors: RPC0[<LAPTOP>:<PORT>] model buffer size = 77955.63 MiB
+6.52.035.870 I llama_kv_cache:      CUDA0 KV buffer size =    15.75 MiB
+6.52.059.176 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    16.50 MiB
+6.52.059.957 I llama_kv_cache:      CUDA0 KV buffer size =   320.00 MiB
+6.52.078.124 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =   352.00 MiB
+6.52.078.772 I llama_kv_cache:      CUDA0 KV buffer size =     9.00 MiB
+6.52.110.285 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    11.00 MiB
+6.52.111.969 I llama_kv_cache:      CUDA0 KV buffer size =    80.00 MiB
+6.52.116.626 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    88.00 MiB
+=== probe ===
+Traceback (most recent call last):
+  File "<REDACTED_PATH>/probe_speed.py", line 27, in <module>
+    r, w = chat([{"role": "user", "content": "In two sentences, who are you and what is one thing you are good at?"}], 200)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<REDACTED_PATH>/probe_speed.py", line 17, in chat
+    r = json.load(urllib.request.urlopen(req, timeout=14400))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 500: Internal Server Error
+=== VRAM ===
+26449 MiB
+server left running on <LOCAL>:<PORT> (stop with <REDACTED_PATH>)
+RUN1 EXIT=0

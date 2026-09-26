@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>256K on a 32 GB card: the cost of reading</title>
+<meta name="description" content="Measured long-context retrieval on a 32 GB RTX 5090: ten dated configurations, memory use, short code answers, and the later batch-tuned DeepSeek read.">
+<link rel="canonical" href="https://graphometer.ai/context-256k/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="256K on a 32 GB card: the cost of reading">
+<meta property="og:description" content="Ten configurations retrieved every planted code. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB.">
+<meta property="og:url" content="https://graphometer.ai/context-256k/">
+<meta property="og:image" content="https://graphometer.ai/og/context-256k.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: 256K on a 32 GB card: the cost of reading">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="256K on a 32 GB card: the cost of reading">
+<meta name="twitter:description" content="Ten configurations retrieved every planted code. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB.">
+<meta name="twitter:image" content="https://graphometer.ai/og/context-256k.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head><body>
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+<main><div class="wrap">
+<div class="hero">
+<div class="eyebrow">Measured study · 15 to 21 September 2026 · one RTX 5090 desktop, plus one laptop split · published September 26, 2026</div>
+<h1>256K on a 32 GB card: the cost of reading</h1>
+<p class="subtitle">Ten configurations retrieved every planted code. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB.</p>
+<p class="lead">On September 15, nine models in ten configurations returned all three codes from synthetic ledgers after reading 150,475 to 231,065 tokens. Nine configurations used the desktop alone; one added the laptop. Peak card use ranged from 8,473 to 31,068 MiB. A large served window was usable here, but the waiting time depended heavily on the model and placement.</p>
+<p class="fineprint">Measured: one retrieval request per configuration, the files and settings below. Bench specification: NVIDIA RTX 5090 (32 GB) and 188 GiB of desktop RAM; the split also used an ASUS ROG Flow Z13 with 128 GB unified memory. These are hardware descriptions, not measured capacity tests.</p>
+<p class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to NVIDIA, ASUS, DeepSeek, MiniMax, ggml-org, or the makers of Gemma, GLM, Qwen, Mistral, Ling, Inkling, Ornith or Laguna.</p>
+<div class="note"><span class="label">Update, September 2026</span>The September 15 runs left batch settings at their defaults. On September 20 (collection date), the same DeepSeek Q8 file read a similarly sized prompt in 313.2 seconds with <code>-b 8192 -ub 8192</code>, against 2,062.2 seconds earlier. That is 5.2 versus 34.4 minutes (arithmetic: seconds divided by 60). The later build is not identified in its saved 256K records, so this is a dated before-and-after comparison, not a one-variable experiment.</div>
+</div><div class="rule"></div>
+<section id="s1"><div class="secnum">01</div><h2>What it is</h2><p>A served window is the space the server makes available for a request and its answer. It does not say how long reading will take, or how much of that space a particular request fills. Here, <strong>256K means a served window of 262,144 tokens</strong>. GLM-4.7-Flash was served at 202,752, the window this sweep requested. The launch notes call that its ceiling. This package has no failed attempt above 202,752.</p>
+<p>The test generated a synthetic ledger with three fixed sealed codes near 5, 50 and 95 percent of its entries. Those are approximate depths in the text, not exact token offsets. After reading the ledger, each model was asked to quote the three codes in order. All ten answers contained the exact strings in the requested order.</p>
+<p>This measures allocation, reading cost and a narrow retrieval task. The prompts did not fill every token of the served windows. In particular, the desktop DeepSeek Q8 prompt was shorter than the other 262,144-window prompts.</p></section>
+<section id="s2"><div class="secnum">02</div><h2>What we ran, exactly</h2><p><strong>Measured, September 15, 2026.</strong> Each configuration ran by itself with <code>--parallel 1 --threads 24 --threads-batch 24</code>. Requests used <code>temperature: 0</code> and did not stream. The probe checked the served window through <code>/props</code>, warmed the model, ran two short-prompt prose requests, then sent one deep retrieval request. The table below uses that last request only.</p>
+<p>The launch lines contain no batch or micro-batch override. “Default batch” here means those flags were absent; the saved logs do not print their effective numeric values. Flash attention was requested in every launch. The Qwen3.5 pair used <code>draft-mtp</code> with maximum draft length 6 and a 0.75 gate. All other main-table launches omitted a draft option. Requests disabled thinking where the launcher supplied that option; Inkling used <code>reasoning_effort: none</code>.</p>
+<div class="data-wrap"><table class="data"><caption>Recorded placement and llama.cpp commit, September 15</caption><thead><tr><th>Configuration</th><th>Placement and key settings</th><th>Commit</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">GLM-4.7-Flash</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-122B-A10B</td><td class="t">38 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Mistral Small 4</td><td class="t">26 expert layers in RAM; no mmap</td><td>5f55650</td></tr><tr><td class="t">Ling-3.0-flash</td><td class="t">All experts in RAM; fit off; no draft requested</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-397B-A17B</td><td class="t">57 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Qwen3.8-Flash-Next</td><td class="t">99 expert layers requested on CPU; fit off</td><td>d3146f2b5</td></tr><tr><td class="t">Inkling-Small</td><td class="t">42 expert layers in RAM; f16 key and value cache</td><td>946fc11d1</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop</td><td class="t">All experts in RAM; no repack</td><td>5f55650</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop</td><td class="t">RPC split 18,25; expert tensors of layers 8 to 17 in desktop RAM; no repack</td><td>d3146f2b5</td></tr></tbody></table></div>
+<p class="tablenote">mmap is memory-mapping the file, fit is the runtime’s automatic placement, repack is a weight rewrite, RPC is the link to the second machine, MTP is the model’s built-in draft head, and 0.75 is the minimum draft probability.</p>
+<p>The <a href="data/CONFIGURATIONS.md">configuration record</a> lists the exact model filenames and complete redacted commands. Quantizations are beside each measured row. Build commits were extracted from the response metadata; the <a href="data/build-records.tsv">build table</a> preserves that mapping. Different builds and placements make this a deployment comparison, not a controlled ranking of model architectures.</p></section>
+<section id="s3"><div class="secnum">03</div><h2>Observed: the September 15 reads</h2><p><strong>Measured, one deep request per configuration.</strong> “Read s” is the server’s prompt-processing time, converted from milliseconds to seconds (arithmetic), excluding model loading and answer generation. Rates are the server’s recorded tokens per second. “Short answer” is the code-only output, <strong>25 to 33 tokens, not prose speed</strong>.</p>
+<div class="data-wrap"><table class="data"><caption>September 15, 2026: default batch, one request at a time</caption><thead><tr><th>Model / quantization</th><th>Served window</th><th>Tokens read</th><th>Read s</th><th>Read tokens/s</th><th>Peak card MiB</th><th>Answer tokens</th><th>Short answer tokens/s</th><th>Codes</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B<br><code>UD-Q4_K_XL</code></td><td>262,144</td><td>230,855</td><td>60.8</td><td>3,799.69</td><td>23,513</td><td>33</td><td>121.36</td><td>3/3</td></tr><tr><td class="t">GLM-4.7-Flash<br><code>UD-Q4_K_XL</code></td><td>202,752</td><td>189,931</td><td>231.7</td><td>819.70</td><td>28,765</td><td>29</td><td>70.48</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-122B-A10B<br><code>UD-Q4_K_S</code></td><td>262,144</td><td>230,803</td><td>531.8</td><td>433.99</td><td>30,794</td><td>32</td><td>37.10</td><td>3/3</td></tr><tr><td class="t">Mistral Small 4<br><code>UD-Q4_K_M</code></td><td>262,144</td><td>231,065</td><td>705.0</td><td>327.75</td><td>30,356</td><td>32</td><td>23.76</td><td>3/3</td></tr><tr><td class="t">Ling-3.0-flash<br><code>Q4_K_M</code></td><td>262,144</td><td>230,759</td><td>1,118.8</td><td>206.25</td><td>8,473</td><td>32</td><td>26.11</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-397B-A17B<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,803</td><td>1,186.6</td><td>194.51</td><td>31,068</td><td>32</td><td>17.00</td><td>3/3</td></tr><tr><td class="t">Qwen3.8-Flash-Next<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,803</td><td>1,392.9</td><td>165.70</td><td>15,626</td><td>32</td><td>13.58</td><td>3/3</td></tr><tr><td class="t">Inkling-Small<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,827</td><td>2,005.9</td><td>115.07</td><td>15,814</td><td>27</td><td>8.78</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop<br><code>UD-Q8_K_XL</code></td><td>262,144</td><td>150,475</td><td>2,062.2</td><td>72.97</td><td>18,306</td><td>25</td><td>9.14</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,835</td><td>6,580.7</td><td>35.08</td><td>25,824</td><td>25</td><td>6.49</td><td>3/3</td></tr></tbody></table></div>
+<p class="tablenote">Peak card use is the largest sampled <code>nvidia-smi</code> memory-used reading while the deep request ran, sampled every 5 seconds and including other card use. It is not model-only allocation or the increase caused by context. The split row reports the desktop card, not the laptop’s unified memory.</p>
+<p>Gemma’s 60.8-second read was the shortest. The two-machine DeepSeek read took 6,580.7 seconds, or 109.7 minutes (arithmetic: milliseconds divided by 60,000). It used a different quantization and read more tokens than desktop DeepSeek Q8, so those two rows do not isolate the cost of splitting a model.</p>
+<p><strong>Load times during this sweep are upper bounds.</strong> The TSV header records large concurrent model downloads competing for disk and page cache. Its <code>load_s</code> values are separate from the reading column. The runs were not performed on an otherwise idle storage system.</p>
+<p>The TSV’s <code>decode_tps</code> column is also a different measurement: the best of two earlier, short-prompt prose replies. The at-depth rates above come from <code>deep_decode_tps</code> and the deep response JSON. Small amounts of prefix reuse appear in some deep responses; <code>prompt_n</code> is the server’s processed-token count, and <code>cache_n</code> remains in the files.</p></section>
+<section id="s4"><div class="secnum">04</div><h2>The later batch settings change the wait</h2><p>A micro-batch sets how much of the prompt the runtime processes in one chunk. The later records below are at long prompt depths, with the window still set to 262,144. They are separate measurements, not estimates applied to the earlier rows.</p>
+<div class="data-wrap"><table class="data"><caption>Measured later runs; time definitions differ as labelled</caption><thead><tr><th>Run</th><th>Batch / micro-batch</th><th>Tokens read</th><th>Recorded time</th><th>Read tokens/s</th><th>Card MiB</th></tr></thead><tbody>
+<tr><td class="t">DeepSeek V4 Flash<br>UD-Q8_K_XL, desktop<br>September 20 (collection date)</td><td>8192 / 8192</td><td>150,324</td><td>313,172.17 ms<br>prompt processing</td><td>480.00</td><td>26,023<br>at load</td></tr>
+<tr><td class="t">Laguna S 2.1<br>September 21 (collection date)</td><td>not recorded / 4096</td><td>200,098</td><td>233.9 s<br>request wall time</td><td class="t">866.1 prefill, not wall ÷ tokens</td><td>27,995<br>series peak</td></tr>
+</tbody></table></div>
+<p>DeepSeek’s later log names the same Q8 model file, one slot and the same served window. Its result records all experts in RAM and both batch settings at 8192. The prompt lengths differ, and the later record lacks a build identifier and full launch command. It records a completed answer, but does not retain the three-code answer needed to repeat the earlier retrieval score. No 3/3 result is claimed for this run.</p>
+<p>Laguna’s record reports the planted string found. Its test used one string and a different prompt harness. The 200,098-token request followed a shorter request in the same series; the peak covers that series. The saved result does not identify the quantization, build, complete placement or sampling settings. It proves this recorded run, not an exact reproducible profile or a before-and-after gain.</p>
+<p>The <a href="../batch-size/">batch-size study</a> covers the broader tuning sweep. There is no new reading time here for a September 15 configuration that was not re-measured at comparable depth.</p></section>
+<section id="s5"><div class="secnum">05</div><h2>Where memory stopped the run</h2><p><strong>Measured failures.</strong> Ornith-1.5-35B Q6_K, with 6 expert layers in RAM and MTP enabled, reached draft-context creation at 262,144 and failed on a 512.00 MiB allocation. Ornith-1.5-397B IQ3_XXS-UD, with 57 expert layers in RAM and MTP enabled, failed on a 1,862.00 MiB compute-buffer allocation. The latter log does not establish that the draft context caused the failure. Neither failure log proves a successful draft-off run at that window.</p>
+<p><strong>A draft head does not always have to go.</strong> Both Qwen3.5 configurations in the main table created their MTP context and used it in the code answer at 262,144. The logs and response draft counters establish that directly.</p>
+<p>The <a href="data/later/GLM-4.7-Full-config-excerpt.txt">GLM-4.7 Full configuration note</a> records a narrower trade: at a 131,072 window, its MTP setup fitted with all 93 expert layers in CPU RAM and failed with 92. This is a recorded setup note, without a raw response or failure log in this package. It is not a 256K retrieval result.</p>
+<p><strong>Measured allocation failures, September 2026.</strong> MiniMax M3’s sparse-attention test used Q2_K_L, a 262,144 window, <code>q8_0</code> key/value cache and flash attention on. Each tested header also placed experts on CPU (cmoe in the test label). At micro-batches 2048, 1024 and 512, the log records refused CUDA buffers of 20,572,169,216, 10,286,650,368 and 5,143,890,944 bytes respectively. All three tested settings failed before a retrieval result. These failures do not establish that every possible configuration must fail.</p></section>
+<section id="s6"><div class="secnum">06</div><h2>What this does not show</h2><ul class="plain">
+<li><strong>Reasoning across a long document.</strong> This is retrieval of three planted strings in one run per configuration. It does not demonstrate reasoning across 230K tokens, handling contradictory evidence, or reliable work over an arbitrary document.</li>
+<li><strong>A full-window generation test.</strong> The server exposed the requested capacity; the ledger occupied only part of it. The answers were short, fixed strings. Their rates do not predict long prose or code generation at that depth.</li>
+<li><strong>A reliability estimate.</strong> There were no repeated deep trials, confidence intervals or alternate sets of codes. The same three codes appeared in every main-table ledger.</li>
+<li><strong>Total machine memory or a universal card requirement.</strong> The table reports sampled card use for these files and placements. Most configurations also used system RAM. It does not measure their total RAM footprint or the minimum card capacity that could serve them.</li>
+<li><strong>An isolated batch effect.</strong> The later DeepSeek timing is materially faster, but the saved records do not establish identical builds, prompts, full launch settings or background load. The September 15 downloads also limit interpretation of load times.</li>
+</ul></section>
+<section id="s7"><div class="secnum">07</div><h2>What to take from these runs</h2><p>For a comparable setup, use the model filename, placement and cache settings together with the requested window. Check the served window after loading. Then measure a fresh prompt at the depth you actually need: a successful load and a quick short prompt leave most of the cost untested.</p>
+<p>Record batch settings explicitly. The later DeepSeek result shows why a default-batch reading time should not become a permanent expectation for that file. Memory also needs another check after changing the micro-batch or enabling a draft head, as the failed allocations show.</p></section>
+<section id="s8"><div class="secnum">08</div><h2>Related pages on this site</h2><p>The <a href="../batch-size/">batch-size study</a> follows the prompt-reading change. <a href="../speculation-gate/">Slower by default</a> measures a draft-confidence setting. The <a href="../qwen35/">Qwen3.5 pair field card</a> covers the two Qwen3.5 files, and <a href="../method/">Method</a> explains the site’s evidence labels.</p></section>
+<section id="s9"><div class="secnum">09</div><h2>Sources and artifacts</h2><p>The <a href="data/README.md">data package</a> contains the recorded TSV, response JSON, server logs, probe and launch scripts, allocation failures and later long-window results. The <a href="data/NUMBERS.md">number map</a> traces every figure to a field or a labelled calculation. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
+<p>Paths, addresses, ports, serving aliases and request identifiers have been redacted. Local model answers and timing fields remain. The scripts are archival records with placeholders. Build revisions for the September 15 responses are preserved in a separate derived table. No vendor performance claim is used as a measured result.</p></section>
+</div></main>
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: NVIDIA, ASUS, DeepSeek, MiniMax, and the makers of Gemma, GLM, Qwen, Mistral, Ling, Inkling, Ornith and Laguna; ggml-org and the contributors to llama.cpp. All are referenced for identification only. Not affiliated with, endorsed by, connected to, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+</body>
+</html>

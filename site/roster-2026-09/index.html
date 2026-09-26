@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The roster, as of 26 September 2026</title>
+<meta name="description" content="Twenty-three local model endpoints on one RTX 5090 desktop, one at a time, as of 26 September 2026, each speed with the prompt and reply it timed.">
+<link rel="canonical" href="https://graphometer.ai/roster-2026-09/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="The roster, as of 26 September 2026">
+<meta property="og:description" content="Twenty-three local model endpoints on one RTX 5090 desktop, one running at a time; one row also uses a linked laptop. Every reading speed says its prompt size and batch setting, and every speaking speed says what reply it timed.">
+<meta property="og:url" content="https://graphometer.ai/roster-2026-09/">
+<meta property="og:image" content="https://graphometer.ai/og/roster-2026-09.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The roster, as of 26 September 2026">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The roster, as of 26 September 2026">
+<meta name="twitter:description" content="Twenty-three local model endpoints on one RTX 5090 desktop, one running at a time; one row also uses a linked laptop. Every reading speed says its prompt size and batch setting, and every speaking speed says what reply it timed.">
+<meta name="twitter:image" content="https://graphometer.ai/og/roster-2026-09.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.sub{margin-top:14px;max-width:60ch;color:var(--ink);font-size:1.0625rem;font-weight:600}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:1.0625rem;font-weight:650;margin:26px 0 10px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.name{font-family:inherit;white-space:normal;min-width:19ch;color:var(--ink);font-weight:600}
+  table.data td.name span{display:block;font-weight:400;font-size:13px;color:var(--faint)}
+  table.data td.none{color:var(--faint);font-family:inherit;white-space:normal}
+  table.data td.stated{color:var(--warn);font-family:inherit;white-space:normal;min-width:11ch}
+  table.data td.meas{font-family:inherit;white-space:normal;min-width:11ch}
+  table.data td.partial{color:var(--warn);font-family:inherit;white-space:normal}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Reference &middot; as of 26 September 2026 &middot; one RTX 5090 desktop, 188 GiB of RAM &middot; llama.cpp &middot; one model at a time</div>
+      <h1>The <em>roster</em>, as of 26 September 2026</h1>
+      <p class="sub">Twenty-three local model endpoints on one RTX 5090 desktop,
+      one running at a time; one row also uses a linked laptop. Every reading
+      speed says its prompt size and batch setting, and every speaking speed
+      says what reply it timed.</p>
+      <p class="lead">Start with the fact that makes the rest of the page
+      readable: <strong>only one of these models can run at a time.</strong>
+      They share one graphics card and one pool of system memory, and the
+      launch policy refuses a second model while one is up. So this is not a
+      fleet. It is a list of what this single desktop can be, one model at a
+      time, with the speed each one produced, the prompt that produced it,
+      and the dated run each figure comes from. Since the list was first
+      compiled on 15 September, three models were added and two removed, and
+      most reading speeds were measured again after we found that llama.cpp's
+      batch settings had never been tuned on this desktop. The largest change
+      was Laguna S 2.1: at its old 32,768-token window it read the same
+      24,071-token prompt at 72.2 tokens a second with <code>-b 512 -ub
+      128</code> and at 1,434.0 with <code>-b/-ub 8192</code>; at the
+      262,144-token window it now serves, it reads 898.8 on 24,013 tokens at
+      <code>-b 8192 -ub 4096</code>. Several figures in our own records did not survive a
+      check against their logs; section 05 lists them. Two rows have no
+      September figure for the configuration they serve, and say so.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to DeepSeek, Thinking Machines Lab, Alibaba
+      Group, Z.ai, Google, MiniMax, Meta, Mistral AI, inclusionAI, Poolside,
+      Ornith AI, Moonshot AI, NVIDIA, Intel, ASUS, or the llama.cpp
+      project.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Twenty-three endpoints on a one-model machine</h2>
+      <p>The machine is one desktop: an NVIDIA GeForce RTX 5090 with 32,607
+      MiB of graphics memory, an Intel Core Ultra 9 285K and 188 GiB of system
+      RAM. Row 1 also uses a second machine, an ASUS ROG Flow Z13 with 128 GB
+      of unified memory, joined to the desktop by a direct Thunderbolt cable;
+      its cells say so. Every model is served by <code>llama-server</code>
+      from llama.cpp, and every start script refuses to launch while another
+      model is up; the package holds one recorded test in which seven separate
+      guards each refused a launch.</p>
+      <div class="note">
+        <span class="label">What "endpoint" means here</span>
+        One installed service: one set of serving flags, with the model file or
+        files that service is set up to read, as installed on this machine.
+        Rows 1 and 3 are two separate services for DeepSeek V4 Flash 0731, one
+        split across the desktop and the laptop and one on this desktop alone.
+        Each can serve either of two files as presets: row 3's figures name
+        their file, and row 1's are all from its default file except the one
+        its row note names.
+      </div>
+      <p><strong>Changes since 15 September, as our operator records have
+      them:</strong> Ornith-1.5-35B-A3B and GLM-5.3-Flash were installed on
+      16 September and MiniMax M2.7 on 21 September. Kimi K3 was retired on 15
+      September and Kimi K2.7-Code's weights were removed on 17 September.
+      MiniMax M3 serves a different file since 21 September, Laguna S 2.1 a
+      262,144-token window since the same day, and Qwen3.6-27B a different
+      file since 26 September; our records also give it a 262,144-token
+      window from that day, which the runs on this page loaded by passing it
+      explicitly. Each row's window cell says whether a run that passed no
+      window shows the installed default. A count of
+      twenty-three installed endpoints is not a capacity claim: one runs at a
+      time.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>The figures come from several exercises between 12 and 26 September
+      2026. Two methods never share a column: a request sent straight to the
+      server (<strong>direct</strong>), and the same kind of request made
+      through an agent framework.</p>
+      <table class="facts">
+        <tr>
+          <th scope="row">The batch-size sweep<br>19 to 21 September</th>
+          <td>On 21 September each model was started through its own start
+          script; the 19 and 20 September runs (MiniMax M2.7 and M3, DeepSeek's
+          8-bit file, Inkling-Small, Qwen3.8-Flash-Next) started the server by
+          hand with the same flags. Each run read a synthetic prompt cold at
+          temperature 0, most often a ledger of about 48,000 tokens with a code
+          word planted halfway that the answer had to quote exactly. Reading is
+          prompt tokens per second. The speaking figure is the
+          short answer's generation rate: a code of about eleven tokens on
+          models that answer directly, longer on thinking models because their
+          hidden reasoning counts. Each row names the batch setting it ran
+          (<code>-b</code> batch, <code>-ub</code> micro-batch; llama.cpp's
+          defaults are <code>-b 2048 -ub 512</code>). The
+          <a href="../batch-size/">batch-size study</a> has the method.</td>
+        </tr>
+        <tr>
+          <th scope="row">Paragraph replies<br>12 and 15 September</th>
+          <td>A short request for plain prose, the better of two warm replies:
+          one paragraph of about 150 words on 15 September, about 200 tokens of
+          prose on 12 September. These are the page's prose speaking figures
+          for most rows.</td>
+        </tr>
+        <tr>
+          <th scope="row">First runs of two new models<br>16 September</th>
+          <td>For Ornith-1.5-35B-A3B and GLM-5.3-Flash: the same paragraph
+          request with the thinking switch off, a tool call, and a read of about
+          120,000 tokens with three planted codes, at llama.cpp's default batch
+          settings.</td>
+        </tr>
+        <tr>
+          <th scope="row">Letters at depth<br>26 September</th>
+          <td>For two Qwen rows: a ledger read cold at about 20,000, 60,000
+          and 100,000 tokens (Qwen3-235B) or 20,000, 100,000 and 230,000
+          (Qwen3.6-27B), then a letter of about 350 to 400 words written on the
+          same cached ledger: prose at depth, as are row 1's replies of about
+          400 tokens.</td>
+        </tr>
+        <tr>
+          <th scope="row">Long reads at a full window<br>15 to 16 September</th>
+          <td>Prompts of about 150,000 to 231,000 tokens with three planted
+          codes, at a 262,144-token window (202,752 for GLM-4.7-Flash). Used here only for the window column and
+          a few depth figures; the full table is its own page,
+          <a href="../context-256k/">what a full window costs</a>.</td>
+        </tr>
+        <tr>
+          <th scope="row">Through an agent framework<br>12 to 14 and 21 September</th>
+          <td>The model driven through an agent framework with 48,000 and
+          96,000 tokens of seeded history, three codes planted in it, and a tool
+          call made at depth. The framework adds its own prompt, so the server
+          read more than the seeded figure; that true size is printed. Its
+          speaking figures are its short answers (30 to 1,004 tokens, mostly
+          the three codes plus any reasoning) and its reading figure is the
+          harness's own estimate from token counts and timing.</td>
+        </tr>
+      </table>
+      <h3>Why there are two speed columns and not one</h3>
+      <p>A model measured directly and through a framework does not give the
+      same number. Gemma-4-26B read at 8,972.3 tokens a second directly at
+      47,983 tokens and at an estimated 6,726.8 through the framework at
+      53,209. Qwen3-235B spoke at 9.3 through the framework on a 62-token
+      answer at 53,458 tokens, and at 5.51 directly on a 478-token letter at
+      20,063. Neither figure is wrong: they answer different questions, and
+      mixing them in one column would be the worst error available on this
+      page. Every speaking figure below also says what it timed, because a
+      short answer and a page of prose are not the same measurement.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The twenty-three, with their newest figures</h2>
+      <p>Every speed below is <strong>measured</strong>, on the dates given,
+      one request at a time. Files and byte counts are read from the files on
+      this machine (a listing taken on 26 September); maker names are the
+      makers' own. "Short answer" means the model's reply to a quote-the-code
+      question, and its token count includes hidden reasoning. Reading speeds
+      after the batch-size sweep name the flag and the depth. Row numbers match
+      <a href="data/ROSTER_23.csv">ROSTER_23.csv</a> in the data package.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr>
+          <th style="text-align:left">#</th>
+          <th style="text-align:left">Model and file</th>
+          <th style="text-align:left">Window as served, and the batch setting there</th>
+          <th style="text-align:left">Speaking t/s, direct<br>(what was timed)</th>
+          <th style="text-align:left">Reading t/s, direct<br>(prompt, setting)</th>
+          <th style="text-align:left">Through an agent framework<br>(48K leg / 96K leg)</th>
+          <th style="text-align:left">Newest figure</th>
+        </tr></thead>
+        <tbody>
+
+          <tr>
+            <td>1</td>
+            <td class="name">DeepSeek V4 Flash 0731, across two machines<span>DeepSeek. UD-IQ3_XXS, 4 shards, 104,207,848,032 bytes; a UD-Q4_K_XL preset with the maker's draft model</span></td>
+            <td class="t">131,072 by the script's fallback; the installed knob may raise it; 262,144 was loaded on 15 and 21 September. <code>-b 2048 -ub 512</code></td>
+            <td class="t">At 262,144 (2026-09-21): 14.73, 12.05, 7.85 on replies of about 400 tokens at 2,998, 48,024 and 150,103 tokens; 14.76, 12.04 and 7.66 on the short code answers of 67, 69 and 83 tokens at the same depths; hidden reasoning included</td>
+            <td class="t">At 262,144, <code>-b 2048 -ub 512</code>: 161.8 on 2,998 tokens, 102.5 on 48,024, 51.4 on 150,103</td>
+            <td class="t">3 of 3 codes and the tool call at both legs; reading about 97.4 on 52,928 tokens and 66.6 on 102,478; speaking 11.7 and 10.0 on 134 and 128-token answers (2026-09-14, 131,072 window). The record's verdict is FAIL, on a separate leg of our own runtime</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>2</td>
+            <td class="name">Inkling-Small<span>Thinking Machines Lab. UD-Q3_K_XL, 4 shards, 119,554,379,840 bytes</span></td>
+            <td class="t">262,144, the installed default: a run that passed no window was served it (2026-09-21); the 14 September probes served 131,072. <code>-b 4096 -ub 2048</code></td>
+            <td class="t">11.77 on a 202-token paragraph (2026-09-15, this window); 8.78 on a 27-token answer after 230,827 tokens</td>
+            <td class="t">At 262,144: 115.07 on 230,827 tokens at the defaults (2026-09-15); with <code>-b 4096 -ub 2048</code>, short reads only, 263.6 on 3,033 (2026-09-20) and 187.9 on 3,033 (2026-09-21). At 131,072 with that setting: 337.9 on 48,115 (2026-09-20)</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 107.9 on 52,925 and 111.1 on 102,473; speaking 12.9 and 10.9 on 145 and 31-token answers (2026-09-14)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>3</td>
+            <td class="name">DeepSeek V4 Flash 0731, this desktop alone<span>DeepSeek. Two presets: 8-bit UD-Q8_K_XL, 5 shards, 161,869,615,520 bytes (the default); 3-bit UD-IQ3_XXS as row 1, experts of 36 of 43 layers in system memory</span></td>
+            <td class="t">262,144, the installed default for both presets: runs that passed no window were served it (2026-09-21). 8-bit <code>-b/-ub 8192</code>, 3-bit <code>-b/-ub 4096</code></td>
+            <td class="t">8-bit: 9.93 on a 209-token reply (2026-09-15); 9.37 on a 106-token answer after 150,324 tokens. 3-bit: 12.65 on a 59-token answer at 2,998 tokens; 11.79 on 86 tokens after 150,103</td>
+            <td class="t">8-bit, <code>-b/-ub 8192</code>: 480.0 on 150,324 tokens at 262,144, and 607.1 on 48,073 at 131,072 (2026-09-20). 3-bit, <code>-b/-ub 4096</code>, at 262,144: 690.9 on 48,024 and 632.1 on 150,103</td>
+            <td class="t">8-bit, at the defaults: 3 of 3 and the tool call at both legs; reading about 75.5 on 52,931 and 73.8 on 102,481; speaking 9.7 and 9.2 on 139 and 119-token answers (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>4</td>
+            <td class="name">Qwen3.5-397B-A17B<span>Alibaba Group. UD-IQ3_XXS, 4 shards, 149,840,422,542 bytes</span></td>
+            <td class="t">131,072 at <code>-b/-ub 4096</code>; 262,144 on request at <code>-b 2048 -ub 512</code>, where the larger buffer would not fit</td>
+            <td class="t">16.41 on an 11-token answer after 48,029 tokens; 12.84 on a 184-token paragraph at the 262,144 rung (2026-09-15)</td>
+            <td class="t">932.2 on 48,029 tokens, <code>-b/-ub 4096</code>; 224.5 at the defaults</td>
+            <td class="t">96K leg only: 3 of 3 and the tool call; reading about 195.2 on 103,266; speaking 19.1 on a 34-token answer (2026-09-13)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>5</td>
+            <td class="name">Qwen3-235B-A22B Instruct 2507<span>Alibaba Group. Q4_K_M, one file, 142,154,073,632 bytes, with a 0.6B draft model</span></td>
+            <td class="t">131,072 at <code>-b 4096 -ub 2048</code></td>
+            <td class="t">5.51, 4.68, 4.22 on letters of about 350 words (478, 426 and 426 tokens) at 20,063, 60,180 and 99,864 tokens</td>
+            <td class="t">741.8 on 20,063 tokens, 652.0 on 60,180, 542.1 on 99,864, <code>-b 4096 -ub 2048</code>; 703.3 on 48,020 (2026-09-21)</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 241.0 on 53,458 and 215.5 on 115,508; speaking 9.3 and 4.4 on 62-token answers (2026-09-12)</td>
+            <td class="t">2026-09-26</td>
+          </tr>
+
+          <tr>
+            <td>6</td>
+            <td class="name">Qwen3.5-122B-A10B<span>Alibaba Group. UD-Q4_K_S, 3 shards, 73,428,564,992 bytes</span></td>
+            <td class="t">131,072 at <code>-b/-ub 4096</code>; 262,144 on request at <code>-b 2048 -ub 512</code>, where the larger buffer would not fit</td>
+            <td class="t">32.72 on a 716-token answer, most of it reasoning, after 48,027 tokens; 22.39 on a 188-token paragraph at the 262,144 rung (2026-09-15)</td>
+            <td class="t">2,101.7 on 48,027 tokens, <code>-b/-ub 4096</code>; 520.2 at the defaults</td>
+            <td class="t">48K leg only: 3 of 3 and the tool call; reading about 467.1 on 53,674; speaking 31.3 on a 240-token answer (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>7</td>
+            <td class="name">Qwen3.8-27B<span>Alibaba Group. Dense, with a built-in draft head. UD-Q5_K_XL, 20,218,178,624 bytes</span></td>
+            <td class="t">131,072 at llama.cpp's defaults, <code>-b 2048 -ub 512</code></td>
+            <td class="t">86.01 on paragraph replies (2026-09-12, better of two); 99.26 on a 106-token answer after 48,069 tokens</td>
+            <td class="t">2,634.8 on 48,069 tokens at the defaults, kept; <code>-ub 4096</code> would not load at this window</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 2,376.8 on 54,073 and 1,797.6 on 103,936; speaking 99.6 and 97.7 on 244 and 252-token answers (2026-09-13)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>8</td>
+            <td class="name">Ornith-1.5-35B-A3B<span>Ornith AI. Q6_K, one file, 29,208,731,392 bytes. Installed 2026-09-16</span></td>
+            <td class="t">131,072 at <code>-b/-ub 4096</code></td>
+            <td class="t">89.72 on a 198-token paragraph, thinking off (2026-09-16); 73.2 on an 83-token answer after 48,027 tokens</td>
+            <td class="t">6,283.3 on 48,027 tokens, <code>-b/-ub 4096</code>; 1,649.22 on 120,334 at the defaults, 3 of 3 codes (2026-09-16)</td>
+            <td class="none">not run through the framework</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>9</td>
+            <td class="name">GLM-5.3-Flash<span>Z.ai. UD-Q3_K_XL, 4 shards, 147,535,921,955 bytes. Installed 2026-09-16</span></td>
+            <td class="t">131,072 at <code>-b/-ub 4096</code></td>
+            <td class="t">9.58 on a 181-token paragraph (2026-09-16); 9.12 on a 310-token answer after 48,168 tokens</td>
+            <td class="t">425.1 on 48,168 tokens, <code>-b/-ub 4096</code>; 75.48 on 120,979 at the defaults, 3 of 3 codes (2026-09-16)</td>
+            <td class="none">not run through the framework</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>10</td>
+            <td class="name">Qwen3.6-27B<span>Alibaba Group. Dense hybrid. Since 2026-09-26 a UD-Q5_K_XL build with a draft head, 20,350,682,240 bytes; the earlier UD-Q4_K_XL, 17,612,564,704 bytes, stays selectable</span></td>
+            <td class="t">131,072 by the script's fallback; the installed knob may raise it; 262,144 was loaded on 26 September. <code>-b 2048 -ub 512</code></td>
+            <td class="t">At 262,144 (2026-09-26): 60.85, 46.66, 34.61 on letters of about 400 words (481, 527 and 526 tokens) at 20,067, 99,934 and 229,564 tokens</td>
+            <td class="t">At 262,144, <code>-b 2048 -ub 512</code>: 3,162.8 on 20,067 tokens, 1,971.1 on 99,934, 1,165.6 on 229,564</td>
+            <td class="t">The earlier file at 131,072: 3 of 3 and the tool call at both legs; reading about 2,739.7 on 53,177 and 2,066.0 on 102,680; speaking 62.0 and 55.2 on 291 and 1,004-token answers (2026-09-13)</td>
+            <td class="t">2026-09-26</td>
+          </tr>
+
+          <tr>
+            <td>11</td>
+            <td class="name">Qwen3.8-Flash-Next<span>Alibaba Group. UD-Q3_K_XL, 3 shards, 89,986,353,824 bytes</span></td>
+            <td class="t">262,144, the installed default: a run that passed no window was served it (2026-09-21); 8-bit cache since 2026-09-20; <code>-b 4096 -ub 2048</code>. 393,216 and 524,288 on request, same setting in the script; the reads at those windows were at the defaults, before the change</td>
+            <td class="t">23.50 on a 32-token answer after 5,986 tokens; 13.08 on 32 tokens after 229,982 (2026-09-20, this window and cache)</td>
+            <td class="t">At 262,144 with the 8-bit cache: 197.14 on 229,982 tokens and 236.50 on 5,986 at the defaults (2026-09-20); with <code>-b 4096 -ub 2048</code>, short reads only, 45.4 on 3,041 (2026-09-20) and 112.3 on 2,999 (2026-09-21). At 131,072 with that setting: 511.7 on 48,069 (2026-09-20)</td>
+            <td class="t">96K leg only: 3 of 3 and the tool call; reading about 175.8 on 103,377; speaking 16.1 on a 301-token answer (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>12</td>
+            <td class="name">GLM-4.7-Flash<span>Z.ai. UD-Q4_K_XL, one file, 17,520,169,312 bytes</span></td>
+            <td class="t">202,752, its own ceiling and the installed default (a run that passed no window, 2026-09-21); llama.cpp's defaults</td>
+            <td class="t">227.43 on a 160-token paragraph at this window (2026-09-15); 129.6 on a 429-token answer, most of it reasoning, after 47,986 tokens</td>
+            <td class="t">2,594.6 on 47,986 tokens at the defaults, kept</td>
+            <td class="t">96K leg only: 3 of 3 and the tool call; reading about 1,406.6 on 105,183; speaking 99.0 on a 299-token answer (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>13</td>
+            <td class="name">GLM-4.7 Full<span>Z.ai. IQ3_XXS, 3 shards, 145,120,517,024 bytes</span></td>
+            <td class="t">131,072 with a 5-bit cache, as served on 2026-09-12; llama.cpp's defaults</td>
+            <td class="t">5.51 on paragraph replies (2026-09-12, better of two, before a draft head was switched on)</td>
+            <td class="t">61.36 on 20,221 tokens at the defaults (2026-09-12)</td>
+            <td class="partial">3 of 3 codes at both legs; the tool call worked at 48K and <strong>failed at 96K</strong>, so the check failed; reading about 58.6 on 54,138 and 58.5 on 105,333; speaking 3.8 and 3.1 on 30-token answers (2026-09-12)</td>
+            <td class="t">2026-09-12</td>
+          </tr>
+
+          <tr>
+            <td>14</td>
+            <td class="name">Gemma-4-26B-A4B<span>Google. UD-Q4_K_XL, one file, 17,010,980,576 bytes</span></td>
+            <td class="t">262,144, the installed default (a run that passed no window, 2026-09-21); llama.cpp's defaults</td>
+            <td class="t">202.64 on a 163-token paragraph at this window (2026-09-15); 163.68 on an 11-token answer after 47,983 tokens</td>
+            <td class="t">8,972.3 on 47,983 tokens at the defaults, kept; 3,799.69 on 230,855 (2026-09-15)</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 6,726.8 on 53,209 and 5,048.5 on 102,635; speaking 124.1 and 97.3 on 36-token answers (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>15</td>
+            <td class="name">Gemma-4-31B IT QAT<span>Google. Dense, q4_0 quantization-aware build, one file, 17,651,001,568 bytes</span></td>
+            <td class="t">131,072; llama.cpp's defaults</td>
+            <td class="t">73.68 on paragraph replies (2026-09-12, better of two); 56.45 on an 11-token answer after 47,983 tokens</td>
+            <td class="t">2,687.5 on 47,983 tokens at the defaults, kept</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 2,075.4 on 53,213 and 1,620.5 on 102,640; speaking 47.4 and 41.9 on 36-token answers (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>16</td>
+            <td class="name">Ling-3.0-flash<span>inclusionAI. Q4_K_M, 2 shards, 77,804,990,144 bytes, MIT licence</span></td>
+            <td class="t">262,144, the installed default (a run that passed no window, 2026-09-21); <code>-b 4096 -ub 2048</code></td>
+            <td class="t">29.57 on a 172-token paragraph at this window (2026-09-15); 23.25 on a 77-token answer after 47,986 tokens; 22.6 on 135 tokens after 149,711</td>
+            <td class="t">727.7 on 47,986 tokens and 694.6 on 149,711, <code>-b 4096 -ub 2048</code></td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 202.6 on 53,718 and 204.9 on 103,807; speaking 24.0 and 23.8 on 173 and 243-token answers (2026-09-13)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>17</td>
+            <td class="name">Mistral Small 4 119B<span>Mistral AI. UD-Q4_K_M, 3 shards, 73,763,180,544 bytes</span></td>
+            <td class="t">131,072 at <code>-b/-ub 8192</code>; 262,144 on request at <code>-b 2048 -ub 512</code>, where the larger buffer would not fit</td>
+            <td class="t">29.55 on a 249-token paragraph at the 262,144 rung (2026-09-15); 20.97 on an 11-token answer after 48,697 tokens</td>
+            <td class="t">2,192.3 on 48,697 tokens, <code>-b/-ub 8192</code>; 481.3 at the defaults</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 463.3 on 52,820 and 421.6 on 101,684; speaking 23.5 and 21.7 on 40 and 39-token answers (2026-09-12)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>18</td>
+            <td class="name">MiniMax M2.7<span>MiniMax. UD-IQ4_XS, 4 shards, 108,413,781,312 bytes. Installed 2026-09-21</span></td>
+            <td class="t">131,072 at <code>-b/-ub 4096</code>; 196,608 on request at <code>-b 4096 -ub 1024</code>, every expert in system memory</td>
+            <td class="t">9.73 on a prose reply of 1,313 characters, 1,522 tokens with its hidden reasoning, after a 70-token prompt (2026-09-13, every expert in system memory); 9.83 on a 32-token answer after 43,909 tokens (2026-09-19)</td>
+            <td class="t">656.5 on 43,909 tokens, <code>-b/-ub 4096</code>, experts of 59 of 62 layers in system memory (2026-09-19)</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 529.2 on 53,584 and 460.2 on 103,931; speaking 8.6 and 7.2 on 180 and 182-token answers (2026-09-21)</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>19</td>
+            <td class="name">MiniMax M3<span>MiniMax. Since 2026-09-21 a Q2_K_L file that carries the model's sparse-attention index, 4 shards, 153,086,988,768 bytes</span></td>
+            <td class="t">131,072 at <code>-b 4096 -ub 2048</code>; 196,608 on request at <code>-b 4096 -ub 512</code></td>
+            <td class="t">8.90 on an 82-token answer at 3,680 tokens; 8.29 on a 165-token answer after 58,307 tokens (2026-09-20)</td>
+            <td class="t">208.11 on 58,307 tokens, <code>-ub 2048</code>, 3 of 3 codes (2026-09-20); 186.8 on 3,009 through the model manager (2026-09-21)</td>
+            <td class="none">not run through the framework</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>20</td>
+            <td class="name">Laguna S 2.1<span>Poolside. Q4_K_M, one file, 68,248,759,648 bytes</span></td>
+            <td class="t">262,144, the start script's own default since 2026-09-21; <code>-b 8192 -ub 4096</code></td>
+            <td class="t">15.74 and 14.69 on short answers after 24,013 and 150,158 tokens; 12.73 on a 35-token answer after 200,098</td>
+            <td class="t">898.8 on 24,013 tokens and 911.6 on 150,158 through the model manager; 866.1 on 200,098; <code>-ub 4096</code></td>
+            <td class="none">not run through the framework</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>21</td>
+            <td class="name">Muse Glimmer 30B<span>Meta. Q4_K_M, one file, 16,756,683,904 bytes, with a block drafter: a companion model that proposes several tokens at once</span></td>
+            <td class="t">131,072; llama.cpp's defaults</td>
+            <td class="t">193.65 on a 139-token answer, most of it reasoning, after 48,090 tokens</td>
+            <td class="t">2,737.7 on 48,090 tokens at the defaults, kept</td>
+            <td class="none">not run through the framework</td>
+            <td class="t">2026-09-21</td>
+          </tr>
+
+          <tr>
+            <td>22</td>
+            <td class="name">Mistral Medium 3.5<span>Mistral AI. Dense, 128B. UD-Q4_K_XL, 3 shards, with a 3B draft model patched to its vocabulary</span></td>
+            <td class="t">32,768 in the start script's default profile, at <code>-b 4096 -ub 1024</code></td>
+            <td class="none" colspan="3">No September figure for this configuration. It was started for the framework check on 2026-09-12 and did not answer within the check's timeout. A different, smaller file of this model ran split across two machines on 16 September; that run is on the <a href="../two-boxes/">two-machine study</a>, not here.</td>
+            <td class="none">none in September</td>
+          </tr>
+
+          <tr>
+            <td>23</td>
+            <td class="name">Mistral Large 3 675B<span>Mistral AI. UD-IQ1_S, 4 shards</span></td>
+            <td class="t">32,768, the largest its start script accepts, at <code>-b 4096 -ub 2048</code></td>
+            <td class="none" colspan="3">No September figure. It was not included in any September run.</td>
+            <td class="none">none in September</td>
+          </tr>
+
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">"Speaking" is generation speed, tokens produced per
+      second; "reading" is prompt processing, tokens of prompt consumed per
+      second, which decides how long you wait before the first word. Every
+      figure's own qualifier (file, window, setting, date) controls. Rows
+      without a date in a cell carry the date in the last column. Every row
+      that shows a planted-code read quoted back all the codes at the depths
+      listed; row 13 is the only failed tool call at depth. The framework's
+      reading figures are its own estimates and its speaking figures are short
+      answers, as section 02 says.</p>
+
+      <h3>Row notes</h3>
+      <table class="facts">
+        <tr>
+          <th scope="row">1 and 3, DeepSeek V4 Flash 0731</th>
+          <td>The speaking figures count hidden reasoning; this model thinks by
+          default. On the same file, window (262,144) and prompts, the desktop
+          alone at <code>-b/-ub 4096</code> read 6.7 times faster than the pair
+          at its kept <code>-b 2048 -ub 512</code> at 48,024 tokens, and 12.3
+          times at 150,103 (arithmetic on the table's figures). At the same
+          micro-batch of 2,048, with <code>-b 4096</code> on the desktop and
+          <code>-b 2048</code> on the pair, the pair was slightly faster on
+          2,998 tokens (224.9 against 208.1) and 3.6 times slower at 48,024
+          (117.0 against 426.5). A whole 48,024-token request took 75.2
+          seconds alone, 474.2 on the pair at its kept setting and 416.4 at
+          <code>-b/-ub 2048</code>. The <a href="../two-boxes/">two-machine
+          study</a> has the comparison and the 4-bit preset's 19.55 speaking
+          on the pair (2026-09-15, at 131,072). Row 1's framework cell is the
+          pair's attempt 2, whose long legs passed and whose verdict is FAIL on
+          a separate leg; its attempt 3 passed with the short legs only, so no
+          single record holds both.</td>
+        </tr>
+        <tr>
+          <th scope="row">2, Inkling-Small</th>
+          <td>The framework figures come from a run made while the model was
+          installed under a temporary name; that run failed a separate leg that
+          checks how a model is listed in our own runtime, and its recall and
+          tool results at both depths passed. Its batch setting changed on 20
+          September; at the served window the only reads with it are of 3,033
+          tokens, each the first request after the server started, and the
+          337.9 was read at 131,072.</td>
+        </tr>
+        <tr>
+          <th scope="row">5, Qwen3-235B</th>
+          <td>Its speaking figures are real prose at depth, and they replace an
+          8.2 from the batch-size sweep that was an 11-token answer. With
+          <code>-ub 4096</code> it read faster (1,069.0 on 20,063 tokens) and
+          spoke the same on letters (5.82 against 5.51), at a higher card peak;
+          the served setting is 2048. In the same letter runs the quote-the-code
+          read passed at every depth; the edit-and-reread request, whose reply
+          is capped at 40 tokens, did not return the code at any depth, because
+          the cap ends the letter before the line that quotes it.</td>
+        </tr>
+        <tr>
+          <th scope="row">7, Qwen3.8-27B</th>
+          <td>At <code>-ub 4096</code> the server could not allocate a
+          1,568.13&nbsp;MiB compute buffer at this window and exited, so the
+          default stays.</td>
+        </tr>
+        <tr>
+          <th scope="row">10, Qwen3.6-27B</th>
+          <td>At 262,144 the draft head is off: a start with it on could not
+          create the draft context (2026-09-26). Its start script only began
+          applying the 8-bit cache that window uses on 26 September; the setting
+          was referenced but never defined before. The framework column is the
+          earlier file at the earlier window. As in row 5, the quote-the-code
+          read passed at every depth and the edit-and-reread request, capped at
+          40 tokens of reply, did not return the code at any depth.</td>
+        </tr>
+        <tr>
+          <th scope="row">11, Qwen3.8-Flash-Next</th>
+          <td>Its configuration changed three times in one week: expert placement
+          on 17 September, and the 8-bit cache and the batch setting on 20
+          September. The 197.14 at 229,982 tokens was measured with the cache
+          change and before the batch change. With the batch change, the only
+          reads at the served window are of about 3,000 tokens, each the first
+          request after the server started; the 511.7 was read at 131,072.</td>
+        </tr>
+        <tr>
+          <th scope="row">13, GLM-4.7 Full</th>
+          <td><strong>A failed check, not a pass.</strong> A built-in draft head
+          was switched on in its start script on 17 September; its speed with
+          that change is recorded only in a same-day table whose raw logs were
+          not kept, so no figure for it is printed. It was not re-measured by
+          the batch-size sweep.</td>
+        </tr>
+        <tr>
+          <th scope="row">18, MiniMax M2.7</th>
+          <td>Its first desktop run, on 13 September, used <code>-ub 128</code>,
+          a value that, per our session notes, was copied from another model's
+          launcher, and read 45.6 tokens a
+          second on 6,776 tokens. At llama.cpp's default it read 100.8 on 3,658
+          tokens, and at 4096 the 656.5 above (2026-09-19). The 13 September
+          prose reply is unaffected by that setting. With a 900-token limit the
+          same request had spent every token on hidden reasoning and returned
+          no answer.</td>
+        </tr>
+        <tr>
+          <th scope="row">19, MiniMax M3</th>
+          <td>The file it served until 21 September was an earlier conversion
+          that, per our session notes, lacked the tensors this model's sparse
+          attention needs; the launch check on the file it serves now reports
+          the sparse attention engaged. At 262,144 the new file could not
+          allocate its compute buffer at any micro-batch from 512 to 2048, so it
+          serves 131,072; at 196,608 it loads only at <code>-ub 512</code>, and
+          read 58,307 tokens at 70.16 a second, 3 of 3 (2026-09-20). It has
+          never run through the framework.</td>
+        </tr>
+        <tr>
+          <th scope="row">20, Laguna S 2.1</th>
+          <td>Until 21 September its script set <code>-b 512 -ub 128</code>,
+          and at its old 32,768 window it read 72.2 tokens a second on 24,071
+          tokens; at <code>-b/-ub 8192</code> it read 1,434.0 on the same
+          prompt. Above 32,768 its script now uses <code>-b 8192 -ub
+          4096</code>, the value measured at the larger windows.</td>
+        </tr>
+        <tr>
+          <th scope="row">Not listed</th>
+          <td>Kimi K3 (retired 15 September) and Kimi K2.7-Code (weights removed
+          17 September) are no longer endpoints; K3's August record is its own
+          <a href="../kimi-k3/">field card</a>, and K2.7's one September
+          measurement is on the <a href="../two-boxes/">two-machine
+          study</a>.</td>
+        </tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>What a batch setting did, and did not, change</h2>
+      <p>The largest movements in this table are reading speeds on models whose
+      experts sit in system memory. Each read is about 48,000 tokens, the
+      same prompt at both settings, except GLM-5.3-Flash's default-setting read
+      of 24,008 tokens; all six at the 131,072-token window these models
+      serve, measured on 21 September through each model's own start
+      script:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">Model</th><th>Tokens read</th><th>At the defaults</th><th>At the setting it now runs</th><th class="t">Setting, at 131,072</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.5-397B-A17B</td><td>48,029</td><td>224.5</td><td>932.2</td><td class="t"><code>-b/-ub 4096</code></td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B</td><td>48,027</td><td>520.2</td><td>2,101.7</td><td class="t"><code>-b/-ub 4096</code></td></tr>
+          <tr><td class="t">Mistral Small 4 119B</td><td>48,697</td><td>481.3</td><td>2,192.3</td><td class="t"><code>-b/-ub 8192</code></td></tr>
+          <tr><td class="t">Ornith-1.5-35B-A3B</td><td>48,027</td><td>1,860.2</td><td>6,283.3</td><td class="t"><code>-b/-ub 4096</code></td></tr>
+          <tr><td class="t">Qwen3-235B-A22B</td><td>48,020</td><td>285.8</td><td>703.3</td><td class="t"><code>-b 4096 -ub 2048</code></td></tr>
+          <tr><td class="t">GLM-5.3-Flash</td><td>24,008 / 48,168</td><td>80.7 (on 24,008)</td><td>425.1 (on 48,168)</td><td class="t"><code>-b/-ub 4096</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">All <span class="n">measured</span>, 2026-09-21;
+      in these six, the planted code came back in the answer at every setting
+      that loaded. The speaking figures in those runs moved by 6.2 percent at
+      most, Qwen3.5-122B's 30.81 to 32.72 (arithmetic on the same files). At
+      262,144 the start scripts of Qwen3.5-397B, Qwen3.5-122B, Mistral Small
+      4 and Ornith keep <code>-b 2048 -ub 512</code>: the larger buffer does
+      not fit there. The models that fit whole on the card kept the defaults:
+      Qwen3.8-27B, GLM-4.7-Flash, the two Gemmas and Muse Glimmer. On each
+      one's best rung, reading moved from a 0.6 percent loss (Muse Glimmer)
+      to a 34.5 percent gain (Gemma-4-26B-A4B at <code>-ub 2048</code>, which
+      spoke 6 percent slower), arithmetic on each model's rungs. Qwen3.6-27B
+      kept them too; its rungs were run on its earlier Q4 file at 131,072.
+      GLM-4.7-Flash at <code>-ub 2048</code> put the code only in its hidden
+      reasoning and returned an empty answer.</p>
+      <p>Three rows moved for other reasons: MiniMax M2.7 and Laguna S 2.1 had
+      inherited <code>-ub 128</code>, Laguna with <code>-b 512</code> (row notes 18 and 20), and MiniMax M3
+      changed file. DeepSeek's two services moved further still, and the
+      <a href="../two-boxes/">two-machine study</a> sets them side by side.
+      How to run the sweep on your own models, and the one value that passed
+      every read and still crashed a server on a specific input, are on the
+      <a href="../batch-size/">batch-size study</a>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>What changed since 15 September</h2>
+      <p>This list was first compiled on 15 September. The later runs corrected
+      figures in our own summary table and in that first list. We publish those
+      corrections the same way we publish everything else.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">Our records said</th><th class="t">What the logs show</th><th class="t">This page</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3-235B speaks at 8.2 tokens a second (21 September)</td><td class="t">That was an 11-token answer. On letters of about 350 words it speaks 5.51, 4.68 and 4.22 at 20,063, 60,180 and 99,864 tokens</td><td class="t">The letters (row 5)</td></tr>
+          <tr><td class="t">Qwen3.5-397B is the fastest-reading large model, at 385</td><td class="t">By our own records, the 385 was a 2,617-token prompt at a 64K window, measured in August. At the served window the batch-size sweep reads 224.5 at the defaults and 932.2 at <code>-b/-ub 4096</code> on 48,029 tokens, and Qwen3-235B reads faster than it at depth on the framework's 96K leg (215.5 against 195.2, estimates)</td><td class="t">The measured figures, with their prompt sizes (row 4)</td></tr>
+          <tr><td class="t">GLM-4.7 Full passed the framework check</td><td class="t">Its record's verdict is a failure: the tool call at 96,000 tokens failed</td><td class="t">A failed check (row 13); the 15 September list already printed it as partial</td></tr>
+          <tr><td class="t">MiniMax M3 reads at 194 tokens a second at depth</td><td class="t">194 is 58,307 tokens divided by the whole request's 300.2 seconds, answer included. The server's own timing is 208.11</td><td class="t">208.11 (row 19)</td></tr>
+          <tr><td class="t">MiniMax M2.7 reads 45.6 on a 4,000-token prompt</td><td class="t">The probe was named for about 4,000 tokens and sent 6,776, at an inherited <code>-ub 128</code></td><td class="t">6,776 tokens, the setting, and the later figures (row 18)</td></tr>
+          <tr><td class="t">Laguna S 2.1 reads at 72 tokens a second</td><td class="t">Its script had hard-coded <code>-b 512 -ub 128</code>; at <code>-b/-ub 8192</code> the same read ran at 1,434.0, both at the old 32,768 window. At the 262,144 window it now serves it reads 898.8 on 24,013 tokens at <code>-b 8192 -ub 4096</code></td><td class="t">The window and setting it now serves (row 20)</td></tr>
+          <tr><td class="t">The two-machine DeepSeek speaks at 15.9 to 17.1</td><td class="t">That band is 13 September at a 131,072 window. At a 262,144 window on 21 September: 14.73 on a 400-token reply at 2,998 tokens and 12.05 at 48,024 (14.76 and 12.04 on the short code answers)</td><td class="t">The 21 September figures (row 1)</td></tr>
+          <tr><td class="t">The 15 September list: 22 endpoints, all at 128K, seven listed without speeds</td><td class="t">Three added, two retired; seven rows now serve 202,752 or 262,144 by default, shown by a run that passed no window, and two more loaded 262,144 when it was passed; two rows without a September figure</td><td class="t">23 rows, each with its served window</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>What held up, in the same breath: every read behind this page's
+      figures that asked for a planted code returned it in its answer, except
+      GLM-4.7-Flash at <code>-ub 2048</code>, whose code stayed in its hidden
+      reasoning (section 04). The letter runs' edit-and-reread requests,
+      capped at 40 tokens of reply, did not return the code at any depth (row
+      notes 5 and 10).</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>No measure of quality.</strong> Speed, window, recall of a
+        planted code and whether a tool call came back are the only things
+        measured. A model can be the fastest row here and the wrong choice for
+        your work.</li>
+        <li><strong>Short answers are not prose.</strong> Where a row's only
+        speaking figure at depth is a short answer, it says so; three rows have
+        prose at depth (1, 5 and 10), and most have a paragraph at a short
+        prompt. A thinking model's short answer counts its reasoning.</li>
+        <li><strong>Figures from different exercises are not a ranking.</strong>
+        Rows were measured on different days, at different depths and settings,
+        and each cell says which. Compare within a column and a date.</li>
+        <li><strong>One desktop.</strong> These are honest samples on one
+        machine, not benchmarks, and not comparable with a vendor's published
+        throughput or with a hosted service.</li>
+        <li><strong>Windows above the served one are not claimed here.</strong>
+        "On request" means the start script offers a larger window and a
+        September run loaded it: the Qwen3.5 pair and Mistral Small 4 read about
+        231,000 tokens at 262,144 (15 September, at <code>-b 2048 -ub
+        512</code>, the setting their scripts keep there), Qwen3.8-Flash-Next
+        read 344,981 and 459,911 tokens at its two larger windows (20
+        September, at llama.cpp's default batch sizes, before its batch
+        change), MiniMax M3 58,307 at 196,608 (20 September, <code>-ub
+        512</code>), and MiniMax M2.7 has only a 3,658-token read at 196,608
+        (19 September, <code>-ub 1024</code>). The scripts of Qwen3.8-27B and
+        Ornith-1.5-35B also offer 262,144, on the strength of a 17 September
+        run whose logs were not kept, so the table does not list it.
+        What a full window costs is on <a href="../context-256k/">its own
+        page</a>.</li>
+        <li><strong>The one-at-a-time constraint is this machine's.</strong> On
+        more hardware several of these would run side by side.</li>
+        <li><strong>Two rows have no figure for what they serve.</strong> That
+        is a statement about our September, not about the models.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Related pages on this site</h2>
+      <ul class="plain">
+        <li><a href="../method/">Method</a>: the labels used on this page.</li>
+        <li><a href="../batch-size/">The batch-size study</a>: the sweep behind
+        most reading figures here, and how to tune your own.</li>
+        <li><a href="../two-boxes/">Two boxes, one model</a>: rows 1 and 3, and
+        the models run across two machines.</li>
+        <li><a href="../context-256k/">What a full window costs</a>: the long
+        reads behind the window column.</li>
+        <li><a href="../deepseek-v4-flash/">DeepSeek V4 Flash</a>,
+        <a href="../inkling-small/">Inkling-Small</a>,
+        <a href="../qwen38-27b/">Qwen3.8-27B</a>,
+        <a href="../qwen35/">the Qwen3.5 pair</a>,
+        <a href="../mistral-medium-35/">Mistral Medium 3.5</a>,
+        <a href="../muse-glimmer-30b/">Muse Glimmer 30B</a> and
+        <a href="../kimi-k3/">Kimi K3</a>: field cards for models on or formerly
+        on this list, each with its own dates.</li>
+        <li><a href="../qwen/">Which Qwen should I run?</a>: the family guide
+        behind seven of the rows.</li>
+        <li><a href="../empty-answer/">Empty Answer</a>: why a thinking model's
+        short answer can come back empty, which is why the counts here include
+        its reasoning.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Sources and artifacts</h2>
+      <p>The data package holds the redacted primary files these figures come
+      from, a few clearly identified extracts, one rebuilt machine-readable
+      table, and the vendor documents cited at pinned revisions. Machine paths,
+      addresses, port numbers, service names and our internal keys for each
+      model are removed; so is a column naming private work. Nothing that
+      carries a measurement is altered, and no figure is recomputed except
+      where a file says it is a derivation.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every file, where it
+        came from, what was removed from it, and the places where the package
+        looks like it argues with itself.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
+        page mapped to its file and field.</li>
+        <li><a href="data/ROSTER_23.csv">data/ROSTER_23.csv</a>: the table,
+        machine readable, with the file and date behind each figure.</li>
+        <li>The runs of 19 to 26 September: the batch-size sweep's result files
+        and logs, the long reads, the paragraph replies, the letters at depth,
+        the MiniMax records and the new framework record.</li>
+        <li>The runs of 12 to 15 September: the direct sweep, the framework
+        check's ledgers and per-model records, the refusal-guard test, and what
+        the model files say.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with a file in
+      its package, the file is right and the page is wrong. Tell us at
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the
+      correction goes on the page with its date.</p>
+      <table class="facts">
+        <tr><th scope="row">2026-09-15</th><td>List first compiled: 22 endpoints, runs of 12 to 15 September.</td></tr>
+        <tr><th scope="row">2026-09-26</th><td>Rebuilt as this snapshot: 23 endpoints, runs of 12 to 26 September, with the corrections in section 05.</td></tr>
+      </table>
+      <p class="fineprint">This page is dated on purpose. It is a snapshot as of
+      26 September 2026, not a living list; a later roster will be a later page
+      with a later date.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: DeepSeek is a mark of
+    DeepSeek; Inkling and Inkling-Small are marks of Thinking Machines Lab;
+    Qwen, Qwen3, Qwen3.5, Qwen3.6 and Qwen3.8 are marks of Alibaba Group
+    Holding Limited; GLM and GLM-4.7 are marks of Z.ai; Gemma is a mark of
+    Google LLC; Ling is a project or mark of inclusionAI; Mistral, Mistral
+    Small, Mistral Medium and Mistral Large are marks of Mistral AI; Kimi,
+    Kimi K2.7 and Kimi K3 are marks of Beijing Moonshot Technology Co., Ltd.
+    and Moonshot AI PTE. LTD.; MiniMax is a mark of MiniMax; Meta and Muse Glimmer
+    are marks of Meta Platforms, Inc.; Poolside and Laguna are marks of
+    Poolside; Ornith is a project or mark of Ornith AI; GeForce and RTX are marks
+    of NVIDIA Corporation; Core and Intel are marks of Intel Corporation; ROG and
+    Flow Z13 are marks of ASUSTeK Computer Inc.; llama.cpp is a project of
+    ggml-org and its contributors. All are referenced for identification only. Not
+    affiliated with, endorsed by, or sponsored by any of them or their
+    affiliates. Product names and marks belong to their respective owners. This
+    site is static. No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

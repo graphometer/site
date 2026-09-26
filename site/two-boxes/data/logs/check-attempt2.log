@@ -1,0 +1,43 @@
+=== fresh worker (the old one survived the suspend but its session is stale) ===
+no desktop llama-server running
+<LAPTOP> worker stopped
+960 MiB
+started pid <PID>
+port <PORT> reachable from the desktop
+=== split server for the gate: IQ3 8/10/25 on <LOCAL>:<PORT>, alias <SERVICE> ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 116 s
+=== placement (from <REDACTED_PATH>) ===
+0.04.031.268 I load_tensors:   CPU_Mapped model buffer size = 40333.14 MiB
+0.04.031.272 I load_tensors:        CUDA0 model buffer size = 22014.99 MiB
+0.04.031.275 I load_tensors: RPC0[<LAPTOP>:<PORT>] model buffer size = 56498.01 MiB
+1.55.029.206 I llama_kv_cache:      CUDA0 KV buffer size =    14.25 MiB
+1.55.040.708 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    18.00 MiB
+1.55.041.387 I llama_kv_cache:      CUDA0 KV buffer size =   288.00 MiB
+1.55.059.987 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =   384.00 MiB
+1.55.060.301 I llama_kv_cache:      CUDA0 KV buffer size =     8.00 MiB
+1.55.100.994 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    12.00 MiB
+1.55.102.677 I llama_kv_cache:      CUDA0 KV buffer size =    72.00 MiB
+1.55.107.355 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    96.00 MiB
+1.55.203.776 I sched_reserve:      CUDA0 compute buffer size =   966.34 MiB
+=== probe ===
+[short] prompt 21 tok in 0.8 s = 27.3 t/s | decode 200 tok = 15.13 t/s | wall 13.9 s
+        reply: 
+[depth~2000] prompt 1991 tok in 11.4 s = 174.2 t/s | decode 45 tok = 14.89 t/s | wall 14.5 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+24970 MiB
+server left running on <LOCAL>:<PORT> (stop with <REDACTED_PATH>)
+SPLIT-UP EXIT=0
+=== <FRAMEWORK> up ===
+<FRAMEWORK> healthy after 18 s
+=== gate (run 2) ===
+GATE EXIT=1
+[VERDICT] <SERVICE> (<HANDLE>): FAIL ['H1 <REDACTED> converse turn not completed/persisted']
+=== restore provider wiring ===
+=== residue + teardown ===
+desktop llama-server stopped
+(<LAPTOP> worker left running; pass --worker to stop it too)
+793 MiB
+GATE-CHAIN-2 DONE 2026-09-14T09:39:40-04:00

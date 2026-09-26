@@ -1,0 +1,72 @@
+# Draft sweep, 2026-09-13: the two DeepSeek blocks of the sweep record.
+# RUN10b is the 4-bit body (2 card / 13 RAM / 28 laptop) with DeepSeek's draft model at
+# a maximum of 8 draft tokens; RUN11b is the 3-bit body (4 / 14 / 25) with the same draft.
+# Omitted from the source file: a final unrelated Llama 4 Maverick run.
+# 
+=== RUN10b: Q4_K_XL 2 card / 13 RAM / 28 Z13 + DSpark draft (n-max 8) ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 231 s
+=== placement (from <REDACTED_PATH>) ===
+0.42.508.470 I load_tensors:   CPU_Mapped model buffer size = 46123.20 MiB
+0.42.508.480 I load_tensors:   CPU_Mapped model buffer size =  5597.95 MiB
+0.42.508.482 I load_tensors:        CUDA0 model buffer size = 12727.46 MiB
+0.42.508.484 I load_tensors: RPC0[<LAPTOP>] model buffer size = 92209.23 MiB
+3.43.913.963 I llama_kv_cache:      CUDA0 KV buffer size =    12.00 MiB
+3.43.924.402 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    20.25 MiB
+3.43.925.067 I llama_kv_cache:      CUDA0 KV buffer size =   224.00 MiB
+3.43.950.354 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =   448.00 MiB
+3.43.950.989 I llama_kv_cache:      CUDA0 KV buffer size =     7.00 MiB
+3.43.997.878 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    13.00 MiB
+3.43.999.881 I llama_kv_cache:      CUDA0 KV buffer size =    56.00 MiB
+3.44.005.584 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =   112.00 MiB
+=== probe ===
+[short] prompt 21 tok in 1.7 s = 12.5 t/s | decode 200 tok = 16.99 t/s | wall 13.4 s
+        reply: 
+[depth~8000] prompt 7841 tok in 64.3 s = 121.9 t/s | decode 46 tok = 19.25 t/s | wall 66.8 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+27991 MiB
+server left running on 127.0.0.1:8199 (stop with <REDACTED_PATH>)
+RUN10b EXIT=0
+[fresh~8000] prompt 8210 tok in 68.5 s = 119.9 t/s | decode 261 tok = 15.96 t/s | wall 85.0 s
+        reply: The lighthouse keeper's password this morning is **GRANITE-4406**.  The town is a misty coastal settlement where granite steps descend to a harbor filled with idle ferries. Each morning, a chapel bell rings twice from the hillside, signaling the start of the day, while the bakery opens its shutters 
+        recall: OK
+4.04.233.627 I slot print_timing: id  0 | task 0 | draft acceptance = 0.68020 (  134 accepted /   197 generated), mean len =  3.20
+5.11.034.653 I slot print_timing: id  0 | task 68 | draft acceptance = 0.84615 (   33 accepted /    39 generated), mean len =  3.75
+6.36.066.988 I slot print_timing: id  0 | task 87 | draft acceptance = 0.69444 (  175 accepted /   252 generated), mean len =  3.16
+<HOST> llama-server stopped
+(Z13 worker left running; pass --worker to stop it too)
+963 MiB
+=== RUN11b: IQ3_XXS 4 card / 14 RAM / 25 Z13 + DSpark draft (n-max 8) ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 164 s
+=== placement (from <REDACTED_PATH>) ===
+0.47.347.882 I load_tensors:   CPU_Mapped model buffer size = 40333.14 MiB
+0.47.347.883 I load_tensors:        CUDA0 model buffer size = 13374.99 MiB
+0.47.347.883 I load_tensors: RPC0[<LAPTOP>] model buffer size = 56498.01 MiB
+2.40.922.455 I llama_kv_cache:      CUDA0 KV buffer size =    14.25 MiB
+2.40.930.637 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    18.00 MiB
+2.40.931.299 I llama_kv_cache:      CUDA0 KV buffer size =   288.00 MiB
+2.40.952.935 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =   384.00 MiB
+2.40.953.428 I llama_kv_cache:      CUDA0 KV buffer size =     8.00 MiB
+2.40.993.097 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    12.00 MiB
+2.40.995.213 I llama_kv_cache:      CUDA0 KV buffer size =    72.00 MiB
+2.41.000.302 I llama_kv_cache: RPC0[<LAPTOP>] KV buffer size =    96.00 MiB
+2.41.102.457 I sched_reserve:      CUDA0 compute buffer size =   967.35 MiB
+=== probe ===
+[short] prompt 21 tok in 1.1 s = 18.4 t/s | decode 200 tok = 19.04 t/s | wall 11.6 s
+        reply: 
+[depth~8000] prompt 7841 tok in 52.7 s = 148.8 t/s | decode 38 tok = 18.12 t/s | wall 54.8 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+27268 MiB
+server left running on 127.0.0.1:8199 (stop with <REDACTED_PATH>)
+RUN11b EXIT=0
+[fresh~8000] prompt 8210 tok in 54.9 s = 149.5 t/s | decode 280 tok = 16.36 t/s | wall 72.2 s
+        reply: **The lighthouse keeper's password this morning is GRANITE-4406.**  The town is a quiet coastal settlement where granite steps descend to the water, with ferries resting idly at their moorings. Each morning, the chapel bell rings twice from the hill while the bakery opens its shutters before the mis
+        recall: OK
+2.55.440.365 I slot print_timing: id  0 | task 0 | draft acceptance = 0.61395 (  132 accepted /   215 generated), mean len =  3.06
+3.50.311.109 I slot print_timing: id  0 | task 70 | draft acceptance = 0.62791 (   27 accepted /    43 generated), mean len =  3.45
+5.02.530.882 I slot print_timing: id  0 | task 88 | draft acceptance = 0.63869 (  175 accepted /   274 generated), mean len =  2.82

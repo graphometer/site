@@ -1,0 +1,34 @@
+#	CONTEXT SWEEP 2026-09-12 - body x rung ladder.  Card = RTX 5090 sm_120, 32,607 MiB.
+#	VRAM is RAW nvidia-smi MiB, never divided by 1000 (house rule). vram_free = 32607 - vram_mib.
+#	METHOD: llama-server invoked DIRECTLY with each body's canonical start_server.sh flags,
+#	varying only --ctx-size (+ the offload/KV knobs named per body). The start scripts were NOT
+#	used to launch, because they source their env files and would override inherited vars.
+#	Rig: rung.sh + bodies.sh in this directory. Per-rung logs in logs/.
+#	decode_tps = best of 2 WARM reps on a ~200-token prose generation; a throwaway warm-up
+#	request precedes them, so the cold first request is never what gets recorded.
+#	long_* = one ~21K-token synthetic ledger prompt (probes/longdoc.txt) with a needle
+#	(MARGATE-4471-QUINCE) planted in entry 0001. needle=HIT means the model quoted it back,
+#	which is what proves a rung actually HOLDS long context rather than merely allocating for it.
+#	source: sweep = measured by this sweep. earlier-0912 = measured earlier the same night by the
+#	the gate checks (cited, not re-run). ladder-0903 = the Qwen3-235B D2 ladder.
+#	CAVEAT: a 97 GB hf download (unsloth GLM-4.7 UD-IQ1_S) ran throughout, competing for NVMe
+#	bandwidth and page cache. It can only have slowed loads, so every load_s below is an upper
+#	bound. VRAM and t/s figures are unaffected.
+body	rung	ctx	offload	kv	load_s	vram_mib	vram_free_mib	decode_tps	long_prompt_tok	long_prefill_tps	long_decode_tps	needle	verdict	source
+Qwen3.8-Flash-Next	long-128K	131072	n-cpu-moe 99	f16	2.3	11366	21241	22.50	21740	195.84	19.82	HIT	NEW DEFAULT	sweep
+Qwen3.8-Flash-Next	card-light-64K	65536	n-cpu-moe 99	f16	18.6	9670	22937	22.30	2624	247.00	-	-	preset	earlier-0912
+GLM-4.7-Flash	long-128K	131072	all GPU	f16	21.2	24814	7793	223.65	20221	4447.44	156.33	HIT	NEW DEFAULT	sweep
+GLM-4.7-Flash	proven-64K	65536	all GPU	f16	28.0	21261	11346	226.50	-	718.00	-	-	preset	earlier-0912
+Gemma-4-26B	long-128K	131072	all GPU	f16	19.2	20646	11961	211.07	21690	10593.27	176.91	HIT	NEW DEFAULT	sweep
+Gemma-4-26B	proven-64K	65536	all GPU	f16	20.0	19271	13336	209.00	-	1228.00	-	-	preset	earlier-0912
+Gemma-4-31B	long-128K	131072	all GPU	f16	3.0	29844	2763	73.68	21690	3166.30	63.44	HIT	NEW DEFAULT - card full, 2.7 GB free	sweep
+Gemma-4-31B	shared-card-64K	65536	all GPU	f16	39.4	24660	7947	73.73	21690	3175.57	63.76	HIT	preset - Chatterbox fits	sweep
+Gemma-4-31B	proven-32K	32768	all GPU	f16	31.0	22037	10570	73.90	-	620.00	-	-	preset	earlier-0912
+Qwen3.8-27B	long-128K	131072	all GPU + gated MTP	f16	40.4	29922	2685	86.01	21740	3030.48	122.92	HIT	ALREADY THE SERVED DEFAULT - confirmed	sweep
+Qwen3.8-27B	shared-voice-64K	65536	all GPU + gated MTP	f16	3.1	25424	7183	82.30	21740	3026.52	129.37	HIT	preset	sweep
+GLM-4.7-Full	long-128K	131072	n-cpu-moe 92	q5_1	4.3	28839	3768	5.51	20221	61.36	4.26	HIT	NEW DEFAULT - reachable only at q5_1 KV	sweep
+GLM-4.7-Full	96K-at-q8	98304	n-cpu-moe 92	q8_0	5.2	29950	2657	5.53	20221	61.24	4.82	HIT	preset - max window at q8_0	sweep
+GLM-4.7-Full	128K-at-q8	131072	n-cpu-moe 92	q8_0	-	-	-	-	-	-	-	-	REFUSED: cudaMalloc failed allocating 25024 MiB for the KV cache; died in create_context after a 163 s weight read	sweep
+GLM-4.7-Full	gate-32K	32768	n-cpu-moe 87	f16	50.0	30395	2212	5.91	-	-	-	-	preset	earlier-0912
+Qwen3-235B	long-128K	131072	n-cpu-moe 94 + 0.6B draft	q8_0 main + q8_0 draft	226.7	28314	4293	6.93	21493	251.58	10.66	HIT	NEW DEFAULT	sweep
+Qwen3-235B	r8	32768	n-cpu-moe 86 + 0.6B draft	q8_0 main + f16 draft	210.0	25971	6636	7.49	-	238.00	-	-	preset	earlier-0912

@@ -1,0 +1,18 @@
+#	CONTEXT 256K SWEEP 2026-09-15 - body x one long rung (262,144; GLM-4.7-Flash 202,752 = its native ceiling).
+#	METHOD: llama-server invoked directly with each start script's exec flags; only --ctx-size varies (context256_bodies.sh).
+#	n_ctx = the server's own /props reading (must equal the ask). VRAM = raw nvidia-smi MiB: loaded, then the peak while the deep prompt is read.
+#	decode_tps = best of 2 warm ~200-token replies. deep_* = one prompt fitted with the server's tokenizer to ~230,000 tokens
+#	(190,000 for GLM-4.7-Flash, 150,000 for the slow Q8 DeepSeek) carrying three sealed codes at ~5/50/95% depth; codes_hit = quoted back.
+#	CAVEAT: three model downloads (~340 GB) ran during the sweep, competing for disk and page cache - load times are upper bounds.
+label	status	load_s	n_ctx	vram_loaded_mib	vram_peak_mib	decode_tps	deep_prompt_tok	deep_prefill_tps	deep_decode_tps	codes_hit	note
+gemma26_262144	OK	23.175614289	262144	23446	23513	202.64260973660214	230855	3799.69	121.36	3/3	
+glm47flash_202752	OK	22.182046769	202752	28702	28765	227.43299666574643	189931	819.70	70.48	3/3	
+flashnext_262144	OK	52.397820033	262144	15124	15626	25.326925145038857	230803	165.70	13.58	3/3	
+ling_262144	OK	103.790779192	262144	8314	8473	29.573442011409124	230759	206.25	26.11	3/3	
+mistral4_262144	OK	148.679411314	262144	30213	30356	29.548341145447967	231065	327.75	23.76	3/3	
+qwen122_262144	OK	104.123163437	262144	30581	30794	22.394244964927992	230803	433.99	37.10	3/3	
+inkling_262144	OK	71.485150460	262144	15744	15814	11.772442551066042	230827	115.07	8.78	3/3	
+dsv4split_262144	OK	233.127961426	262144	25005	25824	15.099684175881121	230835	35.08	6.49	3/3	
+qwen397_262144	OK	235.825880458	262144	30908	31068	12.844951522175622	230803	194.51	17.00	3/3	
+dsv4q8_262144	OK	220.641957820	262144	17752	18306	9.933466685766806	150475	72.97	9.14	3/3	
+dsv4split_131072_120k	OK	242.143731570	131072	25049	25412	15.375716781376694	120305	58.70	9.35	3/3	

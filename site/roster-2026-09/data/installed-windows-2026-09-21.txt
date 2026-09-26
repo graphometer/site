@@ -1,0 +1,103 @@
+# Which window each start script serves when it is given none, from runs on 21 September 2026.
+# Two harnesses started the models through their own start scripts WITHOUT passing a window:
+#   the crash check (stress_chain.sh, then stress_model.py with no script arguments), and
+#   the batch-size sweep (batch_sweep.sh runs "bash start_server.sh" with no arguments).
+# Both only set the batch knobs (none on the "skip" runs used here) and a scratch folder for a helper process.
+# (The DeepSeek 3-bit run was on the fast preset, as its first line says; neither harness sets the preset.)
+# So the window each server reported below is what the installed script and its settings chose.
+# In sections A and B the indented lines are copied verbatim from the run records, with the package redactions;
+# the crash check's server logs (section A) are not in this package, and the sweep results of section B are, in
+# batch-sweep-2026-09-21/ with their server logs. Sections C and D are notes that point at files in this package.
+
+## A. The crash check, 21 September (server log of each stress run: its first line, then the served window)
+
+DeepSeek V4 Flash 0731, this desktop alone, 8-bit preset (quality)
+  deepseek-v4-flash: preset=quality ctx=262144 port=<PORT>
+  0.05.273.833 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+
+DeepSeek V4 Flash 0731, this desktop alone, 3-bit preset (fast)
+  deepseek-v4-flash: preset=fast ctx=262144 port=<PORT>
+  0.03.723.533 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+
+Inkling-Small
+  Inkling-Small: experts-in-RAM blocks 42 of 42 · ctx 262144 · kv f16 · default effort template (high) · <LOCAL>
+  0.02.987.576 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+
+Qwen3.8-Flash-Next
+  0.02.626.159 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+
+Laguna S 2.1 (14:25, before its window change later that day)
+  0.04.123.559 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 32768, kv_unified = 'false'
+
+Qwen3.5-397B-A17B
+  3.43.936.918 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+Qwen3-235B-A22B Instruct 2507
+  3.17.621.914 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+Qwen3.5-122B-A10B
+  0.18.995.632 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+Ornith-1.5-35B-A3B
+  0.03.003.991 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+GLM-5.3-Flash
+  0.04.894.575 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+Mistral Small 4 119B
+  0.18.042.963 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+MiniMax M2.7
+  0.02.959.559 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+
+## B. The batch-size sweep, 21 September, the "skip" run of each model (result file: header and served line)
+
+Gemma-4-26B-A4B
+  [run] Gemma-4-26B-A4B ubatch=skip (the script's own default)
+  served: n_ctx_slot = 262144
+
+GLM-4.7-Flash
+  [run] GLM-4.7-Flash ubatch=skip (the script's own default)
+  served: n_ctx_slot = 202752
+
+Ling-3.0-flash
+  [run] Ling-3.0-flash ubatch=skip (the script's own default)
+  served: n_ctx_slot = 262144
+
+Gemma-4-31B IT QAT
+  [run] gemma-4-31b-it-qat ubatch=skip (the script's own default)
+  served: n_ctx_slot = 131072
+
+Muse Glimmer 30B
+  [run] Muse-Glimmer-30B ubatch=skip (the script's own default)
+  served: n_ctx_slot = 131072
+
+Qwen3.8-27B
+  [run] Qwen3.8-27B ubatch=skip (the script's own default)
+  served: n_ctx_slot = 131072
+
+Qwen3.6-27B (the earlier file, before its 26 September change)
+  [run] Qwen3.6-27B ubatch=skip (the script's own default)
+  served: n_ctx_slot = 131072
+
+## C. Endpoints whose installed window these records do not show
+
+DeepSeek V4 Flash 0731, across two machines: every run that loaded 262,144 passed that window itself.
+  On 15 September the long-read sweep started the server directly with --ctx-size 262144
+  (long-reads-2026-09-15/CONTEXT_256K_MEASUREMENTS.tsv, its METHOD line and the DeepSeek-V4-Flash-pair_262144 row).
+  On 21 September the chain set the split script's first argument to 262144
+  (batch-sweep-2026-09-21/DeepSeek-V4-Flash-pair_chain.sh, SCRIPT_ARGS; its comment calls 262144 the pair's
+  "served" window, which no run that passed no window shows).
+  The framework checks of 14 September found 131,072 served (gate-records/deepseek-v4-flash-0731-two-machines.json
+  and its attempt 3, S.n_ctx); the records carry no launch arguments, so they do not say whether that start
+  passed a window.
+  The split script's fallback is 131,072, CTX="${1:-${PAIR_CTX:-131072}}" (file-listing-2026-09-26.txt,
+  section C); whether the installed settings file raises it is not in these records.
+Qwen3.6-27B since 26 September: the letter runs set the window to 262144 themselves (the env: line of each
+  letters-2026-09-26/*.result); the start script's fallback is 131,072, CTX="${Q36_CTX:-131072}"
+  (file-listing-2026-09-26.txt, section C).
+
+## D. Endpoints whose window is the start script's own fallback, with no settings file involved
+
+Laguna S 2.1: CTX="${1:-262144}" since 21 September (file-listing-2026-09-26.txt, section C).
+MiniMax M3: CTX="${1:-131072}" (same file).

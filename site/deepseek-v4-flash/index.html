@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek V4 Flash 0731, on one desktop and on two</title>
+<meta name="description" content="Batch tuning changes the practical choice: one desktop finishes the measured long-prompt requests sooner. IQ3 and Q8 results, split results and dated history.">
+<link rel="canonical" href="https://graphometer.ai/deepseek-v4-flash/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="DeepSeek V4 Flash 0731, on one desktop and on two">
+<meta property="og:description" content="Batch tuning changes the practical choice: one desktop finishes the measured long-prompt requests sooner. IQ3 and Q8 results, split results and dated history.">
+<meta property="og:url" content="https://graphometer.ai/deepseek-v4-flash/">
+<meta property="og:image" content="https://graphometer.ai/og/deepseek-v4-flash.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: DeepSeek V4 Flash 0731, on one desktop and on two">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DeepSeek V4 Flash 0731, on one desktop and on two">
+<meta name="twitter:description" content="Batch tuning changes the practical choice: one desktop finishes the measured long-prompt requests sooner. IQ3 and Q8 results, split results and dated history.">
+<meta name="twitter:image" content="https://graphometer.ai/og/deepseek-v4-flash.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);text-transform:uppercase}
+  .hero{padding:72px 0 48px}
+  .eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:58ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:62ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:12px;padding:8px 16px;max-width:70ch}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:15ch}
+  table.data td.neg{color:var(--warn)}
+  table.data tr.hi td{background:rgba(201,164,92,.05)}
+  .badge{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:1px 7px;margin-left:5px;vertical-align:.12em;color:var(--gold)}
+  .badge.vendor,.badge.stated,.badge.arithmetic{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:64ch}
+  .note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .note p{color:var(--ink);max-width:none}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow">Field card &middot; measured 12 to 21 September 2026; updated 26 September &middot; one RTX 5090 desktop, alone and paired with a 128 GB laptop &middot; llama.cpp &middot; windows scoped below</div>
+      <h1>DeepSeek V4 Flash 0731, on one desktop and on two</h1>
+      <p class="subtitle">With its batch settings tuned, one desktop answered a 48,024-token request in 75.2 seconds. The same file split across two machines took 416.4 seconds at its best completed setting and 474.2 at the one it keeps. Measured 21 September 2026.</p>
+      <p class="lead">The practical choice for long prompts is now the desktop alone, with experts split between system RAM and the card. The IQ3 desktop at <code>-b 4096 -ub 4096</code> read the 48,024-token prompt at <strong>690.9 tokens a second</strong>; whole-request time was <strong>75.2 seconds</strong>, against <strong>474.2 seconds</strong> on the IQ3 two-machine split at retained <code>-b 2048 -ub 512</code> <span class="badge">measured, 21 September</span>. Reading means prompt tokens processed per second. Speaking means generated tokens per second, including hidden reasoning on this model. These are tested configurations on one RTX 5090 desktop, alone or paired with an ASUS ROG Flow Z13, not an isolated test of machine count.</p>
+      <div class="note"><span class="label">Update, 26 September 2026: what changed</span><p>Our earlier recommendation led with the two-machine 4-bit body and its draft model. Tuning the amount of prompt text processed in each batch changed the whole-turn result. The desktop now finishes the measured long-prompt requests sooner. The September 12 to 15 measurements remain below as history; the 4-bit split with a draft was not re-tuned in the new sweep.</p></div>
+      <div class="nonaff">Independent measurements. DeepSeek, Unsloth, NVIDIA, ASUS, Intel, Hugging Face, and the llama.cpp project are referenced for identification only. Not affiliated with, endorsed by, or connected to any of them or their affiliates.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>DeepSeek V4 Flash 0731 is a mixture-of-experts language model. The maker's model card, read on Hugging Face at repository revision <code>7872f01b</code>, says the release ships with a speculative decoding module attached <span class="badge vendor">vendor</span>. Our 3-bit GGUF header reports <strong>284.33 billion model parameters, 256 experts, 6 experts used per token, and 1 shared expert</strong> <span class="badge">measured</span>. The maker's model card at that revision states no active-parameter figure, so this page prints none, and the header does not carry the expert width an active total would need.</p>
+      <table class="facts">
+        <tr><th scope="row">Maker and release</th><td>DeepSeek; 31 July 2026 <span class="badge vendor">vendor</span>. The date is the creation date of the maker's repository, read at revision <code>7872f01b</code>.</td></tr>
+        <tr><th scope="row">License record</th><td>MIT. The LICENSE file was read in full at repository revision <code>7872f01b</code> and ships in the data package <span class="badge vendor">vendor</span>. The community GGUF header also records <code>mit</code> <span class="badge">measured</span>.</td></tr>
+        <tr><th scope="row">Base shape</th><td>43 blocks, 284.33 billion parameters, 256 experts, 6 used per token plus 1 shared <span class="badge">measured</span>.</td></tr>
+        <tr><th scope="row">Served window</th><td>131,072 tokens in the earlier September 12 to 15 V4 runs and the September 20 Q8 runs at 48,073 prompt tokens; 262,144 in the September 15 full-window sweep, the September 20 Q8 run at 150,324 prompt tokens and the September 21 IQ3 runs, one request at a time <span class="badge">measured</span>. The header records a trained 1,048,576-token window. This card uses 128K and 256K for the two served windows, not prompt occupancy.</td></tr>
+        <tr><th scope="row">Runtime</th><td>llama.cpp build 10919 at source commit <code>d3146f2b5</code> for the two-machine sweep <span class="badge">measured</span>.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>The bench is one NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM, an Intel Core Ultra 9 285K and 188 GiB of RAM. The second machine is an ASUS ROG Flow Z13 with 128 GB of unified memory, joined directly by Thunderbolt. One model process ran at a time. The two-machine runs used one host process on the desktop and a worker on the laptop, built from the same source commit <span class="badge">measured</span>.</p>
+      <table class="facts">
+        <tr><th scope="row">8-bit, desktop alone</th><td>Q8 body, 131,072-token window, one slot. Loaded in 213.1 seconds and used 16,860 MiB on the card on 12 September 2026 <span class="badge">measured</span>. The speed record comes from the tool-and-recall check.</td></tr>
+        <tr><th scope="row">3-bit, two machines</th><td>Unsloth UD-IQ3_XXS, 4 shards totaling 104.2 GB. Placement: 8 whole layers on the card, 10 layers with attention on the card and experts in desktop RAM, then 25 whole layers on the laptop. Healthy in 163 seconds and 24,907 MiB on the card on 13 September 2026 <span class="badge">measured</span>.</td></tr>
+        <tr><th scope="row">4-bit, no draft</th><td>Unsloth UD-Q4_K_XL, 5 shards totaling 155.1 GB. Placement: 5 whole layers on the card, 14 expert sets in desktop RAM, and 24 whole layers on the laptop. Served at 131,072 tokens on 13 September 2026 <span class="badge">measured</span>.</td></tr>
+        <tr><th scope="row">4-bit, installed preset</th><td>The same 4-bit body plus DeepSeek's draft model. Placement: 2 whole layers on the card, 13 expert sets in desktop RAM, and 28 whole layers on the laptop. Healthy in 225 seconds, 27,430 MiB on the card, and 91 GB used on the laptop on 15 September 2026 <span class="badge">measured</span>.</td></tr>
+      </table>
+      <p>On the two-machine runs the common launch shape was a 131,072-token window, one parallel slot, flash attention selected automatically, 24 processing threads, Jinja chat formatting, DeepSeek reasoning formatting, and one request at a time. The server was launched with temperature 1.0, top-p 1.0, top-k 0 and min-p 0.05. The direct speed requests explicitly set temperature 0.7 <span class="badge">measured</span>. The 8-bit desktop-alone run came from a different launcher on 12 September 2026: its record gives the served window and the registered window, both 131,072 tokens, and no launch record for it is in this evidence, so nothing above is claimed for it beyond the window. The draft sweep asked for at most 8 draft tokens; the installed 4-bit preset reported at most 6, with minimum 0 and probability floor 0.50 <span class="badge">measured</span>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The practical result now</h2>
+      <p>On the desktop, use the <code>UD-IQ3_XXS</code> body with <code>--n-cpu-moe 36 -b 4096 -ub 4096 --no-repack</code> for the measured fast configuration. The larger <code>UD-Q8_K_XL</code> body used <code>-cmoe -b 8192 -ub 8192 --no-repack</code>: all experts in system RAM. The names “fast” and “quality” identify those presets; they do not report an answer-quality comparison.</p>
+      <p>These September 20 and 21 probes ran one request at a time, temperature zero, with a synthetic ledger and a sealed code at its midpoint. The code requests allowed 900 generated tokens, including thinking. Both desktop presets used 24 processing and batch threads, automatic flash attention, Jinja formatting and DeepSeek reasoning formatting <span class="badge">measured configuration</span>. The new logs do not print a build commit, so the older build identity below is not assigned to them.</p>
+      <div class="data-wrap"><table class="data">
+      <thead><tr><th>Configuration and date</th><th>Window</th><th>Prompt tokens</th><th>Reading, t/s</th><th>Speaking, t/s</th><th>Label</th></tr></thead><tbody>
+      <tr><td class="t">Q8 desktop, recorded extra arguments -cmoe only, 20 September</td><td>131,072</td><td>48,073</td><td>83.3</td><td>9.91</td><td class="t">measured</td></tr>
+      <tr><td class="t">Q8 desktop, b / ub 4096, 20 September</td><td>131,072</td><td>48,073</td><td>424.4</td><td>9.71</td><td class="t">measured</td></tr>
+      <tr><td class="t">Q8 desktop, b / ub 8192, 20 September</td><td>131,072</td><td>48,073</td><td>607.1</td><td>9.58</td><td class="t">measured</td></tr>
+      <tr><td class="t">Q8 desktop, b / ub 8192, 20 September</td><td>262,144</td><td>150,324</td><td>480.0</td><td>9.37</td><td class="t">measured</td></tr>
+      <tr><td class="t">IQ3 desktop, b / ub 4096, 21 September</td><td>262,144</td><td>2,998</td><td>539.6</td><td>12.65</td><td class="t">measured</td></tr>
+      <tr><td class="t">IQ3 desktop, b / ub 4096, 21 September</td><td>262,144</td><td>48,024</td><td>690.9</td><td>12.16</td><td class="t">measured</td></tr>
+      <tr><td class="t">IQ3 desktop, b / ub 4096, 21 September</td><td>262,144</td><td>150,103</td><td>632.1</td><td>11.79</td><td class="t">measured</td></tr>
+      </tbody></table></div>
+      <p class="tablenote">The visible code answer was 17 characters. Q8 reasoning text was 216 to 332 characters; timed generation was 70 to 106 tokens on Q8 and 59 to 86 tokens on desktop IQ3. Every speaking rate counts hidden reasoning, not just the visible answer <span class="badge">measured</span>. The slow Q8 row records only <code>-cmoe</code> as extra arguments; its progress interval supports logical batch 2,048, but the micro-batch is not recorded. The Q8 date is the 20 September session date, not a calendar timestamp inside its server logs.</p>
+      <p>The Q8 batch change accelerated reading without a speaking gain. At the 131,072 window, card use at load rose from <strong>17,063 to 22,089 MiB</strong>: <strong>5,026 MiB more</strong> <span class="badge arithmetic">arithmetic difference</span>. At the 262,144 window the Q8 run loaded at <strong>26,023 MiB</strong>. The IQ3 desktop peaked at <strong>28,930 MiB</strong> on the deep read <span class="badge">measured</span>. Each displayed code probe returned the exact code. The IQ3 preset also completed <strong>40 of 40</strong> mixed public-text stress prompts without a crash on 21 September <span class="badge">measured</span>; that is a crash check, not an answer-quality score. Its longest prompt was <strong>9,135 tokens</strong>, not the 48,024 or 150,103 tokens of the code requests <span class="badge">measured</span>.</p>
+      <p>Keep the batch settings specific to the body. The measurements above validate <code>-ub 4096</code> on IQ3 and <code>-ub 8192</code> on Q8. Keep <code>--no-repack</code> as used in these runs; removing it was not part of this successful comparison.</p>
+      <h3>Two other Q8 settings did not earn a change</h3>
+      <p>The first sweep combined <code>--n-cpu-moe 50</code> with <code>--cache-type-k q8_0 --cache-type-v q8_0</code>. On a <strong>16,011-token</strong> prompt it read <strong>82.41 versus 81.64 t/s</strong> at default batch, and <strong>255.12 versus 260.82 t/s</strong> with <code>-b 4096 -ub 2048</code> <span class="badge">measured, 20 September</span>. This was a combined configuration test, not an isolated gain from either flag; the model has only 43 blocks, so a CPU-expert setting of 50 is not evidence that experts moved onto the card. The probe allowed only 8 generated tokens and did not verify an answer. We kept the Q8 cache and placement unchanged.</p>
+      <p>Upstream reports cover <a href="https://github.com/ggml-org/llama.cpp/issues/25382">quantized K-cache corruption</a> and <a href="https://github.com/ggml-org/llama.cpp/issues/25582">garbled output with CUDA experts</a>. Read on 26 September 2026, the first is closed; the <a href="https://github.com/ggml-org/llama.cpp/issues/26423">follow-up cache report</a> and the expert report are closed as not planned. Those statuses differ from the tuning notes' “open” description. Closure does not establish that these local builds were fixed. The IQ3 results above are their own measured checks.</p>
+      <h3>The two-machine split, re-tuned</h3>
+      <p>The September 21 split used IQ3 at a <strong>262,144-token window</strong>, no draft, with <strong>8 whole layers on the card, 10 expert sets in desktop RAM and 25 whole layers on the laptop</strong>. At <code>-b 2048 -ub 512</code> it read <strong>161.8 t/s</strong> on 2,998 tokens and <strong>102.5 t/s</strong> on 48,024; timed generation on those short code answers (67 and 69 tokens, hidden reasoning included) ran at <strong>14.76 and 12.04 t/s</strong>. Raising <code>-ub</code> to <strong>2048</strong> gave <strong>224.9 and 117.0 t/s</strong> reading <span class="badge">measured</span>, a <strong>14.1%</strong> gain at the longer depth <span class="badge arithmetic">arithmetic</span>.</p>
+      <p>At <code>-b 4096 -ub 4096</code>, the 48K request failed after the server logged <strong>40,960 tokens</strong> processed and then “Remote RPC server crashed” <span class="badge">measured failure</span>. The same 48,024-token request had already completed with the exact code in <strong>416.4 seconds</strong> at <code>-b 2048 -ub 2048</code> <span class="badge">measured whole-request time</span>. We kept <code>-ub 512</code> anyway as a precaution after the laptop GPU hang at 4096, not because 2048 failed. The desktop's 75.2-second whole request remains shorter than the split's best completed 416.4-second result at this depth. At 150,103 tokens it took <strong>2,922.9 seconds</strong> to read and timed generation, including hidden reasoning, ran at <strong>7.66 t/s</strong> <span class="badge">measured</span>. That read alone is <strong>48.7 minutes</strong> <span class="badge arithmetic">arithmetic</span>. The older <strong>15.9 to 17.1 t/s</strong> split band below came from short probes at a <strong>131,072-token window</strong>, not this larger-window run.</p>
+      <h3>The 15 September full-window sweep</h3>
+      <p>At a 262,144-token window, the desktop <code>UD-Q8_K_XL</code> body read <strong>150,475 tokens in 2,062,226.61 ms at 72.97 t/s</strong> with no explicit batch flags on 15 September <span class="badge">measured</span>, or <strong>2,062.2 seconds</strong> rounded <span class="badge arithmetic">arithmetic, milliseconds divided by 1,000</span>. The 20 September session's Q8 run at the same window read <strong>150,324 tokens in 313,172.17 ms at 480.00 t/s</strong> with <code>-b 8192 -ub 8192</code> <span class="badge">measured</span>, or <strong>313.2 seconds</strong> rounded <span class="badge arithmetic">arithmetic</span>. Both launch records name the same binary path. The older response identifies build <code>b1-5f55650</code>; the later record omits a build identity, so an unchanged binary cannot be established. The prompt lengths and probes also differ; this is not an isolated one-variable comparison.</p>
+      <p>The 15 September <code>UD-IQ3_XXS</code> split at a <strong>262,144-token window</strong> read <strong>230,835 tokens in 6,580,695.01 ms at 35.08 t/s</strong> <span class="badge">measured</span>, or <strong>109.7 minutes</strong> rounded <span class="badge arithmetic">arithmetic, milliseconds divided by 60,000</span>. It returned a <strong>25-token answer at 6.49 t/s</strong>, found <strong>3 of 3 codes</strong> and peaked at <strong>25,824 MiB</strong> on the card <span class="badge">measured</span>. This is generated-token throughput, including any hidden reasoning, not a prose rate. At a <strong>131,072-token window</strong>, the same split read <strong>120,305 tokens at 58.70 t/s</strong> <span class="badge">measured</span>. Both split records identify build <code>10919 / d3146f2b5</code>, one slot, no explicit batch flags, 24 processing and batch threads, and the 8 / 10 / 25 placement described above.</p>
+      <h3>What the next turn costs</h3>
+      <p>A real follow-up appends a reply and a new message to the cached history. At the split's 48K depth it processed just <strong>238 tokens in 5.4 seconds</strong> at ub 512, or <strong>228 in 5.0 seconds</strong> at ub 2048. Swapping the last question in the existing prompt instead went back roughly one micro-batch: <strong>533 tokens in 10.0 seconds</strong> versus <strong>2,065 in 28.2 seconds</strong> <span class="badge">measured, 21 September</span>. An edited or regenerated last turn can pay that replay cost; it is not the cost of every ordinary follow-up.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Observed, 12 to 15 September</h2>
+      <p>Speaking is generated-token throughput. Reading is prompt throughput. This model thinks by default, so speaking counts every generated token, the hidden reasoning included: the short probes behind 19.55, 17.06 and 10.59 tokens a second each spent their whole 200-token budget thinking and returned no visible reply. Each row below is a recorded run, not an average across configurations.</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Body and placement</th><th>Speaking, t/s</th><th>Reading, t/s</th><th>Prompt, tokens</th><th>Label</th></tr></thead>
+          <tbody>
+            <tr><td class="t">8-bit, desktop alone, 12 September</td><td>9.2 to 9.7</td><td>73.8 to 75.5</td><td class="t">48K and 96K legs</td><td class="t">measured</td></tr>
+            <tr><td class="t">3-bit, two machines, no draft, 13 September</td><td>15.9 to 17.1</td><td>184.6, 187.9 fresh</td><td>21, 7,841 and 8,210</td><td class="t">measured</td></tr>
+            <tr><td class="t">4-bit, two machines, no draft, 13 September</td><td>10.6 to 13.0</td><td>145.4, 173.0 fresh</td><td>21, 7,841 and 8,210</td><td class="t">measured</td></tr>
+            <tr><td class="t">4-bit, two machines, installed draft preset, 15 September</td><td>19.55, 19.59</td><td>125.1</td><td>21 and 7,841</td><td class="t">measured</td></tr>
+            <tr><td class="t">3-bit, two machines, at 48,000 tokens of context, 14 September</td><td>11.7</td><td>97.4</td><td>52,928</td><td class="t">measured</td></tr>
+            <tr><td class="t">3-bit, two machines, at 96,000 tokens of context, 14 September</td><td>10.0</td><td>66.6</td><td>102,478</td><td class="t">measured</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">A fresh reading is a newly written prompt the server has never seen, so nothing is answered from cache; a planted code is a short code word hidden at a known depth in that prompt, which the model is then asked to repeat. The last two rows were taken through an agent framework rather than by a direct probe, and they show what a practitioner should expect at depth: on this configuration both speaking and reading fall as the history grows. The 8-bit-alone and 3-bit-split rows use different files, so their difference mixes quantization with placement. The 4-bit rows share a body but differ in placement and draft configuration. The fresh 4-bit no-draft probe missed its planted code; its speed remains a real timing, but it is not a clean recall result.</p>
+      <p>On the short 8-bit turn on 12 September 2026, the first visible word arrived after <strong>60.5 seconds</strong> and the reply then ran at <strong>15.0 tokens a second</strong> <span class="badge">measured</span>. That is faster than the 9.2 to 9.7 band in the table because it is a short turn on a small prompt, while the band was measured at 48,000 and 96,000 tokens of context, where speaking slows. The 60.5-second delay includes the time it took to read the agent framework's own system prompt. It is not a measurement of how long the model thought.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The earlier draft-model comparison</h2>
+      <p>A draft model is a small companion model that guesses the next few tokens. The large model then checks the guesses in one pass and keeps the ones it agrees with. Accepted guesses cost almost nothing extra, so the share of guesses accepted is what turns into speed.</p>
+      <p>The installed 4-bit preset loaded DeepSeek's own draft model natively. Its runtime record reports a maximum draft length of <strong>6</strong>, a minimum of <strong>0</strong>, and a probability floor of <strong>0.50</strong> <span class="badge">measured</span>. The remaining draft settings are recorded in the package README.</p>
+      <p>In the earlier sweep on 13 September 2026, where the launcher allowed up to <strong>8</strong> draft tokens <span class="badge">measured</span>, the draft's guesses were accepted at <strong>61.4%, 62.8%, and 63.9%</strong> on the 3-bit file, and <strong>68.0%, 84.6%, and 69.4%</strong> on the 4-bit file <span class="badge">measured</span>. Each set is the three probe turns of one run, in order: the short turn, the 8,000-token depth probe, and the fresh-prompt probe. Mean accepted runs ranged from <strong>2.82 to 3.75 tokens</strong> <span class="badge">measured</span>.</p>
+      <p>At the 8,000-token depth probe on 13 September 2026, the best 4-bit configuration with the draft reached <strong>19.25 tokens a second</strong> against <strong>12.78</strong> for the best without it, a difference of <strong>51%</strong> <span class="badge arithmetic">arithmetic</span>. On the 3-bit file the same comparison is <strong>18.12</strong> against <strong>16.15</strong>, a difference of <strong>12%</strong> <span class="badge arithmetic">arithmetic</span>. The underlying speeds are measured; the percentages are arithmetic on them.</p>
+      <p>The placement changed as well as the draft, so these are comparisons of two configurations, not an isolated measurement of the draft. Without the draft the 4-bit file ran 5 whole layers on the card, 14 expert sets in desktop RAM and 24 whole layers on the laptop; with the draft it ran 2, 13 and 28. The 3-bit file ran 8, 10 and 25 without the draft and 4, 14 and 25 with it <span class="badge">measured</span>. In both cases whole layers moved off the card to make room for the draft model. Reading fell in both configurations too, from <strong>184.6 to 148.8</strong> tokens a second on the 3-bit file and from <strong>145.4 to 121.9</strong> on the 4-bit file <span class="badge">measured</span>, and that loss carries the same caution.</p>
+      <div class="note">
+        <span class="label">What the 4-bit result means</span>
+        <p>The 4-bit file stores more information per weight than the 3-bit file. We did not measure answer quality, so "better weights" here means a higher-bit file, not a quality verdict. The 15 September preset measured speaking near 19.6 tokens a second, including hidden reasoning, with the 4-bit body <span class="badge">measured</span>. It gave up reading speed to do that. The 26 September update above gives the current choice for the measured long-prompt code requests; the 4-bit draft preset was not re-tuned.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Context, recall, and tools</h2>
+      <p>The 3-bit run's eight cache buffers sum to <strong>892.25 MiB at a 131,072-token window</strong> <span class="badge">measured</span>. Doubling that layout, which is what a 256K window would be, gives <strong>about 1,785 MiB</strong> <span class="badge arithmetic">arithmetic, not run</span>. That was an untested memory estimate on 15 September. The new runs above served 262,144 tokens; their cache layout is not inferred from this doubling.</p>
+      <div class="note">
+        <span class="label">A note on that figure</span>
+        <p>An earlier summary of ours called the 128K attention cache about 1 GB. This page prints the exact sum of the eight recorded buffers instead of the rounded figure. The change is precision, not a correction of a wrong number.</p>
+      </div>
+      <p>Tool calls and recall at 48,000 and 96,000 tokens of context were checked through an agent framework on 14 September 2026. At the first depth a seeded history of about 48,000 tokens became a <strong>52,928-token prompt</strong> once the framework's own scaffolding was counted; the model found <strong>3 of 3 planted codes</strong> and wrote a file through a tool at depth <span class="badge">measured</span>. At the second depth the prompt was <strong>102,478 tokens</strong>, again <strong>3 of 3</strong>, again a tool used at depth <span class="badge">measured</span>. First visible content arrived after <strong>543.65 seconds</strong> at the first depth and <strong>1,537.75 seconds</strong> at the second <span class="badge">measured</span>; both times include the framework seeding the history and reading its own system prompt, so neither is model time alone. The same records give the speaking and reading rates at those depths, <strong>11.7 and 97.4</strong> tokens a second at 48,000 and <strong>10.0 and 66.6</strong> at 96,000 <span class="badge">measured</span>.</p>
+      <p>The long-context check took <strong>three attempts</strong> <span class="badge">measured</span>. The first failed its time budgets. The second holds the 48K and 96K legs, the recall and the tool use, and failed on a separate leg. The third reran the short legs and passed. Across attempts 2 and 3 every component passed; no single recorded attempt contains both.</p>
+      <p>The installed 4-bit preset passed only the short tool-and-recall legs, on 15 September 2026. Its direct tool-schema call took <strong>5.8 seconds</strong> <span class="badge">measured</span>. The 48K and 96K legs were not rerun on that preset.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Thinking is stated, not verified here</h2>
+      <p>Our operator record for both of our DeepSeek V4 Flash endpoints, the desktop-alone one and the two-machine one, says the model thinks by default and accepts a per-request switch to turn thinking off <span class="badge stated">stated</span>. The loaded chat template reported thinking enabled <span class="badge">measured</span>, and the 200-token short speed probes of 12 to 15 September spent their whole token budget on reasoning. The new code probes stopped early and returned a visible answer; their timed generation also counts hidden reasoning. The timed probes packaged here do not establish the off-switch on DeepSeek V4 Flash 0731. We therefore do not label the switch measured.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Cold wake, then and now</h2>
+      <p>The old cold-wake times below remain measurements of their dated configurations. With the tuned desktop IQ3 body on 21 September, the server read <strong>150,103 tokens in 237,469.00 ms</strong> and the complete code-answer request took <strong>244.8 seconds</strong>, against <strong>2,933.8 seconds</strong> on the split at ub 512 <span class="badge">measured</span>. The desktop read time is <strong>237.469 seconds</strong> <span class="badge arithmetic">arithmetic, milliseconds divided by 1,000</span>. At 48,024 tokens the corresponding whole requests took <strong>75.2 and 474.2 seconds</strong> <span class="badge">measured</span>. These are direct requests to an already loaded server. They are not replacement first-visible-content measurements for the old framework history and do not include loading the weights.</p>
+      <p>On the desktop alone on 13 September 2026, the first visible content after a <strong>102,480-token history</strong> took <strong>1,396.6 seconds</strong>, with the prompt read at about <strong>73.4 tokens a second</strong> <span class="badge">measured</span>. That is <strong>23.3 minutes</strong> <span class="badge arithmetic">arithmetic</span>. The same record found <strong>3 of 3 planted codes</strong> <span class="badge">measured</span>.</p>
+      <p>On the pair, the nearest measured equivalent is the deep leg above: a <strong>102,478-token</strong> history reached first visible content in <strong>1,537.75 seconds</strong>, with the prompt read at <strong>66.6 tokens a second</strong> <span class="badge">measured</span>. Reading speed falls with depth on this configuration, so the 184.6 tokens a second in the table, measured on a 7,841-token prompt, must not be extended to a 100,000-token history. We did not measure the pair's reading rate at that depth with a direct probe.</p>
+      <p>The saved-slot experiment did not make this architecture warm after a restart. The saved slot was not put back after the restart: the run record's restore field is empty, and the next request read the history again, <strong>102,846 prompt tokens</strong> processed and first content after <strong>797.57 seconds</strong> against <strong>1,396.6 seconds</strong> cold <span class="badge">measured</span>. The result record marks that attempt FAIL. Its GGUF records <code>attention.sliding_window = 128</code> <span class="badge">measured header</span>, the sliding-window mechanism behind the full re-read after a restored slot described in the <a href="../warm-wake/">warm-wake study</a>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>DeepSeek V4.1 Flash, measured and parked</h2>
+      <p>We also measured the 4.1 version on the same desktop through a community port of llama.cpp on 14 September 2026. That port keeps a small expert cache on the graphics card and a larger second tier of expert weights in system memory, and streams the rest from a local drive as the model needs them. The tier sizes below are the size of that second cache in system memory. The run worked, but it did not complete a tool call through an agent framework with thinking off or on <span class="badge">measured failure</span>. A structured tool call sent straight to the server did succeed with thinking off; with thinking on it did not. We parked it.</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Check</th><th>Result</th><th>Served window</th><th>Label</th></tr></thead>
+          <tbody>
+            <tr><td class="t">File used</td><td class="t">MXFP4 engram GGUF, 11 shards, 475G reported by the download log</td><td class="t">n/a</td><td class="t">measured</td></tr>
+            <tr><td class="t">Load to healthy</td><td class="t">143 to 207 seconds across 5 runs</td><td class="t">4,096 to 131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Card use at 128K</td><td class="t">29,615 and 29,584 MiB in runs D and E</td><td class="t">131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Cold speaking, runs A to D</td><td class="t">6.18 to 6.86 tokens a second</td><td class="t">4,096 to 131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Warm speaking, 110 GiB tier</td><td class="t">10.14 to 10.82 tokens a second</td><td class="t">4,096 to 131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Speaking at about 100K</td><td class="t">5.44 tokens a second</td><td class="t">131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Reading repetitive test text</td><td class="t">22.9 to 39.0 tokens a second</td><td class="t">4,096 to 131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Reading real prose</td><td class="t">12.5 tokens a second on 38,198 prompt tokens</td><td class="t">131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Early recall, runs A and B</td><td class="t neg">3 misses at about 2,000 and 3,500 tokens</td><td class="t">4,096</td><td class="t">measured failure</td></tr>
+            <tr><td class="t">Later recall, runs C to E</td><td class="t">Exact at 2K, 8K, 30K, 32K, and 100K</td><td class="t">32,768 and 131,072</td><td class="t">measured</td></tr>
+            <tr><td class="t">Tool calls through an agent framework</td><td class="t neg">Not completed, thinking off or on</td><td class="t">131,072</td><td class="t">measured failure</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">Runs A to E swept 4,096, 32,768 and 131,072-token windows and second-tier caches of 72, 110 and 125 GiB, so the rows above are not all one configuration. Run A, with the 72 GiB tier, missed the planted code at about 2,000 and 3,500 tokens; its warm speaking rate was 9.25 tokens a second. Run B, with 110 GiB, found the code at 2,000 and missed it at 3,500. Runs C, D, and E then recalled correctly at the listed depths. These are three recorded misses across the first two runs <span class="badge">measured</span>.</p>
+      <p>A separate real-prose probe took <strong>3,064.2 seconds</strong> to read <strong>38,198 prompt tokens</strong> at <strong>12.5 tokens a second</strong>, then recalled its planted code <span class="badge">measured</span>. The prose was about 120,000 characters of our own prose documentation, with a code planted at the midpoint. On this V4.1 port, the later batch-setting attempt failed to create a model context. It remains a failed V4.1 attempt; the successful September 20 and 21 batch results above concern V4 Flash 0731.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>No answer-quality result.</strong> The page measures speed, memory, recall, and tool plumbing. It does not show that 4-bit answers are better than 3-bit answers.</li>
+        <li><strong>No controlled machine-count comparison.</strong> The earlier desktop and split rows changed quantization as well as placement. The new IQ3 rows share weights but compare separately tuned configurations and different machines, not machine count alone.</li>
+        <li><strong>No full-window occupancy test.</strong> The new window is 262,144 tokens; the deepest new IQ3 prompt is 150,103 tokens. The old doubled-cache figure remains arithmetic.</li>
+        <li><strong>No validated quantized-cache recommendation.</strong> The Q8 combined trial timed reading without an answer check. It does not establish correctness of a quantized attention cache.</li>
+        <li><strong>No measured thinking off-switch.</strong> The switch is stated in our operator record and remains unprobed here.</li>
+        <li><strong>No long-context result for the installed 4-bit preset.</strong> Its framework check covered the short legs only.</li>
+        <li><strong>No general claim about two-machine serving.</strong> This card covers one model family. The wider comparison belongs on the two-box study.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>What we got wrong</h2>
+      <p>Our own summary rounded the 3-bit split to <strong>17 tokens a second</strong>. The raw run contains <strong>15.89, 16.15, and 17.06</strong> <span class="badge">measured</span>. This page prints <strong>15.9 to 17.1</strong> <span class="badge">measured</span>.</p>
+      <p>Our ledger gave the 4-bit no-draft placement as 5, 10, and 28 layers. The raw run says <strong>5 whole layers on the card, 14 expert sets in desktop RAM, and 24 whole layers on the laptop</strong> <span class="badge">measured</span>. This page uses the raw run.</p>
+      <p>Our own notes disagreed with each other on active parameters, and one of them carried a figure from a secondary source. We print no active-parameter figure at all: the maker's model card at the pinned revision states none, and the GGUF header records expert counts without the expert width an active total would need <span class="badge">measured</span>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../two-boxes/">two-box study</a> carries the wider comparison across the models tried on the desktop and laptop. The <a href="../warm-wake/">warm-wake study</a> records the successful restores and this model's unsuccessful attempt. The <a href="../method/">method page</a> defines the evidence labels used here.</p>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence package under <code>data/</code> holds the records these numbers come from. Local paths, machine names, network addresses and internal service names are replaced in every file; nothing measured is changed. <a href="data/README.md">data/README.md</a> maps every file, lists the redactions with counts, and opens with the places where the package looks as if it argues with the page. <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps each displayed figure to a file and a field.</p>
+      <ul class="plain">
+        <li>The DeepSeek V4 Flash 0731 model card and LICENSE file, read in full at repository revision <code>7872f01b</code> and kept in <code>data/vendor/</code>.</li>
+        <li>The community GGUF header emitted by llama.cpp, for the base parameter count, expert layout, license metadata, cache layout, served window, runtime build, and model identity.</li>
+        <li>The recorded direct runs for the 3-bit and 4-bit bodies, the installed 4-bit preset, the tool-and-recall JSON records, the cold-wake JSON record, and the V4.1 port results.</li>
+        <li>The probe and launch scripts that produced these figures.</li>
+        <li>llama.cpp build 10919 at source commit <code>d3146f2b5</code> for the two-machine sweep.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: DeepSeek, Unsloth, NVIDIA, ASUS, Intel, Hugging Face, and the llama.cpp project are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+Placement knobs and the three named profiles, quoted from the installed configuration's own
+comment block. Knob names carry a service prefix in the original; it is replaced here, and the
+knob that was named after this machine is written <KNOB_RAM_LAYERS>. Three clauses were removed:
+one naming other software that runs beside the model on the card, one naming other tenants of the
+laptop, and one naming a network product in the bind policy. Nothing with a number was altered.
+
+PLACEMENT KNOBS (layers 0..42): <KNOB_GPU_FULL> layers live whole on the card; layers up to
+<KNOB_RAM_LAYERS>-1 keep attention on the card with experts in RAM; the rest go whole to the
+<LAPTOP>. Card about 2.2 GB per whole layer + about 6 GB fixed; <LAPTOP> about 2.25 GB per layer
+(108 GiB ceiling); RAM about 2.1 GB per expert layer. The three named profiles:
+  gated default   <KNOB_RAM_LAYERS>=18 <KNOB_GPU_FULL>=8  -> card 22 GB | RAM 25 GB | <LAPTOP> 56 GB   (16-17 t/s, 185 prefill)
+  card-light      <KNOB_RAM_LAYERS>=18 <KNOB_GPU_FULL>=4  -> card 13 GB | RAM 33 GB | <LAPTOP> 56 GB
+  <LAPTOP>-heavy  <KNOB_RAM_LAYERS>=13 <KNOB_GPU_FULL>=8  -> card 22 GB | RAM 12 GB | <LAPTOP> 67 GB   (same decode, prefill 160)
+
+ALLOWED VALUES (the script validates <KNOB_CTX>; anything else refuses): 32768 | 65536 | 131072
+
+The same file records the model it serves as "284B MoE, 256 experts, 6 active + 1 shared, arch
+deepseek4", and the 3-bit file as 96.9 GiB, which is that file's own round of the 97.05 GiB the
+shard byte counts add up to.
+
+The sweep runs' draft length is not in this file. It is in the headers of the two draft runs
+(logs/deepseek-draft-runs-and-maverick.log, "+ DSpark draft (n-max 8)"), while the installed
+service reports the draft model's own n_max=6 (installed-4bit-preset-run.txt).
+
+Profile names are the configuration's own. "gated default" there means the profile that passed
+the tool-and-recall check, which is how the page words it.

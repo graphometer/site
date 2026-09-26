@@ -1,0 +1,42 @@
+Excerpt of the download script used on 2026-09-20 (lines 50-87): the retry loop, the
+progress line that used `du -sb` (apparent size), and the final verification by shard
+count and exact bytes.
+
+  50  export HF_HUB_ENABLE_HF_TRANSFER=1
+  51  # RETRY LOOP. The first attempt died at 125/167 GiB on a transient
+  52  # "CAS service error : Request failed after 5 retries" from HF's Xet backend.
+  53  # hf resumes from the .incomplete blobs, so a retry costs nothing already paid
+  54  # for -- but without this loop one blip throws away hours. Backoff is short
+  55  # because the partials are safe on disk and HF itself answers fine.
+  56  hf_exit=1
+  57  for attempt in 1 2 3 4 5 6 7 8; do
+  58    echo "attempt $attempt $(date -Is) -- $(du -sb "$DEST" 2>/dev/null | cut -f1) bytes on disk" | tee -a "$STATUS"
+  59    <REDACTED_PATH>/hf download "$REPO" --include "${QUANT}/*" --local-dir "$DEST" \
+  60      >> "$LOGDIR/hf-download.log" 2>&1
+  61    hf_exit=$?
+  62    [ "$hf_exit" -eq 0 ] && { echo "attempt $attempt succeeded" | tee -a "$STATUS"; break; }
+  63    echo "attempt $attempt failed (exit $hf_exit) -- $(grep -c 'CAS service error' "$LOGDIR/hf-download.log" 2>/dev/null) CAS errors so far; resuming in 30s" | tee -a "$STATUS"
+  64    sleep 30
+  65  done
+  66  echo "hf_exit=$hf_exit" | tee -a "$STATUS"
+  67  
+  68  # ---- verification: count and bytes, NOT the exit code ----
+  69  SRC="$DEST/$QUANT"
+  70  got_shards=$(ls -1 "$SRC"/*.gguf 2>/dev/null | wc -l)
+  71  got_bytes=$(du -sb "$SRC" 2>/dev/null | cut -f1)
+  72  echo "--- verify $(date -Is) ---" | tee -a "$STATUS"
+  73  echo "shards: got $got_shards / expected $EXPECT_SHARDS" | tee -a "$STATUS"
+  74  echo "bytes:  got ${got_bytes:-0} / expected $EXPECT_BYTES" | tee -a "$STATUS"
+  75  for n in 1 2 3 4 5; do
+  76    f="$SRC/${QUANT}-0000${n}-of-0000${EXPECT_SHARDS}.gguf"
+  77    if [ -f "$f" ]; then printf "  shard %d: %15d B\n" "$n" "$(stat -c%s "$f")" | tee -a "$STATUS"
+  78    else echo "  shard $n: MISSING" | tee -a "$STATUS"; fi
+  79  done
+  80  
+  81  if [ "$got_shards" -eq "$EXPECT_SHARDS" ] && [ "${got_bytes:-0}" -eq "$EXPECT_BYTES" ]; then
+  82    echo "VERIFY PASS — all $EXPECT_SHARDS shards, exact byte match" | tee -a "$STATUS"
+  83    echo "ALL_DONE $(date -Is)" | tee -a "$STATUS"
+  84  else
+  85    echo "VERIFY FAIL — do NOT use this copy; re-run to resume" | tee -a "$STATUS"
+  86    exit 2
+  87  fi

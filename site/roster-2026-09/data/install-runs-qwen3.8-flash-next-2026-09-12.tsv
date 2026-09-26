@@ -1,0 +1,17 @@
+# Qwen3.8-Flash-Next, measurements 2026-09-12, RTX 5090 (32607 MiB), 188 GB RAM,
+# runtime = a local llama.cpp build (d3146f2), weights = a local staging copy,
+# bound to a loopback port on this machine.
+# Flags: --jinja --parallel 1 --n-gpu-layers 99 --n-cpu-moe 99 --fit off
+#        --threads 24 --threads-batch 24 --flash-attn auto --temp 0.7 --top-p 0.8 --top-k 20
+ctx	vram_used_MiB	vram_free_MiB	load_s	decode_tps	note
+65536	9670	22417	18.6	22.29	first load, partly-cold page cache
+65536	9670	22417	-	22.41	warm
+65536	9670	22417	-	22.58	warm
+131072	11422	20665	1.86	22.76	fully page-cache-warm load
+131072	11422	20665	-	22.44	warm
+# prefill: 246.9 t/s on a 2624-token prompt (TTFT 10622 ms); TTFT 157-167 ms on short prompts
+# free -g with model resident: total 188 / used 21-23 / buff-cache 170 / AVAILABLE 164-166
+# /proc RSS: VmRSS 40-50 GiB, RssAnon 1.27 GiB, RssFile ~49 GiB  (mmap => page cache)
+# thinking OFF (chat_template_kwargs enable_thinking=false): no reasoning_content, byte-exact answer
+# thinking ON  (key absent): 17*23 -> 391 + 129 chars reasoning at max_tokens 600
+# budget floor: NONE, 2+2 -> 4 with 93 chars reasoning at max_tokens 60

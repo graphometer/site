@@ -1,0 +1,20 @@
+Byte-offset check for the task-A run that died on 2026-09-16 (computed on the original,
+unredacted files; the published copies differ in length because paths were redacted).
+
+version executing when the run began (published as run_trial.version-2026-09-16T04-22.sh):
+  bytes 10045, sha256 b01ce7effcde95e61fcc56ae4f7748051427d5f16c1ae58023c1232246d4616f
+version written over it at 08:55:26 (published as run_trial.version-2026-09-16T08-55.sh):
+  bytes 10977, sha256 47d3939881dbf3e50212a6b235556b3e3be6a9d535dafd5c2ae17b303d424dfc
+
+In the executing version, 'wait "$run_pid"' (the harness waiting for OpenCode) is line 152.
+Line 164 of the executing version starts at byte offset 7807 and reads:
+  finished="$(date --iso-8601=seconds)"
+The rewritten file, read from that same byte offset, begins:
+  ull)" = "$SANDBOX" ] || continue
+The driver log recorded, at the task-A run:
+  run_trial.sh: line 164: syntax error near unexpected token `)'
+  run_trial.sh: line 164: `ull)" = "$SANDBOX" ] || continue'
+
+So bash read line 164 only after the wait on line 152 had returned, i.e. after the OpenCode
+session ended (its log's last line is 09:14:19.043 local time), and died there, before the
+verification, diff capture, meta.json and scoring steps that follow.

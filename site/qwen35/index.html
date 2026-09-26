@@ -152,7 +152,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · runs 2026-08-05 to 08-06 · files re-read 2026-08-08 · prior art corrected 2026-08-10 · budget advice revised 2026-08-11</div>
+      <div class="eyebrow">Field card · runs 2026-08-05 to 08-06 · files re-read 2026-08-08 · prior art corrected 2026-08-10 · budget advice revised 2026-08-11 · reading speeds updated September 2026</div>
       <h1>Field card: <em>Qwen3.5</em> (122B and 397B)</h1>
       <p class="lead">Qwen3.5 is a family of mixture-of-experts models (huge
       in total, small per token: only a few of the many expert sub-networks
@@ -386,6 +386,22 @@
       managed restart with a cooler page cache (a fully cold cache was
       never timed; section 09). Wait on the health endpoint, and do not
       read a 100-second load as a failure.</p>
+      <div class="note">
+        <span class="label">Update, September 2026</span>
+        <p>A batch-size sweep on 2026-09-21, at a 131,072 context and with
+        no memory mapping, raised the batch from llama.cpp's defaults
+        (<code>-b 2048 -ub 512</code>) to <code>-b 4096 -ub 4096</code>. On
+        a 48,029-token read the 397B rose from 224.5 to
+        <strong>932.2</strong> tokens per second. On a 48,027-token read
+        the 122B rose from 520.2 to <strong>2,101.7</strong>. The
+        <a href="../batch-size/">batch-size study</a> carries the full
+        sweep, including the rungs between those two and the 8,192 rung
+        that did not load. The prompt-reading figures in the
+        table above are the August measurements at this page's own
+        no-mmap profiles, and they stay true as dated measurements of that
+        configuration; the batch-size change is a faster configuration,
+        not a correction of these numbers.</p>
+      </div>
     </section>
 
     <section>
@@ -534,8 +550,11 @@
         profile (prefilled at 717 tokens per second, needle retrieved per
         the session's account). The 128K profile starts and serves but has
         never seen a prompt longer than 2,617 tokens. The 397B's longest
-        prompt is 4,367 tokens. The million-token claim is the vendor's
-        and was never attempted.</li>
+        prompt is 4,367 tokens. Those were the limits of the August runs.
+        On 2026-09-21 a 48,027-token prompt was sent to the 122B and a
+        48,029-token prompt to the 397B, both at a 131,072 context. Speeds
+        are the dated note in section 05. The million-token claim is still
+        the vendor's, and it was still not attempted.</li>
         <li><strong>The 397B's ungated creative case was never
         measured</strong>; its gate rides the 122B's evidence.</li>
         <li><strong>Coexistence with a speech engine</strong> is the
@@ -618,7 +637,7 @@
 
     <section lang="zh-Hans"> <div class="secnum">11</div>
       <h2>中文摘要：Qwen3.5 现场记录卡（122B 与 397B）</h2>
-      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10，预算建议修订于 2026-08-11）。<strong>本摘要同步日期：2026-08-11。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。</p>
+      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10，预算建议修订于 2026-08-11）。<strong>本摘要同步日期：2026-08-11。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。英文页面第 05 节现有一条 2026-09-21 的读取速度更新说明，本摘要尚未收录；截至 2026-09-26，本摘要落后于英文页面。</p>
       <p><strong>这是什么。</strong>Qwen3.5 是一组混合专家（MoE）模型：总参数量很大，但每个 token 只激活其中一小部分。我们在同一台工作站、同一张 32 GB 显卡上，用同一套方法，在两天里把其中两个模型分别投入使用：122B（26 到 38 tokens/秒）与 397B（14 到 20 tokens/秒）。本页的核心发现是速度旁边的那个陷阱（见下）。页面上的每个数字都可追溯到一份有日期的记录或模型文件本身；凡属厂商说法而非我们的测量，文中均已注明。</p>
       <p><strong>规格（读自文件头，而非引自模型卡）。</strong>参数总量由张量形状求和得出：122B 为 122,111,526,912，397B 为 396,346,350,336。每 token 激活量：122B 在 256 个专家中路由 8 个，另加 1 个常驻共享专家，约 9.8B；397B 在 512 中路由 10 个，另加 1 个共享专家，约 17.4B，与厂商 A10B / A17B 标签是同一套算术。架构在两个文件中一致：每第四个块为带 KV cache 的完整注意力块，其间为线性注意力块（122B 为 48 块中的 12 块，397B 为 60 块中的 15 块）。上下文：两个文件都声明 262,144，我们默认以 65,536 提供服务；厂商另称经扩展可达 1M，此项不在文件中，我们也从未测试。词表 248,320。两者默认都会先思考再回答。权重开放，许可证 Apache 2.0。</p>
       <p><strong>我们实际运行的东西。</strong>Unsloth 的 MTP-enabled GGUF 构建，版本已固定：unsloth/Qwen3.5-122B-A10B-MTP-GGUF 的 UD-Q4_K_S，pinned revision 907becb3，3 个文件，73.43 GB（68.38 GiB）；unsloth/Qwen3.5-397B-A17B-MTP-GGUF 的 UD-IQ3_XXS，4 个文件，149.84 GB（139.54 GiB）。一处诚实的标签说明：名为 IQ3_XXS 的构建中并不包含该类型的任何张量，这是量化档位标签，不是逐张量的描述。机器：一张 NVIDIA GeForce RTX 5090（32,607 MiB VRAM）、Intel Core Ultra 9 285K（24 核）、188 GiB 系统内存，权重存放在 4 TB NVMe SSD 上。本页最关键的一条事实：两个模型的权重都能完整装进系统内存（73 和 150 GB 对 188 GiB）。运行时：mainline llama.cpp，commit c8e03ce8，为这一对模型所需的架构修复而重新构建。</p>
@@ -656,7 +675,8 @@
         <li>The runtime: mainline llama.cpp at commit
         <span class="n">c8e03ce8</span>, CUDA 12.8, built 2026-08-05 for
         this pair's architecture fixes.</li>
-        <li>Every measured number stands on dated project records: the two
+        <li>The measurements above this page's September 2026 note stand
+        on dated project records: the two
         placement ladders and their per-rung server logs, the gated and
         ungated variant logs, both battery server logs, the service
         manager's log entries for both installation proofs, the
@@ -664,6 +684,9 @@
         are project records rather than public files today; they are named
         here so that every number on this page has a dated, recorded home
         that can be produced if questioned.</li>
+        <li>The 2026-09-21 readings in section 05's update note are the
+        four result lines behind it; the batch-size study publishes the
+        full sweep.</li>
       </ul>
     </section>
 

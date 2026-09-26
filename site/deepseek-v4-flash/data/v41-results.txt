@@ -1,0 +1,131 @@
+# DeepSeek V4.1 Flash through a community port of llama.cpp, 2026-09-14.
+# Complete run summary for runs A to E, the two tool-call gate attempts, the real-prose
+# probe and the failed batch-setting attempt. 12 lines were removed because they name the
+# agent framework's container, a residue check or an internal check leg. Every measured
+# line, every recall miss and both failure verdicts are kept. Paths, addresses and the
+# port author's handle are replaced.
+# 
+[13:59:51] waiting for the download
+[13:59:51] download done: 475G
+[14:02:57] === RUN A-author: cache 18 GiB · L2 72 GiB · ctx 4096 · draft 0 ===
+[14:05:20] RUN A-author: healthy after 143 s · VRAM 27881 MiB · RAM avail 96 GiB
+[cold short] prompt 23 tok 13.0 s = 1.8 t/s | decode 160 tok = 6.63 t/s | wall 37.2 s
+        reply: 
+[same again (resident?)] prompt 4 tok 0.5 s = 8.0 t/s | decode 160 tok = 9.25 t/s | wall 17.8 s
+        reply: At dawn, the harbour town wakes to g
+[depth~2000] prompt 1990 tok 86.7 s = 22.9 t/s | decode 60 tok = 5.88 t/s | wall 96.9 s
+        reply: MARLIN-2000-CO
+        recall: MISSED
+[depth~3500] prompt 3433 tok 143.3 s = 24.0 t/s | decode 60 tok = 6.12 t/s | wall 153.1 s
+        reply: 
+        recall: MISSED
+4.54.408.825 W print_stats: target: moe stream: remap calls = 15440, expert hits = 83912, misses = 36070 (10877 cold), hit rate = 69.94%
+4.54.408.826 W print_stats: moe stream: L2 slab hits = 84544, fills = 101949, evictions = 89629, hit rate = 45.33%
+7.27.525.594 W print_stats: target: moe stream: remap calls = 18120, expert hits = 131943, misses = 43873 (11497 cold), hit rate = 75.05%
+7.27.525.596 W print_stats: moe stream: L2 slab hits = 114484, fills = 215921, evictions = 203601, hit rate = 34.65%
+[14:10:34] RUN A-author: stopped
+[14:10:34] === RUN B-bigtier: cache 18 GiB · L2 110 GiB · ctx 4096 · draft 0 ===
+[14:13:42] RUN B-bigtier: healthy after 188 s · VRAM 27932 MiB · RAM avail 58 GiB
+[cold short] prompt 23 tok 12.5 s = 1.8 t/s | decode 160 tok = 6.86 t/s | wall 35.8 s
+        reply: At dawn, the harbour town wakes under
+[same again (resident?)] prompt 4 tok 0.3 s = 15.3 t/s | decode 160 tok = 10.82 t/s | wall 15.1 s
+        reply: At dawn, the harbour town lies wrapped in pale mist, with fishing boats rocking gently against their moorings and gulls crying above the slate roofs. The first light spills gold across the water, whil
+[depth~2000] prompt 1990 tok 65.3 s = 30.5 t/s | decode 60 tok = 7.28 t/s | wall 73.6 s
+        reply: MARLIN-2000-COBALT
+        recall: OK
+[depth~3500] prompt 3433 tok 105.8 s = 32.4 t/s | decode 60 tok = 7.24 t/s | wall 114.2 s
+        reply: 
+        recall: MISSED
+5.11.249.596 W print_stats: target: moe stream: remap calls = 15440, expert hits = 84007, misses = 35930 (10838 cold), hit rate = 70.04%
+5.11.249.597 W print_stats: moe stream: L2 slab hits = 133794, fills = 50544, evictions = 31722, hit rate = 72.58%
+7.05.409.784 W print_stats: target: moe stream: remap calls = 18120, expert hits = 132075, misses = 43633 (11451 cold), hit rate = 75.17%
+7.05.409.792 W print_stats: moe stream: L2 slab hits = 232745, fills = 91220, evictions = 72398, hit rate = 71.84%
+[14:17:52] RUN B-bigtier: stopped
+[14:17:52] === RUN C-32k: cache 18 GiB · L2 110 GiB · ctx 32768 · draft 0 ===
+[14:21:19] RUN C-32k: healthy after 207 s · VRAM 28170 MiB · RAM avail 57 GiB
+[cold short] prompt 23 tok 11.0 s = 2.1 t/s | decode 77 tok = 6.18 t/s | wall 23.5 s
+        reply (360 chars): As the first light spills over the breakwater, the harbour town stirs awake with the soft clink of rigging and the distant cry of gulls. Fishing boats bob gently in the amber glow, their reflections r
+[same again (resident?)] prompt 4 tok 0.3 s = 15.5 t/s | decode 81 tok = 10.14 t/s | wall 8.3 s
+        reply (386 chars): As dawn breaks over the harbour, fishing boats bob gently on water turned pink and gold by the rising sun, while gulls wheel and cry above the silent piers. The smell of salt and fresh bread drifts fr
+[depth~2000] prompt 1990 tok 82.8 s = 24.0 t/s | decode 9 tok = 6.55 t/s | wall 84.2 s
+        reply (18 chars): MARLIN-2000-COBALT
+        recall: OK
+[depth~8000] prompt 7840 tok 217.5 s = 36.1 t/s | decode 9 tok = 6.14 t/s | wall 219.0 s
+        reply (18 chars): MARLIN-8000-COBALT
+        recall: OK
+[depth~30000] prompt 29290 tok 753.0 s = 38.9 t/s | decode 9 tok = 6.13 t/s | wall 754.5 s
+        reply (19 chars): MARLIN-30000-COBALT
+        recall: OK
+9.01.409.893 W print_stats: target: moe stream: remap calls = 7920, expert hits = 139214, misses = 21287 (11296 cold), hit rate = 86.74%
+9.01.409.896 W print_stats: moe stream: L2 slab hits = 310447, fills = 81560, evictions = 62738, hit rate = 79.19%
+21.35.966.473 W print_stats: target: moe stream: remap calls = 10600, expert hits = 439977, misses = 41383 (11973 cold), hit rate = 91.40%
+21.35.966.474 W print_stats: moe stream: L2 slab hits = 1202490, fills = 146942, evictions = 128120, hit rate = 89.11%
+[14:39:40] RUN C-32k: stopped
+[14:39:40] === RUN D-128k: cache 18 GiB · L2 110 GiB · ctx 131072 · draft 0 ===
+[14:42:40] RUN D-128k: healthy after 180 s · VRAM 29615 MiB · RAM avail 57 GiB
+[cold short] prompt 23 tok 11.1 s = 2.1 t/s | decode 96 tok = 6.50 t/s | wall 25.9 s
+        reply (434 chars): As the first light bleeds into the sky, the harbour town's fishing boats bob gently on the glassy water, their masts a forest of thin silhouettes against the pale horizon. The scent of salt and fresh 
+[same again (resident?)] prompt 4 tok 0.3 s = 15.0 t/s | decode 96 tok = 10.82 t/s | wall 9.1 s
+        reply (429 chars): As the first light spills over the breakwater, the harbour town stirs with the creak of mooring lines and the distant clang of a buoy bell. Fishing boats nudge against the quay while gulls wheel above
+[depth~2000] prompt 1990 tok 70.4 s = 28.3 t/s | decode 9 tok = 6.32 t/s | wall 71.8 s
+        reply (18 chars): MARLIN-2000-COBALT
+        recall: OK
+[depth~8000] prompt 7840 tok 213.7 s = 36.7 t/s | decode 9 tok = 6.06 t/s | wall 215.2 s
+        reply (18 chars): MARLIN-8000-COBALT
+        recall: OK
+[depth~32000] prompt 31240 tok 800.4 s = 39.0 t/s | decode 9 tok = 5.87 t/s | wall 802.0 s
+        reply (19 chars): MARLIN-32000-COBALT
+        recall: OK
+8.20.660.005 W print_stats: target: moe stream: remap calls = 9280, expert hits = 145477, misses = 23426 (11381 cold), hit rate = 86.13%
+8.20.660.008 W print_stats: moe stream: L2 slab hits = 313753, fills = 85595, evictions = 66773, hit rate = 78.57%
+21.42.663.322 W print_stats: target: moe stream: remap calls = 12120, expert hits = 461430, misses = 44942 (12038 cold), hit rate = 91.12%
+21.42.663.324 W print_stats: moe stream: L2 slab hits = 1250020, fills = 153621, evictions = 134799, hit rate = 89.06%
+[15:01:35] RUN D-128k: stopped
+[15:01:35] CHAIN DONE
+[15:02:07] === RUN E-resident: cache 18 GiB · L2 125 GiB · ctx 131072 · thinking off ===
+[15:05:14] run E: healthy after 172 s · VRAM 29584 MiB · RAM avail 42 GiB
+[15:05:14] --- prefix reuse across turns at ~30K ---
+[turn 1 (read ~30000)] prompt 30746 tok 801.0 s = 38.4 t/s | decode 36 tok = 5.89 t/s | wall 807.2 s
+        reply: The town record repeatedly describes granite steps, ferries, a chapel bell, and bakery shutters, and includes the lighthouse keeper's password: GRANITE-4406.
+[turn 2 (+1 question , reuse?)] prompt 17 tok 2.1 s = 8.3 t/s | decode 7 tok = 9.36 t/s | wall 2.9 s
+        reply: GRANITE-4406
+        recall: OK
+[turn 3 (+1 more)] prompt 18 tok 2.0 s = 8.9 t/s | decode 49 tok = 7.88 t/s | wall 8.3 s
+        reply: 1. Granite steps leading down to the water where the ferries idle. 2. A bell ringing twice from the chapel on the hill. 3. The bakery's shutters going up before
+[15:18:53] --- 100K read + recall + decode at depth ---
+[depth~100000] prompt 97540 tok 2522.5 s = 38.7 t/s | decode 9 tok = 5.44 t/s | wall 2524.2 s
+        reply (20 chars): MARLIN-100000-COBALT
+        recall: OK
+59.09.113.250 W print_stats: target: moe stream: load stall = 22112.10 ms total (1.043 ms per remap call)
+59.09.113.252 W print_stats: moe stream: L2 slab hits = 4113736, fills = 118203, evictions = 96814, hit rate = 97.21%
+[16:01:27] run E: stopped · QUEST E DONE
+[16:04:06] === GATE on the V4.1 port: <LOCAL> · L2 125 · 128K · thinking off ===
+[16:07:09] gate: server healthy after 168 s
+[19:11:30] gate: exit 1
+[T0] {"finish": "tool_calls", "has_tool_calls": true, "tc_names": ["ping"], "content_len": 38, "latency_s": 42.3, "error": null}
+[T1] {"events": ["ping", "assistant_message", "stop_reason", "usage_statistics"], "tool_calls": [], "tool_returns": [], "assistant_chars": 5, "reasoning_events": 0, "think_leak": false, "first_event_s": 0.19, "first_content_s": 288.0, "first_assistant_s": 288.
+[l64] donor window 118000->118000 (handle_preserved=True); seeding ~48000 tokens
+[l64] {"target_tokens": 48000, "window": 118000, "tok_per_page": 439, "pages": 109, "seed_tokens_est": 47869, "register_rc": 0, "in_context_rows": 219, "window_live": 118000, "handle_live_ok": true, "A_recall": {"events": ["ping"], "tool_calls": [], "tool_retu
+[l128] donor window 118000->118000 (handle_preserved=True); seeding ~96000 tokens
+[l128] {"target_tokens": 96000, "window": 118000, "tok_per_page": 439, "pages": 218, "seed_tokens_est": 95738, "register_rc": 0, "in_context_rows": 437, "window_live": 118000, "handle_live_ok": true, "A_recall": {"events": ["ping"], "tool_calls": [], "tool_ret
+[VERDICT] DeepSeek V4.1 Flash port (<MODEL_HANDLE>): FAIL ['T2 tool call not emitted', 'T2 file wrong/missing', 'T3 read_tool not called', 'T3 no round-trip', 'T3 post-tool follow-up not clean', 'H1 <WITHHELD> converse turn not completed/persisted', 'l6
+[19:14:23] === DECIDE: fit legs, THINKING ON, behind a saved-state proxy of our own ===
+[19:17:34] DECIDE: healthy after 191 s
+{"alias": "<MODEL_ALIAS>", "current_slot_key": null, "known_keys": 0, "last_warm": null, "target_up": true, "
+[19:25:03] decide gate: exit 1
+[T0] {"finish": "stop", "has_tool_calls": false, "tc_names": [], "content_len": 78, "latency_s": 35.2, "error": null}
+[T1] {"events": ["ping", "assistant_message", "stop_reason", "usage_statistics"], "tool_calls": [], "tool_returns": [], "assistant_chars": 5, "reasoning_events": 0, "think_leak": false, "first_event_s": 0.2, "first_content_s": 293.25, "first_assistant_s": 293.25, "latency_s": 293.5, "error": null, "prompt_tokens": 3824
+[T1b] {"events": ["ping", "reasoning_message", "assistant_message", "stop_reason", "usage_statistics"], "tool_calls": [], "tool_returns": [], "assistant_chars": 874, "reasoning_events": 20, "think_leak": false, "first_event_s": 0.2, "first_content_s": 7.01, "first_assistant_s": 10.04, "latency_s": 31.3, "error": null, 
+[T2] {"events": ["ping", "assistant_message", "stop_reason", "usage_statistics"], "tool_calls": [], "tool_returns": [], "assistant_chars": 293, "reasoning_events": 0, "think_leak": false, "first_event_s": 0.2, "first_content_s": 16.63, "first_assistant_s": 16.63, "latency_s": 29.8, "error": null, "prompt_tokens": 4139,
+[T3] {"events": ["ping", "assistant_message", "stop_reason", "usage_statistics"], "tool_calls": [], "tool_returns": [], "assistant_chars": 192, "reasoning_events": 0, "think_leak": false, "first_event_s": 0.21, "first_content_s": 4.04, "first_assistant_s": 4.04, "latency_s": 9.5, "error": null, "prompt_tokens": 4255, "
+[VERDICT] DeepSeek V4.1 Flash port (<MODEL_HANDLE>): FAIL ['T0 no structured tool call direct from the server', 'T2 tool call not emitted', 'T2 file wrong/missing', 'T3 read_tool not called', 'T3 no round-trip', 'T3 post-tool follow-up not clean']
+[19:25:18] === PREFILL LEVER: real text ~30K, default batch vs -ub 2048 -b 4096 ===
+[19:28:37] PF-default: healthy after 199 s
+[realtext 120000 chars] prompt 38198 tok 3064.2 s = 12.5 t/s | decode 9 tok = 5.00 t/s | wall 3066.2 s
+        reply: HERON-2148-SAFFRON | recall: OK
+[20:23:27] PF-ub2048: server exited during load
+3.21.337.994 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/DeepSeek-V4.1-Flash-MXFP4-engram-00001-of-00011.gguf'
+3.21.338.532 E srv    load_model: failed to create_context with model '<REDACTED_PATH>/DeepSeek-V4.1-Flash-MXFP4-engram-00001-of-00011.gguf'
+3.21.338.676 I srv    operator(): operator(): cleaning up before exit...
+3.21.341.232 E srv  llama_server: exiting due to model loading error
+[20:23:30] DECIDE DONE

@@ -1,0 +1,363 @@
+{
+ "model": "Qwen3.6-27B",
+ "run": "wave-two",
+ "started_utc": "2026-09-13T13:19:54+00:00",
+ "S": {
+  "health_s": 0.0,
+  "vram_before_mib": 25987,
+  "vram_after_mib": 25987,
+  "n_ctx": 131072,
+  "slots": 1
+ },
+ "T0": {
+  "finish": "tool_calls",
+  "has_tool_calls": true,
+  "tc_names": [
+   "ping"
+  ],
+  "content_len": 0,
+  "latency_s": 1.1,
+  "error": null
+ },
+ "T1": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 5,
+  "reasoning_events": 29,
+  "think_leak": false,
+  "first_event_s": 0.18,
+  "first_content_s": 1.68,
+  "first_assistant_s": 2.08,
+  "latency_s": 2.2,
+  "error": null,
+  "prompt_tokens": 3979,
+  "completion_tokens": 33,
+  "stop_reason": "end_turn",
+  "decode_tps": 63.5,
+  "prefill_tps_approx": 2368.5
+ },
+ "T1b": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 955,
+  "reasoning_events": 63,
+  "think_leak": false,
+  "first_event_s": 0.25,
+  "first_content_s": 0.65,
+  "first_assistant_s": 1.54,
+  "latency_s": 4.5,
+  "error": null,
+  "prompt_tokens": 4035,
+  "completion_tokens": 268,
+  "stop_reason": "end_turn",
+  "decode_tps": 69.6,
+  "prefill_tps_approx": 6207.7
+ },
+ "T2": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "tool_call_message",
+   "tool_return_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_write",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 27,
+    "contains_fixed": false,
+    "head": "wrote 33 bytes to probe.txt",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 291,
+  "think_leak": false,
+  "first_event_s": 0.23,
+  "first_content_s": 2.18,
+  "first_assistant_s": 8.55,
+  "latency_s": 8.7,
+  "error": null,
+  "prompt_tokens": 8729,
+  "completion_tokens": 361,
+  "stop_reason": "end_turn",
+  "decode_tps": 55.4,
+  "prefill_tps_approx": 4004.1,
+  "disk_exact": true
+ },
+ "T3": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "tool_call_message",
+   "tool_return_message",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_read",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 33,
+    "contains_fixed": true,
+    "head": "<non-technical return withheld>",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 100,
+  "think_leak": false,
+  "first_event_s": 0.21,
+  "first_content_s": 0.61,
+  "first_assistant_s": 3.97,
+  "latency_s": 4.1,
+  "error": null,
+  "prompt_tokens": 9061,
+  "completion_tokens": 145,
+  "stop_reason": "end_turn",
+  "decode_tps": 41.5,
+  "prefill_tps_approx": 14854.1
+ },
+ "l64": {
+  "target_tokens": 48000,
+  "window": 118000,
+  "tok_per_page": 579,
+  "pages": 82,
+  "seed_tokens_est": 47450,
+  "in_context_rows": 165,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 56,
+   "reasoning_events": 255,
+   "think_leak": false,
+   "first_event_s": 0.17,
+   "first_content_s": 19.41,
+   "first_assistant_s": 23.5,
+   "latency_s": 24.1,
+   "error": null,
+   "prompt_tokens": 53177,
+   "completion_tokens": 291,
+   "stop_reason": "end_turn",
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 62.0,
+   "prefill_tps_approx": 2739.7,
+   "hits": 3
+  },
+  "rows_after_A": 167,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "tool_call_message",
+    "tool_return_message",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 4,
+   "reasoning_events": 76,
+   "think_leak": false,
+   "first_event_s": 0.17,
+   "first_content_s": 0.62,
+   "first_assistant_s": 4.31,
+   "latency_s": 4.4,
+   "error": null,
+   "prompt_tokens": 106680,
+   "completion_tokens": 147,
+   "stop_reason": "end_turn",
+   "decode_tps": 38.9,
+   "prefill_tps_approx": 172064.5,
+   "disk_exact": true
+  },
+  "rows_after_B": 171,
+  "C_warm": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 5,
+   "reasoning_events": 21,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 0.67,
+   "first_assistant_s": 1.04,
+   "latency_s": 1.2,
+   "error": null,
+   "prompt_tokens": 53427,
+   "completion_tokens": 25,
+   "stop_reason": "end_turn",
+   "decode_tps": 47.2,
+   "prefill_tps_approx": 79741.8
+  },
+  "rows_after_C": 173
+ },
+ "l128": {
+  "target_tokens": 96000,
+  "window": 118000,
+  "tok_per_page": 579,
+  "pages": 165,
+  "seed_tokens_est": 95480,
+  "in_context_rows": 331,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 198,
+   "reasoning_events": 940,
+   "think_leak": false,
+   "first_event_s": 0.16,
+   "first_content_s": 49.7,
+   "first_assistant_s": 66.67,
+   "latency_s": 67.9,
+   "error": null,
+   "prompt_tokens": 102680,
+   "completion_tokens": 1004,
+   "stop_reason": "end_turn",
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 55.2,
+   "prefill_tps_approx": 2066.0,
+   "hits": 3
+  },
+  "rows_after_A": 333,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "tool_call_message",
+    "tool_return_message",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 5,
+   "reasoning_events": 262,
+   "think_leak": false,
+   "first_event_s": 0.19,
+   "first_content_s": 49.11,
+   "first_assistant_s": 56.56,
+   "latency_s": 56.7,
+   "error": null,
+   "prompt_tokens": 205742,
+   "completion_tokens": 334,
+   "stop_reason": "end_turn",
+   "decode_tps": 44.0,
+   "prefill_tps_approx": 4189.4,
+   "disk_exact": true
+  },
+  "rows_after_B": 337,
+  "C_warm": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 6,
+   "reasoning_events": 19,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 0.75,
+   "first_assistant_s": 1.12,
+   "latency_s": 1.3,
+   "error": null,
+   "prompt_tokens": 102959,
+   "completion_tokens": 24,
+   "stop_reason": "end_turn",
+   "decode_tps": 43.6,
+   "prefill_tps_approx": 137278.7
+  },
+  "rows_after_C": 339
+ },
+ "fails": [],
+ "verdict": "PASS",
+ "ended_utc": "2026-09-13T13:23:11+00:00"
+}

@@ -1,0 +1,390 @@
+{
+ "model": "Gemma-4-31B IT QAT",
+ "run": "wave-one",
+ "started_utc": "2026-09-12T23:44:16+00:00",
+ "S": {
+  "health_s": 33.0,
+  "vram_before_mib": 1010,
+  "vram_after_mib": 30220,
+  "n_ctx": 131072,
+  "slots": 1
+ },
+ "T0": {
+  "finish": "tool_calls",
+  "has_tool_calls": true,
+  "tc_names": [
+   "ping"
+  ],
+  "content_len": 0,
+  "latency_s": 0.2,
+  "error": null
+ },
+ "T1": {
+  "events": [
+   "ping",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 5,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.18,
+  "first_content_s": 2.45,
+  "first_assistant_s": 2.45,
+  "latency_s": 2.6,
+  "error": null,
+  "prompt_tokens": 3682,
+  "completion_tokens": 2,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 2,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 13.3,
+  "prefill_tps_approx": 1502.9
+ },
+ "T1b": {
+  "events": [
+   "ping",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 841,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.2,
+  "first_content_s": 1.6,
+  "first_assistant_s": 1.6,
+  "latency_s": 4.3,
+  "error": null,
+  "prompt_tokens": 3739,
+  "completion_tokens": 168,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 2,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 62.2,
+  "prefill_tps_approx": 2336.9
+ },
+ "T2": {
+  "events": [
+   "ping",
+   "tool_call_message",
+   "tool_return_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_write",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 27,
+    "contains_fixed": false,
+    "head": "wrote 33 bytes to probe.txt",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.21,
+  "first_content_s": 2.02,
+  "first_assistant_s": 4.68,
+  "latency_s": 4.8,
+  "error": null,
+  "prompt_tokens": 8065,
+  "completion_tokens": 57,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 20.5,
+  "prefill_tps_approx": 3992.6,
+  "disk_exact": true
+ },
+ "T3": {
+  "events": [
+   "ping",
+   "tool_call_message",
+   "tool_return_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_read",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 33,
+    "contains_fixed": true,
+    "head": "<non-technical return withheld>",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.19,
+  "first_content_s": 1.91,
+  "first_assistant_s": 4.18,
+  "latency_s": 4.3,
+  "error": null,
+  "prompt_tokens": 8407,
+  "completion_tokens": 33,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 13.8,
+  "prefill_tps_approx": 4401.6
+ },
+ "l64": {
+  "target_tokens": 48000,
+  "window": 118000,
+  "tok_per_page": 571,
+  "pages": 84,
+  "seed_tokens_est": 47978,
+  "in_context_rows": 169,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 56,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 25.64,
+   "first_assistant_s": 25.64,
+   "latency_s": 26.4,
+   "error": null,
+   "prompt_tokens": 53213,
+   "completion_tokens": 36,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 1,
+    "prefill_tokens_processed": 53209
+   },
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 47.4,
+   "prefill_tps_approx": 2075.4,
+   "hits": 3
+  },
+  "rows_after_A": 171,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "tool_call_message",
+    "tool_return_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 4,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.17,
+   "first_content_s": 25.25,
+   "first_assistant_s": 28.41,
+   "latency_s": 28.5,
+   "error": null,
+   "prompt_tokens": 106754,
+   "completion_tokens": 58,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 3,
+    "prefill_tokens_processed": 53305
+   },
+   "decode_tps": 17.8,
+   "prefill_tps_approx": 4227.9,
+   "disk_exact": true
+  },
+  "rows_after_B": 175,
+  "C_warm": {
+   "events": [
+    "ping",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 5,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 2.01,
+   "first_assistant_s": 2.01,
+   "latency_s": 2.1,
+   "error": null,
+   "prompt_tokens": 53468,
+   "completion_tokens": 2,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 0
+   },
+   "decode_tps": 22.2,
+   "prefill_tps_approx": 26601.0
+  },
+  "rows_after_C": 177
+ },
+ "l128": {
+  "target_tokens": 96000,
+  "window": 118000,
+  "tok_per_page": 571,
+  "pages": 168,
+  "seed_tokens_est": 95956,
+  "in_context_rows": 337,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 56,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 63.34,
+   "first_assistant_s": 63.34,
+   "latency_s": 64.2,
+   "error": null,
+   "prompt_tokens": 102640,
+   "completion_tokens": 36,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 102636
+   },
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 41.9,
+   "prefill_tps_approx": 1620.5,
+   "hits": 3
+  },
+  "rows_after_A": 339,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "tool_call_message",
+    "tool_return_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 4,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.19,
+   "first_content_s": 3.72,
+   "first_assistant_s": 8.29,
+   "latency_s": 8.4,
+   "error": null,
+   "prompt_tokens": 205608,
+   "completion_tokens": 58,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 3,
+    "prefill_tokens_processed": 102636
+   },
+   "decode_tps": 12.4,
+   "prefill_tps_approx": 55271.0,
+   "disk_exact": true
+  },
+  "rows_after_B": 343,
+  "C_warm": {
+   "events": [
+    "ping",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 5,
+   "reasoning_events": 0,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 3.33,
+   "first_assistant_s": 3.33,
+   "latency_s": 3.4,
+   "error": null,
+   "prompt_tokens": 102895,
+   "completion_tokens": 2,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 0
+   },
+   "decode_tps": 28.6,
+   "prefill_tps_approx": 30899.4
+  },
+  "rows_after_C": 345
+ },
+ "fails": [],
+ "verdict": "PASS",
+ "ended_utc": "2026-09-12T23:47:44+00:00"
+}

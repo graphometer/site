@@ -1,0 +1,24 @@
+### trying -ub 2048
+MiniMax-M3 two-box (MSA-correct IQ3_XXS, 167.6 GiB)
+  card whole: 0-3 · experts in this box's RAM: 4-35 · <LAPTOP>: 36-59 (24 layers)
+  ctx 131072 · KV q8_0 · -ub 2048 · worker <LAPTOP>
+  NOTE: quantized KV with MSA is flagged upstream as not-yet-validated; f16 at this ctx may not fit. Watch output quality.
+VOID — exited during load:
+  3.40.538.879 E llama_init_from_model: failed to initialize the context: failed to allocate compute pp buffers
+  3.40.538.888 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/MiniMax-M3-IQ3_XXS-00001-of-00005.gguf'
+  3.40.538.892 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/MiniMax-M3-IQ3_XXS-00001-of-00005.gguf'
+  3.40.538.906 E srv    load_model: failed to create_context with model '<REDACTED_PATH>/MiniMax-M3-IQ3_XXS-00001-of-00005.gguf'
+  3.40.540.619 E srv  llama_server: exiting due to model loading error
+### -ub 2048 exited rc=1
+### trying -ub 1024
+MiniMax-M3 two-box (MSA-correct IQ3_XXS, 167.6 GiB)
+  card whole: 0-3 · experts in this box's RAM: 4-35 · <LAPTOP>: 36-59 (24 layers)
+  ctx 131072 · KV q8_0 · -ub 1024 · worker <LAPTOP>
+  NOTE: quantized KV with MSA is flagged upstream as not-yet-validated; f16 at this ctx may not fit. Watch output quality.
+healthy in 190s · VRAM 24854 MiB
+MSA: no dense-fallback warning in the log -> sparse attention is engaged
+  (msa-related log lines: 1)
+server up on :<PORT>. Measure with:
+  python3 MiniMax-M3_probe.py --url http://<LOCAL> --sizes 4096 --label split_ctx131072_vl36_ub1024 --out results/split_ctx131072_vl36_ub1024.prefill.json
+  python3 MiniMax-M3_decode_probe.py --url http://<LOCAL> --out results/split_ctx131072_vl36_ub1024.decode.json
+Stop with: kill -INT $(cat results/MiniMax-M3-pair.pid)

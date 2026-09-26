@@ -1,0 +1,45 @@
+Excerpt of the two-machine DeepSeek round driver's log, 2026-09-16 (local time, UTC-4).
+Lines 32-45: the task-A attempt, the syntax error, task B's start. Lines 89-113: the driver
+itself resuming at an old byte offset after it too was edited, and the harness refusing to
+overwrite finished runs.
+
+  32  --- DeepSeek V4 Flash (two machines) task a
+  33  2026-09-16T08:52:14-04:00
+  34  building sandbox for task a ...
+  35  model:   DeepSeek V4 Flash (two machines)
+  36  task:    a
+  37  sandbox: <REDACTED_PATH>/sandbox
+  38  budget:  2700s (hard kill at 6600s)
+  39  
+  40  run_trial.sh: line 164: syntax error near unexpected token `)'
+  41  run_trial.sh: line 164: `ull)" = "$SANDBOX" ] || continue'
+  42  !! RUN FAILED OR REFUSED: DeepSeek V4 Flash (two machines) task a
+  43  
+  44  --- DeepSeek V4 Flash (two machines) task b
+  45  2026-09-16T09:14:19-04:00
+
+  89  <REDACTED_PATH>: line 53: server probe replied: 'ready': command not found
+  90  
+  91  --- DeepSeek V4 Flash (two machines) task d
+  92  2026-09-16T09:28:22-04:00
+  93  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+  94  !! RUN FAILED OR REFUSED: DeepSeek V4 Flash (two machines) task d
+  95  
+  96  --- DeepSeek V4 Flash (two machines) task a
+  97  2026-09-16T09:28:22-04:00
+  98  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+  99  !! RUN FAILED OR REFUSED: DeepSeek V4 Flash (two machines) task a
+ 100  
+ 101  --- DeepSeek V4 Flash (two machines) task b
+ 102  2026-09-16T09:28:22-04:00
+ 103  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+ 104  !! RUN FAILED OR REFUSED: DeepSeek V4 Flash (two machines) task b
+ 105  
+ 106  --- DeepSeek V4 Flash (two machines) task c
+ 107  2026-09-16T09:28:22-04:00
+ 108  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+ 109  !! RUN FAILED OR REFUSED: DeepSeek V4 Flash (two machines) task c
+ 110  
+ 111  === DeepSeek V4 Flash (two machines) ROUND 2 COMPLETE ===
+ 112  2026-09-16T09:28:22-04:00
+ 113  cleanup: DeepSeek V4 Flash (two machines) stopped

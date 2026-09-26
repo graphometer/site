@@ -1,0 +1,33 @@
+0.00.026.303 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.026.522 W srv  llama_server: -----------------
+0.00.026.523 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.026.523 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.026.523 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.026.523 W srv  llama_server: -----------------
+0.00.027.843 I srv    load_model: loading model '<REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf'
+0.00.370.342 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 999, abort
+0.00.538.617 W llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+0.02.078.997 I cmn          init: llama threadpool init, n_threads = 24
+<REDACTED_PATH>/ggml-cuda.cu:108: CUDA error
+0.02.097.639 E CUDA error: out of memory
+0.02.097.643 E   current device: 0, in function launch_fattn at <REDACTED_PATH>/fattn-common.cuh:1127
+0.02.097.644 E   cudaOccupancyMaxActiveBlocksPerMultiprocessor(&max_blocks_per_sm, fattn_kernel, block_dim.x * block_dim.y * block_dim.z, nbytes_shared)
+<REDACTED_PATH>/libggml-base.so.0(+0x1d39b)[0x7b441169e39b]
+<REDACTED_PATH>/libggml-base.so.0(ggml_print_backtrace+0x21c)[0x7b441169e81c]
+<REDACTED_PATH>/libggml-base.so.0(ggml_abort+0x15b)[0x7b441169e9fb]
+<REDACTED_PATH>/libggml-cuda.so.0(_Z15ggml_cuda_errorPKcS0_S0_iS0_+0xb7)[0x7b440be70c27]
+<REDACTED_PATH>/libggml-cuda.so.0(_Z12launch_fattnILi128ELi2ELi1EEvR25ggml_backend_cuda_contextP11ggml_tensorPFvPKcS5_S5_S5_S5_PKiPfP6float2ffffjfi5uint3iiiiiiiiiiiliiliiiiilEimibbbbi+0x25c2)[0x7b440c0cfe02]
+<REDACTED_PATH>/libggml-cuda.so.0(_Z33ggml_cuda_flash_attn_ext_vec_caseILi128EL9ggml_type8ELS0_8EEvR25ggml_backend_cuda_contextP11ggml_tensor+0x6a)[0x7b440cb19caa]
+<REDACTED_PATH>/libggml-cuda.so.0(+0x2872eb)[0x7b440be872eb]
+<REDACTED_PATH>/libggml-base.so.0(ggml_backend_sched_graph_compute_async+0x877)[0x7b44116bdc97]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context13graph_computeEP11ggml_cgraphb+0xa1)[0x7b440ffeedf1]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context14process_ubatchERK12llama_ubatch14llm_graph_typeP22llama_memory_context_iR11ggml_status+0x11a)[0x7b440fff276a]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context6decodeERK11llama_batch+0x63d)[0x7b440fffa2dd]
+<REDACTED_PATH>/libllama.so.0(llama_decode+0xf)[0x7b440fffb76f]
+<REDACTED_PATH>/libllama-common.so.0(_Z23common_init_from_paramsR13common_paramsb+0x43b)[0x7b441042dd6b]
+<REDACTED_PATH>/libllama-server-impl.so(_ZN19server_context_impl10load_modelER13common_params+0x5a6)[0x7b4411176e16]
+<REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serverR13common_paramsiPPc+0x3777)[0x7b44110d1c67]
+<REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serveriPPc+0xd6)[0x7b44110d30d6]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7b441082a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7b441082a28b]
+<REDACTED_PATH>/llama-server(+0x12a5)[0x5d99d35b92a5]

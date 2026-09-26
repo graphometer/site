@@ -1,0 +1,109 @@
+== Ornith-1.5-35B, first round (01:15 to 01:22): OpenCode provider limits (line 30) and the server launch (lines 33-40).
+
+  30    "models":{"ornith-1.5-35b":{"name":"Ornith-1.5-35B trial","reasoning":True,"tool_call":True,"limit":{"context":131072,"output":32768}}}}
+
+  33  LD_LIBRARY_PATH="$CU" setsid nohup "$Q35/llama-server" \
+  34    --model <REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf \
+  35    --host <LOCAL> --port <PORT> --alias ornith-1.5-35b \
+  36    --jinja --reasoning-format auto --ctx-size 131072 \
+  37    --n-gpu-layers 999 --n-cpu-moe 6 --flash-attn on \
+  38    --temp 0.6 --top-p 0.95 --top-k 20 \
+  39    --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 3600 \
+  40    > "$D/logs_audition/Ornith-1.5-35B_trial_server.log" 2>&1 &
+
+
+== Ornith-1.5-35B, the two voided runs (01:25 to 03:25): provider limits and server launch.
+
+  23    "models":{"ornith-1.5-35b":{"name":"Ornith-1.5-35B trial","reasoning":True,"tool_call":True,"limit":{"context":131072,"output":32768}}}}
+
+  26  LD_LIBRARY_PATH="$CU" setsid nohup "$Q35/llama-server" \
+  27    --model <REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf \
+  28    --host <LOCAL> --port <PORT> --alias ornith-1.5-35b \
+  29    --jinja --reasoning-format auto --ctx-size 131072 \
+  30    --n-gpu-layers 999 --n-cpu-moe 6 --flash-attn on \
+  31    --temp 0.6 --top-p 0.95 --top-k 20 \
+  32    --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 3600 \
+  33    > "$D/logs_audition/Ornith-1.5-35B_trial_server_bc.log" 2>&1 &
+
+
+== Ornith-1.5-35B, the guarded re-runs of tasks B and C (04:24 to 04:29): provider limits and server launch.
+
+  45    "models":{"ornith-1.5-35b":{"name":"Ornith-1.5-35B trial","reasoning":True,"tool_call":True,"limit":{"context":131072,"output":32768}}}}
+
+  49  LD_LIBRARY_PATH="$CU" setsid nohup "$Q35/llama-server" \
+  50    --model <REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf \
+  51    --host <LOCAL> --port <PORT> --alias ornith-1.5-35b \
+  52    --jinja --reasoning-format auto --ctx-size 131072 \
+  53    --n-gpu-layers 999 --n-cpu-moe 6 --flash-attn on \
+  54    --temp 0.6 --top-p 0.95 --top-k 20 \
+  55    --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 3600 \
+  56    > "$D/logs_audition/Ornith-1.5-35B_round2_server.log" 2>&1 &
+
+
+== Ornith-1.5-397B (09:48 to 11:27): header, provider limits and server launch.
+
+   1  #!/usr/bin/env bash
+   2  # round2_Ornith-1.5-397B.sh — trial round 2, model 2 of 3: Ornith-1.5-397B (IQ3_XXS-UD, 162 GB).
+   3  # Flags are the ones its audition PASSED on: --n-cpu-moe 60 at ctx 131072, no MTP. The community
+   4  # quant is 13 GB larger than unsloth's, which is why experts go entirely to CPU (~14 GB VRAM).
+   5  # Not installed, so it gets a scratch server on <LOCAL> and a TEMPORARY OpenCode provider; a trap
+   6  # restores the user's config and stops the server on ANY exit, including an interrupt.
+   7  # Budgets: 45-min soft budget UNCHANGED (comparable to round 1), hard kill raised to 110 min.
+
+  33    "models":{"ornith-1.5-397b":{"name":"Ornith-1.5-397B trial","reasoning":True,"tool_call":True,"limit":{"context":131072,"output":32768}}}}
+
+  37  LD_LIBRARY_PATH="$CU" setsid nohup "$BIN" \
+  38    --model <REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf \
+  39    --host <LOCAL> --port <PORT> --alias ornith-1.5-397b \
+  40    --jinja --reasoning-format auto --ctx-size 131072 \
+  41    --n-gpu-layers 999 --n-cpu-moe 60 --no-mmap --flash-attn on \
+  42    --temp 0.6 --top-p 0.95 --top-k 20 \
+  43    --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 7200 \
+  44    > "$D/logs_audition/Ornith-1.5-397B_round2_server.log" 2>&1 &
+
+
+== GLM-5.3-Flash (11:27 to 13:10): header, provider limits and server launch.
+
+   1  #!/usr/bin/env bash
+   2  # round2_GLM-5.3-Flash.sh — trial round 2, model 3 of 3: GLM-5.3-Flash (UD-Q3_K_XL, 138 GB).
+   3  # Flags from its audition, which PASSED first time: -cmoe at ctx 131072, 15.2 GB VRAM, 9.6 t/s,
+   4  # first word 20.5 s. NOTE the runtime: unsloth's glm5next build, NOT mainline llama.cpp.
+   5  # Its thinking switch is reasoning_effort (low/high), not enable_thinking.
+   6  # Budgets: 45-min soft budget UNCHANGED (comparable to round 1), hard kill raised to 110 min.
+   7  # It is the slowest reader of the three (75 t/s prefill) — the likeliest to need the extra time.
+
+  33    "models":{"glm-5.3-flash":{"name":"GLM-5.3-Flash trial","reasoning":True,"tool_call":True,"limit":{"context":131072,"output":32768}}}}
+
+  37  LD_LIBRARY_PATH="$GLM5:$CU" setsid nohup "$GLM5/llama-server" \
+  38    --model <REDACTED_PATH>/GLM-5.3-Flash-UD-Q3_K_XL-00001-of-00004.gguf \
+  39    --host <LOCAL> --port <PORT> --alias glm-5.3-flash \
+  40    --jinja --ctx-size 131072 \
+  41    --n-gpu-layers 999 -cmoe --flash-attn auto \
+  42    --temp 1.0 --top-p 0.95 \
+  43    --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 7200 \
+  44    > "$D/logs_audition/GLM-5.3-Flash_round2_server.log" 2>&1 &
+
+
+== Qwen3.8-27B, started through its installed start script: the window the server reported (pilot log).
+
+   4  healthy after 38s
+   5  serving n_ctx 131072
+
+
+== DeepSeek V4 Flash across two machines: the round driver's note that the run needs the laptop's
+   llama.cpp RPC worker (checked before anything starts).
+
+   6  # It needs the Z13's RPC worker on <LAPTOP> — checked before anything is started.
+
+
+== DeepSeek V4 Flash across two machines, started through its installed start script: the window
+   the server reported, and the budget line (45 minutes, hard stop raised to 6,600 s = 110 minutes).
+
+   1  Z13 worker: serving
+
+   4  start DeepSeek V4 Flash — two-box split (IQ3, 5090 + Z13): ok. 
+   5  healthy after 244s
+   6  serving n_ctx=262144
+   7  server probe replied: 'ready'
+
+  15  budget:  2700s (hard kill at 6600s)

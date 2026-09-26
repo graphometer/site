@@ -1,0 +1,164 @@
+== overnight round log, 2026-09-16 (local time). Lines 1-27: Qwen3.8-27B task B fails
+   verification (30/60) under the original task-B answer key. Lines 94-103: the second model's
+   task B and C runs refused because both models' runs had been given the same label.
+
+   1  === PART 1: Qwen3.8-27B, tasks B and C ===
+   2  2026-09-16T01:11:44-04:00
+   3  start Qwen3.8 27B — <MODEL_MANAGER_ENTRY>: ok. 
+   4  healthy after 13s
+   5  --- Qwen3.8-27B task b
+   6  building sandbox for task b ...
+   7  model:   Qwen3.8-27B
+   8  task:    b
+   9  sandbox: <REDACTED_PATH>/sandbox
+  10  budget:  2700s (hard kill at 3600s)
+  11  
+  12  opencode exited 0 after 111s
+  13  verifying ...
+  14  verification exited 1
+  15  task b  —  FAIL
+  16    mechanical      30/60
+  17    wall            111s of 2700s budget
+  18    tool calls      23  {'read': 11, 'bash': 7, 'edit': 4, 'write': 1}
+  19    malformed       0
+  20    scope issues    0
+  21    AUTOMATIC FAILURE:
+  22      - did not finish with green tests/checks
+  23    wrote <REDACTED_PATH>
+  24    wrote <REDACTED_PATH>
+  25  
+  26  run directory: <REDACTED_PATH>
+  27  next: have a DIFFERENT model grade <REDACTED_PATH>
+
+  94  run directory: <REDACTED_PATH>
+  95  next: have a DIFFERENT model grade <REDACTED_PATH>
+  96  --- Ornith-1.5-35B task b
+  97  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+  98  --- Ornith-1.5-35B task c
+  99  ERROR: refusing to overwrite an existing run directory: <REDACTED_PATH>
+ 100  temporary provider removed (config restored)
+ 101    providers now: 20 · <PROVIDER> present: False
+ 102  === ROUND 1 DONE ===
+ 103  2026-09-16T01:22:51-04:00
+
+
+== Ornith-1.5-35B tasks B and C, 01:25 to 03:25: both hit the 3,600 s hard kill with 0 tool calls
+   and were first scored 20/60 by the scorer as it stood then (later voided).
+
+   1  === Ornith-1.5-35B, tasks b and c ===
+   2  2026-09-16T01:25:43-04:00
+   3  temporary provider added
+   4  healthy after 4s
+   5  --- Ornith-1.5-35B task b
+   6  building sandbox for task b ...
+   7  model:   Ornith-1.5-35B
+   8  task:    b
+   9  sandbox: <REDACTED_PATH>/sandbox
+  10  budget:  2700s (hard kill at 3600s)
+  11  
+  12  opencode exited 124 after 3600s
+  13  verifying ...
+  14  verification exited 1
+  15  task b  —  FAIL
+  16    mechanical      20/60
+  17    wall            3600s of 2700s budget
+  18    tool calls      0  {}
+  19    malformed       0
+  20    scope issues    0
+  21    AUTOMATIC FAILURE:
+  22      - did not finish with green tests/checks
+  23    wrote <REDACTED_PATH>
+  24    wrote <REDACTED_PATH>
+  25  
+  26  run directory: <REDACTED_PATH>
+  27  next: have a DIFFERENT model grade <REDACTED_PATH>
+  28  !! RUN FAILED OR REFUSED: Ornith-1.5-35B task b
+  29  --- Ornith-1.5-35B task c
+  30  building sandbox for task c ...
+  31  model:   Ornith-1.5-35B
+  32  task:    c
+  33  sandbox: <REDACTED_PATH>/sandbox
+  34  budget:  2700s (hard kill at 3600s)
+  35  
+  36  opencode exited 124 after 3600s
+  37  verifying ...
+  38  verification exited 1
+  39  task c  —  FAIL
+  40    mechanical      20/60
+  41    wall            3600s of 2700s budget
+  42    tool calls      0  {}
+  43    malformed       0
+  44    scope issues    0
+  45    AUTOMATIC FAILURE:
+  46      - did not finish with green tests/checks
+  47    wrote <REDACTED_PATH>
+  48    wrote <REDACTED_PATH>
+  49  
+  50  run directory: <REDACTED_PATH>
+  51  next: have a DIFFERENT model grade <REDACTED_PATH>
+  52  !! RUN FAILED OR REFUSED: Ornith-1.5-35B task c
+  53  temporary provider removed (config restored)
+  54    providers: 20 · trial entry gone: True
+  55  === ORNITH ROUND 1 COMPLETE ===
+  56  2026-09-16T03:25:51-04:00
+
+
+== Ornith-1.5-35B re-runs of tasks B and C, 04:24 to 04:29, with the startup guard in place.
+   Task B fails verification (30/60) under the original answer key; it was re-verified after
+   the key was corrected (see its meta.json note). Task C passes.
+
+   1  === Ornith-1.5-35B round 2 — tasks b and c ===
+   2  2026-09-16T04:24:28-04:00
+   3  temporary provider added
+   4  healthy after 4s
+   5  server probe replied: 'ready'
+   6  --- Ornith-1.5-35B round2 task b
+   7  2026-09-16T04:24:31-04:00
+   8  building sandbox for task b ...
+   9  model:   Ornith-1.5-35B
+  10  task:    b
+  11  sandbox: <REDACTED_PATH>/sandbox
+  12  budget:  2700s (hard kill at 3600s)
+  13  
+  14  opencode exited 0 after 198s
+  15  verifying ...
+  16  verification exited 1
+  17  task b  —  FAIL
+  18    mechanical      30/60
+  19    wall            198s of 2700s budget
+  20    tool calls      28  {'read': 12, 'bash': 7, 'edit': 5, 'todowrite': 3, 'write': 1}
+  21    malformed       0
+  22    scope issues    0
+  23    AUTOMATIC FAILURE:
+  24      - did not finish with green tests/checks
+  25    wrote <REDACTED_PATH>
+  26    wrote <REDACTED_PATH>
+  27  
+  28  run directory: <REDACTED_PATH>
+  29  next: have a DIFFERENT model grade <REDACTED_PATH>
+  30  !! RUN FAILED OR REFUSED: Ornith-1.5-35B task b
+  31  --- Ornith-1.5-35B round2 task c
+  32  2026-09-16T04:27:50-04:00
+  33  building sandbox for task c ...
+  34  model:   Ornith-1.5-35B
+  35  task:    c
+  36  sandbox: <REDACTED_PATH>/sandbox
+  37  budget:  2700s (hard kill at 3600s)
+  38  
+  39  opencode exited 0 after 77s
+  40  verifying ...
+  41  verification exited 0
+  42  task c  —  pass (mechanical)
+  43    mechanical      60/60
+  44    wall            77s of 2700s budget
+  45    tool calls      14  {'bash': 7, 'read': 3, 'edit': 3, 'grep': 1}
+  46    malformed       0
+  47    scope issues    0
+  48    wrote <REDACTED_PATH>
+  49    wrote <REDACTED_PATH>
+  50  
+  51  run directory: <REDACTED_PATH>
+  52  next: have a DIFFERENT model grade <REDACTED_PATH>
+  53  === ORNITH ROUND 2 COMPLETE ===
+  54  2026-09-16T04:29:07-04:00
+  55  cleanup: server stopped, config restored (20 providers)

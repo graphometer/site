@@ -1,0 +1,18 @@
+Refusal-guard tests, the start script of Qwen3.8-Flash-Next 125B, 2026-09-12.
+Tests 4-7 ran against scratch copies in which ONLY the shard-existence check was neutralised
+(the weights were not on the drive yet), so the guard under test was reachable. Nothing else
+in the logic was altered.
+
+This is a redacted transcript. Every span in square brackets is a redaction: a path, an
+address, a port, a process id, or the name of a program of ours that is not published.
+
+G1 context allowlist     CTX=49152               -> exit 2  "ERROR: CTX=49152 is not a validated context (65536 default | 131072 long)."
+G2 shards present        real script, no weights -> exit 2  "ERROR: shard 1 of 3 missing: [path]"
+G3 runtime present       runtime -> a bad path   -> exit 2  "ERROR: runtime missing: [path]"
+G4 own RAM floor         floor raised to 9000 GB -> exit 1  "REFUSED: only 165 GB RAM available (<100 GB floor)..."
+G5 sibling host:port     bound [address]:[port]  -> exit 1  "REFUSED: [address]:[port] is listening, a hand-started 'Qwen3.8-27B' is up."
+G6 sibling proc-marker   marker -> /bin/sleep 733-> exit 1  "REFUSED: pid [pid] matches '/bin/sleep 733', a hand-started 'Kimi K3' is up (any host/port)."
+G7 sibling program active row -> live [the operator tool] -> exit 1  "REFUSED: '[the operator tool]' is running, Qwen3.8-Flash-Next 125B is exclusive with the other large models on this machine..."
+
+Teardown after the smoke: [teardown commands], then verified the port dead, no server process
+(only the process search's own wrapper self-matched), GPU back to 781 MiB of 32607.

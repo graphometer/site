@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</title>
+<meta name="description" content="A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 (32 GB) and 188 GiB of RAM, 19 to 21 September 2026. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default (-b 2048 -ub 512); where a script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. Two of those models were timed on long prompts only at half the window they serve, and at the full window one of them read short prompts far slower. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Each model had its own ceiling in card memory and window; one setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input. Includes the cost after the first read, two refused knobs, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), our own corrections, and the logs behind every figure.">
+<link rel="canonical" href="https://graphometer.ai/batch-size/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
+<meta property="og:description" content="On one RTX 5090 desktop, a bigger --ubatch-size made long prompts read 2.5 to 7.3 times faster than llama.cpp's default on models with experts in system RAM, and 19.9 and 17.5 times faster than an inherited -ub 128 on a 24,071-token and a 3,658-token read. Each model had its own ceiling, and one setting crashed on a single 3,007-token input.">
+<meta property="og:url" content="https://graphometer.ai/batch-size/">
+<meta property="og:image" content="https://graphometer.ai/og/batch-size.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
+<meta name="twitter:description" content="On one RTX 5090 desktop, a bigger --ubatch-size made long prompts read 2.5 to 7.3 times faster than llama.cpp's default on models with experts in system RAM, and 19.9 and 17.5 times faster than an inherited -ub 128 on a 24,071-token and a 3,658-token read. Each model had its own ceiling, and one setting crashed on a single 3,007-token input.">
+<meta name="twitter:image" content="https://graphometer.ai/og/batch-size.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; 19 to 21 September 2026 &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 188&nbsp;GiB RAM) &middot; llama.cpp at seven commits, one of them built twice &middot; 12 models with experts in system RAM, 6 that fit on the card</div>
+      <h1>llama.cpp's <em>batch size</em></h1>
+      <p class="subtitle">Prompt reading 2.5 to 7.3 times faster than the
+      default, up to 20 against an inherited <code>-ub 128</code>.</p>
+      <p class="lead">llama.cpp reads a prompt in micro-batches of 512 tokens
+      unless you tell it otherwise, and on this desktop almost nothing told it
+      otherwise: before 20 September, 20 of our 25 start scripts left both
+      batch settings at llama.cpp's defaults, and three of the five that did
+      set them used a micro-batch smaller than the default. We swept
+      <code>--ubatch-size</code>, with <code>--batch-size</code> kept at least
+      as large, across the models we serve. On the twelve whose expert weights
+      sit in system RAM, the first read of a long prompt, mostly 48,000 tokens,
+      became <strong>2.5 to 7.3 times faster than at llama.cpp's
+      default</strong>; where a script had inherited <code>-ub 128</code>,
+      reading became 19.9 times faster on a 24,071-token prompt and 17.5 times
+      on a 3,658-token one. Two of them, Inkling-Small and Qwen3.8-Flash-Next,
+      were timed on long prompts only at half the window they serve, and at the
+      full window Flash-Next's short reads were far slower (section 04). With a
+      large enough token budget the planted code came back at every rung we
+      checked, and decode on short answers moved less than 7 percent for every
+      shipped value but one (same day, same window). Five
+      of the six models that fit on the card gained 3 to 34.5 percent, the sixth
+      got slower, and all six kept the default. Every model had its own
+      ceiling, set by card memory and by the window it serves, and one setting
+      that read 150,153 tokens correctly and passed 110 other prompts crashed
+      the server on a single 3,007-token input, so we withdrew it. This is one
+      machine, the llama.cpp builds of that week, one request at a time, and
+      reading speed, not the quality of the answers.</p>
+      <div class="nonaff">Independent measurements; no affiliation with the
+      llama.cpp project, ggml-org, NVIDIA, ASUS, Intel, Alibaba (Qwen),
+      DeepSeek, inclusionAI, Thinking Machines Lab, Poolside, Mistral AI, Z.ai,
+      MiniMax, Google, Meta, Unsloth, or the makers of Ornith.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>Before a model writes the first word of a reply, llama.cpp reads the
+      whole prompt, in batches whose size two settings decide.
+      <code>--batch-size</code> (<code>-b</code>) is the logical batch: the most
+      prompt tokens the server hands the model in one step.
+      <code>--ubatch-size</code> (<code>-ub</code>) is the physical
+      micro-batch: the most tokens that go through the model's layers in one
+      pass. At the build most of our models ran, the defaults are 2048 and 512
+      (<code>common/common.h</code> lines 451 and 452 at commit
+      <span class="n">d3146f2b5</span>; <code>--help</code> calls them the
+      &ldquo;logical maximum batch size&rdquo; and the &ldquo;physical maximum
+      batch size&rdquo;). A 48,000-token prompt is 94 micro-batches at the
+      default and 12 at 4096, counting the partial last batch (48,000 / 512 =
+      93.75; arithmetic).</p>
+      <p><strong>Why it matters when the experts sit in system RAM.</strong> A
+      mixture-of-experts model keeps most of its weights in
+      &ldquo;experts&rdquo;, of which each token uses only a few. When the file
+      is larger than the graphics card, the experts usually stay in system RAM
+      and the rest goes on the card. During prompt reading, when an operation's
+      weights live in host memory and the batch is large enough, llama.cpp's
+      scheduler hands the operation to the graphics card, which means carrying
+      those weights across for that pass (<code>ggml/src/ggml-backend.cpp</code> lines
+      966 to 975; the CUDA backend takes any operation with a batch of at least
+      32 tokens, <code>ggml-cuda.cu</code> lines 5536 to 5539 and 5710, same
+      build). That trip costs about the same for a micro-batch of 512 tokens as
+      for one of 8,192, so a bigger micro-batch pays it fewer times per prompt.
+      This is our reading of the code; we did not instrument the transfer
+      itself.</p>
+      <p><strong>What it does not touch.</strong> Writing the reply (decode)
+      goes one token at a time, so the micro-batch does not enter into it. Our
+      decode figures moved little where before and after share a day and a
+      window, with one exception explained in section 06.</p>
+      <p><strong>What it costs.</strong> Card memory: the card holds a working
+      buffer sized for one micro-batch. On MiniMax M3 split across two machines
+      (20 September), the server asked the card for 20,746,340,352 bytes
+      (19,785.25&nbsp;MiB) at <code>-ub 4096</code> whether 36 or 50 of the
+      model's 60 layers stayed on the desktop, and for exactly half,
+      10,373,736,448 bytes, at <code>-ub 2048</code>; all three requests were
+      refused. The buffer also grows with the window (section 04).</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>Every figure on this page is measured on this machine on the date
+      given, unless it is marked arithmetic.</p>
+      <table class="facts">
+        <tr><th scope="row">Machine</th><td>One desktop: one NVIDIA GeForce RTX&nbsp;5090 (32&nbsp;GB), 188&nbsp;GiB of system RAM. Every server ran with <code>--threads 24 --threads-batch 24</code>, one request slot (<code>--parallel 1</code>) and flash attention on or auto, one model at a time.</td></tr>
+        <tr><th scope="row">The read</th><td>A synthetic ledger of numbered, near-identical lines (the generator is in the package), seed 20260920, sized with the server's own tokenizer to within 2 percent of 48,000 tokens (24,000 on Laguna S 2.1's 32,768-token window), with one sealed code at half depth and the question &ldquo;quote the sealed reference exactly. Answer with the code only.&rdquo; Temperature 0, <code>max_tokens</code> 900, a freshly loaded server, nothing cached. Reading speed is the server's own <code>timings.prompt_per_second</code>; decode is its <code>predicted_per_second</code>.</td></tr>
+        <tr><th scope="row">Pass rule</th><td>From 21 September, a non-empty answer had to contain the code itself; an empty answer passed for reading speed if the code was in the model's reasoning (section 08). The 20 September harness recorded only whether the code appeared in the answer or the reasoning, and the answer's length: 17 characters, the length of the code, in every passing row.</td></tr>
+        <tr><th scope="row">19 September</th><td>MiniMax M2.7 with its own harness: one 3,658-token prompt at <code>-ub</code> 128, 512, 1024, 2048 and 4096 with every expert layer in RAM (131,072 window, q8_0 cache); then 43,909-token reads at 4096 with 62, 61, 60, 59 and 58 of its 62 expert layers in RAM; then its full 196,608 window. That prompt was a repeated paragraph, and this harness did not check the answer.</td></tr>
+        <tr><th scope="row">20 September</th><td>Flags copied by hand from each start script, at a 131,072 window: Ling-3.0-flash, Inkling-Small and Qwen3.8-Flash-Next (the default and a candidate; 8192 as well on Inkling and Flash-Next), and DeepSeek V4 Flash with its own harness (16,011-token reads for the first comparisons, then 48,073). The three winners were then loaded at the served 262,144 window and sent one 3,000-token prompt each (sections 04 and 05), and DeepSeek's read 150,324 tokens there. This pass could not start Laguna S 2.1: the hand-copied <code>--n-gpu-layers 999</code> tried to put all 64,771.15&nbsp;MiB of its weights on the card.</td></tr>
+        <tr><th scope="row">21 September</th><td>The remaining models, and Ling again, through their own start scripts at each script's served window. The scripts take the batch setting from the environment; a script that had none was first given one whose default is llama.cpp's own, so its baseline did not change, and nothing else was edited. Rungs: the script's own setting, then 2048, 4096 and 8192 (1024, 2048 and 4096 on the models that fit on the card and on Ornith-1.5-35B), stopping at the first rung that failed to load, lost the code, or read slower than the one before. Card memory was sampled every 2 to 5 seconds during each read.</td></tr>
+        <tr><th scope="row">Stress check</th><td>21 September, the shipped settings of the other eleven models with experts in RAM (twelve runs: DeepSeek V4 Flash's Q8 and IQ3 files separately). Each: a fresh load whose first request was the exact 3,007-token prompt that crashed Ling (section 05), then 40 prompts of real mixed text from llama.cpp's own source tree (C, C++, CUDA, Python, Markdown), sized mostly around one and two micro-batches, <code>max_tokens</code> 32, with a restart and a saved prompt after any crash. Ling had its own check; the six models on the card were not stress-checked.</td></tr>
+        <tr><th scope="row">Card memory</th><td>Raw <code>nvidia-smi</code> MiB, desktop included. The 20 September runs recorded it once, after load; the 21 September runs recorded the peak during the read, which ran 0 to 465&nbsp;MiB above the load reading.</td></tr>
+        <tr><th scope="row">Scripts before</th><td>Of the 25 start scripts on the machine before 20 September, 20 left both settings at llama.cpp's defaults. Five set them: one at <code>-b 64 -ub 32</code>, two at <code>-ub 128</code>, and two above the default, one of those on only two of its three window settings. (Our first-pass harness's header says four; the recount is in the package.)</td></tr>
+      </table>
+      <h3>The builds</h3>
+      <p>Each model ran on the llama.cpp binary its start script names. The
+      commit comes from each build's own <code>build-info</code> record, and
+      every binary was built before the sweep began.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Commit</th><th class="t" style="text-align:left">Origin</th><th class="t" style="text-align:left">Models in this study</th></tr></thead>
+        <tbody>
+          <tr><td>d3146f2b5</td><td class="t">ggml-org mainline, build 10919 (a second build of it with RPC enabled)</td><td class="t">Ling-3.0-flash, Qwen3.8-Flash-Next, GLM-4.7-Flash, Gemma 4 26B-A4B; with RPC: MiniMax M2.7, MiniMax M3, DeepSeek V4 Flash IQ3</td></tr>
+          <tr><td>946fc11d1</td><td class="t">llama.cpp pull request #25731, a draft adding the Inkling architecture</td><td class="t">Inkling-Small</td></tr>
+          <tr><td>04b2b72</td><td class="t">Poolside's llama.cpp fork</td><td class="t">Laguna S 2.1</td></tr>
+          <tr><td>c8e03ce</td><td class="t">ggml-org mainline</td><td class="t">Qwen3.5-397B-A17B, Qwen3.5-122B-A10B, Qwen3-235B-A22B-Instruct-2507, Qwen3.8-27B, Qwen3.6-27B, Ornith-1.5-35B</td></tr>
+          <tr><td>5f55650</td><td class="t">ggml-org mainline</td><td class="t">DeepSeek V4 Flash Q8, Mistral Small 4</td></tr>
+          <tr><td>d94f44e</td><td class="t">Unsloth's llama.cpp fork, glm5next branch</td><td class="t">GLM-5.3-Flash</td></tr>
+          <tr><td>3cb7ffb</td><td class="t">ggml-org</td><td class="t">Gemma 4 31B, Muse Glimmer 30B</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Observed: reading before and after</h2>
+      <p>Twelve models keep some or all of their expert weights in system RAM.
+      Eleven of their files are larger than the card (68.2 to 161.9&nbsp;GB);
+      Ornith-1.5-35B's 29.2&nbsp;GB file keeps 6 of its 41 layers' experts in
+      RAM. &ldquo;Was&rdquo; is the setting before the sweep; &ldquo;now&rdquo;
+      is the shipped setting, read at the window given under the table, half
+      the served window on three models (note e). Decode figures are short
+      answers (tokens generated on the second line): they show whether decode
+      moved, not how fast these models speak.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model &middot; file</th><th>Read, tokens</th><th>Was, t/s</th><th>Now, t/s</th><th>Shipped</th><th>Card, MiB</th><th>Decode, t/s</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td>DeepSeek V4 Flash<br>UD-Q8_K_XL, 161.9&nbsp;GB <sup>e</sup></td><td>48,073</td><td>83.3</td><td>607.1 (7.3&times;)</td><td>-b 8192 -ub 8192</td><td>17,063 &rarr; 22,089<br>after load</td><td>9.91 &rarr; 9.58<br>74, 70 tokens</td><td>20 Sep</td></tr>
+          <tr><td>GLM-5.3-Flash<br>UD-Q3_K_XL, 147.5&nbsp;GB <sup>b</sup></td><td>24,008 &rarr; 20,333</td><td>80.7</td><td>446.0 (5.5&times;)</td><td>-b 4096 -ub 4096</td><td>24,352 &rarr; 29,872<br>peak during read</td><td>9.22 &rarr; 9.35<br>62, 60 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Mistral Small 4 119B<br>UD-Q4_K_M, 73.8&nbsp;GB</td><td>48,697</td><td>481.3</td><td>2,192.3 (4.6&times;)</td><td>-b 8192 -ub 8192</td><td>26,882 &rarr; 29,756<br>peak during read</td><td>21.01 &rarr; 20.97<br>11, 11 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Qwen3.5-397B-A17B<br>UD-IQ3_XXS, 149.8&nbsp;GB</td><td>48,029</td><td>224.5</td><td>932.2 (4.2&times;)</td><td>-b 4096 -ub 4096</td><td>26,195 &rarr; 29,360<br>peak during read</td><td>16.39 &rarr; 16.41<br>11, 11 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Qwen3.5-122B-A10B<br>UD-Q4_K_S, 73.4&nbsp;GB</td><td>48,027</td><td>520.2</td><td>2,101.7 (4.0&times;)</td><td>-b 4096 -ub 4096</td><td>26,911 &rarr; 29,619<br>peak during read</td><td>30.81 &rarr; 32.72<br>648, 716 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Ornith-1.5-35B<br>Q6_K, 29.2&nbsp;GB</td><td>48,027</td><td>1,860.2</td><td>6,283.3 (3.4&times;)</td><td>-b 4096 -ub 4096</td><td>27,304 &rarr; 28,691<br>peak during read</td><td>73.57 &rarr; 73.20<br>87, 83 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Ling-3.0-flash<br>Q4_K_M, 77.8&nbsp;GB <sup>a</sup></td><td>47,992 &rarr; 47,986</td><td>238.2</td><td>727.7 (3.1&times;)</td><td>-b 4096 -ub 2048</td><td>7,233 after load;<br>8,824 peak</td><td>27.46 &rarr; 23.25<br>77, 77 tokens</td><td>20 &amp; 21 Sep</td></tr>
+          <tr><td>Ling-3.0-flash, one<br>day and window <sup>a</sup></td><td>3,007</td><td>201.5</td><td>444.0 (2.2&times;)</td><td>-b 4096 -ub 2048</td><td>8,037 &rarr; 8,871<br>peak during read</td><td>24.41 &rarr; 23.0<br>104, 64 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Inkling-Small<br>UD-Q3_K_XL, 119.6&nbsp;GB <sup>e</sup></td><td>48,115</td><td>123.0</td><td>337.9 (2.7&times;)</td><td>-b 4096 -ub 2048</td><td>12,641 &rarr; 13,183<br>after load</td><td>12.23 &rarr; 11.77<br>97, 97 tokens</td><td>20 Sep</td></tr>
+          <tr><td>Qwen3.8-Flash-Next<br>UD-Q3_K_XL, 90.0&nbsp;GB <sup>e</sup></td><td>48,069</td><td>203.2</td><td>511.7 (2.5&times;)</td><td>-b 4096 -ub 2048</td><td>19,444 &rarr; 21,394<br>after load</td><td>18.14 &rarr; 18.75<br>99, 104 tokens</td><td>20 Sep</td></tr>
+          <tr><td>Qwen3-235B-A22B-Instruct-2507<br>Q4_K_M, 142.2&nbsp;GB</td><td>48,020</td><td>285.8</td><td>703.3 (2.5&times;)</td><td>-b 4096 -ub 2048</td><td>28,317 &rarr; 29,421<br>peak during read</td><td>8.27 &rarr; 8.18<br>11, 11 tokens</td><td>21 Sep</td></tr>
+          <tr><td>Laguna S 2.1<br>Q4_K_M, 68.2&nbsp;GB <sup>c</sup></td><td>24,071</td><td class="neg">72.2 at -ub 128</td><td>1,434.0 (19.9&times;)</td><td>-b 8192 -ub 8192</td><td>27,973 &rarr; 28,272<br>peak during read</td><td class="neg">18.40 &rarr; 16.50<br>12, 12 tokens</td><td>21 Sep</td></tr>
+          <tr><td>MiniMax M2.7<br>UD-IQ4_XS, 108.4&nbsp;GB <sup>d</sup></td><td>3,658</td><td class="neg">32.3 at -ub 128</td><td>564.0 (17.5&times;)</td><td>-b 4096 -ub 4096</td><td>22,530 &rarr; 24,359<br>after load</td><td>9.9 &rarr; 9.3<br>32, 32 tokens</td><td>19 Sep</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Windows: 131,072 tokens, except Ling's 21 September
+      figures (262,144) and Laguna (32,768). Card memory is at load or the peak
+      during the read, as marked; the two are not comparable. The code came
+      back at every rung shown except M2.7's, whose harness did not check (note
+      d). <sup>a</sup> Ling's first line spans two passes and two windows, 238.2
+      on 20 September (hand-copied flags, 131,072) and 727.7 on 21 September
+      (its own script, 262,144), each with its own card and decode figures; the
+      second line is one pass at one window. <code>-ub 4096</code> read 1,140.4
+      on the 20th and was withdrawn (section 05). <sup>b</sup> GLM-5.3-Flash's
+      default read was a load's first request; the tuned 20,333-token read was
+      the third on its load, and the fourth, 48,168 tokens, read at 425.1; the
+      card peak covers all four. <sup>c</sup> Laguna's &ldquo;was&rdquo; is its
+      inherited <code>-b 512 -ub 128</code>, not llama.cpp's default (section
+      06). <sup>d</sup> M2.7's figures come from its own harness on 19
+      September, a repeated-paragraph prompt with no answer check; at
+      llama.cpp's default 512 the same prompt read 100.8. <sup>e</sup> These
+      &ldquo;now&rdquo; figures are 48,000-token reads at 131,072, half the
+      262,144-token window these scripts serve. At 262,144 DeepSeek read 150,324 tokens at
+      480.0 (below); Inkling-Small and Qwen3.8-Flash-Next read only 3,000-token
+      prompts there, Inkling at 263.6 and 187.9 t/s, Flash-Next at 45.4 and
+      112.3, and no deep read was re-measured (section 04).</p>
+      <p><strong>Against llama.cpp's own default, the gain on long reads was
+      2.5 to 7.3 times</strong>: from Qwen3-235B's 2.46 (285.8 to 703.3, with 4096 not
+      shipped, section 13) to DeepSeek V4 Flash's 7.29, whose 48,000-token read
+      went from 576.9 seconds to 79.2. <strong>Against an inherited
+      <code>-ub 128</code>, it was 17.5 and 19.9 times</strong> (MiniMax M2.7 on
+      a 3,658-token read, Laguna S 2.1 on 24,071 tokens).</p>
+      <h3>At depth, on the same build</h3>
+      <p>One comparison sits at a full window: DeepSeek V4 Flash, the same Q8
+      file and build (5f55650), every expert in RAM, 24 threads, a
+      262,144-token window. On 15 September at llama.cpp's default it read
+      150,475 tokens in 2,062.2 seconds (34.4 minutes, 72.97 t/s) and returned
+      all three planted codes; on 20 September at <code>-b 8192 -ub 8192</code>
+      it read 150,324 tokens in 313.2 seconds (5.2 minutes, 480.0 t/s) and
+      returned its one code: 6.6 times the prompt-reading rate, on two
+      different synthetic ledgers. More than the batch differed: the earlier
+      request had thinking off, the launches differed in listening address and
+      default sampling flags (both requests set temperature 0), and the 15
+      September read was a later request on a server whose load took 220
+      seconds, the 20 September read the first request after a load of about 4
+      seconds, a difference of the kind that moved an untuned read from 72.3 to
+      83.3 t/s (section 12). The default's cost at a full window on other
+      models has its own page (section 14).</p>
+      <h3>Models that fit on the card</h3>
+      <p>Six models fit entirely on the card, so no weights cross, and the
+      gains were smaller: 3 to 34.5 percent on five, while the sixth read slower.
+      All six kept llama.cpp's default, for reasons their start scripts record:
+      Gemma 4 26B-A4B already read about 9,000 t/s and decoded slower as the
+      batch grew (on 11-token answers, the kind of figure section 13 corrects);
+      GLM-4.7-Flash and Qwen3.8-27B kept card room (1,371&nbsp;MiB on
+      Qwen3.8-27B's almost-full card); the rest gained 5.6 percent or less, or
+      read slower.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model &middot; file</th><th>Window</th><th>Default, t/s</th><th>Fastest read, t/s</th><th>Change</th><th>Decode, t/s</th></tr></thead>
+        <tbody>
+          <tr><td>Gemma 4 26B-A4B<br>UD-Q4_K_XL, 17.0&nbsp;GB</td><td>262,144</td><td>8,972.3</td><td>12,063.4 at 2048</td><td>+34.5%</td><td class="neg">163.68 &rarr; 153.82<br>11, 11 tokens</td></tr>
+          <tr><td>GLM-4.7-Flash<br>UD-Q4_K_XL, 17.5&nbsp;GB</td><td>202,752</td><td>2,594.6</td><td>3,100.2 at 2048,<br>answer empty (failed)</td><td>+19.5%,<br>reading only</td><td>129.60 &rarr; 130.09<br>429, 900 tokens</td></tr>
+          <tr><td>Qwen3.6-27B<br>UD-Q4_K_XL, 17.6&nbsp;GB</td><td>131,072</td><td>2,966.5</td><td>3,133.3 at 2048</td><td>+5.6%</td><td>63.15 &rarr; 63.14<br>182, 166 tokens</td></tr>
+          <tr><td>Gemma 4 31B<br>q4_0, 17.7&nbsp;GB</td><td>131,072</td><td>2,687.5</td><td>2,784.5 at 1024</td><td>+3.6%</td><td>56.45 &rarr; 55.92<br>11, 11 tokens</td></tr>
+          <tr><td>Qwen3.8-27B<br>UD-Q5_K_XL, 20.2&nbsp;GB</td><td>131,072</td><td>2,634.8</td><td>2,717.5 at 2048</td><td>+3.1%</td><td>99.26 &rarr; 94.41<br>106, 106 tokens</td></tr>
+          <tr><td>Muse Glimmer 30B<br>Q4_K_M, 16.8&nbsp;GB</td><td>131,072</td><td>2,737.7</td><td>none faster</td><td class="neg">&minus;0.6% at 1024, &minus;7.1% at 2048</td><td>193.65 &rarr; 179.59 at 1024<br>and 182.69 at 2048;<br>139, 139, 138 tokens</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">21 September, 48,000-token reads through each start
+      script. The code came back in the answer at every rung except
+      GLM-4.7-Flash's 2048, which spent all 900 tokens reasoning and returned an
+      empty answer, a failure as an answer though our harness counted it for
+      reading speed (section 08); its 1024 and 4096 rungs answered, at 3,022.0
+      and 3,070.1. Qwen3.8-27B could not load <code>-ub 4096</code> (section
+      04).</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The ceiling is per model</h2>
+      <p>No single value was safe for every model. The largest setting that
+      loads and finishes a read depends on the model, its placement and its
+      window, and the failure can come at load or in the middle of a read.</p>
+      <ul class="plain">
+        <li><strong>At load.</strong> <code>-ub 8192</code> failed to load on
+        Qwen3.8-Flash-Next at a 131,072 window on 20 September (a
+        16,171.13&nbsp;MiB working buffer refused) and, on 21 September, on
+        GLM-5.3-Flash (15,424.89&nbsp;MiB), Qwen3.5-397B (3,712.25),
+        Qwen3.5-122B (3,264.25) and Qwen3-235B (2,752.23). Qwen3.8-27B, which
+        fits on the card, failed at <code>-ub 4096</code> (1,568.13&nbsp;MiB).</li>
+        <li><strong>Mid-read.</strong> Inkling-Small at <code>-ub 8192</code>
+        loaded at 18,130&nbsp;MiB, then 8,203 tokens into the read the server
+        tried to allocate 29,242.27&nbsp;MiB, was refused, and died. The client
+        saw only a dropped connection; that was the out-of-memory signature here.</li>
+        <li><strong>Where 8192 worked.</strong> DeepSeek V4 Flash Q8, Laguna S
+        2.1 at 32,768 tokens, Mistral Small 4, and Ornith-1.5-35B, which read
+        7,393.7 t/s at 8192 but peaked at 30,087&nbsp;MiB, so we shipped 4096.</li>
+      </ul>
+      <p><strong>The window moves the ceiling.</strong> The same setting took
+      more card at the 262,144-token window these models serve than at the
+      131,072 we swept: Ling at <code>-ub 4096</code> 8,107 &rarr;
+      10,285&nbsp;MiB, Inkling-Small at 2048 13,183 &rarr; 17,281, DeepSeek at
+      8192 22,089 &rarr; 26,023, and Qwen3.8-Flash-Next at 2048 21,394 &rarr;
+      26,561, all after load, 2,178 to 5,167&nbsp;MiB more. MiniMax M2.7 with
+      every expert layer in RAM read 43,909 tokens at <code>-ub 4096</code> with
+      a 131,072 window, but at its full 196,608 window 4096 failed to load (a
+      2,916.16&nbsp;MiB buffer refused), 2048 failed too, and only 1024 loaded,
+      at 31,560&nbsp;MiB; its script now forces 1024 there. Four other scripts (Qwen3.5-397B,
+      Qwen3.5-122B, Mistral Small 4, Ornith-1.5-35B) return to llama.cpp's
+      default above 131,072, where the bigger value was not measured, and
+      Laguna S 2.1 drops from 8192 to 4096 above 32,768.</p>
+      <p><strong>The served window was checked for memory, not speed.</strong>
+      On 20 September Inkling-Small and Qwen3.8-Flash-Next each read one
+      3,000-token prompt at 262,144, and no deep read there followed, so their
+      section 03 speeds are from 131,072. At 262,144 Inkling-Small read 3,033
+      tokens at 263.6 t/s (187.9 when its shipped script replayed the crash
+      prompt on 21 September) and Qwen3.8-Flash-Next 3,041 at 45.4 (2,999 at
+      112.3 on the replay). Short first reads are slower in general: on the
+      seven loads here that read both lengths, a 3,000-token first request ran
+      at 49 to 78 percent of the same load's 48,000-token rate. Inkling's fit
+      that; Flash-Next's, 9 and 22 percent of its 511.7, do not. Its 20
+      September read spent 57.1 of its 67.0 seconds on the first 989 tokens and
+      9.7 on the next 2,048 (the replay, 19.7 on 947 and 6.8 on 2,048). A partly filled
+      micro-batch, which on our reading costs about what a full one does
+      (section 01), does not explain that, and the records do not show what
+      does. The script still ships 2048 at 262,144, our records do not say
+      why, and we do not know Flash-Next's reading speed at the window it
+      serves.</p>
+      <p><strong>Two files of one model need two values.</strong> The DeepSeek V4
+      Flash IQ3 file, with 7 of its 43 expert layers on the card instead of in
+      RAM, ships <code>-ub 4096</code> while the Q8 file ships 8192. At the
+      262,144 window the IQ3 file read 48,024 tokens at 426.5 t/s at 2048 and
+      690.9 at 4096; at 2048 the same load read 149,898 tokens at 403.8 t/s,
+      and the shipped script at 4096 read 150,103 tokens at 632.1 (21
+      September, code returned each time).</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>One correct read does not make a setting safe</h2>
+      <p>On 20 September, Ling-3.0-flash at <code>-b 4096 -ub 4096</code> read
+      47,992 tokens at 1,140.4 t/s with the code correct, at a 131,072 window.
+      Loaded at its served 262,144 window (10,285&nbsp;MiB), the server died on
+      its first request:</p>
+      <pre class="log">CUDA error: an illegal memory access was encountered</pre>
+      <p>Our records then called that setting confirmed (section 13). On 21
+      September, through the model's own script at 262,144 and
+      <code>-ub 4096</code>, five reads on one load (3,005, 2,991, 19,962,
+      48,084 and 150,153 tokens) were all correct, the three long ones at
+      1,067.6 to 1,173.9 t/s. Then a fresh load got the exact 3,007-token ledger
+      from the 20 September check as its first request, and died with the same
+      error. At <code>-ub</code> 2048, 1024 and 512 the same prompt passed with
+      the code correct (444.0, 325.7 and 201.5 t/s).</p>
+      <p>By hand, with the model's exact launch flags, we narrowed it down:</p>
+      <ul class="plain">
+        <li><strong>Not the window.</strong> It crashed at
+        <code>-ub 4096</code> with windows of 262,144 (the control), 131,072 and
+        65,536, and at <code>-ub 3072</code> with 262,144, the only window tried
+        there.</li>
+        <li><strong>Not the length alone.</strong> The same kind of ledger at
+        nine other sizes, 1,760 to 4,001 tokens, passed at 4096, as did
+        raw-token prompts of real code at exactly 3,006, 3,007 and 3,008 tokens
+        and five other lengths.</li>
+        <li><strong>Rare.</strong> At 4096, 60 prompts of real mixed text and 50
+        random ledgers of 2,134 to 6,541 tokens, 110 in all, passed without a
+        crash, and so did the same 110 at 2048.</li>
+      </ul>
+      <p>We shipped <code>-b 4096 -ub 2048</code>: 727.7 t/s on a 47,986-token
+      read and 694.6 on 149,711, code correct, 8,824&nbsp;MiB at peak, and the
+      crash prompt passed through the shipped script. The shipped settings of
+      the other eleven models with experts in RAM then got the same crash
+      prompt first and 40 prompts of real text: twelve runs (DeepSeek's Q8 and
+      IQ3 files separately), 40 of 40 each, no crash, the code returned on
+      every replay. The six models on the card were not stress-checked.</p>
+      <p>We did not find the cause. The closest public report we found is
+      llama.cpp issue #28282, opened on 2 September and still open when we
+      checked on 26 September: an illegal memory access during a long prompt
+      read on GLM-5.3-Flash at <code>-ub 2048</code>, on the same GPU family,
+      with 512 or 128 as that report's workaround. It is a different model, and
+      we have not shown a shared cause. Our GLM-5.3-Flash at
+      <code>-ub 4096</code>, on its own build, read 3,019 to 48,168 tokens
+      without it and passed its 40 stress prompts through its start script,
+      which sets 4096 (the stress log does not print the micro-batch).</p>
+      <p class="fineprint">The package includes <code>repro_ling_crash.py</code>,
+      which rebuilds the same request (same generator, same seed) against any
+      running server. The crashes on this page come from the logs, not from that
+      script.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Inherited values</h2>
+      <p><strong>Laguna S 2.1.</strong> Its start script, written in July, set
+      <code>--batch-size 512 --ubatch-size 128</code>, a micro-batch a quarter
+      of llama.cpp's default, with no reason recorded. Through its own script on
+      21 September, a 24,071-token read at its 32,768 window took 333.2 seconds
+      at 72.2 t/s. At 2048 it read 698.4 t/s, at 4096 1,070.5, and at 8192
+      1,434.0, 16.8 seconds, code correct at every rung; the shipped script
+      with no override read 24,013 tokens at 1,406.5. Decode on its 12-token
+      answer fell from 18.40 to 16.50 t/s (15.32 in the shipped-script run),
+      the one shipped value whose decode moved more than 7 percent. The script
+      lets llama.cpp choose the placement (<code>--fit on</code>,
+      4,096&nbsp;MiB kept free) and the card total barely moved (27,973 to
+      28,272&nbsp;MiB at peak); we suspect the bigger buffer pushed some experts
+      back to RAM and slowed decode, but the logs do not record the
+      placement.</p>
+      <p><strong>MiniMax M2.7.</strong> It was first tried with
+      <code>-cmoe -ub 128</code>, the same pair of flags as the MiniMax M3 start
+      script, where no reason for either is recorded. On 19 September the same
+      3,658-token prompt, every expert layer in RAM, read 32.3 t/s at 128, 100.8
+      at llama.cpp's default 512, 184.7 at 1024, 324.3 at 2048 and 564.0 at 4096.
+      At 43,909 tokens, <code>-ub 4096</code> evaluated the prompt at 640.2 t/s
+      with every expert layer in RAM and 656.5 with 59 of 62, the shipped
+      placement; the whole requests, each ending in a short answer, took 72.1
+      and 70.1 seconds. We did not run 128 at that depth; at its short-read
+      rate, 43,909 tokens would take about 22.7 minutes (arithmetic). On 21
+      September the installed script (<code>-b 4096 -ub 4096</code>, 59 of 62
+      layers' experts in RAM) returned 3 of 3 codes planted in a 43,679-token
+      document, passed its 40 stress prompts, and returned the code on the crash
+      prompt.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Knobs we measured and refused</h2>
+      <p>On DeepSeek V4 Flash Q8, 20 September, 16,011-token reads at a
+      131,072 window:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Setting</th><th>Reading, t/s</th><th>Card after load, MiB</th></tr></thead>
+        <tbody>
+          <tr><td class="t">default micro-batch, f16 cache, every expert in RAM</td><td>81.6</td><td>17,229</td></tr>
+          <tr><td class="t">default micro-batch, q8_0 K and V cache</td><td>82.4</td><td>16,662</td></tr>
+          <tr><td class="t"><code>-b 4096 -ub 2048</code>, f16 cache</td><td>260.8</td><td>17,933</td></tr>
+          <tr><td class="t"><code>-b 4096 -ub 2048</code>, q8_0 K and V cache</td><td>255.1</td><td>17,465</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Short reads: the request asked for a one-word reply
+      and generated 8 tokens; these runs did not check an answer.</p>
+      <ul class="plain">
+        <li><strong>A quantized cache: no gain, and a known risk.</strong> The
+        q8_0 cache read 0.9 percent faster at the default micro-batch and 2.2
+        percent slower at 2048. Two upstream reports describe garbage output with
+        a quantized K cache on this architecture: llama.cpp #25382, opened and
+        closed as completed on 7 July, and #26423, from a build that already
+        carried the earlier fix, closed as not planned on 5 August. We refused
+        it.</li>
+        <li><strong>Moving experts onto the card: not measured on this
+        file.</strong> Our records said it was measured here and gained
+        nothing; it was not (section 13). An upstream report describes this
+        model's output degrading in proportion to how many expert layers run on
+        the card (llama.cpp #25582, opened 12 July on a different machine,
+        closed as not planned on 5 September). We refuse it on that report
+        alone. The IQ3 file we also run keeps 7 of its 43 expert layers on the
+        card and returned its code at every depth we read, 2,998 to 150,103
+        tokens; one planted code is a narrow check, not a quality test.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>A thinking model with a small budget returns an empty answer</h2>
+      <p>Our first 48,000-token check on DeepSeek V4 Flash (20 September) set
+      <code>max_tokens</code> to 64. Every rung, the untuned default included,
+      came back empty: the model spent all 64 tokens reasoning. An empty answer
+      after a settings change looks exactly like corruption; here it was the
+      budget. Rerun at 900, the same reads used 70 to 79 tokens and returned
+      the code at the default, 4096 and 8192, and the harness has used 900
+      since, reading the reasoning field too.</p>
+      <p>The same thing happened once at 900: GLM-4.7-Flash's
+      <code>-ub 2048</code> rung spent all 900 tokens reasoning, with the code
+      in its reasoning and an empty answer, while the rungs either side, 1024 and
+      4096, answered with the code in 433 and 488 tokens. The pass rule in
+      section 02 counts that as a pass for reading speed; as an answer it
+      failed, and the table in section 03 marks it so.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What a bigger micro-batch costs after the first read</h2>
+      <p>Everything above is a cold read, with nothing cached. After a read the
+      server keeps the prompt in its cache; the question is how much of the
+      next request it reads again. For models whose cache cannot be rolled back token by
+      token, or that use sliding-window attention, llama-server keeps restore
+      points 4&nbsp;+&nbsp;<code>n_ubatch</code> tokens and 4 tokens before the
+      end of every prompt (<code>tools/server/server-context.cpp</code> lines
+      3465 to 3472 and 3559 to 3565 at d3146f2b5, added by llama.cpp pull
+      request #20288). DeepSeek V4 Flash declares sliding-window attention in its file
+      header (<code>deepseek4.attention.sliding_window = 128</code>).</p>
+      <p>We measured the cost on one configuration: DeepSeek V4 Flash IQ3 split
+      across the desktop and a laptop (section 10), 262,144 window, 21
+      September. For each document, three requests: the cold read; the same
+      document with a different last question (about 200 words asked for); and
+      a real next turn, sending back the first request, the reply as returned,
+      and a short new question.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Re-read on the second or third request</th><th>-ub 512</th><th>-ub 2048</th><th>-ub 4096</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Swapped last question, 3,000-token document</td><td>533 tok, 4.4 s</td><td>2,065 tok, 9.4 s</td><td>3,015 tok (all of it), 12.4 s</td></tr>
+          <tr><td class="t">Swapped last question, 48,000-token document</td><td>533 tok, 10.0 s</td><td class="neg">2,065 tok, 28.2 s</td><td>no result (section 10)</td></tr>
+          <tr><td class="t">Real next turn, 3,000-token document</td><td>245 tok, 3.0 s</td><td>227 tok, 2.8 s</td><td>233 tok, 2.9 s</td></tr>
+          <tr><td class="t">Real next turn, 48,000-token document</td><td>238 tok, 5.4 s</td><td>228 tok, 5.0 s</td><td>no result</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">At 150,103 tokens (-ub 512 only): swapped question
+      533 tokens in 20.7 seconds, real next turn 239 tokens in 9.7 seconds.</p>
+      <p>A normal next turn re-read only the new material, 227 to 245 tokens,
+      at every setting. A changed last message went back to the restore
+      point one micro-batch before the end, so it re-read about one micro-batch:
+      3.9 times as many tokens at 2048 as at 512 (2,065 against 533), and 2.8
+      times the wait on the 48,000-token document. If you often edit or
+      regenerate the last message on a model like this, that is the price of
+      the bigger micro-batch; a normal conversation does not pay it. The code applies the same restore points to
+      every model whose cache cannot be rolled back or that uses sliding-window
+      attention; we measured the cost on DeepSeek only.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>Two machines are the exception</h2>
+      <p>The one setup with experts in RAM where we kept the default: DeepSeek
+      V4 Flash IQ3 split across the desktop and an ASUS ROG Flow Z13 laptop over
+      Thunderbolt with llama.cpp's RPC backend (21 September, 262,144 window;
+      layers 0 to 7 on the desktop's card, 8 to 17 with their experts in the
+      desktop's RAM, 18 to 42 on the laptop).</p>
+      <ul class="plain">
+        <li><strong>512 (the default):</strong> 161.8 t/s on a 2,998-token read,
+        102.5 on 48,024 tokens (468.4 seconds).</li>
+        <li><strong>2048:</strong> 224.9 and 117.0 (410.5 seconds), 14 percent
+        faster at 48,000 tokens.</li>
+        <li><strong>4096:</strong> 250.5 on the short read; on the 48,024-token
+        read, after 40,960 tokens, the desktop's server logged the laptop's
+        worker as crashed (&ldquo;Remote RPC server crashed or returned
+        malformed response&rdquo;). The laptop's log of that moment is not in
+        our records.</li>
+      </ul>
+      <p>We kept 512: the split read 150,103 tokens in 2,922.9 seconds (48.7
+      minutes, 51.4 t/s) with the code correct, and decoded 12.05 t/s on a
+      reply of about 400 tokens at 48,000 and 7.85 at 150,000. The IQ3 file on
+      the desktop alone, at its shipped <code>-ub 4096</code>, read the same
+      150,103 tokens in 237.5 seconds (632.1 t/s); the two-machine study is
+      linked in section 14.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>How to tune your own</h2>
+      <p>What we would do on a new model, in order. Setup takes a few minutes;
+      then each rung is one long read, and one untuned read on our largest file
+      took about 10 minutes by itself (576.9 seconds). With the stress check,
+      Qwen3-235B took 35 minutes in all and Qwen3.5-397B 34.</p>
+      <ol class="plain">
+        <li><strong>Find out where the weights live.</strong> On the card,
+        expect less: five of our six such models read 3 to 34.5 percent faster,
+        the sixth slower, and all six kept the default (step 4). With any expert
+        layers in system RAM (<code>-cmoe</code>, <code>--n-cpu-moe</code>,
+        <code>--fit</code>, or a file bigger than your card), this is worth
+        doing.</li>
+        <li><strong>Build one read you can check.</strong> A long prompt (we used
+        48,000 tokens) with a code planted in the middle and a question asking
+        for it; temperature 0; a freshly started server; <code>max_tokens</code>
+        large enough for a thinking model (we used 900). Take
+        <code>timings.prompt_per_second</code> from the response, and look for
+        the code in the answer, not only in the reasoning. Our harness is in the
+        package.</li>
+        <li><strong>Sweep upward.</strong> Your current setting, then
+        <code>-b 4096 -ub 2048</code>, <code>-b 4096 -ub 4096</code>,
+        <code>-b 8192 -ub 8192</code>. Keep <code>-b</code> at least as large as
+        <code>-ub</code>. Stop at the first rung that fails to load, drops the
+        connection mid-read, loses the code, or reads slower than the one
+        before.</li>
+        <li><strong>Decide whether the gain is worth its cost.</strong> The stop
+        rule finds the fastest rung that works, not the one to ship. We shipped
+        a bigger setting on every model with experts in RAM, where reading got
+        at least twice as fast, and on none of the six on the card, where the
+        gain was 34.5 percent at most and their scripts record the trade (section
+        03).</li>
+        <li><strong>Watch the card during the read, not just after load.</strong>
+        The working buffer fills while the prompt is read; our peaks ran up to
+        465&nbsp;MiB above the load reading. Leave room for anything else that
+        shares the card.</li>
+        <li><strong>Re-run the winner at the window you actually serve, with a
+        long read.</strong> At double the window the same setting took 2,178 to
+        5,167&nbsp;MiB more card here, and one model that loaded
+        <code>-ub 4096</code> at 131,072 could not load it at 196,608. A short
+        read there does not tell you the long-read speed (section 04).</li>
+        <li><strong>Stress it with real text before you trust it.</strong> Forty
+        to sixty prompts of real mixed text sized around one and two
+        micro-batches, plus repetitive input (logs, tables, ledgers), a small
+        <code>max_tokens</code>, and a restart after any crash, keeping the
+        prompt that caused it. Replay any prompt that ever crashed a server. Ling's
+        <code>-ub 4096</code> passed 110 prompts and a 150,153-token read, and
+        still died on one 3,007-token ledger.</li>
+        <li><strong>Check that the setting reached the server.</strong> In our
+        logs, llama-server's progress lines advance in steps of the logical
+        batch (512 on Laguna's inherited <code>-b 512</code>, 2,048 at the
+        default, 4,096 at <code>-b 4096</code>); at our log level the
+        micro-batch itself was not printed.</li>
+        <li><strong>Judge decode on a real reply.</strong> Most of our decode
+        figures are answers of 11 to 100 tokens. They can show a large change;
+        they are not speaking speeds.</li>
+        <li><strong>If you often edit or regenerate the last message</strong>,
+        each edit re-reads about one micro-batch on models that keep restore
+        points (section 09); a normal next turn does not.</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>One machine.</strong> One RTX&nbsp;5090 (32&nbsp;GB),
+        188&nbsp;GiB of RAM, one CPU, and a RAM-to-card link we did not record or
+        measure; the gain depends on how fast weights cross, so a different card
+        or link will move it.</li>
+        <li><strong>Experts in system RAM.</strong> The large gains belong to that
+        placement. Models on the card gained 34.5 percent at most, and we shipped
+        none of it.</li>
+        <li><strong>The builds of that week.</strong> Seven llama.cpp commits,
+        three of them forks or a pull-request branch. Defaults and kernels
+        change.</li>
+        <li><strong>Reading, not quality.</strong> The check is one planted code
+        (three in two runs), and the stress runs looked for crashes, not answers.
+        Nothing here measures whether a model's replies got better or worse.</li>
+        <li><strong>Decode from short answers.</strong> Most decode figures come
+        from answers of 11 to 100 tokens (up to 900 on thinking models).</li>
+        <li><strong>Mixed passes.</strong> Hand-copied flags at 131,072 on 20
+        September, each model's own script at its served window on 21 September.
+        Ling's ratio spans both; GLM-5.3-Flash's spans two read lengths; M2.7's
+        comes from a harness with no answer check.</li>
+        <li><strong>Speed at the served window.</strong> Inkling-Small and
+        Qwen3.8-Flash-Next were timed on short reads only at the 262,144 they
+        serve (section 04).</li>
+        <li><strong>Run-to-run variation.</strong> The untuned DeepSeek 48,000-token
+        read measured 72.3 t/s in one run and 83.3 in another with the same
+        flags, after loads of 3 minutes 55 seconds and 3 seconds. We use 83.3,
+        the less flattering baseline; single runs carry noise of that size.</li>
+        <li><strong>Cold reads, one request at a time.</strong> No prompt cache,
+        no parallel slots.</li>
+        <li><strong>A stress check is not a proof.</strong> Forty prompts per
+        changed setting found nothing; the Ling fault passed 110.</li>
+        <li><strong>Upstream report states</strong> are as we found them on 26
+        September 2026.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>What we got wrong</h2>
+      <p>This site publishes corrections of its own records, and this study has
+      five.</p>
+      <h3>Two inherited micro-batches nobody had measured</h3>
+      <p>Laguna S 2.1 ran at <code>-ub 128</code> from July to 21 September, and
+      MiniMax M2.7 was first judged at <code>-cmoe -ub 128</code>, the pair of
+      flags in the MiniMax M3 start script. Measured, those values cost a
+      factor of 19.9 and 17.5 in reading (sections 03 and 06).</p>
+      <h3>&ldquo;Confirmed&rdquo; at the served window</h3>
+      <p>After the 20 September pass, three start scripts carried the same
+      comment above their new setting: &ldquo;Confirmed to LOAD and answer at
+      the full served window (ctx 262144)&rdquo;, then a card figure. The run
+      cited for Ling's <code>-ub 4096</code> (10,285&nbsp;MiB) died on its first
+      request: the comment took its figure from the load line of a result file
+      that also records the crash, and the script shipped 4096 until the
+      afternoon of 21 September. The runs cited for Inkling-Small and
+      Qwen3.8-Flash-Next at 2048 (17,281 and 26,561&nbsp;MiB) did load and
+      answer, but each was one 3,000-token read; the comments give reading
+      speeds from 131,072 only, Flash-Next's 45.4 t/s at 262,144 appears in
+      none, and our records hold no deep read there since the change (section
+      04).</p>
+      <h3>An &ldquo;experts on the card&rdquo; test that moved no experts</h3>
+      <p>Our records said moving DeepSeek V4 Flash's experts onto the card was
+      measured and bought nothing (255.1 against 260.8 t/s). Those runs used
+      <code>--n-cpu-moe 50</code> on a 43-layer model
+      (<code>deepseek4.block_count = 43</code>), so every expert stayed in RAM
+      and card use fell by 468 to 567&nbsp;MiB; they measured the q8_0 cache.
+      The same records called the reports behind both refusals open: #25382
+      had been closed as completed on 7 July, before any of these runs, and
+      #25582 as not planned on 5 September (section 07).</p>
+      <h3>A speaking figure that was an 11-token answer</h3>
+      <p>We shipped <code>-ub 2048</code> on Qwen3-235B instead of 4096 partly
+      because an 11-token answer decoded 12 percent slower at 4096 (7.20
+      against 8.18 t/s). An 11-token answer is not a speaking measurement. The
+      other half of the reason stands: at 4096 the card peaked at
+      31,053&nbsp;MiB. 4096 read 944.2 t/s. The same kind of figure is part of
+      why Gemma 4 26B-A4B kept the default (section 03).</p>
+      <h3>Labels in our own harness</h3>
+      <p>The result files of runs with no override say &ldquo;llama.cpp default
+      512&rdquo; even when the script itself set <code>-ub 128</code> (Laguna)
+      or 4096 (Ling's crash run), and the M2.7 console printed
+      &ldquo;FIT&rdquo; for the two window settings that failed to load. The
+      server logs are right and the labels are wrong; the package README lists
+      each case.</p>
+    </section>
+
+    <section>
+      <div class="secnum">14</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../deepseek-v4-flash/">DeepSeek V4 Flash page</a> covers
+      the model this sweep sped up the most, and the
+      <a href="../inkling-small/">Inkling-Small page</a> a model on a draft
+      llama.cpp branch. The <a href="../field-notes-2026-09/">September field
+      notes</a> collect the month's shorter results from this machine;
+      <a href="../two-boxes/">Two boxes</a> studies the desktop and laptop as
+      one host; the cost of a full 262,144-token window at the default has
+      <a href="../context-256k/">its own page</a>.
+      <a href="../speculation-gate/">Slower by default</a> and
+      <a href="../l3-threads/">The wrong flag</a> measure two other llama.cpp
+      defaults on this desktop. <a href="../empty-answer/">Empty Answer</a> is
+      the thinking-budget trap in detail; the <a href="../method/">method
+      page</a> explains the labels and the data packages.</p>
+    </section>
+
+    <section>
+      <div class="secnum">15</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence for this page ships as a data package: the files the runs
+      produced, not a summary. If a number on this page disagrees with a file
+      in the package, the file is right and the page is wrong; tell us and we
+      will fix the page.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every folder, what it
+        holds, where the files disagree with each other, and every
+        redaction.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
+        page, with its file and field.</li>
+        <li><strong>The runs</strong> (<code>data/runs/</code>): result files,
+        server logs and card-memory samples for every run on this page.</li>
+        <li><strong>The tools</strong> (<code>data/tools/</code>): the sweep
+        drivers, the stress and turn probes, the Ling diagnostics and the
+        standalone crash reproducer, with private paths removed.</li>
+        <li><strong>Derived tables</strong> (<code>data/derived/</code>): the
+        server-log reads on this page in one table, the model files and their headers, the
+        builds, the start-script census, and the source lines quoted above.</li>
+        <li><strong>Read at pinned revisions:</strong> llama.cpp source at
+        commit <span class="n">d3146f2b5</span>; llama.cpp pull request #20288
+        and issues #25382, #26423, #25582 and #28282, checked on 26 September
+        2026.</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-09-15</th><td>DeepSeek V4 Flash Q8 at its full window and the default batch, 150,475 tokens in 34.4 minutes (a separate study; the depth baseline here).</td></tr>
+        <tr><th scope="row">2026-09-19</th><td>MiniMax M2.7: the micro-batch ladder, the placement ladder at 4096, the 196,608-window check.</td></tr>
+        <tr><th scope="row">2026-09-20</th><td>First pass with hand-copied flags (Ling, Inkling, Flash-Next; Laguna failed to start); the DeepSeek V4 Flash sweep, empty-answer pass and 150,324-token read; Ling's crashed full-window load; MiniMax M3 split buffers.</td></tr>
+        <tr><th scope="row">2026-09-21</th><td>The remaining models and Ling through their own scripts; the Ling crash reproduced, diagnosed and fixed; the stress checks; the DeepSeek IQ3 values; the two-machine sweep and turn probes.</td></tr>
+        <tr><th scope="row">2026-09-26</th><td>Upstream report states checked; file headers and build records read for this page.</td></tr>
+      </table>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; GeForce, RTX and CUDA are marks of NVIDIA
+    Corporation; ROG and Flow Z13 are marks of ASUSTeK Computer Inc.; Thunderbolt
+    is a mark of Intel Corporation; Qwen, Qwen3, Qwen3.5,
+    Qwen3.6 and Qwen3.8 are marks of Alibaba Group Holding Limited; DeepSeek is a
+    mark of DeepSeek; Ling is a project or mark of inclusionAI; Inkling and
+    Inkling-Small are marks of Thinking Machines Lab; Poolside and Laguna are marks
+    of Poolside; Mistral and Mistral Small are marks of Mistral AI; GLM is a mark of
+    Z.ai; MiniMax is a mark of MiniMax; Gemma is a mark of Google LLC; Meta and Muse
+    Glimmer are marks of Meta Platforms, Inc.; Ornith is a mark of its respective
+    owner; Unsloth is a project or mark of its respective owner. All are
+    referenced for identification only. Not affiliated with, endorsed by, or
+    sponsored by any of them or their affiliates. Product names and marks belong
+    to their respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

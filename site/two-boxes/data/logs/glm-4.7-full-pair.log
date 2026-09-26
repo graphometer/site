@@ -1,0 +1,30 @@
+=== prep: worker cache optional, GLM thinking off for the speed probe, slot-save support ===
+=== stop Kimi (server, then worker), wipe the <LAPTOP> cache, restart the worker without cache ===
+desktop llama-server stopped
+<LAPTOP> worker stopped
+870 MiB
+started pid <PID>
+port <PORT> reachable from the desktop
+=== GLM-4.7 Full split: 38 desktop layers (4 whole on the card), 55 on the <LAPTOP>, q8 KV, 128K, thinking off for the probe ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 333 s
+=== placement (from <REDACTED_PATH>) ===
+2.49.929.634 I load_tensors:   CPU_Mapped model buffer size = 46696.52 MiB
+2.49.929.636 I load_tensors:   CPU_Mapped model buffer size =  6912.31 MiB
+2.49.929.637 I load_tensors:        CUDA0 model buffer size =  9197.60 MiB
+2.49.929.638 I load_tensors: RPC0[<LAPTOP>:<PORT>] model buffer size = 78246.21 MiB
+5.26.938.501 I llama_kv_cache:      CUDA0 KV buffer size = 10608.00 MiB
+5.27.630.534 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size = 14416.00 MiB
+5.29.151.872 I sched_reserve:      CUDA0 compute buffer size =   890.53 MiB
+5.29.151.900 I sched_reserve: RPC0[<LAPTOP>:<PORT>] compute buffer size =   301.03 MiB
+5.29.151.900 I sched_reserve:  CUDA_Host compute buffer size =   148.09 MiB
+=== probe ===
+[short] prompt 22 tok in 3.3 s = 6.6 t/s | decode 33 tok = 5.66 t/s | wall 9.0 s
+        reply: I am an artificial intelligence assistant created to help answer questions and provide support. One thing I am good at is quickly processing and summarizing large amounts of information.
+[depth~8000] prompt 7640 tok in 149.5 s = 51.1 t/s | decode 9 tok = 5.59 t/s | wall 151.0 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+22231 MiB
+server left running on <LOCAL>:<PORT> (stop with <REDACTED_PATH>)
+RUN4 EXIT=0

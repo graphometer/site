@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Six large models on the ASUS ROG Flow Z13 alone</title>
+<meta name="description" content="A measured study of six local models on an ASUS ROG Flow Z13 by itself. At 48K the laptop read prompts 2.8 to 23 times slower than a one-RTX-5090 desktop. Ling-3.0-flash was the practical exception, matching desktop short-answer speaking at 48K after a 3.6-minute read.">
+<link rel="canonical" href="https://graphometer.ai/z13-alone/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Six large models on the ASUS ROG Flow Z13 alone">
+<meta property="og:description" content="At 48K the laptop read prompts 2.8 to 23 times slower than a one-RTX-5090 desktop. Ling-3.0-flash matched desktop short-answer speaking at that depth after a 3.6-minute read.">
+<meta property="og:url" content="https://graphometer.ai/z13-alone/">
+<meta property="og:image" content="https://graphometer.ai/og/z13-alone.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Six large models on the ASUS ROG Flow Z13 alone">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Six large models on the ASUS ROG Flow Z13 alone">
+<meta name="twitter:description" content="At 48K the laptop read prompts 2.8 to 23 times slower than a one-RTX-5090 desktop. Ling-3.0-flash matched desktop short-answer speaking at that depth after a 3.6-minute read.">
+<meta name="twitter:image" content="https://graphometer.ai/og/z13-alone.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}.brand svg{width:40px;height:40px;flex:none}
+  .brand span{font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);text-transform:uppercase}
+  .hero{padding:72px 0 48px}.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}.hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:56ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}.secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}h3{font-size:17.5px;font-weight:650;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}section p:last-child{margin-bottom:0}section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}.facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}.facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}.facts td{color:var(--ink)}
+  @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}table.data th:first-child,table.data td:first-child{text-align:left}table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}table.data td{font-family:var(--mono);color:var(--ink)}table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}.tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}.note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}ul.plain li{margin-bottom:8px}.fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}.sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}.sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="../" style="text-decoration:none"><div class="brand"><svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg><span>Graphometer</span></div></a><nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav></div></header>
+
+<main><div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Measured study &middot; 2026-09-20 to 2026-09-21 &middot; six models &middot; one request at a time &middot; laptop alone versus desktop</div>
+    <h1>Six large models on the ASUS ROG Flow <em>Z13 alone</em></h1>
+    <p class="subtitle">At 48K, the laptop read prompts 2.8 to 23 times slower than the desktop. Ling-3.0-flash was the practical exception: desktop-level short-answer speaking at 48K, with a 3.6-minute read.</p>
+    <p class="lead"><strong>Measured, 2026-09-20 to 2026-09-21.</strong> A 128 GB unified-memory laptop can hold models that do not fit on a 32 GB graphics card. Holding them is not the same as serving them well. We ran six local models on the Z13 by itself, over loopback, then compared the 48K measurements with the same sealed-code probe family on a desktop with one RTX 5090 and 188 GiB of RAM. All six returned the code. The laptop's prompt reading slowed with depth. Only Ling remained a practical alternative at 48K, and even Ling took 216.2 seconds to read the prompt.</p>
+    <div class="nonaff">Independent measurements. No affiliation with ASUS, AMD, NVIDIA, Intel, the llama.cpp or ggml-org projects, or the makers of the Qwen, DeepSeek, GLM, and Ling models.</div>
+  </div>
+
+  <section><div class="secnum">01</div><h2>The answer</h2>
+    <p><strong>Measured, 2026-09-20 to 2026-09-21.</strong> At about 48K prompt tokens, the laptop read at 36.9 to 222.0 tokens per second. The selected desktop comparisons read at 511.7 to 2,594.6 tokens per second. Dividing each desktop rate by its laptop counterpart gives a range of <strong>2.8 to 23 times slower on the laptop</strong>. Flash-Next supplies the low end at 2.76 times, rounded to 2.8. The laptop's own best Flash-Next setting, <code>-ub 2048</code> at 213.0 tokens per second, narrows that low end to 2.4 times. GLM-4.7-Flash supplies the high end at 22.70 times, rounded to 23.</p>
+    <p>The laptop did not win on deep speaking. These measurements used a sealed-code answer, so every decode figure below is labelled <strong>speaking on a short answer</strong>. Ling was effectively level at 48K, 23.79 tokens per second on the laptop and 23.25 on the desktop. Qwen3-235B was also close, but the two machines used different quantizations. The laptop's clearest speaking win was shallow Ling: 34.84 tokens per second after a 3K prompt versus 23.22 on the desktop.</p>
+    <div class="note"><span class="label">Practical choice</span>For Ling on this laptop, use the 256K window, <code>-ub 512</code>, and no multi-token prediction (MTP) draft. It read the 47,986-token prompt at 222.0 tokens per second, returned the exact code, spoke the short answer at 23.79 tokens per second, and peaked at 72,179 MiB GTT and 76,002 MiB RAM used.</div>
+  </section>
+
+  <section><div class="secnum">02</div><h2>What we ran, exactly</h2>
+    <p><strong>Measured configuration, 2026-09-21.</strong> The machine and runtime facts below describe the recorded test configuration, not a general specification for either machine class.</p>
+    <table class="facts">
+      <tr><th scope="row">Laptop</th><td>ASUS ROG Flow Z13 GZ302EA, AMD Ryzen AI Max+ 395, Radeon 8060S, 128 GB unified memory with about 119 GiB usable.</td></tr>
+      <tr><th scope="row">Laptop runtime</th><td>llama.cpp build 10919 at revision <code>d3146f2b5</code>, Vulkan, <code>-ngl 999 -fa on -t 16 --parallel 1</code>, one model and one request at a time, bound to loopback.</td></tr>
+      <tr><th scope="row">Power</th><td>Balanced mode, on mains. We changed neither the power mode nor the machine configuration.</td></tr>
+      <tr><th scope="row">Desktop</th><td>One NVIDIA GeForce RTX 5090 (32,607 MiB), 188 GiB system RAM, and a 24-core Intel Core Ultra 9 285K. CUDA llama.cpp kept model experts in system RAM where required.</td></tr>
+      <tr><th scope="row">Probe</th><td>A synthetic ledger placed a sealed code at its midpoint. Temperature 0; one cold request at about 3K and 48K. A warm prose follow-up was recorded for five models and is absent from the Qwen3-235B log. This page uses only the cold sealed-code decode figures for cross-machine speaking.</td></tr>
+      <tr><th scope="row">Dates</th><td>Laptop runs and five desktop comparisons: 2026-09-21. Flash-Next desktop comparison: 2026-09-20. All used the same probe family.</td></tr>
+    </table>
+    <p class="fineprint">Laptop files were Qwen3-235B-A22B-Instruct-2507 <code>UD-Q3_K_XL</code>, Qwen3.8-Flash-Next <code>UD-Q3_K_XL</code>, Ling-3.0-flash <code>Q4_K_M</code>, DeepSeek V4 Flash 0731 <code>UD-IQ3_XXS</code>, GLM-4.7-Flash <code>UD-Q4_K_XL</code>, and Qwen3.5-122B-A10B <code>UD-Q4_K_S</code>. The desktop used the same files except Qwen3-235B, which used <code>Q4_K_M</code> plus a Qwen3-0.6B <code>Q8_0</code> draft. All laptop comparison rows used <code>-ub 512</code>; windows were 128K for both Qwen models and the main DeepSeek run, 198K for GLM, and 256K for Ling and Flash-Next. In the desktop table, Ling used 256K and <code>-ub 2048</code>; Flash-Next used 128K and <code>-ub 2048</code> on the separate Flash-Next server binary, not build 10919; Qwen3.5 used 128K and <code>-ub 4096</code>; GLM used 198K at that model's own default micro-batch, whose number the log does not record; DeepSeek used 256K and <code>-ub 4096</code>; and Qwen3-235B used 128K and <code>-ub 2048</code> with the draft already disclosed. A separate load allocated a 256K DeepSeek slot and answered a 3K prompt, peaking at 98,482 MiB GTT.</p>
+  </section>
+
+  <section><div class="secnum">03</div><h2>Observed at 48K</h2>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>Laptop read</th><th>Desktop read</th><th>Slower</th><th>Laptop speak</th><th>Desktop speak</th></tr></thead><tbody>
+      <tr><td class="t">Ling-3.0-flash</td><td>222.0 t/s</td><td>727.7 t/s</td><td>3.28x</td><td>23.79 t/s</td><td>23.25 t/s</td></tr>
+      <tr><td class="t">Qwen3.8-Flash-Next</td><td>185.4 t/s</td><td>511.7 t/s</td><td>2.76x</td><td>14.39 t/s</td><td>18.75 t/s</td></tr>
+      <tr><td class="t">Qwen3.5-122B-A10B</td><td>159.3 t/s</td><td>2,101.7 t/s</td><td>13.19x</td><td>19.07 t/s</td><td>32.72 t/s</td></tr>
+      <tr><td class="t">GLM-4.7-Flash</td><td>114.3 t/s</td><td>2,594.6 t/s</td><td>22.70x</td><td>10.70 t/s</td><td>129.60 t/s</td></tr>
+      <tr><td class="t">DeepSeek V4 Flash</td><td>56.7 t/s</td><td>690.9 t/s</td><td>12.19x</td><td>11.03 t/s</td><td>12.16 t/s</td></tr>
+      <tr><td class="t">Qwen3-235B</td><td>36.9 t/s</td><td>703.3 t/s</td><td>19.06x</td><td>8.42 t/s</td><td>8.18 t/s</td></tr>
+    </tbody></table></div>
+    <p class="tablenote"><strong>Measured</strong> rates from one cold sealed-code request per configuration. Laptop prompts ranged from 47,985 to 48,052 tokens; desktop prompts ranged from 47,986 to 48,069. Speaking columns are speaking on a short answer, including reasoning tokens where the runtime counted them. The &ldquo;slower&rdquo; column is arithmetic: desktop read rate divided by laptop read rate. The ratios divide the one-decimal result fields; server-log rates give 22.71 for GLM and 19.08 for Qwen3-235B. Desktop configurations were Ling at 256K and <code>-ub 2048</code>; Flash-Next at 128K and <code>-ub 2048</code> on the separate Flash-Next server binary, not build 10919; Qwen3.5 at 128K and <code>-ub 4096</code>; GLM at 198K with its own default micro-batch, whose number the log does not record; DeepSeek at 256K and <code>-ub 4096</code>; and Qwen3-235B at 128K and <code>-ub 2048</code> with the disclosed draft. Laptop Flash-Next used <code>-ub 512</code>; its fastest tested laptop setting, <code>-ub 2048</code>, reached 213.0 tokens per second.</p>
+    <h3>The cold-read wait</h3>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>48K read time</th><th>Peak GTT</th><th>Practical result</th></tr></thead><tbody>
+      <tr><td class="t">Ling-3.0-flash</td><td>3.6 min</td><td>72,179 MiB</td><td class="t">practical</td></tr>
+      <tr><td class="t">Qwen3.8-Flash-Next</td><td>4.3 min</td><td>61,948 MiB</td><td class="t">works, slower</td></tr>
+      <tr><td class="t">Qwen3.5-122B-A10B</td><td>5.0 min</td><td>68,875 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">GLM-4.7-Flash</td><td>7.0 min</td><td>24,455 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">DeepSeek V4 Flash</td><td>14.1 min</td><td>97,477 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">Qwen3-235B</td><td>21.7 min</td><td>103,358 MiB</td><td class="t">desktop preferred</td></tr>
+    </tbody></table></div>
+    <p class="tablenote"><strong>Measured</strong> read times for the first five rows, rounded from seconds in the result files. Qwen3-235B did not record a separate read duration, so its 21.7 minutes is <strong>arithmetic</strong>: 48,027 prompt tokens divided by 36.9 tokens per second. GTT is the laptop's sampled GPU-visible memory counter, not power use.</p>
+    <p>Flash-Next is the credible fallback if Ling is not the desired model. It fit with a 256K configured window and finished the 48K read in 4.3 minutes, but its short-answer speaking rate at that depth remained below the desktop's. Qwen3.5-122B also finished its read in about five minutes, yet gave up much more speaking speed. GLM used the least GTT and still suffered the largest relative reading gap. DeepSeek and Qwen3-235B came closest to their desktop short-answer speaking rates, but waiting 14.1 or 21.7 minutes for a cold 48K read makes that parity less useful.</p>
+    <p><strong>Measured trend.</strong> Every laptop model read more slowly at 48K than at 3K. The declines ranged from 23% for Flash-Next and Qwen3.5-122B to 79% for GLM. The Qwen3-235B server log shows the cumulative rate continuing to fall after about 30K. That pattern is consistent with attention work becoming dominant, but the run did not instrument attention separately, so the cause is an inference rather than a direct measurement.</p>
+  </section>
+
+  <section><div class="secnum">04</div><h2>Why Ling is the exception</h2>
+    <p><strong>Measured.</strong> Ling combines a usable read time with speaking that stayed level with the desktop at the tested depth. Its 47,986-token read took 216.2 seconds, or 3.6 minutes, before the short answer. At 103,887 tokens it read at 149.0 tokens per second in 697.4 seconds and spoke the short answer at 15.09 tokens per second. The desktop was not measured at 104K; its deeper recorded point was 149,711 tokens, with reading at 694.6 tokens per second and short-answer speaking at 22.60 tokens per second.</p>
+    <p><strong>Measured.</strong> The laptop also survived a targeted stability check. A fresh Ling server first answered the recorded 3,007-token crash replay and stayed alive. It then completed 40 of 40 public-source prompts with zero crashes and one server start. Those 40 prompts ranged from 339 to 10,930 tokens. <strong>This was not a 48K stability test.</strong> It reduces one specific crash concern; it does not establish long-window reliability.</p>
+    <p><strong>Measured.</strong> The MTP draft was the wrong trade at depth. At <code>-ub 2048</code>, it raised speaking on a short answer after 3K from 34.65 to 41.55 tokens per second, then lowered the 48K figure from 23.80 to 16.30. We left it off. Raising <code>-ub</code> from 512 to 2048 also did not improve Ling's 48K read: 222.0 versus 217.7 tokens per second.</p>
+  </section>
+
+  <section><div class="secnum">05</div><h2>What we got wrong</h2>
+    <p><strong>Measured correction.</strong> An early note treated the warm follow-up as a normal next turn. It was not. The probe replaced the last question on the same ledger. With Ling, that edit caused 535 tokens to be read again at <code>-ub 512</code> and 2,067 at <code>-ub 2048</code>. At <code>-ub 2048</code> the regenerated answer included the sealed code; at <code>-ub 512</code> it did not. A normal appended turn parts at the end of the old prompt and can use a different restore point. This page therefore uses the result only as advice about editing or regenerating the last prompt, not ordinary conversation.</p>
+  </section>
+
+  <section><div class="secnum">06</div><h2>What this does not show</h2>
+    <ul class="plain">
+      <li>No Performance-mode run was made. Balanced mode stayed on throughout, so the study does not measure the laptop's fastest possible power profile.</li>
+      <li>No battery life, wall power, temperature, fan noise, sustained thermal throttling, or simultaneous-request capacity was measured.</li>
+      <li>The cross-machine speaking task was a short sealed-code answer, not prose. The study does not claim the same ratios for long generation.</li>
+      <li>Exact-code retrieval is a correctness check, not a model-quality evaluation. There was one main cold request per depth and configuration, not a statistical sample.</li>
+      <li>Only Ling was probed beyond 48K, at about 104K. A configured 128K, 198K, or 256K window is capacity, not proof of speed or stability at its limit.</li>
+      <li>The Qwen3-235B 48K prompts, 48,020 tokens on the desktop and 48,027 on the laptop, were longer than the 40,960-token trained context reported in the desktop log.</li>
+      <li>The machines used different backends, context windows, micro-batches, batch sizes, cache settings, thread counts, and some model-specific flags. Qwen3-235B also used different quantization and drafting on the desktop, and Flash-Next used a separate desktop server binary. These are practical deployment comparisons, not isolated hardware benchmarks.</li>
+    </ul>
+  </section>
+
+  <section><div class="secnum">07</div><h2>Related pages on this site</h2>
+    <p>The <a href="../two-boxes/">two-machine study</a> measures what changes when the laptop helps the desktop instead of serving alone. The provisional <a href="../batch-size/">batch-size study</a> shows why prompt-reading settings matter on the desktop comparison machine.</p>
+  </section>
+
+  <section><div class="secnum">08</div><h2>Sources and artifacts</h2>
+    <p>The <a href="data/README.md">data package</a> contains the redacted result files, memory samples, server logs, probes, launch chains, and the six desktop comparison records. <a href="data/NUMBERS.md">NUMBERS.md</a> maps every displayed figure to a file and field. The runtime was <a href="https://github.com/ggml-org/llama.cpp/tree/d3146f2b5">llama.cpp at revision d3146f2b5</a>. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
+  </section>
+</div></main>
+
+<footer><div class="wrap"><div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div><div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div><p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p><p>Copyright 2026 Grant Williams. Independent work: ASUS and ROG are marks of ASUSTeK Computer Inc.; AMD, Ryzen and Radeon are marks of Advanced Micro Devices, Inc.; NVIDIA and GeForce RTX are marks of NVIDIA Corporation; Intel and Core Ultra are marks of Intel Corporation; llama.cpp is a project of ggml-org and its contributors; the Qwen, DeepSeek, GLM, and Ling model names and marks belong to their respective makers. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p><div class="foot-links"><a href="../">Graphometer</a></div></div></footer>
+</body>
+</html>

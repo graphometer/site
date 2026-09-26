@@ -1,0 +1,14 @@
+# Non-executable excerpt: model, placement and llama-server arguments only.
+  quality)
+    BIN=<REDACTED_PATH>
+    MODEL=<REDACTED_PATH>
+    PLACE=(-cmoe); : "${BATCH:=8192}" "${UBATCH:=8192}" ;;
+  fast)
+    BIN=<REDACTED_PATH>
+    MODEL=<REDACTED_PATH>
+    PLACE=(--n-cpu-moe 36); : "${BATCH:=4096}" "${UBATCH:=4096}" ;;
+  --jinja --reasoning-format deepseek --ctx-size "$CTX" --parallel 1 \
+  --threads 24 --threads-batch 24 \
+  --batch-size "${BATCH}" --ubatch-size "${UBATCH}" \
+  --n-gpu-layers 999 "${PLACE[@]}" --no-repack --flash-attn auto \
+  --temp 1.0 --top-p 1.0 --top-k 0 --min-p 0.05

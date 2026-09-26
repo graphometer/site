@@ -1,0 +1,242 @@
+{
+ "model": "DeepSeek V4 Flash 0731, 8-bit body, desktop alone",
+ "tokens": 96000,
+ "started_utc": "2026-09-13T12:15:41+00:00",
+ "S": {
+  "health_s": 216.1,
+  "n_ctx": 131072,
+  "slots": 1,
+  "vram_mib": 16702
+ },
+ "P": {
+  "create_status": 200,
+  "error": null,
+  "present": true,
+  "max_context_window": 131072
+ },
+ "seed": {
+  "pages": 219,
+  "seed_tokens_est": 95739,
+  "in_context_rows": 439,
+  "window_live": 118000
+ },
+ "A_cold": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 56,
+  "reasoning_events": 125,
+  "think_leak": false,
+  "first_event_s": 0.2,
+  "first_content_s": 1396.6,
+  "first_assistant_s": 1411.26,
+  "latency_s": 1414.6,
+  "error": null,
+  "prompt_tokens": 102480,
+  "completion_tokens": 154,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 1,
+   "prefill_tokens_processed": 102476
+  },
+  "contains": [
+   true,
+   true,
+   true
+  ],
+  "decode_tps": 8.6,
+  "prefill_tps_approx": 73.4,
+  "hits": 3
+ },
+ "B_tool": {
+  "events": [
+   "ping",
+   "assistant_message",
+   "tool_call_message",
+   "tool_return_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "write_tool",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 33,
+    "contains_fixed": false,
+    "head": "wrote 33 bytes to depth-probe.txt",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 6,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.19,
+  "first_content_s": 5.63,
+  "first_assistant_s": 5.63,
+  "latency_s": 22.9,
+  "error": null,
+  "prompt_tokens": 205523,
+  "completion_tokens": 94,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 55
+  },
+  "decode_tps": 5.4,
+  "prefill_tps_approx": 36505.0,
+  "disk_exact": true
+ },
+ "C_warm_before_restart": {
+  "events": [
+   "ping",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 5,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.2,
+  "first_content_s": 2.79,
+  "first_assistant_s": 2.79,
+  "latency_s": 3.0,
+  "error": null,
+  "prompt_tokens": 102850,
+  "completion_tokens": 3,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 2,
+   "prefill_tokens_processed": 55
+  },
+  "decode_tps": 14.3,
+  "prefill_tps_approx": 36863.8
+ },
+ "slot_files": [
+  {
+   "bytes": 727106620
+  }
+ ],
+ "bin_settle_s": 70.0,
+ "restart": {
+  "health_s": 6.0,
+  "server_back": true
+ },
+ "D_after_restart": {
+  "events": [
+   "ping",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 5,
+  "reasoning_events": 0,
+  "think_leak": false,
+  "first_event_s": 0.18,
+  "first_content_s": 797.57,
+  "first_assistant_s": 797.57,
+  "latency_s": 797.8,
+  "error": null,
+  "prompt_tokens": 102864,
+  "completion_tokens": 3,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 102846
+  },
+  "decode_tps": 13.0,
+  "prefill_tps_approx": 129.0,
+  "wall_since_stop_s": 1411.0
+ },
+ "E_after_restart": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 23,
+  "reasoning_events": 28,
+  "think_leak": false,
+  "first_event_s": 0.21,
+  "first_content_s": 2.86,
+  "first_assistant_s": 6.31,
+  "latency_s": 7.1,
+  "error": null,
+  "prompt_tokens": 102888,
+  "completion_tokens": 36,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 2,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 8.5,
+  "prefill_tps_approx": 35974.8
+ },
+ "verdict_numbers": {
+  "cold_ttft_s": 1396.6,
+  "after_restart_ttft_s": 797.57,
+  "speedup": 1.8
+ },
+ "fails": [
+  "post-restart turn not warm (ttft 797.57s vs cold 1396.6s)"
+ ],
+ "verdict": "FAIL",
+ "ended_utc": "2026-09-13T13:08:29+00:00",
+ "saved_state_status_start": {
+  "current_slot_key": null,
+  "known_keys": 0,
+  "last_warm": null,
+  "target_up": true,
+  "waiting": 0,
+  "save": true,
+  "save_idle_seconds": 60.0,
+  "dirty_key": null,
+  "dirty_for_s": null,
+  "saves": 0,
+  "warm_on_start": true
+ },
+ "saved_state_status_after_turns": {
+  "current_slot_key": "<SESSION_KEY>",
+  "known_keys": 1,
+  "last_warm": null,
+  "target_up": true,
+  "waiting": 0,
+  "save": true,
+  "save_idle_seconds": 60.0,
+  "dirty_key": "<SESSION_KEY>",
+  "dirty_for_s": 0.1,
+  "saves": 0,
+  "warm_on_start": true
+ },
+ "saved_state_status_after_restart": {
+  "current_slot_key": null,
+  "known_keys": 1,
+  "last_warm": null,
+  "target_up": true,
+  "waiting": 0,
+  "save": true,
+  "save_idle_seconds": 60.0,
+  "dirty_key": null,
+  "dirty_for_s": null,
+  "saves": 0,
+  "warm_on_start": true
+ }
+}

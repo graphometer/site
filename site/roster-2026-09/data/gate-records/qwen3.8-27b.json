@@ -1,0 +1,404 @@
+{
+ "model": "Qwen3.8-27B",
+ "run": "wave-two",
+ "started_utc": "2026-09-13T13:16:03+00:00",
+ "S": {
+  "health_s": 12.0,
+  "vram_before_mib": 723,
+  "vram_after_mib": 29939,
+  "n_ctx": 131072,
+  "slots": 1
+ },
+ "T0": {
+  "finish": "tool_calls",
+  "has_tool_calls": true,
+  "tc_names": [
+   "ping"
+  ],
+  "content_len": 0,
+  "latency_s": 1.1,
+  "error": null
+ },
+ "T1": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 5,
+  "reasoning_events": 89,
+  "think_leak": false,
+  "first_event_s": 0.19,
+  "first_content_s": 2.17,
+  "first_assistant_s": 3.23,
+  "latency_s": 3.4,
+  "error": null,
+  "prompt_tokens": 4018,
+  "completion_tokens": 93,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 1,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 75.6,
+  "prefill_tps_approx": 1851.6
+ },
+ "T1b": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [],
+  "tool_returns": [],
+  "assistant_chars": 904,
+  "reasoning_events": 2472,
+  "think_leak": false,
+  "first_event_s": 0.2,
+  "first_content_s": 0.61,
+  "first_assistant_s": 20.56,
+  "latency_s": 22.1,
+  "error": null,
+  "prompt_tokens": 4167,
+  "completion_tokens": 2684,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 2,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 124.9,
+  "prefill_tps_approx": 6831.1
+ },
+ "T2": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "tool_call_message",
+   "tool_return_message",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_write",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 27,
+    "contains_fixed": false,
+    "head": "wrote 33 bytes to probe.txt",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 198,
+  "think_leak": false,
+  "first_event_s": 0.19,
+  "first_content_s": 1.47,
+  "first_assistant_s": 5.36,
+  "latency_s": 5.5,
+  "error": null,
+  "prompt_tokens": 13959,
+  "completion_tokens": 268,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 66.5,
+  "prefill_tps_approx": 9495.9,
+  "disk_exact": true
+ },
+ "T3": {
+  "events": [
+   "ping",
+   "reasoning_message",
+   "tool_call_message",
+   "tool_return_message",
+   "reasoning_message",
+   "assistant_message",
+   "stop_reason",
+   "usage_statistics"
+  ],
+  "tool_calls": [
+   {
+    "name": "file_read",
+    "arg_keys": "<unparsed>"
+   }
+  ],
+  "tool_returns": [
+   {
+    "len": 33,
+    "contains_fixed": true,
+    "head": "<non-technical return withheld>",
+    "status": "success"
+   }
+  ],
+  "assistant_chars": 4,
+  "reasoning_events": 70,
+  "think_leak": false,
+  "first_event_s": 0.23,
+  "first_content_s": 0.55,
+  "first_assistant_s": 2.98,
+  "latency_s": 3.1,
+  "error": null,
+  "prompt_tokens": 14591,
+  "completion_tokens": 115,
+  "stop_reason": "end_turn",
+  "server": {
+   "server_tasks": 3,
+   "prefill_tokens_processed": 0
+  },
+  "decode_tps": 45.1,
+  "prefill_tps_approx": 26529.1
+ },
+ "l64": {
+  "target_tokens": 48000,
+  "window": 118000,
+  "tok_per_page": 578,
+  "pages": 83,
+  "seed_tokens_est": 47987,
+  "in_context_rows": 167,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 56,
+   "reasoning_events": 208,
+   "think_leak": false,
+   "first_event_s": 0.16,
+   "first_content_s": 22.75,
+   "first_assistant_s": 24.78,
+   "latency_s": 25.2,
+   "error": null,
+   "prompt_tokens": 54073,
+   "completion_tokens": 244,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 1,
+    "prefill_tokens_processed": 54069
+   },
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 99.6,
+   "prefill_tps_approx": 2376.8,
+   "hits": 3
+  },
+  "rows_after_A": 169,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "tool_call_message",
+    "tool_return_message",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 4,
+   "reasoning_events": 95,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 1.13,
+   "first_assistant_s": 4.33,
+   "latency_s": 4.5,
+   "error": null,
+   "prompt_tokens": 108896,
+   "completion_tokens": 166,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 3,
+    "prefill_tokens_processed": 0
+   },
+   "decode_tps": 49.3,
+   "prefill_tps_approx": 96368.1,
+   "disk_exact": true
+  },
+  "rows_after_B": 173,
+  "C_warm": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 5,
+   "reasoning_events": 36,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 0.99,
+   "first_assistant_s": 1.51,
+   "latency_s": 1.6,
+   "error": null,
+   "prompt_tokens": 54577,
+   "completion_tokens": 40,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 0
+   },
+   "decode_tps": 65.6,
+   "prefill_tps_approx": 55128.3
+  },
+  "rows_after_C": 175
+ },
+ "l128": {
+  "target_tokens": 96000,
+  "window": 118000,
+  "tok_per_page": 578,
+  "pages": 166,
+  "seed_tokens_est": 95975,
+  "in_context_rows": 333,
+  "window_live": 118000,
+  "A_recall": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 56,
+   "reasoning_events": 216,
+   "think_leak": false,
+   "first_event_s": 0.17,
+   "first_content_s": 57.82,
+   "first_assistant_s": 59.99,
+   "latency_s": 60.4,
+   "error": null,
+   "prompt_tokens": 103936,
+   "completion_tokens": 252,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 99933
+   },
+   "contains": [
+    true,
+    true,
+    true
+   ],
+   "decode_tps": 97.7,
+   "prefill_tps_approx": 1797.6,
+   "hits": 3
+  },
+  "rows_after_A": 335,
+  "B_tool_at_depth": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "tool_call_message",
+    "tool_return_message",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [
+    {
+     "name": "file_write",
+     "arg_keys": "<unparsed>"
+    }
+   ],
+   "tool_returns": [
+    {
+     "len": 33,
+     "contains_fixed": false,
+     "head": "wrote 33 bytes to depth-probe.txt",
+     "status": "success"
+    }
+   ],
+   "assistant_chars": 4,
+   "reasoning_events": 76,
+   "think_leak": false,
+   "first_event_s": 0.17,
+   "first_content_s": 56.94,
+   "first_assistant_s": 60.24,
+   "latency_s": 60.4,
+   "error": null,
+   "prompt_tokens": 208638,
+   "completion_tokens": 147,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 3,
+    "prefill_tokens_processed": 104243
+   },
+   "decode_tps": 42.5,
+   "prefill_tps_approx": 3664.2,
+   "disk_exact": true
+  },
+  "rows_after_B": 339,
+  "C_warm": {
+   "events": [
+    "ping",
+    "reasoning_message",
+    "assistant_message",
+    "stop_reason",
+    "usage_statistics"
+   ],
+   "tool_calls": [],
+   "tool_returns": [],
+   "assistant_chars": 5,
+   "reasoning_events": 7,
+   "think_leak": false,
+   "first_event_s": 0.18,
+   "first_content_s": 1.36,
+   "first_assistant_s": 1.51,
+   "latency_s": 1.6,
+   "error": null,
+   "prompt_tokens": 104427,
+   "completion_tokens": 11,
+   "stop_reason": "end_turn",
+   "server": {
+    "server_tasks": 2,
+    "prefill_tokens_processed": 0
+   },
+   "decode_tps": 45.8,
+   "prefill_tps_approx": 76784.6
+  },
+  "rows_after_C": 341
+ },
+ "fails": [],
+ "verdict": "PASS",
+ "ended_utc": "2026-09-13T13:19:50+00:00"
+}

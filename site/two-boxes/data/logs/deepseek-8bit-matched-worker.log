@@ -1,0 +1,40 @@
+=== <LAPTOP> build ===
+[100%] Built target llama-server
+-rwxrwxr-x 1 <USER> <USER> 196848 Sep 13 21:08 build-vulkan-rpc/bin/ggml-rpc-server
+BUILD-0911-DONE
+196848 <REDACTED_PATH>
+=== swap the worker ===
+no desktop llama-server running
+<LAPTOP> worker stopped
+899 MiB
+started pid <PID>
+port <PORT> reachable from the desktop
+ggml_vulkan: Found 1 Vulkan devices:
+ggml_vulkan: 0 = Radeon 8060S Graphics (RADV STRIX_HALO) (radv) | uma: 1 | fp16: 1 | bf16: 0 | fp4: 0 | warp size: 64 | shared memory: 65536 | int dot: 1 | matrix cores: KHR_coopmat
+
+=== DEEPSEEK split run 2 (rebuilt worker) ===
+launcher pid <PID>; waiting for /health (up to 30 min)
+healthy after 183 s
+=== placement (from <REDACTED_PATH>) ===
+1.06.359.809 I load_tensors:   CPU_Mapped model buffer size = 45907.25 MiB
+1.06.359.810 I load_tensors:   CPU_Mapped model buffer size = 25898.35 MiB
+1.06.359.811 I load_tensors:        CUDA0 model buffer size = 23176.18 MiB
+1.06.359.812 I load_tensors: RPC0[<LAPTOP>:<PORT>] model buffer size = 77955.63 MiB
+2.57.307.665 I llama_kv_cache:      CUDA0 KV buffer size =    15.75 MiB
+2.57.324.187 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    16.50 MiB
+2.57.324.836 I llama_kv_cache:      CUDA0 KV buffer size =   320.00 MiB
+2.57.345.471 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =   352.00 MiB
+2.57.345.916 I llama_kv_cache:      CUDA0 KV buffer size =     9.00 MiB
+2.57.382.460 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    11.00 MiB
+2.57.383.975 I llama_kv_cache:      CUDA0 KV buffer size =    80.00 MiB
+2.57.388.496 I llama_kv_cache: RPC0[<LAPTOP>:<PORT>] KV buffer size =    88.00 MiB
+=== probe ===
+[short] prompt 21 tok in 20.2 s = 1.0 t/s | decode 200 tok = 3.19 t/s | wall 82.7 s
+        reply: 
+[depth~16000] prompt 15641 tok in 193.6 s = 80.8 t/s | decode 45 tok = 7.74 t/s | wall 199.4 s
+        reply: TIDEWATER-7391
+        recall: OK
+=== VRAM ===
+26300 MiB
+server left running on <LOCAL>:<PORT> (stop with <REDACTED_PATH>)
+RUN2 EXIT=0

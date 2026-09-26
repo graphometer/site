@@ -1,0 +1,34 @@
+# MiniMax M2.7 thinking-budget probe, 2026-09-15: the probe's own log
+# Written by budget/probe_budget.py as it ran. One RTX 5090 desktop, the model
+# alone at 131,072 context with an 8-bit cache, one request at a time.
+# The '~first answer token' figure is the probe's estimate (wall time minus the
+# answer's own decode time, the answer's token count estimated from its length),
+# not a recorded streaming timestamp. Everything else on the line is measured.
+# The verdict paragraph of the session write-up is not part of this record.
+#
+[12:38:49] === M2.7 thinking-budget test (the desktop alone, 128K, q8_0 KV, -cmoe, a local llama.cpp build) ===
+[12:39:25] budget 0: healthy after 36 s · VRAM 22090 MiB
+[budget=0 short] prompt 59 tok | decode 467 tok = 10.73 t/s | wall 47.6 s | thought 1734 chars | ~first answer token at 36 s | tool_calls 0 | finish stop
+        reply (513 chars): At dawn the harbour town stirs, its calm waters mirroring the soft pink and amber glow of the sunrise as the silhouettes of bobbing fishing boats sway gently against the horizon. A light salty breeze carries the scent of the sea while the d
+[budget=0 question] prompt 27 tok | decode 600 tok = 10.71 t/s | wall 57.0 s | thought 3003 chars | ~first answer token at 57 s | tool_calls 0 | finish length
+        reply (0 chars): 
+[budget=0 tool] prompt 174 tok | decode 57 tok = 10.53 t/s | wall 12.9 s | thought 129 chars | ~first answer token at 13 s | tool_calls 1 | finish tool_calls
+        reply (0 chars): 
+        tool_call: {"name": "get_weather", "arguments": "{\"city\":\"Lisbon\"}"}
+[budget=0 depth~8K] prompt 7850 tok | decode 164 tok = 10.24 t/s | wall 244.9 s | thought 665 chars | ~first answer token at 245 s | tool_calls 0 | finish stop
+        reply (14 chars): TIDEWATER-7391
+        recall: OK
+[12:45:29] budget 0: stopped · card 480 MiB
+[12:45:34] budget 256: healthy after 5 s · VRAM 22024 MiB
+[budget=256 short] prompt 59 tok | decode 311 tok = 10.79 t/s | wall 32.8 s | thought 1217 chars | ~first answer token at 27 s | tool_calls 0 | finish stop
+        reply (241 chars): At dawn the harbour town stirs with a hushed calm, the sea‑glossy water reflecting the pink‑gold sky as gulls call above the gently bobbing fishing boats. A visitor should climb the old lighthouse pier to watch the sunrise paint the horizon
+[budget=256 question] prompt 27 tok | decode 338 tok = 10.90 t/s | wall 31.9 s | thought 1272 chars | ~first answer token at 23 s | tool_calls 0 | finish stop
+        reply (402 chars): I hear you-feeling unseen at work can be lonely and discouraging. It’s important to remember that your contributions matter, even when others don’t notice them right away. Try sharing your ideas more openly, or ask for feedback, so your pre
+[budget=256 tool] prompt 174 tok | decode 52 tok = 10.53 t/s | wall 12.5 s | thought 115 chars | ~first answer token at 13 s | tool_calls 1 | finish tool_calls
+        reply (0 chars): 
+        tool_call: {"name": "get_weather", "arguments": "{\"city\":\"Lisbon\"}"}
+[budget=256 depth~8K] prompt 7850 tok | decode 167 tok = 10.44 t/s | wall 246.9 s | thought 647 chars | ~first answer token at 247 s | tool_calls 0 | finish stop
+        reply (14 chars): TIDEWATER-7391
+        recall: OK
+[12:51:00] budget 256: stopped · card 478 MiB
+[12:51:00] BUDGET TEST DONE

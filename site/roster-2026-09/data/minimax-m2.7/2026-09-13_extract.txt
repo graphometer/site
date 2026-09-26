@@ -1,0 +1,40 @@
+# MiniMax M2.7 alone on the desktop, 2026-09-13. EXTRACT: only the lines named below are copied, each
+# verbatim; nothing else in these files is shown. Every expert in system memory (-cmoe), -ub 128.
+
+## 1. serving script, launch block (the -ub 128 and -cmoe flags)
+exec "$BIN" \
+  --model "$MODEL" \
+  --host "$HOST" --port "$PORT" --alias <ALIAS> \
+  --jinja --ctx-size "$CTX" --parallel 1 \
+  --threads 24 --threads-batch 24 \
+  --n-gpu-layers 999 -cmoe -ub 128 \
+  --no-repack --fit off \
+  --flash-attn on \
+  --cache-type-k "$KV" --cache-type-v "$KV" \
+  --cors-origins localhost --timeout 3600 \
+  --temp 1.0 --top-p 0.95 --top-k 40 --min-p 0.05
+
+
+## 2. the reading probe: how its long prompt was named, and what the server reported
+# long prompt ~4k tokens of filler + a real question at the end (prefill-at-depth)
+for name, p in [("short(~20 tok)", short), ("long(~4k tok)", longp)]:
+- **long(~4k tok)**: prefill **45.6 tok/s** (6776 tok) · decode **10.2 tok/s** (128 tok) · wall 161.3s
+- **long(~4k tok)**: prefill **45.0 tok/s** (6776 tok) · decode **9.6 tok/s** (128 tok) · wall 163.9s
+# first line: the 64K window with f16 cache; second: the 131,072 window with q8_0 cache
+
+## 3. the prose request and its two replies (token counts and characters only; texts omitted)
+PROMISE = ("Write about 200 words, in plain prose, about what it takes to keep a promise "
+           "across many years. No lists, no headings — just write it.")
+=== COHERENCE (default settings, 320 max_tokens) ===
+finish=length  wall=96.8s  prompt_tokens=70  completion_tokens=900
+content_chars=0  reasoning_chars=4034  '<think>' in content=False  '</think>' in content=False
+# 64K window, f16 cache: 900 tokens, all of them hidden reasoning, cut off at the length limit
+=== COHERENCE (4096 max_tokens — 900 returned an EMPTY answer) ===
+finish=stop  wall=160.9s  prompt_tokens=70  completion_tokens=1522
+content_chars=1313  reasoning_chars=5481  '<think>' in content=False  '</think>' in content=False
+# 131,072 window, q8_0 cache: 1,522 tokens, a finished reply with its hidden reasoning
+
+## 4. the file header as printed at load on 2026-09-14 (layer count)
+0.00.593.332 I llama_model_loader: - kv   5:                               general.name str              = Minimax-M2.7
+0.00.593.342 I llama_model_loader: - kv  14:                     minimax-m2.block_count u32              = 62
+0.00.732.243 I print_info: n_layer               = 62

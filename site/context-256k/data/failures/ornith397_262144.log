@@ -1,0 +1,18 @@
+[preflight] gpu=946MiB ram=167GB want_ctx=262144
+[cmd] <REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf --host <LOCAL> --port <LOCAL> --alias Ornith-1.5-397B --jinja --reasoning-format auto --ctx-size 262144 --n-gpu-layers 999 --n-cpu-moe 57 --no-mmap --flash-attn on --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 --temp 0.6 --top-p 0.95 --top-k 20 --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 3600
+[launch] pid=<REDACTED> pgid=<REDACTED>
+0.00.160.726 W DEPRECATED: --mmap and --no-mmap are deprecated. use --load-mode mmap instead
+0.00.160.816 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.292.552 I srv    load_model: loading model '<REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf'
+0.01.074.551 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 999, abort
+3.29.377.084 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 1862.00 MiB on device 0: cudaMalloc failed: out of memory
+3.29.377.091 E ggml_gallocr_reserve_n_impl: failed to allocate CUDA0 buffer of size 1952448640
+3.29.377.091 E graph_reserve: failed to allocate compute buffers
+3.29.382.881 E llama_init_from_model: failed to initialize the context: failed to allocate compute pp buffers
+3.29.382.885 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf'
+3.29.382.890 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf'
+3.29.383.250 E srv    load_model: failed to create_context with model '<REDACTED_PATH>/Ornith-1.5-397B-IQ3_XXS-UD.gguf'
+3.29.383.253 I srv    operator(): operator(): cleaning up before exit...
+3.29.385.490 E srv  llama_server: exiting due to model loading error
+[health] exited before healthy (t=200s)
+[cleanup] gpu_after=946 MiB live_servers=0

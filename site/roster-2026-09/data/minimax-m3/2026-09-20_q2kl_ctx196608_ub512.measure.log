@@ -1,0 +1,15 @@
+### 192K @ -ub 512 — short (4K) then deep (48K)
+  [  4096] cold prefill     72.6 t/s over 3658 tok (53.83s)   decode 9.0 t/s   | warm 0.12s
+### decode
+chat endpoint (template applied, <REDACTED>):
+  9.2 t/s over 106 tokens (62.0s) · finish=stop · 237 chars
+forced generation (ignore_eos — pure hardware decode rate):
+  9.2 t/s over 128 tokens (56.6s)
+### deep recall at 64K (does it still find all three?)
+  document ~64000 tokens, needles at [0.05, 0.5, 0.95] depth
+  prompt 58307 tok · 856.3s · finish=stop · 207 generated
+    HIT   SABLE-4417
+    HIT   MERIDIAN-8823
+    HIT   FULCRUM-2096
+  SCORE 3/3
+### done

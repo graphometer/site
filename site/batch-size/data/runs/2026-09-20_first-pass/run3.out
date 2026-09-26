@@ -1,0 +1,35 @@
+[load] Ling-3.0-flash_262k-confirm key=Ling-3.0-flash ctx=262144 vram=10285 MiB load=100s args='--batch-size 4096 --ubatch-size 4096'
+Traceback (most recent call last):
+  File "<stdin>", line 23, in <module>
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1348, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1457, in getresponse
+    response.begin()
+  File "/usr/lib/python3.12/http/client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 305, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+<REDACTED_PATH>/bsweep.sh: line 69: <PID> Aborted                 (core dumped) "$BIN" --model "$M" --host 127.0.0.1 --port 8188 --alias bsweep --jinja --ctx-size "$CTX" --parallel 1 "${PLACE[@]}" --threads 24 --threads-batch 24 --timeout 3600 "$@" > "$LOG" 2>&1
+[load] Inkling-Small_262k-confirm key=Inkling-Small ctx=262144 vram=17281 MiB load=55s args='--batch-size 4096 --ubatch-size 2048'
+{"prompt_n": 3033, "prefill_tps": 263.6, "decode_tps": 12.48, "needle_found": true, "answer_len": 17, "reasoning_len": 347}
+[load] Qwen3.8-Flash-Next_262k-confirm key=Qwen3.8-Flash-Next ctx=262144 vram=26561 MiB load=65s args='--batch-size 4096 --ubatch-size 2048'
+{"prompt_n": 3041, "prefill_tps": 45.4, "decode_tps": 17.57, "needle_found": true, "answer_len": 17, "reasoning_len": 311}
+RUN3-COMPLETE

@@ -1,0 +1,15 @@
+### prefill (cold 4K)
+  [  4096] cold prefill    147.5 t/s over 3658 tok (24.85s)   decode 0.0 t/s   | warm 0.17s
+### decode (two independent methods)
+chat endpoint (template applied, <REDACTED>):
+  8.9 t/s over 82 tokens (26.8s) · finish=stop · 268 chars
+forced generation (ignore_eos — pure hardware decode rate):
+  9.0 t/s over 128 tokens (29.2s)
+### needle recall, 64K doc, q8_0 KV (half A of the indexer check)
+  document ~64000 tokens, needles at [0.05, 0.5, 0.95] depth
+  prompt 58307 tok · 300.2s · finish=stop · 165 generated
+    HIT   SABLE-4417
+    HIT   MERIDIAN-8823
+    HIT   FULCRUM-2096
+  SCORE 3/3
+### done

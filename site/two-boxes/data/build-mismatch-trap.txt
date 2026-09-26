@@ -1,0 +1,19 @@
+The build-mismatch trap, extracted from the run record of 2026-09-14. A second model, not the
+subject of this page, was served from a llama.cpp pull-request branch on the desktop while the
+worker on the laptop was still built from the mainline commit d3146f2b5. The model is not named
+here: the record is about the build, not the model.
+
+Run 3, experts on the <LAPTOP> via the d3146f2b5 worker, 23:02
+  Loaded, ready to serve in 122 s, 11.8 GB of the card, and the first request came back
+  500 with garbage output ("Neural Neural Neural..."). This is the silent-corruption trap of
+  the RPC device: it answers supports_op=true for everything.
+
+Run 3b, experts on the <LAPTOP> with a MATCHED worker built from the branch commit, 23:13
+  The garbage was the build mismatch. The branch adds one ggml operation
+  (GGML_OP_COUNT 101 -> 102, RPC protocol patch 0 -> 1), so the d3146f2b5 worker executed
+  shifted operation ids. With the matched worker the same placement produced coherent output,
+  recall found at 2,000 and 8,000 tokens, tool call correct, at 7.0 to 7.5 t/s speaking and
+  48 to 52 t/s reading.
+
+Host build for those runs: commit 946fc11d1, llama.cpp build 10897. Worker build in run 3:
+commit d3146f2b5, build 10919. Both are public llama.cpp commits.

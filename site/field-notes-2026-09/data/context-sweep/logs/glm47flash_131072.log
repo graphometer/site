@@ -1,0 +1,55 @@
+[preflight] gpu_used_mib=740
+[preflight] ram_avail_gb=164
+[cmd] <REDACTED_PATH>/llama-server --model <REDACTED_PATH>/GLM-4.7-Flash-UD-Q4_K_XL.gguf --host <HOST> --port <PORT> --alias <ALIAS> --jinja --ctx-size 131072 --parallel 1 --n-gpu-layers 99 --threads 24 --threads-batch 24 --flash-attn auto --cors-origins localhost --timeout 3600
+0.00.135.815 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.137.444 I srv    load_model: loading model '<REDACTED_PATH>/GLM-4.7-Flash-UD-Q4_K_XL.gguf'
+0.00.654.335 W load: special_eot_id is not in special_eog_ids - the tokenizer config may be incorrect
+0.00.654.338 W load: special_eom_id is not in special_eog_ids - the tokenizer config may be incorrect
+[launch] pid=<PID> pgid=<PID>
+0.20.926.264 I cmn          init: llama threadpool init, n_threads = 24
+0.20.998.696 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+0.21.007.503 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.21.007.536 I srv  llama_server: model loaded
+0.21.007.539 I srv  llama_server: listening on http://<HOST>:<PORT>
+[result] healthy in 21.194612695s  vram=24814 MiB
+[kv] 
+0.21.187.027 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.21.187.090 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.21.248.369 I slot print_timing: id  0 | task 0 | prompt eval time =      45.27 ms /    12 tokens (    3.77 ms per token,   265.08 tokens per second)
+0.21.248.371 I slot print_timing: id  0 | task 0 |        eval time =      15.98 ms /     3 tokens (    7.99 ms per token,   125.13 tokens per second)
+0.21.248.372 I slot print_timing: id  0 | task 0 |       total time =      61.25 ms /    15 tokens
+0.21.248.375 I slot print_timing: id  0 | task 0 |    graphs reused =          2
+0.21.248.400 I slot      release: id  0 | task 0 | stop processing: n_tokens = 14, truncated = 0
+[warmup] done
+0.21.267.003 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 76072540680
+0.21.267.915 I slot launch_slot_: id  0 | task 4 | processing task, is_child = 0
+0.22.148.703 I slot print_timing: id  0 | task 4 | prompt eval time =     153.02 ms /    28 tokens (    5.46 ms per token,   182.99 tokens per second)
+0.22.148.707 I slot print_timing: id  0 | task 4 |        eval time =     727.76 ms /   161 tokens (    4.55 ms per token,   219.85 tokens per second)
+0.22.148.707 I slot print_timing: id  0 | task 4 |       total time =     880.78 ms /   189 tokens
+0.22.148.708 I slot print_timing: id  0 | task 4 |    graphs reused =        161
+0.22.148.728 I slot      release: id  0 | task 4 | stop processing: n_tokens = 191, truncated = 0
+[probeA rep1] decode=219.85239659723453 t/s
+0.22.173.580 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 1.000 (> 0.100 thold), f_keep = 0.162
+0.22.179.050 I slot launch_slot_: id  0 | task 166 | processing task, is_child = 0
+0.22.179.057 W slot   operator(): id  0 | task 166 | need to evaluate at least 1 token for each active slot (n_past = 31, task.n_tokens() = 31)
+0.22.179.058 W slot   operator(): id  0 | task 166 | n_past was set to 30
+0.22.841.579 I slot print_timing: id  0 | task 166 | prompt eval time =       5.22 ms /     1 tokens (    5.22 ms per token,   191.39 tokens per second)
+0.22.841.582 I slot print_timing: id  0 | task 166 |        eval time =     657.29 ms /   148 tokens (    4.47 ms per token,   223.65 tokens per second)
+0.22.841.582 I slot print_timing: id  0 | task 166 |       total time =     662.52 ms /   149 tokens
+0.22.841.583 I slot print_timing: id  0 | task 166 |    graphs reused =        309
+0.22.841.599 I slot      release: id  0 | task 166 | stop processing: n_tokens = 178, truncated = 0
+[probeA rep2] decode=223.64523475903363 t/s
+0.22.923.287 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 76074133879
+0.22.928.862 I slot launch_slot_: id  0 | task 315 | processing task, is_child = 0
+0.26.172.400 I slot print_timing: id  0 | task 315 | prompt processing, n_tokens =  16384, progress = 0.81, t =   3.24 s / 5051.32 tokens per second
+0.26.794.972 I slot print_timing: id  0 | task 315 | prompt processing, n_tokens =  18432, progress = 0.91, t =   3.87 s / 4767.61 tokens per second
+0.27.545.899 I slot print_timing: id  0 | task 315 | prompt eval time =    4546.66 ms / 20221 tokens (    0.22 ms per token,  4447.44 tokens per second)
+0.27.545.901 I slot print_timing: id  0 | task 315 |        eval time =      70.37 ms /    12 tokens (    6.40 ms per token,   156.33 tokens per second)
+0.27.545.902 I slot print_timing: id  0 | task 315 |       total time =    4617.02 ms / 20233 tokens
+0.27.545.903 I slot print_timing: id  0 | task 315 |    graphs reused =        319
+0.27.546.233 I slot      release: id  0 | task 315 | stop processing: n_tokens = 20235, truncated = 0
+[probeA] decode=223.65 t/s  prompt_n=1 prefill=191.39 t/s
+[probeB] prompt_n=20221 prefill=4447.44 t/s decode=156.33 t/s needle=HIT
+[cleanup] killing tree pgid=<PID> pid=<PID>
+0.27.586.180 I srv    operator(): operator(): cleaning up before exit...
+[cleanup] port_dead=yes gpu_after=740 MiB live_servers=0

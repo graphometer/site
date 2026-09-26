@@ -1,0 +1,43 @@
+0.00.132.324 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.276.776 I spec common_specu: auto-detected speculative type 'draft-dflash' from the draft model metadata
+0.00.281.313 I srv    load_model: loading model '<REDACTED_PATH>/Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf'
+0.00.555.094 E llama_init_from_model: failed to initialize the context: dflash requires ctx_other to be set (this warning is normal during memory fitting)
+0.00.607.257 W srv    load_model: [spec] failed to measure draft model memory: failed to create llama_context from model
+0.01.118.872 W load: setting token '<|message|>' (200023) attribute to USER_DEFINED (16), old attributes: 8
+0.01.118.876 W load: setting token '<|start|>' (200022) attribute to USER_DEFINED (16), old attributes: 8
+0.01.121.671 W load: special_eot_id is not in special_eog_ids - the tokenizer config may be incorrect
+0.02.499.836 I cmn          init: llama threadpool init, n_threads = 24
+0.02.537.205 I common_speculative_init_result: loading draft model '<REDACTED_PATH>/dflash-Muse-Glimmer-30B-Q4_K_M.gguf'
+0.02.758.194 W load: setting token '<|message|>' (200023) attribute to USER_DEFINED (16), old attributes: 8
+0.02.758.197 W load: setting token '<|start|>' (200022) attribute to USER_DEFINED (16), old attributes: 8
+0.02.760.946 W load: special_eot_id is not in special_eog_ids - the tokenizer config may be incorrect
+0.02.978.401 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+0.02.978.426 I common_speculative_impl_draft_dflash: adding speculative implementation 'draft-dflash'
+0.02.978.427 I common_speculative_impl_draft_dflash: - n_max=16, n_min=0, p_min=0.00
+0.02.978.427 I common_speculative_impl_draft_dflash: - block_size=16, mask_token_id=201818, n_extract=5
+0.02.978.427 W common_speculative_impl_draft_dflash: requested draft size (n_max=16, n_min=0) exceeds the trained block size 16 -- clamping to 15
+0.03.014.858 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.03.014.888 I srv  llama_server: model loaded
+0.03.014.891 I srv  llama_server: listening on http://<LOCAL>
+0.05.676.674 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.05.677.001 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.10.508.920 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   8242, progress = 0.17, t =   4.15 s / 1983.87 tokens per second
+0.11.859.759 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  12338, progress = 0.26, t =   5.50 s / 2242.87 tokens per second
+0.13.226.809 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  16434, progress = 0.34, t =   6.86 s / 2394.31 tokens per second
+0.14.611.994 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  20530, progress = 0.43, t =   8.24 s / 2490.52 tokens per second
+0.16.014.814 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  24626, progress = 0.51, t =   9.64 s / 2554.28 tokens per second
+0.17.434.710 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  28722, progress = 0.60, t =  11.06 s / 2597.72 tokens per second
+0.18.873.429 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  32818, progress = 0.68, t =  12.49 s / 2627.75 tokens per second
+0.20.332.428 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  36914, progress = 0.77, t =  13.94 s / 2647.16 tokens per second
+0.21.806.354 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  41010, progress = 0.85, t =  15.41 s / 2660.71 tokens per second
+0.23.300.781 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  45106, progress = 0.94, t =  16.90 s / 2668.79 tokens per second
+0.23.671.545 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  46038, progress = 0.96, t =  17.74 s / 2594.68 tokens per second
+0.24.493.751 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =  48086, progress = 1.00, t =  18.29 s / 2629.29 tokens per second
+0.25.328.867 I slot print_timing: id  0 | task 0 | prompt eval time =   18901.83 ms / 48090 tokens (    0.39 ms per token,  2544.20 tokens per second)
+0.25.328.871 I slot print_timing: id  0 | task 0 |        eval time =     749.91 ms /   138 tokens (    5.47 ms per token,   182.69 tokens per second)
+0.25.328.871 I slot print_timing: id  0 | task 0 |       total time =   19651.75 ms / 48228 tokens
+0.25.328.875 I slot print_timing: id  0 | task 0 |    graphs reused =         22
+0.25.328.879 I slot print_timing: id  0 | task 0 | draft acceptance = 0.33333 (  115 accepted /   345 generated), mean len =  6.00
+0.25.329.290 I slot      release: id  0 | task 0 | stop processing: n_tokens = 48228, truncated = 0
+0.25.342.077 I srv    operator(): operator(): cleaning up before exit...
+0.25.357.938 W ~llama_context:  CUDA_Host compute buffer size of 260.0000 MiB, does not match expectation of  68.0469 MiB

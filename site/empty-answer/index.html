@@ -185,7 +185,27 @@
       where they appear.</p>
       <div class="nonaff">Independent measurements. Not affiliated with,
       endorsed by, or connected to the Qwen team, Alibaba Group, Z.ai,
-      Ollama, or OpenRouter.</div>
+      Ollama, OpenRouter, MiniMax, or the llama.cpp project.</div>
+    </div>
+
+    <div class="note">
+      <span class="label">Update, September 2026</span>
+      Another instance, measured on our own hardware. On 2026-09-13, MiniMax
+      M2.7, a reasoning model from a different vendor served locally under
+      llama.cpp, was given a 900-token output budget on a first coherence probe
+      and returned <code>finish=length</code>, 900 completion tokens, 4,034
+      characters of hidden reasoning, and zero visible characters. Its chat
+      template starts it inside a thought block on every turn: the default and
+      three attempts to switch thinking off, eight calls in all, every one produced
+      reasoning. On 2026-09-15, with the
+      server's own reasoning-budget control set to 0, a question still spent its
+      whole 600-token cap and came back with zero visible characters. These are
+      13 and 15 September measurements, and they were not re-run after the
+      model's launch settings were corrected later that month; the correction
+      changed the model's measured reading speed, and nothing about the budget
+      behavior was retested. The measured record is the MiniMax M2.7 entry of the
+      <a href="../field-notes-2026-09/">September field notes</a>, with the run
+      logs in its data package.
     </div>
 
     <section>
@@ -1078,7 +1098,8 @@ if finish == "length" and text:
     checked against recorded evidence.</p>
     <p>Copyright 2026 Grant Williams. Independent work: Qwen, Qwen3.5, Qwen3.6,
     Qwen3.8, and Tongyi are marks of Alibaba Group Holding Limited; GLM is a
-    mark of Z.ai; Ollama and OpenRouter are marks of their respective owners.
+    mark of Z.ai; Ollama, OpenRouter and MiniMax are marks of their respective owners;
+    llama.cpp is a project of ggml-org and its contributors.
     All are referenced for identification only. Not affiliated with, endorsed
     by, or sponsored by any of them or their affiliates. Product names and
     marks belong to their respective owners. This site is static. No scripts,

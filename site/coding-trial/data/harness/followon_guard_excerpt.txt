@@ -1,0 +1,38 @@
+Excerpt of the follow-on chain script (2026-09-16), lines 14-31 and 33-40: the guard that
+decided whether the previous job was still running, and its six-hour wait. The rest of the
+script is withheld (it carries private material for a separate question).
+
+  14  orchestrator_gone() {                     # matches only a real bash process running that script
+  15    local p cmd
+  16    for p in /proc/[0-9]*; do
+  17      [ "${p#/proc/}" = "$$" ] && continue
+  18      cmd=$(tr '\0' ' ' < "$p/cmdline" 2>/dev/null) || continue
+  19      case "$cmd" in
+  20        *bash*round2_orchestrator.sh*) return 1 ;;
+  21      esac
+  22    done
+  23    return 0
+  24  }
+  25  box_free() {
+  26    local p
+  27    for p in /proc/[0-9]*; do
+  28      case "$(readlink -f "$p/exe" 2>/dev/null)" in *llama-server|*opencode) return 1 ;; esac
+  29    done
+  30    return 0
+  31  }
+
+  33  echo "=== follow-on chain ==="; date -Is
+  34  echo "waiting for the orchestrator to finish all its stages..."
+  35  deadline=$(( $(date +%s) + 6*3600 ))
+  36  while [ "$(date +%s)" -lt "$deadline" ]; do
+  37    if orchestrator_gone && box_free; then sleep 30; orchestrator_gone && box_free && break; fi
+  38    sleep 30
+  39  done
+  40  orchestrator_gone && box_free || { echo "!! gave up waiting after 6 h"; exit 1; }
+
+Its log, complete:
+
+      === follow-on chain ===
+      2026-09-16T10:20:55-04:00
+      waiting for the orchestrator to finish all its stages...
+      

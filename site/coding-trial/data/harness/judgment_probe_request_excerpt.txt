@@ -1,0 +1,49 @@
+Excerpt of the judgment-question script (2026-09-16), lines 35-66: how the one request per model
+was built and timed (max_tokens 32000, no sampling override; seconds counted from before the request
+to after the reply), and the five request lines (88, 97, 109, 120, 126): only line 120, GLM-5.3-Flash,
+adds a setting (high reasoning effort). The question
+itself is read from a file that is withheld. Note the comment's '30,214-token turn': that figure
+repeats the misreading corrected in section 09 of the page (it was the step's input, not its output).
+
+  35  ask() {                     # $1 label · $2 host:port · $3 model-alias · $4 extra JSON for the body
+  36    local label="$1" hp="$2" alias="$3" extra="${4:-}"
+  37    local t0=$(date +%s)
+  38    local body
+  39    body=$(python3 - "$Q" "$alias" "$extra" <<'PY'
+  40  import json,sys
+  41  q=open(sys.argv[1]).read(); alias=sys.argv[2]; extra=sys.argv[3]
+  42  # 32k leaves room to reason AND answer. Reasoning tokens count against max_tokens, and these
+  43  # are all thinking models — one produced a single 30,214-token turn during the trial. No
+  44  # temperature here on purpose: each server is launched with its own audition-proven sampling
+  45  # (GLM 1.0, Ornith 0.6), and overriding it would measure my choice rather than the model.
+  46  d={"model":alias,"messages":[{"role":"user","content":q}],"max_tokens":32000}
+  47  if extra: d.update(json.loads(extra))
+  48  print(json.dumps(d))
+  49  PY
+  50  )
+  51    local reply
+  52    reply=$(curl -s -m 5400 "http://$hp/v1/chat/completions" -H 'Content-Type: application/json' -d "$body" \
+  53      | python3 -c "
+  54  import sys,json
+  55  try:
+  56      m=json.load(sys.stdin)['choices'][0]['message']
+  57  except Exception as e:
+  58      print('<<NO PARSEABLE REPLY: %s>>'%e); raise SystemExit
+  59  c=(m.get('content') or '').strip()
+  60  r=(m.get('reasoning_content') or '').strip()
+  61  print(c if c else ('<<ONLY REASONING RETURNED>>\n'+r))" 2>/dev/null)
+  62    local secs=$(( $(date +%s) - t0 ))
+  63    printf '%s\n' "$reply" > "$OUT/$label.md"
+  64    printf '  %-14s %5ss  %6s chars  %s\n' "$label" "$secs" "${#reply}" \
+  65      "$([ -n "$reply" ] && echo 'answered' || echo 'NO ANSWER')"
+  66    python3 -c "
+
+  88  wait_healthy <LOCAL> 900 && ask Ornith-1.5-35B <LOCAL> ornith-1.5-35b
+
+  97  wait_healthy <LOCAL> 900 && ask Qwen3.8-27B <LOCAL> qwen3.8-27b
+
+ 109  wait_healthy <LOCAL> 1800 && ask Ornith-1.5-397B <LOCAL> ornith-1.5-397b
+
+ 120  wait_healthy <LOCAL> 1800 && ask GLM-5.3-Flash <LOCAL> glm-5.3-flash '{"chat_template_kwargs":{"reasoning_effort":"high"}}'
+
+ 126  wait_healthy <LOCAL> 1800 && ask DeepSeek V4 Flash (two machines) <LOCAL> DeepSeek V4 Flash (two machines)

@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two boxes, one model: splitting one llama.cpp model across a desktop and a laptop, measured</title>
+<meta name="description" content="Ten models split across an RTX 5090 desktop and a 128 GB laptop. The pair adds memory; tuned, the desktop alone read a long prompt 12.3 times faster.">
+<link rel="canonical" href="https://graphometer.ai/two-boxes/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Two boxes, one model">
+<meta property="og:description" content="A desktop and a laptop joined by one cable, running one large model between them. The pair adds memory. With llama.cpp's batch size raised, the desktop alone answered a 48,024-token request with the same DeepSeek V4 Flash file in 75.2 seconds; the pair took 416.4 at its best completed setting and 474.2 at the one it keeps. The pair still speaks faster on short prompts.">
+<meta property="og:url" content="https://graphometer.ai/two-boxes/">
+<meta property="og:image" content="https://graphometer.ai/og/two-boxes.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Two boxes, one model">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Two boxes, one model">
+<meta name="twitter:description" content="A desktop and a laptop joined by one cable, running one large model between them. The pair adds memory. With llama.cpp's batch size raised, the desktop alone answered a 48,024-token request with the same DeepSeek V4 Flash file in 75.2 seconds; the pair took 416.4 at its best completed setting and 474.2 at the one it keeps. The pair still speaks faster on short prompts.">
+<meta name="twitter:image" content="https://graphometer.ai/og/two-boxes.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; 13 to 21 September 2026 &middot; one RTX 5090 desktop and a 128 GB laptop over Thunderbolt &middot; llama.cpp RPC &middot; ten models tried</div>
+      <h1>Two boxes, <em>one model</em></h1>
+      <p class="subtitle">A desktop and a laptop joined by one cable,
+      running one large model between them. The pair adds memory. With
+      llama.cpp's batch size raised, the desktop alone answered a
+      48,024-token request with the same DeepSeek V4 Flash file in 75.2
+      seconds; the pair took 416.4 at its best completed setting and 474.2
+      at the one it keeps. The pair still speaks faster on short
+      prompts.</p>
+      <div class="note">
+        <span class="label">What to set, from these runs</span>
+        <ul class="plain">
+          <li><strong>If the model fits on one machine, run it there, and
+          raise llama.cpp's micro-batch first</strong>
+          (<code>--ubatch-size</code>, the number of prompt tokens pushed
+          through the model in one step, with <code>--batch-size</code> at
+          least as large). Keep the fastest value that loads and answers
+          correctly at your real window; the
+          <a href="../batch-size/">batch-size study</a> has the method. On
+          this desktop at <code>-b/-ub 4096</code> the 3-bit DeepSeek V4
+          Flash file answered a 48,024-token request in 75.2 seconds, 69.5
+          of them reading the prompt. The pair took 474.2 seconds at its
+          kept <code>-b 2048 -ub 512</code>, 468.4 of them reading, and
+          416.4 at <code>-b/-ub 2048</code>, its best completed
+          setting.</li>
+          <li><strong>Use the second machine for memory</strong>: for a
+          model that does not fit on one machine, or a dense model much
+          larger than the card (section 05). Expect it to cost reading
+          speed, more the longer the prompt.</li>
+          <li><strong>On the pair, a larger micro-batch helped until it
+          broke.</strong> <code>-ub 2048</code> finished the same request
+          faster; at 4,096 the laptop's side failed 40,960 tokens into the
+          read. We keep 512 as a precaution after that failure, not because
+          2,048 failed.</li>
+          <li><strong>Build both ends from the same llama.cpp
+          commit</strong>, or a mismatch can answer in fluent nonsense
+          (section 08).</li>
+        </ul>
+        If your prompts stay short, the pair still speaks this model about
+        a sixth faster: 14.76 tokens a second against 12.65 on a
+        2,998-token prompt.
+      </div>
+      <p class="lead">llama.cpp can serve one model from two computers:
+      the server runs on the desktop, and a worker program on a second
+      machine lends it that machine's memory. Between 13 and 20 September
+      2026 we ran ten models that way, with the desktop's RTX&nbsp;5090 and
+      an ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory on the other
+      end of a direct Thunderbolt cable. On 21 September we ran the pair's
+      best case, DeepSeek V4 Flash at 3-bit, against the same file on the
+      desktop alone: same day, same llama.cpp commit, same window, same
+      prompts. <strong>Reading</strong> is how fast a server takes a prompt
+      in; <strong>speaking</strong> is how fast it writes the answer; both
+      are llama.cpp's own timings. The pair always added memory: a
+      283.03&nbsp;GiB file, larger than either machine's memory, loaded and
+      answered on it. It did not beat a well-set desktop at reading: every
+      comparison re-run after the batch change reads faster on the desktop
+      alone. The one case that had pointed the other way, MiniMax M2.7, was
+      measured against a desktop run left at a quarter of llama.cpp's
+      default micro-batch; at the default the desktop read faster, on a
+      shorter prompt (3,658 tokens against the pair's 7,844). GLM-4.7 Full
+      and the control were not re-run after the batch change. Every speed
+      here is measured on these machines, one request at a time; the one
+      maker's figure is labelled <span class="n">vendor</span>.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to DeepSeek, Alibaba Group, Z.ai, Moonshot
+      AI, MiniMax, Meta, Mistral AI, NVIDIA, AMD, ASUS, Intel, or the
+      llama.cpp project.</div>
+      <div class="note">
+        <span class="label">What changed after the first runs</span>
+        Our records of the 13 to 15 September runs said the pair made
+        DeepSeek V4 Flash faster than the desktop alone, comparing the
+        3-bit file on the pair with the 8-bit file alone, both at
+        llama.cpp's default batch sizes. Once the same 3-bit file was
+        measured alone with a raised micro-batch, the answer reversed for
+        long prompts. The earlier runs stay as dated records, most of them
+        now in the data package; section 09 lists what we got wrong.
+      </div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Summary</h2>
+      <p>Each finding is scoped to the runs that produced it; the dates are
+      in section 03.</p>
+      <ol class="plain">
+        <li><strong>For DeepSeek V4 Flash, one machine now beats two on long
+        prompts.</strong> Same 3-bit file, same build, same 262,144-token
+        window and identical prompts, 21 September: the desktop alone at
+        <code>-b/-ub 4096</code> read 690.9 tokens a second at 48,024
+        tokens and 632.1 at 150,103; the pair at its kept
+        <code>-b 2048 -ub 512</code> read 102.5 and 51.4. Whole requests
+        took 75.2 seconds against 474.2 at 48,024 tokens (416.4 on the pair
+        at <code>-b/-ub 2048</code>), and 244.8 seconds against 2,933.8 at
+        150,103, of which reading took 237.5 seconds and 2,922.9, or 48.7
+        minutes (section 04).</li>
+        <li><strong>The pair's speaking edge is a short-prompt edge.</strong>
+        On the same day and prompts the pair spoke at 14.76 tokens a
+        second against 12.65 at 2,998 tokens, 12.04 against 12.16 at 48,024
+        and 7.66 against 11.79 at 150,103, and its reading fell from 226.8
+        to 30.7 tokens a second across one long prompt.</li>
+        <li><strong>The pair always adds memory; it did not add reading
+        speed.</strong> A 400.71-billion-parameter model and a
+        1.03-trillion-parameter model ran on the pair, and the larger file,
+        283.03&nbsp;GiB, is bigger than either machine's memory. Against the
+        desktop at its tuned setting, the pair read slower in every
+        comparison re-run after the batch change. MiniMax M2.7, which our
+        records had as faster on the pair, was compared with a desktop run
+        at <code>-ub 128</code>; at the default the desktop read faster, on
+        a shorter prompt (section 05). GLM-4.7 Full and the control were not
+        re-run.</li>
+        <li><strong>A dense model is the pair's best case for
+        speaking.</strong> Mistral Medium 3.5, which does not fit the card,
+        spoke at 5.54 tokens a second on the pair on a 441-token prose
+        reply, against 1.97 on its desktop record, a different file from
+        August; it read about ten times slower (section 05).</li>
+        <li><strong>A large micro-batch can break the pair.</strong> At
+        <code>-ub 4096</code> the laptop's side failed 40,960 tokens into a
+        48,024-token read and the request died. <code>-ub 2048</code>
+        finished it, reading 14 percent faster, in 416.4 seconds against
+        474.2; the pair is kept at 512 as a precaution after the 4,096
+        failure (sections 04 and 08).</li>
+        <li><strong>The path works, and it is not free.</strong> A
+        29.94-billion-parameter control model split half and half spoke at
+        63.8 to 68.0 tokens a second on answers of 54, 10 and 8 tokens,
+        against 223.65 alone on replies of about 200 tokens; its reading
+        figures are on different prompt lengths and windows, so neither
+        pair measures what the cable costs (section 05). Two traps cost
+        more time than any tuning (section 08).</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What it is</h2>
+      <p>llama.cpp has an RPC backend. One machine runs
+      <code>llama-server</code> and holds the model; another machine runs
+      <code>ggml-rpc-server</code>, and the first machine treats it as a
+      device, in the same list as its graphics card and its processor.
+      Layers are assigned to devices at load time. Nothing is pipelined
+      across requests and nothing is sharded inside a layer: when a token
+      needs a layer that lives on the second machine, the work and its data
+      cross the cable and come back.</p>
+      <p>That makes three places a layer can live on this bench, and the
+      launcher expresses them as three numbers: <strong>whole layers on the
+      graphics card</strong>, <strong>layers whose attention stays on the
+      card while their experts sit in the desktop's system
+      memory</strong>, and <strong>whole layers on the second
+      machine</strong>. Every run on the pair is written as those three
+      numbers in that order, for example <code>8 / 10 / 25</code>. A whole
+      layer on the laptop includes its attention: the load logs put the
+      attention cache for those layers on the laptop, so the laptop does
+      that part of the attention work.</p>
+      <p>Every model placed with that middle number is a mixture-of-experts
+      model: most of its weight sits in expert tensors that only some
+      tokens use. That is why the knob exists at all, and it is why the
+      placement question has an answer worth measuring.</p>
+      <table class="facts">
+        <tr><th scope="row">Desktop</th><td>One NVIDIA GeForce RTX&nbsp;5090, 32,086&nbsp;MiB as llama.cpp reports it (32,607&nbsp;MiB as nvidia-smi reports it); Intel Core Ultra 9 285K, 16 compute threads of 24 in the control run and 24 in the others; 192,591&nbsp;MiB of system memory, which is 188&nbsp;GiB. CUDA 12.8.93, sm_120. <span class="n">measured</span></td></tr>
+        <tr><th scope="row">Second machine</th><td>An ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory: Ryzen AI Max+ 395, Radeon 8060S Graphics, served through Vulkan, which reports <code>uma: 1</code>, <code>fp16: 1</code>, <code>bf16: 0</code>, <code>fp4: 0</code>. <span class="n">measured</span></td></tr>
+        <tr><th scope="row">Memory it offered</th><td>110,592&nbsp;MiB total, 109,602&nbsp;MiB free, as the server's own device probe reported it at launch. This is a device report, not a memory benchmark. <span class="n">measured</span></td></tr>
+        <tr><th scope="row">Link</th><td>A direct Thunderbolt cable between the two machines, host to host, no switch and no router in between. Measured on 2026-09-15; figures in section 03. <span class="n">measured</span></td></tr>
+        <tr><th scope="row">Model under the headline</th><td>DeepSeek V4 Flash 0731: 284 billion parameters, read from the model file's header (<span class="n">measured</span>); the maker's repository page lists 304B because a draft module ships with it (<span class="asstated">vendor, read 2026-09-15</span>). <span class="asstated">The maker's model card at the revision we retained states no parameter count at all, and we print no figure for how many parameters are active per token.</span></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>What we ran, exactly</h2>
+      <h3>The builds</h3>
+      <p>Both ends of the pair were built from one llama.cpp source
+      commit, <span class="n">d3146f2b5</span> (build 10919, GNU 13.3.0,
+      Linux x86_64), with the RPC backend on, as the server's own first
+      log line records on 13 September: a CUDA build on the desktop, a
+      Vulkan build of the worker, <code>ggml-rpc-server</code>, on the
+      laptop. The later pair runs and the 21 September runs of the 3-bit
+      DeepSeek file alone used a desktop build of the same commit, read
+      from the build's own source directory because their logs do not
+      print it. Other desktop-alone runs used each model's own serving
+      build: <span class="n">5f55650a7</span> for the 8-bit DeepSeek runs
+      of 15 and 20 September and the 13 September MiniMax run,
+      <span class="n">c8e03ce81</span> for the 21 September Qwen runs.</p>
+      <h3>The link, measured</h3>
+      <p>On 2026-09-15, with no model server running: 0.667&nbsp;ms average
+      round trip over 30 pings, and one TCP stream carrying 2,092 to
+      2,120&nbsp;MB/s from desktop to laptop and 1,107 to 1,111&nbsp;MB/s
+      back. That is a plain socket test, a lower bound rather than a tuned
+      benchmark; the table, the method and its scripts are in the data
+      package. <span class="n">measured</span></p>
+      <h3>The launch shape</h3>
+      <p>One <code>llama-server</code> on the desktop, one worker process
+      on the laptop, one request at a time. The 13 to 14 September runs
+      served a 131,072-token window, except the control, which served
+      8,192; the 15 and 21 September runs served 262,144 where the rows say
+      so. Every run on the pair from 13 to 21 September left llama.cpp's
+      batch sizes at their defaults, <code>-b 2048 -ub 512</code>, except
+      the 21 September rungs that raised them.</p>
+      <h3>The probes</h3>
+      <ul class="plain">
+        <li><strong>13 to 15 September:</strong> a short probe (a
+        21-to-55-token question, up to 200 tokens of answer), a depth probe
+        (filler padded to about 8,000 tokens with a code word planted in the
+        middle) and, on some runs, a fresh 8,000-token prompt with a
+        different code.</li>
+        <li><strong>15 to 21 September:</strong> a synthetic ledger with a
+        sealed code planted halfway, read cold, answered with the code. On
+        21 September the desktop-alone and pair runs used identical prompts,
+        2,998, 48,024 and 150,103 tokens long, and on the pair each cold read
+        was followed by the same ledger with its last question changed, then
+        a real follow-up turn.</li>
+      </ul>
+      <p>Speeds are llama.cpp's own timings fields, per request. Speaking
+      figures count every token the model generates, hidden reasoning
+      included: DeepSeek V4 Flash thinks by default, and a short answer can
+      be mostly reasoning. Where a figure comes from a short answer, the
+      table says how long the answer was. A whole-request time is the
+      probe's wall clock from sending the request to the finished answer;
+      a reading time is the server's own prompt-evaluation time inside
+      it.</p>
+      <h3>Dates</h3>
+      <table class="facts">
+        <tr><th scope="row">2026-09-13</th><td>Link brought up, both ends built from one commit, control run, then the first sweep on the pair: DeepSeek's 8-bit, 3-bit and 4-bit files, the draft model, the trillion-parameter model, GLM-4.7 Full, Qwen3.5-397B and the 400B.</td></tr>
+        <tr><th scope="row">2026-09-14</th><td>Three tool-and-recall attempts on the 3-bit pair; Qwen3-235B and MiniMax M2.7 on the pair.</td></tr>
+        <tr><th scope="row">2026-09-15 to 16</th><td>The 4-bit preset on the installed service; the link measured; long reads at a 262,144-token window; Mistral Medium 3.5 on the pair on the 16th.</td></tr>
+        <tr><th scope="row">2026-09-17</th><td>The 3-bit DeepSeek file measured alone on the desktop for the first time.</td></tr>
+        <tr><th scope="row">2026-09-19 to 21</th><td>MiniMax M3 on the pair early on the 20th. The micro-batch sweep on the desktop alone, then, on the night of the 21st, the pair re-tuned against the 3-bit file alone.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The same file on one machine and on two</h2>
+      <p>On 21 September we ran the 3-bit DeepSeek V4 Flash file
+      (UD-IQ3_XXS, 104.2&nbsp;GB) both ways: the same llama.cpp binary, a
+      262,144-token window and identical prompts. On the desktop alone the
+      file ran with every layer's attention on the card and the experts of
+      36 of its 43 layers in system memory. On the pair it ran at
+      <code>8 / 10 / 25</code>. All figures <span class="n">measured</span>,
+      2026-09-21, one request at a time, the sealed code quoted back
+      correctly on every read that finished.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr>
+          <th class="t">Setup</th>
+          <th>Reading, 2,998 tokens</th>
+          <th>Reading, 48,024 tokens</th>
+          <th>Reading, 150,103 tokens</th>
+          <th>Speaking, 2,998</th>
+          <th>Speaking, 48,024</th>
+          <th>Speaking, 150,103</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="t">Desktop alone, <code>-b/-ub 4096</code> (the setting it now runs at; see the note for the 150,103-token run)</td>
+            <td><strong>539.6</strong></td><td><strong>690.9</strong></td><td><strong>632.1</strong></td>
+            <td>12.65</td><td>12.16</td><td><strong>11.79</strong></td>
+          </tr>
+          <tr>
+            <td class="t">Desktop alone, <code>-b 4096 -ub 2048</code></td>
+            <td>208.1</td><td>426.5</td><td>403.8 (149,898 tokens)</td>
+            <td>12.62</td><td>12.29</td><td>11.80</td>
+          </tr>
+          <tr>
+            <td class="t">The pair, <code>-b 2048 -ub 512</code> (kept)</td>
+            <td>161.8</td><td class="neg">102.5</td><td class="neg">51.4</td>
+            <td><strong>14.76</strong></td><td>12.04</td><td class="neg">7.66</td>
+          </tr>
+          <tr>
+            <td class="t">The pair, <code>-b/-ub 2048</code></td>
+            <td>224.9</td><td class="neg">117.0</td><td>not run</td>
+            <td>14.61</td><td>11.70</td><td>not run</td>
+          </tr>
+          <tr>
+            <td class="t">The pair, <code>-b/-ub 4096</code></td>
+            <td>250.5</td><td class="neg">failed after 40,960 tokens</td><td>not run</td>
+            <td>14.39</td><td>none</td><td>not run</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Speaking figures are short answers: 59 to 86
+      tokens generated, most of it hidden reasoning before a one-line code.
+      On the pair, a longer reply of about 400 tokens on the same documents
+      spoke within 3 percent of the short answer at every depth (14.73,
+      12.05 and 7.85); we did not time a longer reply on the desktop alone.
+      The desktop run at <code>-ub 2048</code> read a different
+      150,000-token ledger, 149,898 tokens long. The desktop's 150,103-token
+      run records <code>ubatch=skip</code>: the probe passed no batch
+      setting, and the server was started on the fast preset, whose default
+      is <code>-b/-ub 4096</code>; its card reading at load, 28,570&nbsp;MiB,
+      matches the explicit 4,096 run (28,490) and not the 2,048 one
+      (27,092). The package README lists this as its contradiction 10.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">Time to the answer, seconds</th><th>48,024 tokens: reading</th><th>48,024: whole request</th><th>150,103 tokens: reading</th><th>150,103: whole request</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Desktop alone, <code>-b/-ub 4096</code></td><td>69.5</td><td><strong>75.2</strong></td><td>237.5</td><td><strong>244.8</strong></td></tr>
+          <tr><td class="t">The pair, <code>-b/-ub 2048</code> (best completed)</td><td>410.5</td><td>416.4</td><td>not run</td><td>not run</td></tr>
+          <tr><td class="t">The pair, <code>-b 2048 -ub 512</code> (kept)</td><td>468.4</td><td class="neg">474.2</td><td>2,922.9</td><td class="neg">2,933.8</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Reading is the server's own prompt-evaluation
+      time; the whole request adds the answer and the probe's round trip.
+      2,922.9 seconds of reading is 48.7 minutes, and 237.5 is 4.0.
+      <span class="n">measured</span></p>
+      <p><strong>Reading.</strong> The desktop alone read faster at every
+      length, each machine at its own setting (<code>-b/-ub 4096</code>
+      alone, <code>-b 2048 -ub 512</code> on the pair): 3.3 times the pair's
+      speed at 2,998 tokens, 6.7 times at 48,024 and 12.3 times at 150,103.
+      At the same micro-batch of 2,048, with <code>-b 4096</code> on the
+      desktop and <code>-b 2048</code> on the pair, the pair was slightly
+      faster on the short prompt, 224.9 against 208.1, and 3.6 times slower
+      at 48,024 tokens, 117.0 against 426.5. The gap grows with depth, and
+      the server's own progress lines on the 150,103-token read show it
+      directly:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">Stretch of the 150,103-token prompt</th><th>Desktop alone, <code>-ub 4096</code>, tokens a second</th><th>The pair, <code>-ub 512</code>, tokens a second</th></tr></thead>
+        <tbody>
+          <tr><td class="t">tokens 0 to 4,096</td><td>690.7</td><td>226.8</td></tr>
+          <tr><td class="t">tokens 40,960 to 49,152</td><td>673.7</td><td class="neg">75.2</td></tr>
+          <tr><td class="t">tokens 90,112 to 98,304</td><td>614.6</td><td class="neg">43.3</td></tr>
+          <tr><td class="t">tokens 139,264 to 143,360</td><td>573.7</td><td class="neg">30.7</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Tokens read per second over each stretch, worked
+      out from the timestamps in each server's progress lines for the same
+      prompt by the script in the package. <span class="n">measured</span></p>
+      <p><strong>Speaking.</strong> The pair still spoke faster on the
+      short prompt, 14.76 against 12.65, about a sixth. By 48,024 tokens the
+      two were level (12.04 against 12.16), and at 150,103 the desktop alone
+      was faster (11.79 against 7.66). Our reading of the pattern, which no
+      run here instruments: the laptop holds 25 whole layers, attention
+      included, and attention work grows with the prompt, so the laptop's
+      share of every token grows with depth.</p>
+      <p><strong>The micro-batch on the pair.</strong> Raising it from 512
+      to 2,048 bought 39 percent on the 2,998-token read and 14 percent at
+      48,024 tokens, where the whole request took 416.4 seconds against
+      474.2. At 4,096 the 48,024-token read stopped: the server's last
+      progress line was at 40,960 tokens, then it logged that the remote
+      worker had crashed or returned a malformed response, and the request
+      failed. Our notes from the laptop's system log record its graphics
+      driver resetting the device and the worker restarting itself; that
+      log was not kept, so the desktop's log is the only file behind this
+      paragraph. The worker was serving again three minutes later for a
+      150,103-token read at 512, which completed without a fault. We keep
+      512 as a precaution after that failure; 2,048 did not fail.</p>
+      <p><strong>What a follow-up turn costs on the pair.</strong> A real
+      next turn, with the model's reply sent back and a short new question
+      added, re-read only the new messages at either setting. A changed
+      last message, here the same document with its last question swapped,
+      went back one micro-batch, so a larger micro-batch costs more there;
+      we measured the swapped question only.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">The pair, 48,024 tokens deep</th><th><code>-ub 512</code></th><th><code>-ub 2048</code></th></tr></thead>
+        <tbody>
+          <tr><td class="t">A real next turn: tokens re-read, time</td><td>238, 5.4&nbsp;s</td><td>228, 5.0&nbsp;s</td></tr>
+          <tr><td class="t">The last question changed: tokens re-read, time</td><td>533, 10.0&nbsp;s</td><td class="neg">2,065, 28.2&nbsp;s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">At 150,103 tokens deep and <code>-ub 512</code>
+      the same two cases re-read 239 tokens in 9.7 seconds and 533 tokens
+      in 20.7 seconds. <span class="n">measured</span></p>
+      <h3>How the picture changed</h3>
+      <ul class="plain">
+        <li><strong>13 September, the comparison our records first
+        made.</strong> The 3-bit file on the pair, at a 131,072-token window
+        and default batch sizes, spoke at 15.9 to 17.1 tokens a second and
+        read 184.6 to 187.9 on prompts of about 8,000 tokens. It was set
+        against the 8-bit file alone in a 12 September framework check:
+        speaking 9.2 to 9.7, and reading of about 75.5 and 73.8, the
+        framework's own estimates, on counted prompts of 52,931 and 102,481
+        tokens. Different files, depths, days and methods.
+        <span class="n">measured</span></li>
+        <li><strong>17 September, the first desktop run of the same 3-bit
+        file.</strong> It spoke at 13.5, the mean of three 400-token replies
+        to a short prompt, at 262,144 with the experts of 36 layers in
+        system memory. That comes from the day's own results table; its raw
+        logs were not kept. <span class="n">measured</span></li>
+        <li><strong>21 September, the reversal:</strong> the tables above.
+        The 15 September reads at a full window are on
+        <a href="../context-256k/">what a full window costs</a>, and the
+        8-bit file's batch runs of 20 September on the
+        <a href="../deepseek-v4-flash/">DeepSeek V4 Flash card</a>.</li>
+      </ul>
+      <p><strong>The laptop by itself.</strong> Run alone, with the same
+      3-bit file at a 131,072-token window and <code>-ub 512</code>, the
+      laptop read the 48,024-token prompt at 56.7 tokens a second, slower
+      than the pair. Six models on the laptop alone have
+      <a href="../z13-alone/">their own page</a>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>The other models</h2>
+      <p>One row per model, on the pair at llama.cpp's default batch sizes,
+      one request at a time. Where a model has a desktop-alone figure, the
+      run that produced it is named, because it was always a different
+      night and often a different setting. All speeds
+      <span class="n">measured</span>; parameter counts and sizes are read
+      from each file's own header. The full cells, with every probe, are in
+      the data package.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr>
+          <th class="t">Model and file</th>
+          <th class="t">On the pair</th><th class="t">On the desktop alone</th>
+          <th class="t">What we take from it</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="t">GLM-4.7-Flash, the control, 29.94 B; half the layers each side, 8,192-token window</td>
+            <td class="t">Speaking 63.80, 67.97 and 63.86 on answers of 54, 10 and 8 tokens; reading 1,125.28 on a 1,940-token prompt</td>
+            <td class="t">Speaking 223.65 on replies of about 200 tokens; reading 4,447.44 on 20,221 tokens at a 131,072 window (2026-09-12)</td>
+            <td class="t">The path works. The speaking figures are different reply lengths and the reading figures different prompt lengths and windows, so they are not a measured cost of the cable. Not re-run after the batch change.</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3-235B-A22B 2507, Q4_K_M, 235.09 B; 6 / 36 / 52</td>
+            <td class="t">Speaking 5.97 on a 49-token answer, 5.54 on a 10-token answer at 8K depth; reading 97.6 on 7,844 tokens</td>
+            <td class="t">2026-09-21, 48,020 tokens: reading 285.8 at the defaults, 703.3 at <code>-b 4096 -ub 2048</code> (the setting it serves) and 944.2 at <code>-b/-ub 4096</code></td>
+            <td class="t">Slower to read on the pair, even against the desktop's default micro-batch on a prompt six times longer. Speaking not comparable on answers of 10 and 49 tokens.</td>
+          </tr>
+          <tr>
+            <td class="t">MiniMax M2.7, UD-IQ4_XS, 228.69 B; 6 / 16 / 40</td>
+            <td class="t">Speaking 9.66 on a 401-token answer, 8.98 on 128 tokens at 8K depth; reading 70.4 on 7,844 tokens</td>
+            <td class="t">2026-09-13: speaking 9.8 to 10.2 across eight replies of 64 to 900 tokens (the 900 all hidden reasoning), reading 45.6 on 6,776 tokens at <code>-ub 128</code>, a 64K window, f16 cache. 2026-09-19, 131,072 window, q8_0 cache: reading 100.8 on 3,658 tokens at the default <code>-ub 512</code>, 656.5 on 43,909 at <code>-ub 4096</code></td>
+            <td class="t">Same speaking speed. The faster reading on the pair was an artifact of the desktop run's <code>-ub 128</code>, a quarter of the default, inherited from another model's launcher. At the default the desktop read faster, on a shorter prompt: 3,658 tokens against 7,844.</td>
+          </tr>
+          <tr>
+            <td class="t">GLM-4.7 Full, IQ3_XXS, 358.34 B; 4 / 34 / 55, q8 cache</td>
+            <td class="t">Speaking 5.66 short, 5.59 at 8K depth; reading 51.1 at depth</td>
+            <td class="t">Speaking 5.51, reading 61.36 on 20,221 tokens at 131,072 with a q5_1 cache (2026-09-12)</td>
+            <td class="t">Slower reading on the pair; the cache precision differs too. Not re-run after the batch change.</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3.5-397B-A17B, UD-IQ3_XXS, 402.94 B; 6 / 25 / 30</td>
+            <td class="t">Speaking 12.61 on a 10-token answer at 8K depth, 15.31 on a 108-token answer; reading 98.7 and 108.2</td>
+            <td class="t">2026-09-21, 131,072 window: reading 224.5 on 48,029 tokens at the defaults, 932.2 at <code>-b/-ub 4096</code>; speaking 16.39 on an 11-token answer</td>
+            <td class="t">Slower to read on the pair even against the desktop's default on a prompt six times longer.</td>
+          </tr>
+          <tr>
+            <td class="t">Mistral Medium 3.5, dense, Q3_K_S, 54.4&nbsp;GB, with a 3B draft model patched to its vocabulary; 16 layers on the card, 72 on the laptop; 2026-09-16</td>
+            <td class="t">Prose speaking 5.54 on a 441-token reply to a 1,453-token prompt (3.81 with no draft at 8 / 80 layers); 4.71 on a 311-token reply to an 8,437-token request, 1,377 of its tokens already cached and 7,060 read; 2.82 after a 32,509-token read that took 1,027.1 seconds at 31.65. Reading 43.8 on the 1,453-token prompt</td>
+            <td class="t">Its field card, 2026-08-06, a different and larger file (UD-Q4_K_XL) at a 32K window: prose 1.97 with the draft, reading 435</td>
+            <td class="t">The one model here that spoke clearly faster on the pair, across different files and months: on the desktop much of a dense model this size sits in system memory, on the pair in the laptop's graphics memory. Reading fell about ten times.</td>
+          </tr>
+          <tr>
+            <td class="t">MiniMax M3, IQ3_XXS with its sparse-attention tensors, 167.6&nbsp;GiB; 4 / 32 / 24; 2026-09-20</td>
+            <td class="t">At <code>-ub 4096</code> and 2048 it could not allocate its compute buffers at either of two layer splits. At <code>-ub 1024</code> it loaded and read a 3,658-token prompt at 17.58; speaking not measured</td>
+            <td class="t">A smaller file with the same attention (Q2_K_L, 142.6&nbsp;GiB) read the same 3,658 tokens at 147.5 with <code>-ub 2048</code> and spoke 8.90 on an 82-token answer (2026-09-20)</td>
+            <td class="t">The compute buffer grew with the micro-batch, not the layer split. At the one setting that fit, the pair read at an eighth of the desktop's speed, on a larger file, since deleted.</td>
+          </tr>
+          <tr>
+            <td class="t">Llama 4 Maverick, UD-Q3_K_XL, 400.71 B, 167.21&nbsp;GiB</td>
+            <td class="t">Speaking 12.02 to 13.18; reading 147.4 and 148.5</td>
+            <td class="t">Never served from one machine here</td>
+            <td class="t">A capacity demonstration; files deleted 2026-09-14.</td>
+          </tr>
+          <tr>
+            <td class="t">Kimi K2.7-Code, IQ1_M, 1.03 T, 283.03&nbsp;GiB</td>
+            <td class="t">Cold first turn 0.67 speaking; warm 8K turn 5.17 speaking and 26.10 reading</td>
+            <td class="t">Not measured alone</td>
+            <td class="t">The second capacity demonstration; weights removed 2026-09-17.</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Ten models loaded on the pair, including the
+      control. Against the same file alone, DeepSeek V4 Flash's speaking
+      edge holds only on short prompts (section 04); Mistral Medium 3.5
+      spoke faster than its desktop record, on a different file; four
+      models read more slowly on the pair and spoke at about the same pace
+      or slower; MiniMax M3 loaded only at a small micro-batch; two are
+      capacity demonstrations; the control is a proof of path.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>The placement rule, revised</h2>
+      <div class="note">
+        <span class="label">The placement rule, as an inference from the measured cases</span>
+        <p><strong>Moving layers onto the second machine speeds up speaking
+        only when it lets the graphics card hold more whole layers, and only
+        while the prompt is short.</strong> As the prompt grows, the second
+        machine's share of the attention work grows with it, and the gain
+        shrinks, then reverses. Reading on the pair was slower than the
+        desktop alone at the desktop's tuned setting in every case we
+        re-measured.</p>
+      </div>
+      <p>The mechanism we believe is simple, and worth stating as belief
+      rather than measurement. Every token drags some bytes through some
+      memory: bytes on the card are fastest, bytes in the desktop's system
+      memory are slower, and bytes on the other end of a cable that carries
+      about two gigabytes a second (section 03) are slower again. Moving
+      expert weight off the desktop helps when the freed card space fills
+      with layers the card can serve at full speed. But a whole layer on
+      the laptop brings its attention with it, and attention work grows
+      with the prompt, so the laptop's slower share of every token grows
+      too. That fits DeepSeek's speaking going from 17 percent ahead at
+      2,998 tokens to 35 percent behind at 150,103, and the pair's reading
+      falling from 226.8 to 30.7 tokens a second across one long prompt.
+      The dense Mistral Medium 3.5 fits it from the other side. We did not
+      instrument any of it: no byte counter, link utilisation or per-layer
+      timing.</p>
+      <p>Reading has a plainer cause too. For models whose experts sit in
+      system memory, a larger micro-batch makes the desktop's reading
+      several times faster (the <a href="../batch-size/">batch-size
+      study</a> explains why); on the pair it bought 14 percent before the
+      laptop's side failed. The 13 September comparisons ran the desktop at
+      the default setting or below it.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>The draft model, the installed preset and the checks</h2>
+      <p>DeepSeek's draft model, on the card, 2026-09-13, raised speaking at
+      8,000 tokens of depth by 12 percent on the 3-bit file (16.15 to
+      18.12) and 51 percent on the 4-bit file (12.78 to 19.25), and cost
+      reading on both (184.6 to 148.8; 145.4 to 121.9); placement moved as
+      well. It was not re-measured at 262,144 or with a larger
+      micro-batch. The 4-bit file with the draft, as a preset of the
+      installed service on 2026-09-15 at 131,072, spoke 19.55 and 19.59 and
+      read 125.1 on 7,841 tokens; its check covered the short legs only.
+      <span class="n">measured</span></p>
+      <p>A separate check through an agent framework, 2026-09-14, planted
+      three codes in 48,000 and 96,000 tokens of history and required a
+      tool call at depth. On the 3-bit pair the long legs passed, 3 of 3
+      codes and a tool call at 52,928 and 102,478 tokens with the first
+      word after 543.65 and 1,537.75 seconds, only inside an attempt that
+      failed on an unrelated leg; a later attempt passed and covers the
+      short legs only. The tables, the attempts and the load figures are
+      in the data package, and the <a href="../deepseek-v4-flash/">DeepSeek
+      V4 Flash card</a> carries the model-level record.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Two traps behind the advice</h2>
+      <p>Each is an interaction between a reasonable default and a
+      two-machine setup the default did not anticipate, and each is cheap to
+      avoid once seen. The figures are from the campaign's logs.</p>
+      <h3>1. Build both ends from one commit, or get confident gibberish</h3>
+      <p>The first split run of the campaign loaded cleanly, was ready to
+      serve after 414 seconds, and returned <code>HTTP 500</code> on the
+      first request: the laptop's worker had been built from a different
+      commit than the desktop's server. The second time was quieter. With a
+      server built from a llama.cpp pull-request branch and a worker built
+      from mainline, a different model loaded, stayed up, and produced
+      fluent nonsense: the same word repeated. The branch adds one ggml
+      operation, shifting every operation identifier after it
+      (<code>GGML_OP_COUNT</code> 101 to 102, RPC protocol 0 to 1), and the
+      host never asks the worker what it can do. <strong>Build both ends
+      from the same source commit and record it.</strong> If split output
+      is fluent and wrong, suspect the build before the model.</p>
+      <h3>2. A micro-batch the laptop cannot carry</h3>
+      <p>At <code>-b/-ub 4096</code> the pair read a 2,998-token prompt
+      normally, then failed 40,960 tokens into a 48,024-token read (section
+      04). The short read gave no warning. <strong>On a pair, test any
+      larger micro-batch at your longest real prompt, not a short
+      one.</strong></p>
+      <p>Two more traps from the first nights, a watchdog that stopped a
+      healthy server by probing a busy worker's port and a worker that
+      started before the laptop's graphics driver and served from its
+      processor for hours, are written up in the data package with their
+      dates.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What we got wrong</h2>
+      <p>This site publishes corrections of its own records as a genre.
+      Where our records and the logs disagree, the log's number is
+      printed.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t">Our records said</th><th class="t">What the records show</th><th class="t">This page now says</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="t">The pair made DeepSeek V4 Flash faster than the desktop alone</td>
+            <td class="t">That comparison set a 3-bit file on the pair against an 8-bit file alone, with default batch sizes on both. The same 3-bit file alone at its tuned setting read 3.3 to 12.3 times faster than the pair at its kept one, finished a 48,024-token request in 75.2 seconds against 474.2, and spoke as fast at 48,024 tokens and faster at 150,103</td>
+            <td class="t">One machine is the better choice for long prompts; the pair's edge is short-prompt speaking (sections 04 and 06)</td>
+          </tr>
+          <tr>
+            <td class="t">MiniMax M2.7 read faster on the pair (70.4 against 45.6)</td>
+            <td class="t">The desktop run used <code>-ub 128</code>, a quarter of llama.cpp's default. At the default the desktop read 100.8, on a 3,658-token prompt against the pair's 7,844</td>
+            <td class="t">At the default micro-batch the desktop alone read faster, on a shorter prompt; the apparent gain came from the desktop run's <code>-ub 128</code></td>
+          </tr>
+          <tr>
+            <td class="t">M2.7's desktop reading was on "a 4,000-token prompt", speaking "9.9 to 10.2"</td>
+            <td class="t">The probe was named for about 4,000 tokens; the server counted 6,776. The run's eight timings span 9.80 to 10.19</td>
+            <td class="t">6,776 tokens, and 9.8 to 10.2</td>
+          </tr>
+          <tr>
+            <td class="t">Qwen3.5-397B reads at 385 on the desktop alone, carried from an earlier run</td>
+            <td class="t">The 385 was a 2,617-token prompt at a 64K window in August. Measured on 21 September: 224.5 on 48,029 tokens at the default batch sizes, 932.2 at <code>-b/-ub 4096</code></td>
+            <td class="t">The measured figures; the 385 is retired</td>
+          </tr>
+          <tr>
+            <td class="t">Every run served a 131,072-token window</td>
+            <td class="t">The control run served 8,192</td>
+            <td class="t">The control's row says so</td>
+          </tr>
+          <tr>
+            <td class="t">No run showed the laptop's graphics chip doing attention work</td>
+            <td class="t">The load logs put the attention cache for the laptop's layers on the laptop, so it computes those layers' attention</td>
+            <td class="t">It does; how much time that takes is not measured</td>
+          </tr>
+          <tr>
+            <td class="t">The pair speaks the 3-bit file at 15.9 to 17.1</td>
+            <td class="t">True at a 131,072 window on 13 September. Other nights gave 14.8 to 15.4 on similar short answers, including 15.2 to 15.4 at the same window</td>
+            <td class="t">The band, dated (section 04); the other nights are in the data package</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Our internal ledger of the first runs also rounded several numbers
+      or quoted the best probe without saying so; the nine rows where it and
+      the logs disagree are in the data package. The pattern is worth more
+      than any single row: the numbers that drifted all drifted in the
+      flattering direction, for the pair. A band became its top end, three
+      attempts became one pass, and a comparison across two files and two
+      default settings became a speed-up.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>One same-file comparison, one model.</strong> Section 04
+        compares one DeepSeek file on one machine and on two, on one day,
+        each machine at its own tuned or kept setting. The other models'
+        rows cross nights, builds, windows and prompt lengths, and each row
+        says which.</li>
+        <li><strong>Nothing here measures quality.</strong> The only
+        correctness checks are planted codes quoted back and tool calls that
+        returned.</li>
+        <li><strong>Windows up to 262,144 tokens.</strong> The longest
+        prompt on the pair was 230,835 tokens, the longest on the desktop
+        alone in these records 150,475. We have no data past that.</li>
+        <li><strong>One failure at <code>-ub 4096</code></strong>, not
+        retried; the laptop's side of it rests on notes, not a kept
+        log.</li>
+        <li><strong>DeepSeek's speaking is measured on short
+        answers</strong>, which 400-token replies matched within 3 percent
+        on the pair; on the desktop alone we did not time a long
+        reply.</li>
+        <li><strong>Three files on this page are no longer here.</strong>
+        Llama 4 Maverick was deleted on 2026-09-14, Kimi K2.7-Code's
+        weights on 2026-09-17 and the MiniMax M3 file used on the pair by
+        2026-09-21. Their rows record that the files loaded, not a
+        recommendation.</li>
+        <li><strong>One cable, one pair of machines, runs from 13 to 21 September.</strong>
+        A different second machine, link or llama.cpp build could move all
+        of it.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence ships as a data package: the files the runs actually
+      produced, not a summary. If a number on this page disagrees with a
+      file in the package, the file is right and the page is wrong; tell us
+      and we will fix the page. <a href="data/README.md">data/README.md</a>
+      maps every file, states its provenance and the redactions, and opens
+      with the places where the package looks like it argues with itself;
+      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on
+      this page to its file and field;
+      <a href="data/moved-from-the-page-2026-09-26.md">data/moved-from-the-page-2026-09-26.md</a>
+      holds the tables and write-ups that left this page on 26 September,
+      each with its sources.</p>
+      <ul class="plain">
+        <li><strong>15 to 21 September</strong>: server logs, result files
+        and memory samples for the pair and the 3-bit file alone, the long
+        reads at a 262,144-token window, the 8-bit file's micro-batch runs,
+        the MiniMax and Qwen desktop runs, and the probe scripts.</li>
+        <li><strong>13 to 15 September</strong>: the link measurement with
+        its scripts, one log per model on the pair, the loader's header
+        lines, the tool-and-recall records, the installed service's run
+        record, the placement comment block and the maker's model card at a
+        pinned revision.</li>
+      </ul>
+      <p>Machine names, network addresses, ports, absolute paths, service
+      names, our internal keys and the agent framework's tool names are
+      replaced with marked placeholders or public names, file by file, as
+      the package README lists; nothing that carries a measurement is
+      altered. Withheld: the internal ledger that section 09 quotes, the
+      session notes, and the desktop-only records of 12 September, which
+      carry private labels.</p>
+      <p class="fineprint">Every claim on this page is dated. llama.cpp's
+      RPC backend is under active development; if today is much later than
+      21 September 2026, treat everything here as unverified since
+      then.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../deepseek-v4-flash/">DeepSeek V4 Flash field
+      card</a> is the model-level record for the model in sections 04 and
+      07. The <a href="../batch-size/">batch-size study</a> is the
+      desktop-alone half of this story across the whole roster.
+      <a href="../context-256k/">What a full window costs</a> has the long
+      reads of 15 September. The <a href="../z13-alone/">laptop-alone
+      study</a> runs six models on the second machine by itself. The
+      <a href="../roster-2026-09/">September roster</a> lists what else this
+      desktop serves. <a href="../l3-threads/">The wrong flag</a> is the
+      same editorial habit applied to an earlier record: a default nobody
+      had checked, measured and corrected.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent measurements. Not affiliated
+    with, endorsed by, or connected to DeepSeek, Alibaba Group, Z.ai, Moonshot AI,
+    MiniMax, Meta, Mistral AI, NVIDIA, AMD, ASUS, Intel, or the llama.cpp project. llama.cpp is
+    a project of ggml-org and its contributors; DeepSeek V4 Flash is a model of
+    DeepSeek; Qwen models are of the Qwen team and Alibaba Group; GLM models are of
+    Z.ai; Kimi models are of Moonshot AI; MiniMax models are of MiniMax; Llama is a
+    model family of Meta Platforms; Mistral models are of Mistral AI; NVIDIA, GeForce and RTX are marks of NVIDIA
+    Corporation; AMD, Ryzen and Radeon are marks of Advanced Micro Devices; ASUS and
+    ROG are marks of ASUSTeK Computer; Intel and Core Ultra are marks of Intel
+    Corporation. All are referenced for identification only. Not affiliated with,
+    endorsed by, or sponsored by any of them or their affiliates. Product names and
+    marks belong to their respective owners. This site is static. No scripts, no
+    tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

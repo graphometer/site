@@ -1,0 +1,77 @@
+### 192K feasibility at -ub 4096
+preflight OK: card free, 157 GB RAM available, port 8131 free
+
+=== one_ub4096_cmoe_ctx196608 :: -ub 4096 · place cmoe · ctx 196608 · KV q8_0 ===
+  VOID: server exited during load. Tail:
+    0.01.955.858 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf'
+    0.01.955.861 E cmn  common_init_: failed to create context with model '<REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf'
+    0.01.955.865 E srv    load_model: failed to create_context with model '<REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf'
+    0.01.955.867 I srv    operator(): operator(): cleaning up before exit...
+    0.01.959.250 E srv  llama_server: exiting due to model loading error
+
+config                    ub   place  tokens  prefill t/s  decode t/s   warm s  load s    VRAM
+------------------------------------------------------------------------------------------------
+A_ub1024_cmoe           1024    cmoe    4096        184.7        10.0     3.15       5   22930
+A_ub128_cmoe             128    cmoe    4096         32.3         9.9     3.23      76   22530
+A_ub2048_cmoe           2048    cmoe    4096        324.3        10.2     3.14       5   23383
+A_ub512_cmoe             512    cmoe    4096        100.8        10.1     3.11       5   22705
+one_ub2048_cmoe_ctx131072  2048    cmoe   49152        372.8         9.0     3.64       5   23457
+one_ub4096_58_ctx131072  4096      58   49152        666.1        10.0     3.38       5   30695
+one_ub4096_59_ctx131072  4096      59   49152        656.5         9.8     3.37       5   29094
+one_ub4096_60_ctx131072  4096      60   49152        644.9         9.3     3.46       5   27483
+one_ub4096_61_ctx131072  4096      61   49152        636.2         9.0     3.61       5   25884
+one_ub4096_cmoe_ctx131072  4096    cmoe   49152        640.2         9.0     3.65       5   24296
+
+Baseline to beat: the 2026-09-13 gate read 26.7 t/s at 3,685 tokens (-cmoe -ub 128).
+   ^ FIT at -ub 4096
+### 192K feasibility at -ub 2048
+preflight OK: card free, 157 GB RAM available, port 8131 free
+
+=== one_ub2048_cmoe_ctx196608 :: -ub 2048 · place cmoe · ctx 196608 · KV q8_0 ===
+MiniMax-M2.7_sweep.sh: line 116: <PID> Aborted                 (core dumped) LD_LIBRARY_PATH=<REDACTED_PATH>/lib64 "$BIN" --model "$MODEL" --host "$HOST" --port "$PORT" --alias minimax-m2.7 --jinja --ctx-size "$ctx" --parallel 1 --threads "$THREADS" --threads-batch "$THREADS" --n-gpu-layers 999 "${PLACE[@]}" -b 4096 -ub "$ub" --no-repack --flash-attn on --cache-type-k "$kv" --cache-type-v "$kv" --timeout 3600 > "$log" 2>&1
+  VOID: server exited during load. Tail:
+    <REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serverR13common_paramsiPPc+0x3777)[0x7b44110d1c67]
+    <REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serveriPPc+0xd6)[0x7b44110d30d6]
+    /lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7b441082a1ca]
+    /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7b441082a28b]
+    <REDACTED_PATH>/llama-server(+0x12a5)[0x5d99d35b92a5]
+
+config                    ub   place  tokens  prefill t/s  decode t/s   warm s  load s    VRAM
+------------------------------------------------------------------------------------------------
+A_ub1024_cmoe           1024    cmoe    4096        184.7        10.0     3.15       5   22930
+A_ub128_cmoe             128    cmoe    4096         32.3         9.9     3.23      76   22530
+A_ub2048_cmoe           2048    cmoe    4096        324.3        10.2     3.14       5   23383
+A_ub512_cmoe             512    cmoe    4096        100.8        10.1     3.11       5   22705
+one_ub2048_cmoe_ctx131072  2048    cmoe   49152        372.8         9.0     3.64       5   23457
+one_ub4096_58_ctx131072  4096      58   49152        666.1        10.0     3.38       5   30695
+one_ub4096_59_ctx131072  4096      59   49152        656.5         9.8     3.37       5   29094
+one_ub4096_60_ctx131072  4096      60   49152        644.9         9.3     3.46       5   27483
+one_ub4096_61_ctx131072  4096      61   49152        636.2         9.0     3.61       5   25884
+one_ub4096_cmoe_ctx131072  4096    cmoe   49152        640.2         9.0     3.65       5   24296
+
+Baseline to beat: the 2026-09-13 gate read 26.7 t/s at 3,685 tokens (-cmoe -ub 128).
+   ^ FIT at -ub 2048
+### 192K feasibility at -ub 1024
+preflight OK: card free, 157 GB RAM available, port 8131 free
+
+=== one_ub1024_cmoe_ctx196608 :: -ub 1024 · place cmoe · ctx 196608 · KV q8_0 ===
+  healthy in 5s · VRAM 31560 MiB
+  [  4096] cold prefill    188.8 t/s over 3658 tok (22.41s)   decode 10.3 t/s   | warm 3.1s
+  stopped.
+
+config                    ub   place  tokens  prefill t/s  decode t/s   warm s  load s    VRAM
+------------------------------------------------------------------------------------------------
+A_ub1024_cmoe           1024    cmoe    4096        184.7        10.0     3.15       5   22930
+A_ub128_cmoe             128    cmoe    4096         32.3         9.9     3.23      76   22530
+A_ub2048_cmoe           2048    cmoe    4096        324.3        10.2     3.14       5   23383
+A_ub512_cmoe             512    cmoe    4096        100.8        10.1     3.11       5   22705
+one_ub1024_cmoe_ctx196608  1024    cmoe    4096        188.8        10.3     3.10       5   31560
+one_ub2048_cmoe_ctx131072  2048    cmoe   49152        372.8         9.0     3.64       5   23457
+one_ub4096_58_ctx131072  4096      58   49152        666.1        10.0     3.38       5   30695
+one_ub4096_59_ctx131072  4096      59   49152        656.5         9.8     3.37       5   29094
+one_ub4096_60_ctx131072  4096      60   49152        644.9         9.3     3.46       5   27483
+one_ub4096_61_ctx131072  4096      61   49152        636.2         9.0     3.61       5   25884
+one_ub4096_cmoe_ctx131072  4096    cmoe   49152        640.2         9.0     3.65       5   24296
+
+Baseline to beat: the 2026-09-13 gate read 26.7 t/s at 3,685 tokens (-cmoe -ub 128).
+   ^ FIT at -ub 1024

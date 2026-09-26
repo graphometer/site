@@ -1,0 +1,18 @@
+MiniMax M2.7: ctx 131072 · experts in RAM 59 of 62 · -b 4096 -ub 4096 · q8_0 KV · <warm-restore program> 0 · <HOST>:<PORT> · weights <REDACTED_PATH>
+0.00.141.609 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.143.817 I srv    load_model: loading model '<REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf'
+0.00.717.063 W llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+0.02.627.310 I cmn          init: llama threadpool init, n_threads = 24
+0.02.963.001 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
+0.02.971.379 I srv  llama_server: model loaded
+0.02.971.384 I srv  llama_server: listening on http://<HOST>:<PORT>
+0.05.298.450 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 1.000 (> 0.100 thold), f_keep = 1.000
+0.05.298.559 I slot launch_slot_: id  0 | task 1 | processing task, is_child = 0
+0.05.298.650 W slot   operator(): id  0 | task 1 | need to evaluate at least 1 token for each active slot (n_past = 42883, task.n_tokens() = 42883)
+0.05.298.652 W slot   operator(): id  0 | task 1 | n_past was set to 42882
+0.07.267.889 I slot print_timing: id  0 | task 1 | prompt eval time =     136.79 ms /     1 tokens (  136.79 ms per token,     7.31 tokens per second)
+0.07.267.892 I slot print_timing: id  0 | task 1 |        eval time =    1832.48 ms /    16 tokens (  122.17 ms per token,     8.19 tokens per second)
+0.07.267.892 I slot print_timing: id  0 | task 1 |       total time =    1969.28 ms /    17 tokens
+0.07.267.896 I slot print_timing: id  0 | task 1 |    graphs reused =         16
+0.07.268.348 I slot      release: id  0 | task 1 | stop processing: n_tokens = 42898, truncated = 0
+0.07.276.845 I srv    operator(): operator(): cleaning up before exit...

@@ -223,18 +223,20 @@
           <div class="links"><a class="cardlink" href="gpt4o-measured/">The study</a></div>
         </div>
         <div class="card stat">
-          <div class="n">2.78T params</div>
-          <p>The complete Kimi K3, topology intact under a 1-bit expert build,
-          generating on one desktop at about 0.2 tokens per second.</p>
-          <div class="date">Runs 2026-08-01 to 08-05</div>
-          <div class="links"><a class="cardlink" href="kimi-k3/">The field card</a></div>
+          <div class="n">2.5 to 7.3x</div>
+          <p>How much faster long prompts read on twelve models whose experts sit in
+          system RAM, after raising llama.cpp's micro-batch from its default, with
+          the planted answer still correct.</p>
+          <div class="date">Measured 2026-09-19 to 09-21</div>
+          <div class="links"><a class="cardlink" href="batch-size/">The study</a></div>
         </div>
         <div class="card stat">
-          <div class="n">19.8% slower</div>
-          <p>What llama.cpp's shipped speculation default did to prose, in the
-          same run that made structured output 22.5% faster.</p>
-          <div class="date">Measured 2026-08-10</div>
-          <div class="links"><a class="cardlink" href="speculation-gate/">The study</a></div>
+          <div class="n">75.2 s</div>
+          <p>One desktop answering a 48,024-token DeepSeek V4 Flash request after
+          tuning; the same file split across two machines took 416.4 seconds at
+          its best completed setting.</p>
+          <div class="date">Measured 2026-09-21</div>
+          <div class="links"><a class="cardlink" href="deepseek-v4-flash/">The field card</a></div>
         </div>
       </div>
     </section>
@@ -327,6 +329,11 @@
       <div class="eyebrow">Model field cards</div>
       <div class="grid2">
         <div class="mini">
+          <h3><a href="deepseek-v4-flash/">DeepSeek V4 Flash 0731, on one desktop and on two</a></h3>
+          <p>With its batch settings tuned, one desktop answered a 48,024-token request in 75.2 seconds. The same file split across two machines took 416.4 seconds at its best completed setting and 474.2 at the one it keeps.</p>
+          <div class="date">Measured 2026-09-12 to 09-21</div>
+        </div>
+        <div class="mini">
           <h3><a href="inkling-small/">Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</a></h3>
           <p>Thinking Machines Lab's 276-billion-parameter, 12-billion-active
           open model (vendor) on one RTX 5090. Speaking stayed between 11.6 and
@@ -386,6 +393,36 @@
     <section>
       <div class="eyebrow">Studies and reports</div>
 
+      <div class="listrow">
+        <div class="meta">Measured study · 19 to 21 September 2026</div>
+        <h3><a href="batch-size/">llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</a></h3>
+        <p>Swept on one RTX 5090 desktop: on twelve models whose experts sit in system RAM, long prompts read 2.5 to 7.3 times faster than at llama.cpp's default, and raising an inherited -ub 128 made one read 19.9 times faster. Each model had its own ceiling, and one input crashed a setting that had passed everything else.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · 20 to 21 September 2026</div>
+        <h3><a href="z13-alone/">Six large models on the ASUS ROG Flow Z13 alone</a></h3>
+        <p>At 48K the laptop read prompts 2.8 to 23 times slower than the desktop. Ling-3.0-flash matched desktop short-answer speaking after a 3.6-minute read. The run used Balanced mode on mains.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · 15 to 21 September 2026</div>
+        <h3><a href="context-256k/">256K on a 32 GB card: the cost of reading</a></h3>
+        <p>Ten configurations of nine models read prompts of 150,000 to 231,000 tokens at full windows and returned every planted code. Reading took from 60.8 seconds to 109.7 minutes; most configurations kept expert weights in system RAM.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · runs 16 September 2026</div>
+        <h3><a href="coding-trial/">Five local coding models, four points apart</a></h3>
+        <p>Five open-weight models ran four agentic coding tasks through OpenCode and scored 387 to 391 of 400. Every first scored run took all 60 mechanical points; the graded half was noisy and steered by instructions that put most competent work between 30 and 37 of 40. One re-run of one task moved 37 points. With the harness traps behind it.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Measured study · 13 to 21 September 2026</div>
+        <h3><a href="two-boxes/">Two boxes, one model: splitting one llama.cpp model across a desktop and a laptop, measured</a></h3>
+        <p>A desktop and a laptop joined by one cable, running one large model between them. The pair adds memory. With llama.cpp's batch size raised, the desktop alone answered a 48,024-token request with the same DeepSeek V4 Flash file in 75.2 seconds; the pair took 416.4 at its best completed setting and 474.2 at the one it keeps. The pair still speaks faster on short prompts.</p>
+      </div>
+      <div class="listrow">
+        <div class="meta">Field notes · 12 to 21 September 2026</div>
+        <h3><a href="field-notes-2026-09/">September field notes: eleven measurements on one RTX 5090 desktop</a></h3>
+        <p>Eleven measurements from one desktop, led by a correction of our own record: MiniMax M2.7's 96,000-token leg did not fail, it timed out against a launch flag we had inherited without noticing. With the flag fixed, it found all three planted codes at 103,931 tokens through the same agent framework in 251.2 seconds. Also MiniMax M3 on a file older than llama.cpp's support for its attention, Ling's crash input, and what Flash-Next held past its window.</p>
+      </div>
       <div class="listrow">
         <div class="meta">Measured study · 13 September 2026 · updated 26 September</div>
         <h3><a href="warm-wake/">Seven minutes to 1.7 seconds</a></h3>
@@ -468,12 +505,8 @@
 
     <section class="workshop">
       <div class="eyebrow">In the works</div>
-      <p>A two-machine llama.cpp study, a DeepSeek V4 Flash field card, a dated
-      roster of the local endpoints running here, a round of September field
-      notes, and new studies of llama.cpp's batch settings and of long context
-      windows on one card, each checked against measurements taken since it
-      was drafted. No promises on timing: they
-      land when they are measured and checked.</p>
+      <p>More measurements from this desktop and the laptop beside it. No
+      promises on timing: they land when they are measured and checked.</p>
     </section>
 
   </div>
@@ -493,7 +526,8 @@
     <p>Copyright 2026 Grant Williams. Independent work: not affiliated with,
     endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, Meta
     Platforms, the Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter,
-    DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, or Thinking Machines Lab. This site
+    DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, Thinking Machines Lab, DeepSeek, MiniMax, ASUS, or the OpenCode
+    project. This site
     is static. No scripts, no tracking, no cookies.</p>
   </div>
 </footer>

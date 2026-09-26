@@ -1,0 +1,56 @@
+0.00.136.474 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.137.991 I srv    load_model: loading model '<REDACTED_PATH>/Ling-3.0-flash-Q4_K_M-00001-of-00002.gguf'
+0.00.349.075 W load: special_eos_id is not in special_eog_ids - the tokenizer config may be incorrect
+0.00.392.645 W llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+0.00.602.267 W model has unused tensor blk.42.attn_norm.weight (size = 10240 bytes) -- ignoring
+0.00.602.270 W model has unused tensor blk.42.attn_q.weight (size = 8847360 bytes) -- ignoring
+0.00.602.272 W model has unused tensor blk.42.attn_kv_a_mqa.weight (size = 829440 bytes) -- ignoring
+0.00.602.273 W model has unused tensor blk.42.attn_kv_a_norm.weight (size = 2048 bytes) -- ignoring
+0.00.602.275 W model has unused tensor blk.42.attn_k_b.weight (size = 1179648 bytes) -- ignoring
+0.00.602.276 W model has unused tensor blk.42.attn_v_b.weight (size = 1179648 bytes) -- ignoring
+0.00.602.278 W model has unused tensor blk.42.attn_gate.weight (size = 46080 bytes) -- ignoring
+0.00.602.279 W model has unused tensor blk.42.attn_output.weight (size = 5898240 bytes) -- ignoring
+0.00.602.281 W model has unused tensor blk.42.ffn_norm.weight (size = 10240 bytes) -- ignoring
+0.00.602.282 W model has unused tensor blk.42.ffn_gate_inp.weight (size = 5242880 bytes) -- ignoring
+0.00.602.284 W model has unused tensor blk.42.exp_probs_b.bias (size = 2048 bytes) -- ignoring
+0.00.602.285 W model has unused tensor blk.42.ffn_gate_exps.weight (size = 566231040 bytes) -- ignoring
+0.00.602.286 W model has unused tensor blk.42.ffn_up_exps.weight (size = 566231040 bytes) -- ignoring
+0.00.602.288 W model has unused tensor blk.42.ffn_down_exps.weight (size = 566231040 bytes) -- ignoring
+0.00.602.289 W model has unused tensor blk.42.ffn_gate_shexp.weight (size = 1105920 bytes) -- ignoring
+0.00.602.290 W model has unused tensor blk.42.ffn_up_shexp.weight (size = 1105920 bytes) -- ignoring
+0.00.602.291 W model has unused tensor blk.42.ffn_down_shexp.weight (size = 1105920 bytes) -- ignoring
+0.00.602.294 W model has unused tensor blk.42.nextn.eh_proj.weight (size = 7372800 bytes) -- ignoring
+0.00.602.295 W model has unused tensor blk.42.nextn.enorm.weight (size = 10240 bytes) -- ignoring
+0.00.602.297 W model has unused tensor blk.42.nextn.hnorm.weight (size = 10240 bytes) -- ignoring
+0.00.602.298 W model has unused tensor blk.42.layer_output_norm.weight (size = 10240 bytes) -- ignoring
+0.01.685.754 I cmn          init: llama threadpool init, n_threads = 24
+0.01.914.147 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+0.01.923.207 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.01.923.249 I srv  llama_server: model loaded
+0.01.923.253 I srv  llama_server: listening on http://127.0.0.1:8188
+0.03.024.257 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.03.024.632 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+<REDACTED_PATH>/ggml-cuda.cu:108: CUDA error
+0.03.370.715 E CUDA error: an illegal memory access was encountered
+0.03.370.718 E   current device: 0, in function ggml_backend_cuda_synchronize at <REDACTED_PATH>/ggml-cuda.cu:2539
+0.03.370.719 E   cudaStreamSynchronize(cuda_ctx->stream())
+<REDACTED_PATH>/libggml-base.so.0(+0x1d39b)[0x7b7a674ad39b]
+<REDACTED_PATH>/libggml-base.so.0(ggml_print_backtrace+0x21c)[0x7b7a674ad81c]
+<REDACTED_PATH>/libggml-base.so.0(ggml_abort+0x15b)[0x7b7a674ad9fb]
+<REDACTED_PATH>/libggml-cuda.so.0(_Z15ggml_cuda_errorPKcS0_S0_iS0_+0xb7)[0x7b7a62e70c27]
+<REDACTED_PATH>/libggml-cuda.so.0(+0x279168)[0x7b7a62e79168]
+<REDACTED_PATH>/libggml-base.so.0(ggml_backend_sched_graph_compute_async+0x865)[0x7b7a674ccc85]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context13graph_computeEP11ggml_cgraphb+0xa1)[0x7b7a65deedf1]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context14process_ubatchERK12llama_ubatch14llm_graph_typeP22llama_memory_context_iR11ggml_status+0x11a)[0x7b7a65df276a]
+<REDACTED_PATH>/libllama.so.0(_ZN13llama_context6decodeERK11llama_batch+0x63d)[0x7b7a65dfa2dd]
+<REDACTED_PATH>/libllama.so.0(llama_decode+0xf)[0x7b7a65dfb76f]
+<REDACTED_PATH>/libllama-server-impl.so(_ZNSt17_Function_handlerIFvvEZN19server_context_impl6decodeERiiR11llama_batchEUlvE_E9_M_invokeERKSt9_Any_data+0x49)[0x7b7a66f5bf39]
+<REDACTED_PATH>/libllama-server-impl.so(_ZN12server_queue14yield_to_queueEOSt8functionIFvvEE+0xa6)[0x7b7a66f1ca56]
+<REDACTED_PATH>/libllama-server-impl.so(_ZN19server_context_impl6decodeERiiR11llama_batch+0x159)[0x7b7a66f70bf9]
+<REDACTED_PATH>/libllama-server-impl.so(_ZN19server_context_impl12update_slotsEv+0x391)[0x7b7a66f72691]
+<REDACTED_PATH>/libllama-server-impl.so(_ZN12server_queue10start_loopEl+0x125)[0x7b7a66f1d695]
+<REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serverR13common_paramsiPPc+0x3ba0)[0x7b7a66ed2090]
+<REDACTED_PATH>/libllama-server-impl.so(_Z12llama_serveriPPc+0xd6)[0x7b7a66ed30d6]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7b7a6662a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7b7a6662a28b]
+<REDACTED_PATH>/llama-server(+0x12a5)[0x5da38e7192a5]

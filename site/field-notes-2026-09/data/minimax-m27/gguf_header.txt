@@ -1,0 +1,226 @@
+file            <REDACTED_PATH>/MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf
+gguf_version    3
+tensor_count    0
+kv_count        50
+------------------------------------------------------------------------
+general.architecture                             minimax-m2
+general.basename                                 Minimax-M2.7
+general.file_type                                30
+general.license                                  other
+general.license.link                             https://github.com/MiniMax-AI/MiniMax-M2.7/blob/main/LICENSE
+general.license.name                             modified-mit
+general.name                                     Minimax-M2.7
+general.quantization_version                     2
+general.quantized_by                             Unsloth
+general.repo_url                                 https://huggingface.co/unsloth
+general.sampling.temp                            1.0
+general.sampling.top_k                           40
+general.sampling.top_p                           0.949999988079071
+general.size_label                               256x4.9B
+general.tags                                     <array of 1 strings, skipped>
+general.type                                     model
+minimax-m2.attention.head_count                  48
+minimax-m2.attention.head_count_kv               8
+minimax-m2.attention.key_length                  128
+minimax-m2.attention.layer_norm_rms_epsilon      9.999999974752427e-07
+minimax-m2.attention.value_length                128
+minimax-m2.block_count                           62
+minimax-m2.context_length                        196608
+minimax-m2.embedding_length                      3072
+minimax-m2.expert_count                          256
+minimax-m2.expert_feed_forward_length            1536
+minimax-m2.expert_gating_func                    2
+minimax-m2.expert_used_count                     8
+minimax-m2.feed_forward_length                   1536
+minimax-m2.rope.dimension_count                  64
+minimax-m2.rope.freq_base                        5000000.0
+quantize.imatrix.chunks_count                    81
+quantize.imatrix.dataset                         unsloth_calibration_MiniMax-M2.7.txt
+quantize.imatrix.entries_count                   496
+quantize.imatrix.file                            MiniMax-M2.7-GGUF/imatrix_unsloth.gguf
+split.count                                      4
+split.no                                         0
+split.tensors.count                              809
+tokenizer.ggml.add_bos_token                     False
+tokenizer.ggml.add_sep_token                     False
+tokenizer.ggml.bos_token_id                      200034
+tokenizer.ggml.eos_token_id                      200020
+tokenizer.ggml.merges                            <array of 199744 strings, skipped>
+tokenizer.ggml.model                             gpt2
+tokenizer.ggml.padding_token_id                  200004
+tokenizer.ggml.pre                               minimax-m2
+tokenizer.ggml.token_type                        <array[5] of 200064: [1, 1, 1, 1, 1, 1, 1, 1] … [5, 5, 5, 5]>
+tokenizer.ggml.tokens                            <array of 200064 strings, skipped>
+tokenizer.ggml.unknown_token_id                  200021
+------------------------------------------------------------------------
+tokenizer.chat_template          <6594 chars>
+  template mentions 'enable_thinking'          : False
+  template mentions 'reasoning_effort'         : False
+  template mentions 'thinking'                 : True
+  template mentions '<think>'                  : True
+  template mentions '</think>'                 : True
+  template mentions 'thinking_budget'          : False
+  template mentions 'tools'                    : True
+  template mentions 'tool_call'                : True
+  template mentions 'add_generation_prompt'    : True
+------------------------------------------------------------------------
+{# ----------‑‑‑ special token variables ‑‑‑---------- #}
+{%- set toolcall_begin_token   = '<minimax:tool_call>'         -%}
+{%- set toolcall_end_token     = '</minimax:tool_call>'        -%}
+{#- Tool Rendering Functions ============================================== -#}
+{%- macro render_tool_namespace(namespace_name, tool_list) -%}
+{%- for tool in tool_list if tool is not none -%}
+<tool>{{ tool.function | tojson(ensure_ascii=False) }}</tool>
+{% endfor -%}
+{%- endmacro -%}
+{%- macro visible_text(content) -%}
+    {%- if content is string -%}
+        {{ content }}
+    {%- elif content is iterable and content is not mapping -%}
+        {%- for item in content if item is not none -%}
+            {%- if item is mapping and item.type == 'text' -%}
+                {{- item.text }}
+            {%- elif item is string -%}
+                {{- item }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- else -%}
+        {{- content }}
+    {%- endif -%}
+{%- endmacro -%}
+{#- System Message Construction ============================================ -#}
+{%- macro build_system_message(system_message) -%}
+    {%- if system_message and system_message.content -%}
+        {{- visible_text(system_message.content) }}
+    {%- else -%}
+        {%- if model_identity is not defined -%}
+            {%- set model_identity = "You are a helpful assistant. Your name is MiniMax-M2.7 and is built by MiniMax." -%}
+        {%- endif -%}
+        {{- model_identity }}
+    {%- endif -%}
+    
+    {#- Handle current_date -#}
+    {%- if system_message and system_message.current_date -%}
+        {{- '\n' ~ 'Current date: ' + system_message.current_date }}
+    {%- endif -%}
+    {#- Handle current_location -#}
+    {%- if system_message and system_message.current_location -%}
+        {{- '\n' ~ 'Current location: ' + system_message.current_location }}
+    {%- endif -%}
+{%- endmacro -%}
+{#- Main Template Logic ================================================= -#}
+{#- Extract system message (only first message if it's system) -#}
+{%- set system_message = none -%}
+{%- set conversation_messages = messages -%}
+{%- if messages and messages[0].role == "system" -%}
+    {%- set system_message = messages[0] -%}
+    {%- set conversation_messages = messages[1:] -%}
+{%- endif -%}
+{#- Get the last user message turn, for interleved thinking -#}
+{%- set ns = namespace(last_user_index=-1) %}
+{%- for m in conversation_messages if m is not none -%}
+    {%- if m.role == 'user' %}
+        {% set ns.last_user_index = loop.index0 -%}
+    {%- endif %}
+{%- endfor %}
+{#- Render system message -#}
+{{- ']~!b[' ~ ']~b]system' ~ '\n' }}
+{{- build_system_message(system_message) }}
+{#- Render tools if available -#}
+{%- if tools -%}
+    {{- '\n\n' ~ '# Tools' ~ '\n' ~ 'You may call one or more tools to assist with the user query.\nHere are the tools available in JSONSchema format:' ~ '\n' }}
+    {{- '\n' ~ '<tools>' ~ '\n' }}
+    {{- render_tool_namespace("functions", tools) }}
+    {{- '</tools>' ~ '\n\n' }}
+{{- 'When making tool calls, use XML format to invoke tools and pass parameters:' ~ '\n' }}
+{{- '\n' ~ toolcall_begin_token }}
+<invoke name="tool-name-1">
+<parameter name="param-key-1">param-value-1</parameter>
+<parameter name="param-key-2">param-value-2</parameter>
+...
+</invoke>
+{{- '\n' ~ toolcall_end_token }}
+{%- endif -%}
+{{- '[e~[\n' }}
+
+{#- Render messages -#}
+{%- set last_tool_call = namespace(name=none) -%}
+{%- for message in conversation_messages if message is not none -%}
+    {%- if message.role == 'assistant' -%}
+        {#- Only render reasoning_content if no user message follows -#}
+        {{- ']~b]ai' ~ '\n' }}
+
+        {%- set reasoning_content = '' %}
+        {%- set content = visible_text(message.content) %}
+        {%- if message.reasoning_content is string %}
+            {%- set reasoning_content = message.reasoning_content %}
+        {%- else %}
+            {%- if '</think>' in content %}
+                {%- set reasoning_content = content.split('</think>')[0].strip('\n').split('<think>')[-1].strip('\n') %}
+                {%- set content = content.split('</think>')[-1].strip('\n') %}
+            {%- endif %}
+        {%- endif %}
+        {%- if reasoning_content and loop.index0 > ns.last_user_index -%}
+            {{- '<think>' ~ '\n' ~ reasoning_content ~ '\n' ~ '</think>' ~ '\n\n' }}
+        {%- endif -%}
+        {%- if content -%}
+            {{- content }}
+        {%- endif -%}
+        {%- if message.tool_calls -%}
+            {{- '\n' ~ toolcall_begin_token ~ '\n' }}
+
+            {%- for tool_call in message.tool_calls -%}
+                {%- if tool_call.function %}
+                    {%- set tool_call = tool_call.function %}
+                {%- endif %}
+                {{- '<invoke name="' + tool_call.name + '">' }}
+                {% set _args = tool_call.arguments %}
+                {%- for k, v in _args.items() %}
+                {{- '<parameter name="' + k + '">' }}
+                {{- v | tojson(ensure_ascii=False) if v is not string else v }}
+                {{- '</parameter>' }}
+                {% endfor %}
+                {{- '</invoke>' ~ '\n' }}
+            {%- endfor -%}
+            
+            {{- toolcall_end_token}}
+            {%- set last_tool_call.name = message.tool_calls[-1].name -%}
+        {%- else -%}
+            {%- set last_tool_call.name = none -%}
+        {%- endif -%}
+        {{- '[e~[' ~ '\n' }}
+        
+    {%- elif message.role == 'tool' -%}
+    {%- if last_tool_call.name is none -%}
+        {{- raise_exception("Message has tool role, but there was no previous assistant message with a tool call!") }}
+    {%- endif -%}
+    {%- if loop.first or (conversation_messages[loop.index0 - 1].role != 'tool') -%}
+        {{- ']~b]tool' }}
+    {%- endif -%}
+    {%- if message.content is string -%}
+        {{- '\n<response>' }}
+        {{- message.content }}
+        {{- '</response>' }}
+    {%- else -%}
+        {%- for tr in message.content -%}
+            {{- '\n<response>' }}
+            {{- tr.output if tr.output is defined else (tr.text if tr.type == 'text' and tr.text is defined else tr) }}
+            {{- '\n</response>' }}
+        {%- endfor -%}
+    {%- endif -%}
+    {%- if loop.last or (conversation_messages[loop.index0 + 1].role != 'tool') -%}
+        {{- '[e~[\n' -}}
+    {%- endif -%}
+        
+    {%- elif message.role == 'user' -%}
+        {{- ']~b]user' ~ '\n' }}
+        {{- visible_text(message.content) }}
+        {{- '[e~[' ~ '\n' }}
+    {%- endif -%}
+{%- endfor -%}
+
+{#- Generation prompt -#}
+{%- if add_generation_prompt -%}
+{{- ']~b]ai' ~ '\n' ~ '<think>' ~ '\n' }}
+{%- endif -%}
+

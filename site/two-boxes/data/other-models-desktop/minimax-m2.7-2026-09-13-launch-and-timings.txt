@@ -1,0 +1,46 @@
+# MiniMax M2.7 alone on the desktop, 2026-09-13: the launch lines of the serving script and the
+# timing lines of its server log (64K window, f16 cache). Extract; nothing else in either file is shown.
+
+## serving script, exec block
+exec "$BIN" \
+  --model "$MODEL" \
+  --host "$HOST" --port "$PORT" --alias <ALIAS> \
+  --jinja --ctx-size "$CTX" --parallel 1 \
+  --threads 24 --threads-batch 24 \
+  --n-gpu-layers 999 -cmoe -ub 128 \
+  --no-repack --fit off \
+  --flash-attn on \
+  --cache-type-k "$KV" --cache-type-v "$KV" \
+  --cors-origins localhost --timeout 3600 \
+  --temp 1.0 --top-p 0.95 --top-k 40 --min-p 0.05
+
+
+## server log, header and timing lines
+>> MiniMax-M2.7 UD-IQ4_XS (108.41 GB, 4 shards) @ http://<LOCAL>/v1
+>> ctx 65536 · KV f16 · build <BUILD> · Ctrl-C to stop
+>> VRAM before load: 696 MiB
+0.33.707.051 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 65536, kv_unified = 'false'
+0.49.337.462 I slot print_timing: id  0 | task 0 | prompt eval time =     819.96 ms /    17 tokens (   48.23 ms per token,    20.73 tokens per second)
+0.49.337.465 I slot print_timing: id  0 | task 0 |        eval time =   12878.35 ms /   128 tokens (  100.61 ms per token,     9.94 tokens per second)
+0.49.337.466 I slot print_timing: id  0 | task 0 |       total time =   13698.32 ms /   145 tokens
+3.30.619.695 I slot print_timing: id  0 | task 129 | prompt eval time =  148669.56 ms /  6776 tokens (   21.94 ms per token,    45.58 tokens per second)
+3.30.619.698 I slot print_timing: id  0 | task 129 |        eval time =   12560.93 ms /   128 tokens (   98.13 ms per token,    10.19 tokens per second)
+3.30.619.698 I slot print_timing: id  0 | task 129 |       total time =  161230.49 ms /  6904 tokens
+5.07.407.724 I slot print_timing: id  0 | task 261 | prompt eval time =    4070.78 ms /    70 tokens (   58.15 ms per token,    17.20 tokens per second)
+5.07.407.726 I slot print_timing: id  0 | task 261 |        eval time =   91840.01 ms /   900 tokens (  102.04 ms per token,     9.80 tokens per second)
+5.07.407.727 I slot print_timing: id  0 | task 261 |       total time =   95910.79 ms /   970 tokens
+5.26.386.185 I slot print_timing: id  0 | task 1162 | prompt eval time =     873.25 ms /    21 tokens (   41.58 ms per token,    24.05 tokens per second)
+5.26.386.187 I slot print_timing: id  0 | task 1162 |        eval time =   17973.33 ms /   177 tokens (  101.54 ms per token,     9.85 tokens per second)
+5.26.386.188 I slot print_timing: id  0 | task 1162 |       total time =   18846.57 ms /   198 tokens
+5.41.281.280 I slot print_timing: id  0 | task 1340 | prompt eval time =     108.17 ms /     1 tokens (  108.17 ms per token,     9.25 tokens per second)
+5.41.281.283 I slot print_timing: id  0 | task 1340 |        eval time =   14749.30 ms /   145 tokens (  101.72 ms per token,     9.83 tokens per second)
+5.41.281.284 I slot print_timing: id  0 | task 1340 |       total time =   14857.46 ms /   146 tokens
+6.05.822.969 I slot print_timing: id  0 | task 1486 | prompt eval time =     123.60 ms /     1 tokens (  123.60 ms per token,     8.09 tokens per second)
+6.05.822.972 I slot print_timing: id  0 | task 1486 |        eval time =   24381.85 ms /   240 tokens (  101.59 ms per token,     9.84 tokens per second)
+6.05.822.972 I slot print_timing: id  0 | task 1486 |       total time =   24505.45 ms /   241 tokens
+6.39.232.643 I slot print_timing: id  0 | task 1727 | prompt eval time =     108.36 ms /     1 tokens (  108.36 ms per token,     9.23 tokens per second)
+6.39.232.646 I slot print_timing: id  0 | task 1727 |        eval time =   33250.01 ms /   327 tokens (  101.68 ms per token,     9.83 tokens per second)
+6.39.232.646 I slot print_timing: id  0 | task 1727 |       total time =   33358.37 ms /   328 tokens
+6.53.907.445 I slot print_timing: id  0 | task 2055 | prompt eval time =    8082.71 ms /   209 tokens (   38.67 ms per token,    25.86 tokens per second)
+6.53.907.448 I slot print_timing: id  0 | task 2055 |        eval time =    6506.98 ms /    64 tokens (  101.67 ms per token,     9.84 tokens per second)
+6.53.907.448 I slot print_timing: id  0 | task 2055 |       total time =   14589.70 ms /   273 tokens

@@ -1,0 +1,17 @@
+[preflight] gpu=1113MiB ram=166GB want_ctx=262144
+[cmd] <REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf --host <LOCAL> --port <LOCAL> --alias Ornith-1.5-35B --jinja --reasoning-format auto --ctx-size 262144 --n-gpu-layers 999 --n-cpu-moe 6 --flash-attn on --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 --temp 0.6 --top-p 0.95 --top-k 20 --parallel 1 --threads 24 --threads-batch 24 --cors-origins localhost --timeout 3600
+[launch] pid=<REDACTED> pgid=<REDACTED>
+0.00.163.946 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.282.029 I srv    load_model: loading model '<REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf'
+0.00.875.369 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 999, abort
+0.01.069.544 W llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --no-mmap for better performance
+0.13.299.443 I common_speculative_init_result: creating MTP draft context against the target model '<REDACTED_PATH>/Ornith-1.5-35B-Q6_K.gguf'
+0.13.308.480 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 512.00 MiB on device 0: cudaMalloc failed: out of memory
+0.13.308.483 E alloc_tensor_range: failed to allocate CUDA0 buffer of size 536870912
+0.13.310.260 E llama_init_from_model: failed to initialize the context: failed to allocate buffer for kv cache
+0.13.310.266 E common_speculative_init_result: failed to create MTP context
+0.13.310.273 E srv    load_model: failed to create MTP context
+0.13.310.283 I srv    operator(): operator(): cleaning up before exit...
+0.13.312.150 E srv  llama_server: exiting due to model loading error
+[health] exited before healthy (t=15s)
+[cleanup] gpu_after=1113 MiB live_servers=0

@@ -1,0 +1,47 @@
+Probe lines from the runs that used both machines, 2026-09-13 to 2026-09-15.
+
+These blocks are extracted from three run records, not copied from them. The records they come
+from carry network detail (a hostname, the addresses on the link, worker ports, program names,
+process ids and absolute paths) and a long transfer dump, none of which is published. Nothing
+inside a block is edited: the probe lines are as the run wrote them.
+
+Each heading gives the run, the date, the model file and the placement.
+[short], [depth~8000] and [fresh~8000] are the three probes: a short prompt, a prompt of about
+8,000 tokens on a warm server, and a fresh prompt of about 8,000 tokens the server has not seen.
+
+run 5, 2026-09-13, DeepSeek V4 Flash 0731, 3-bit file (unsloth UD-IQ3_XXS), split across both machines
+[short]      prompt 21 tok in 1.0 s = 21.2 t/s | decode 200 tok = 17.06 t/s | wall 12.7 s
+[depth~8000] prompt 7841 tok in 42.5 s = 184.6 t/s | decode 42 tok = 16.15 t/s | wall 45.1 s
+[fresh~8000] prompt 8210 tok in 43.7 s = 187.9 t/s | decode 160 tok = 15.89 t/s | wall 53.9 s
+
+run 7, 2026-09-13, Qwen3.5-397B-A17B, 3-bit file (unsloth UD-IQ3_XXS), split across both machines
+[short]      prompt 29 tok in 4.8 s = 6.0 t/s | decode 42 tok = 5.18 t/s | wall 12.7 s
+[depth~8000] prompt 7651 tok in 77.6 s = 98.7 t/s | decode 10 tok = 12.61 t/s | wall 78.5 s
+[fresh~8000] prompt 8222 tok in 76.0 s = 108.2 t/s | decode 108 tok = 15.31 t/s | wall 83.6 s
+
+2026-09-15 14:28 to 14:35, DeepSeek V4 Flash 0731, 4-bit file (unsloth UD-Q4_K_XL) with the
+maker's own draft model, split across both machines, 2 whole layers on the card, 13 layers'
+experts in system memory, 28 whole layers on the laptop
+[14:28:03] copy finished
+[14:28:03] 5 shards byte-exact
+[14:28:03] the laptop's worker reachable on the link
+[14:31:49] healthy after 225 s, VRAM 27430 MiB
+[short]      prompt 21 tok in 1.3 s = 16.5 t/s | decode 200 tok = 19.55 t/s | wall 11.5 s
+[depth~8000] prompt 7841 tok in 62.7 s = 125.1 t/s | decode 40 tok = 19.59 t/s | wall 64.8 s
+
+Shard listings, from the two runs' own file checks:
+
+3-bit file, unsloth UD-IQ3_XXS, 4 shards
+  5,257,696 bytes      DeepSeek-V4-Flash-0731-UD-IQ3_XXS-00001-of-00004.gguf
+  49,910,532,416 bytes DeepSeek-V4-Flash-0731-UD-IQ3_XXS-00002-of-00004.gguf
+  49,257,859,456 bytes DeepSeek-V4-Flash-0731-UD-IQ3_XXS-00003-of-00004.gguf
+  5,034,198,464 bytes  DeepSeek-V4-Flash-0731-UD-IQ3_XXS-00004-of-00004.gguf
+  total 104,207,848,032 bytes = 104.2 GB
+
+4-bit file, unsloth UD-Q4_K_XL, 5 shards
+  5,257,408 bytes      shard 1 of 5
+  48,935,523,072 bytes shard 2 of 5
+  48,980,787,136 bytes shard 3 of 5
+  49,999,168,416 bytes shard 4 of 5
+  7,174,505,088 bytes  shard 5 of 5
+  total 155,095,241,120 bytes = 155.1 GB, verified byte-exact after the transfer

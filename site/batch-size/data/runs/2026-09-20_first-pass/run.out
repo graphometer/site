@@ -1,0 +1,40 @@
+REFUSED: model missing <REDACTED_PATH>/Ling-3.0-flash-Q4_K_M-00001-of-00002.gguf
+REFUSED: model missing <REDACTED_PATH>/Ling-3.0-flash-Q4_K_M-00001-of-00002.gguf
+[load] Inkling-Small_base key=Inkling-Small ctx=131072 vram=12641 MiB load=60s args=''
+{"prompt_n": 48115, "prefill_tps": 123.0, "decode_tps": 12.23, "needle_found": true, "answer_len": 17, "reasoning_len": 308}
+[load] Inkling-Small_ub8192 key=Inkling-Small ctx=131072 vram=18130 MiB load=5s args='--batch-size 8192 --ubatch-size 8192'
+Traceback (most recent call last):
+  File "<stdin>", line 23, in <module>
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1348, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1457, in getresponse
+    response.begin()
+  File "/usr/lib/python3.12/http/client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 305, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+<REDACTED_PATH>/bsweep.sh: line 70: <PID> Segmentation fault      (core dumped) "$BIN" --model "$M" --host 127.0.0.1 --port 8188 --alias bsweep --jinja --ctx-size "$CTX" --parallel 1 "${PLACE[@]}" --threads 24 --threads-batch 24 --timeout 3600 "$@" > "$LOG" 2>&1
+[load] Qwen3.8-Flash-Next_base key=Qwen3.8-Flash-Next ctx=131072 vram=19444 MiB load=80s args=''
+{"prompt_n": 48069, "prefill_tps": 203.2, "decode_tps": 18.14, "needle_found": true, "answer_len": 17, "reasoning_len": 304}
+Qwen3.8-Flash-Next_ub8192 DIED: 0.03.103.317 E srv  llama_server: exiting due to model loading error
+Laguna-S-2.1_handflags_base DIED: 1.33.357.683 E srv  llama_server: exiting due to model loading error
+Laguna-S-2.1_handflags_ub4096 DIED: 0.01.089.444 E srv  llama_server: exiting due to model loading error
+BSWEEP-COMPLETE

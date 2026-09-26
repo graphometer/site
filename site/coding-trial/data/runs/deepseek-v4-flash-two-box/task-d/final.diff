@@ -1,0 +1,213 @@
+diff --git a/src/ledgerlite/cli.py b/src/ledgerlite/cli.py
+index de53472..7a343a9 100644
+--- a/src/ledgerlite/cli.py
++++ b/src/ledgerlite/cli.py
+@@ -1,5 +1,6 @@
+ import argparse
+ import csv
++import json
+ from pathlib import Path
+ 
+ from .ledger import Ledger
+@@ -13,11 +14,36 @@ def load_csv(path: Path) -> Ledger:
+         return Ledger(Transaction.from_csv_row(row) for row in rows if row)
+ 
+ 
++def _fmt(value) -> str:
++    return f"{value:.2f}"
++
++
++def render_json(ledger: Ledger) -> str:
++    categories = {
++        category: {
++            "net": _fmt(net),
++        }
++        for category, net in ledger.category_totals().items()
++    }
++    payload = {
++        "purchases": _fmt(ledger.gross_purchases()),
++        "refunds": _fmt(ledger.total_refunds()),
++        "net": _fmt(ledger.net_total()),
++        "categories": categories,
++    }
++    return json.dumps(payload, indent=2)
++
++
+ def main(argv: list[str] | None = None) -> int:
+     parser = argparse.ArgumentParser(description="Summarize a transaction CSV file")
+     parser.add_argument("path", type=Path)
++    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+     args = parser.parse_args(argv)
+-    print(render_text(load_csv(args.path)))
++    ledger = load_csv(args.path)
++    if args.json:
++        print(render_json(ledger))
++    else:
++        print(render_text(ledger))
+     return 0
+ 
+ 
+diff --git a/src/ledgerlite/ledger.py b/src/ledgerlite/ledger.py
+index ac3cf09..c105679 100644
+--- a/src/ledgerlite/ledger.py
++++ b/src/ledgerlite/ledger.py
+@@ -1,5 +1,6 @@
+ from collections.abc import Iterable
+ from decimal import Decimal
++from typing import Dict
+ 
+ from .models import Transaction
+ 
+@@ -21,5 +22,11 @@ class Ledger:
+         )
+ 
+     def net_total(self) -> Decimal:
+-        # Intentional benchmark bug: refunds are represented as positive amounts.
+-        return sum((item.amount for item in self.transactions), start=Decimal("0"))
++        return self.gross_purchases() - self.total_refunds()
++
++    def category_totals(self) -> Dict[str, Decimal]:
++        <PERMISSION_ID>: Dict[str, Decimal] = {}
++        for item in self.transactions:
++            sign = Decimal("1") if item.kind == "purchase" else Decimal("-1")
++            <PERMISSION_ID>[item.category] = <PERMISSION_ID>.get(item.category, Decimal("0")) + item.amount * sign
++        return dict(sorted(<PERMISSION_ID>.items()))
+diff --git a/tests/test_categories.py b/tests/test_categories.py
+new file mode 100644
+index 0000000..be17c5a
+--- /dev/null
++++ b/tests/test_categories.py
+@@ -0,0 +1,50 @@
++import sys
++import unittest
++from decimal import Decimal
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
++
++from ledgerlite import Ledger, Transaction
++
++
++class CategoryTotalsTests(unittest.TestCase):
++    def test_category_refunds_reduce_net(self) -> None:
++        ledger = Ledger(
++            [
++                Transaction("Keyboard", "equipment", "purchase", Decimal("120.00")),
++                Transaction("Keyboard return", "equipment", "refund", Decimal("20.00")),
++                Transaction("Book", "learning", "purchase", Decimal("30.00")),
++            ]
++        )
++        self.assertEqual(
++            ledger.category_totals(),
++            {"equipment": Decimal("100.00"), "learning": Decimal("30.00")},
++        )
++
++    def test_categories_sorted_deterministically(self) -> None:
++        ledger = Ledger(
++            [
++                Transaction("Zed", "zeta", "purchase", Decimal("5.00")),
++                Transaction("Alpha", "alpha", "purchase", Decimal("7.00")),
++                Transaction("Mid", "mid", "purchase", Decimal("3.00")),
++            ]
++        )
++        self.assertEqual(
++            list(ledger.category_totals().keys()),
++            ["alpha", "mid", "zeta"],
++        )
++
++    def test_category_totals_match_net_total(self) -> None:
++        ledger = Ledger(
++            [
++                Transaction("A", "x", "purchase", Decimal("10.00")),
++                Transaction("B", "x", "refund", Decimal("4.00")),
++                Transaction("C", "y", "purchase", Decimal("6.00")),
++            ]
++        )
++        self.assertEqual(ledger.net_total(), sum(ledger.category_totals().values()))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+new file mode 100644
+index 0000000..6a73127
+--- /dev/null
++++ b/tests/test_cli.py
+@@ -0,0 +1,77 @@
++import io
++import json
++import sys
++import unittest
++from contextlib import redirect_stdout
++from decimal import Decimal
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
++
++from ledgerlite.cli import main
++
++CSV = (
++    "Keyboard,equipment,purchase,120.00\n"
++    "Keyboard return,equipment,refund,20.00\n"
++    "Book,learning,purchase,30.00\n"
++)
++
++
++def _write_csv(tmp: Path) -> Path:
++    path = tmp / "transactions.csv"
++    path.write_text(CSV, encoding="utf-8")
++    return path
++
++
++class CliJsonTests(unittest.TestCase):
++    def test_json_output_shape_and_strings(self) -> None:
++        import tempfile
++
++        with tempfile.TemporaryDirectory() as tmp:
++            path = _write_csv(Path(tmp))
++            stdout = io.StringIO()
++            with redirect_stdout(stdout):
++                self.assertEqual(main([str(path), "--json"]), 0)
++            payload = json.loads(stdout.getvalue())
++        self.assertEqual(payload["purchases"], "150.00")
++        self.assertEqual(payload["refunds"], "20.00")
++        self.assertEqual(payload["net"], "130.00")
++        self.assertEqual(
++            payload["categories"],
++            {"equipment": {"net": "100.00"}, "learning": {"net": "30.00"}},
++        )
++        for value in payload.values():
++            self.assertTrue(isinstance(value, (str, dict)))
++
++    def test_json_categories_sorted(self) -> None:
++        import tempfile
++
++        csv_path = Path(tempfile.mkdtemp()) / "t.csv"
++        csv_path.write_text(
++            "Zed,zeta,purchase,5.00\nAlpha,alpha,purchase,7.00\n",
++            encoding="utf-8",
++        )
++        stdout = io.StringIO()
++        with redirect_stdout(stdout):
++            main([str(csv_path), "--json"])
++        payload = json.loads(stdout.getvalue())
++        self.assertEqual(list(payload["categories"].keys()), ["alpha", "zeta"])
++
++
++class CliTextTests(unittest.TestCase):
++    def test_text_output_unchanged(self) -> None:
++        import tempfile
++
++        with tempfile.TemporaryDirectory() as tmp:
++            path = _write_csv(Path(tmp))
++            stdout = io.StringIO()
++            with redirect_stdout(stdout):
++                self.assertEqual(main([str(path)]), 0)
++            self.assertEqual(
++                stdout.getvalue(),
++                "Purchases: $150.00\nRefunds: $20.00\nNet: $130.00\n",
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()
