@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</title>
+<meta name="description" content="A guide, built from dated records of 12 to 26 September 2026 on one RTX 5090 desktop: twelve settings the server accepted as tested, while the speed or the number was wrong anyway. A kept record shows the server loading under eight of them and a request returning text under six; two failed only where they had not been tried, a full-window micro-batch refused or dying at load and a --help name dying at load with a missing header key; the start script that promised a cache has no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and the settings-file override's two misreads are a dated note, its runs' logs not kept. A start with no window passed that serves a different window from the one a page quoted; a window past the file's training length that is capped and still paid for in card memory; a micro-batch that loads at 131,072 and is refused at 196,608 or 262,144; an inherited -ub 128 that read 17.5 times slower on a 3,658-token prompt (MiniMax M2.7, -b 4096 held and only -ub changed) and 19.9 times slower on a 24,071-token prompt (Laguna S 2.1 at a 32,768 window, --batch-size 512 --ubatch-size 128 against -b 8192 -ub 8192); a first request that read at 87.7 tokens a second while the model file paged in, against 517.6 for the next; every expert in system memory leaving 8,311 MiB of a 32,607 MiB card unused; MiniMax M3 numbers taken on a file with no sparse-attention index, a dense fallback until the correct file arrived on 20 September, and the one warning line llama.cpp's source prints when the launch flags force the same fallback; a start script whose 262,144 rung promised an 8-bit cache and expanded an array nothing assigned, for nine days; a settings file that wins over an exported variable in 19 of 26 scripts, with MiniMax M2.7 reading only the file's own location first, so the file wins in all twenty that have one; a script header that said the draft head did not work while the shared library implemented it; a flag in --help the build could not load; and Ollama's server running 4 of 24 threads on the CPU unless told otherwise (273.17 seconds of wall time for one 4K picture against 111.01 at 16 threads and 38.52 with a 1,536-pixel cap, on answers of unequal length). Each item gives the symptom, the one-line check, what it cost us and the record.">
+<link rel="canonical" href="https://graphometer.ai/silent-settings/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
+<meta property="og:description" content="Twelve settings a local model server accepted as tested while the speed or the number was wrong anyway: eight with a kept load and six of those with a request that returned text; two failing only at the full window or the draft's load where nobody had tried them; one with no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and one whose two misreads are a dated note, its runs' logs not kept. Windows, micro-batches, an inherited flag, expert placement, a model file without its sparse-attention index, two start-script bugs, a stale header, a help flag and an Ollama thread default. The symptom, the one-line check, the cost and the record for each, from one RTX 5090 desktop in September 2026.">
+<meta property="og:url" content="https://graphometer.ai/silent-settings/">
+<meta property="og:image" content="https://graphometer.ai/og/silent-settings.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
+<meta name="twitter:description" content="Twelve settings a local model server accepted as tested while the speed or the number was wrong anyway: eight with a kept load and six of those with a request that returned text; two failing only at the full window or the draft's load where nobody had tried them; one with no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and one whose two misreads are a dated note, its runs' logs not kept. Windows, micro-batches, an inherited flag, expert placement, a model file without its sparse-attention index, two start-script bugs, a stale header, a help flag and an Ollama thread default. The symptom, the one-line check, the cost and the record for each, from one RTX 5090 desktop in September 2026.">
+<meta name="twitter:image" content="https://graphometer.ai/og/silent-settings.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Guide &middot; twelve items from dated records, 12 to 26 September 2026 &middot; llama.cpp start scripts and one Ollama default &middot; one RTX 5090 desktop</div>
+      <h1>Silent <em>settings</em></h1>
+      <p class="subtitle">Twelve settings that cost speed or correctness on one
+      desktop without an error, and the one-line check for each.</p>
+      <p class="lead">A silent setting is one the server accepted as it was
+      tested, while the speed we lived with or the number we published was
+      wrong anyway. For eight of the twelve items below a kept record shows
+      the server loading under the setting (items 02, 03, 05, 06, 07, 08,
+      11 and 13), and for six of those a request that returned text (05,
+      06, 07, 08, 11 and 13). Two failed loudly, but only where nobody had
+      tried them: a micro-batch that had loaded at one window is refused,
+      or dies, at the model's full window (item 04), and a draft type that
+      <code>--help</code> lists dies at load with a missing header key
+      (item 12); the silent part was the setting that had passed and the
+      help text that offered it. Item 09 has no run at the 262,144 window
+      in the records; the shell check exits 0 and the launch line gains no
+      cache flags. Item 10's two misreads are a dated note, and the runs'
+      logs were not kept. Between 12 and 26 September 2026
+      the records on this machine caught twelve of them: in llama.cpp launch
+      flags, in our own start scripts, in one shared library, and in one
+      Ollama default. This page is the list. Each item gives the symptom you
+      would see, or fail to see; the one-line check that catches it; what it
+      cost us; and where the record is. Most of the records live on the pages
+      that measured them, and this page links to those rather than repeating
+      them. Nothing here is a bug report against any project: every item is an
+      interaction between a default, a file and a script, and most of the
+      mistakes were ours.</p>
+      <div class="nonaff">Independent measurements; no affiliation with the
+      llama.cpp project, ggml-org, Ollama, MiniMax, Z.ai, DeepSeek, Alibaba
+      Group, Poolside, Unsloth, NVIDIA, Intel, or the makers of the other
+      models the package's tables name (Google, Mistral AI, Moonshot AI,
+      Thinking Machines Lab, inclusionAI, Meta, Ornith AI).</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>A checklist for anyone who keeps more than a few start scripts for
+      local models. The test a server applies to itself, the process came
+      up and the health check answered, is in a kept record for eight of the
+      twelve items (02, 03, 05, 06, 07, 08, 11 and 13), and a request that
+      returned text for six of them (05, 06, 07, 08, 11 and 13). Items 04
+      and 12 failed that test loudly, at a window or a load nobody had
+      tried, after a setting or a help entry had looked fine. Item 09 has no
+      run at the 262,144 window in the records; the shell check exits 0 and
+      the launch line gains no cache flags. Item 10's two misreads are a
+      dated note, and the runs' logs were not kept. What was wrong showed up
+      later: a 3,658-token read that took
+      17.5 times longer than the same model managed once one flag changed,
+      a card with 8,311&nbsp;MiB of its 32,607 unused while a model served,
+      a window that was not the one we thought we served, or a number on a
+      page that a later run could not reproduce.</p>
+      <p>The machine is one desktop: an RTX 5090 with 32,607&nbsp;MiB as
+      nvidia-smi reports it, 188&nbsp;GiB of RAM and a 24-core Core Ultra 9
+      285K. The servers are llama.cpp's <code>llama-server</code> at the
+      builds each record names, started by our own scripts, and Ollama for
+      the last item. Every figure below is measured on a dated run unless it
+      is marked arithmetic, or marked as a dated note whose run log was not
+      kept; three items carry such notes, and each says so. Where another
+      page on this site owns a figure, this page prints only enough of it
+      to recognise the trap and links to the page and its package. The
+      records that exist nowhere else, script excerpts, source lines, five
+      result files and one header dump, ship in this page's package
+      (section 18).</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>The window you pass is not the window you serve</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>A start script accepts a window and serves it when you pass one. What it serves when nothing is passed, the installed default, can be another number, and a figure measured by passing the window says nothing about the default. The server log prints only the window it served, so nothing looks wrong.</td></tr>
+        <tr><th scope="row">Check</th><td>Start once with nothing passed and read the served window back: <code>curl -s http://127.0.0.1:PORT/props</code> and look for <code>n_ctx</code>, or <code>grep n_ctx_slot</code> in the server log.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Our 15 September list of endpoints put all 22 of them at 128K. By 26 September ten rows served more than 131,072 by default, each shown by a start that passed no window. On the evening of 26 September four installed scripts were started with nothing passed, 21:06 to 21:13, and served 262,144, 262,144, 196,608 and 262,144 (measured 2026-09-26).</td></tr>
+        <tr><th scope="row">Record</th><td>The <a href="../roster-2026-09/">September roster</a>: section 05 for the 15 September list and the ten rows, section 03 for each row's window cell, which says whether a run that passed no window shows the installed default; its package file <code>installed-starts-2026-09-26.txt</code> for the four starts.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>A window past the file's training length is capped, and the card still pays for it</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>Ask for 524,288 on a file trained to 262,144 without the rope-scaling flags (the settings that stretch a model's position encoding past the length it was trained at). The server comes up. Its log says the slot context exceeds the training context and that it is capping; the card holds the memory of the window you asked for, not the one you got.</td></tr>
+        <tr><th scope="row">Check</th><td>After the load, compare the served window (<code>n_ctx</code> from <code>/props</code>, or <code>n_ctx_slot</code> in the log) with the one you asked for, and read <code>nvidia-smi</code> against a plain load at the capped window.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Qwen3.8-Flash-Next, 20 September: asked for 524,288 with no rope flags, it served 262,144 and peaked at 23,816&nbsp;MiB, the same as a genuine 524,288 window with the flags (23,814) and 8,422&nbsp;MiB more than a plain 262,144 load (15,394; the difference is arithmetic). The capped server's own record is up in 2 seconds; it was the plain 262,144 load whose probe then logged a 600-second timeout (measured 2026-09-20).</td></tr>
+        <tr><th scope="row">Record</th><td>The <a href="../field-notes-2026-09/">September field notes</a>, section 09; its package files <code>flashnext-context/e_512k_norope.log</code> (lines 11 and 12) and <code>e_512k_norope.vram</code> for the cap and the 23,816, <code>b_512k_unlock.vram</code> for the 23,814, and <code>a_256k_base.vram</code> for the 15,394 and the 600-second timeout.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>A micro-batch that loads at one window fails at another</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td><code>-ub 4096</code> loads and reads fast at 131,072. At the model's full window the same script either dies at load with a refused CUDA buffer, or loads and peaks within a few hundred MiB of the card's total. A script that names one batch setting for every window has usually been checked at one.</td></tr>
+        <tr><th scope="row">Check</th><td>Load once at every window the script offers, and read two things: the compute-buffer allocation at load, and the peak card use during one long read at that window.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>MiniMax M2.7 read 43,909 tokens at <code>-ub 4096</code> at 131,072; at its 196,608 window 4096 was refused (a 2,916.16&nbsp;MiB buffer), 2048 failed too, and only 1024 loaded, at 31,560&nbsp;MiB. GLM-5.3-Flash at 262,144: <code>-b 4096 -ub 4096</code>, its setting at 131,072, was refused (a 13,281.37&nbsp;MiB compute buffer); 2048 loaded and read 230,039 tokens but peaked at 31,951&nbsp;MiB, 656 below the card's total, and the script ships 1024 there. Until 26 September four other scripts returned to llama.cpp's default above 131,072, unmeasured there; that day two of them were measured at 262,144, and Ornith-1.5-35B's script now sets <code>-b 2048 -ub 2048</code> there while Qwen3.5-122B's keeps 512 for the card's sake. The Qwen3.5-397B and Mistral Small 4 scripts still return to the default above 131,072, unmeasured there (measured 2026-09-19 to 2026-09-26).</td></tr>
+        <tr><th scope="row">Record</th><td>The <a href="../batch-size/">batch-size study</a>, section 04, and its package.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>An inherited micro-batch</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>A prompt reads many times slower than the same model can: here 17.5 times on a 3,658-token read and 19.9 times on a 24,071-token read (arithmetic on the rates below). At the log level our scripts use, the server logs we kept do not print the batch sizes at load, so nothing in the log says why.</td></tr>
+        <tr><th scope="row">Check</th><td>Read the running server's real arguments: <code>tr '\0' ' ' &lt; /proc/PID/cmdline | grep -o -E -- '(-ub|--ubatch-size) [0-9]+'</code>. No match means the build's default, 512 on the builds we ran. A value copied from another script is worth one long read at 2048 and at 4096.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Laguna S 2.1 ran <code>--batch-size 512 --ubatch-size 128</code> from July to 21 September, with no reason recorded: at its 32,768 window a 24,071-token read took 333.2 seconds at 72.2 t/s, and 16.8 seconds at 1,434.0 t/s with <code>-b 8192 -ub 8192</code>, the code correct at both, while decode on the 12-token answer fell from 18.40 to 16.50 t/s. MiniMax M2.7 was first judged at <code>-cmoe -ub 128</code>, the pair of flags in the MiniMax M3 start script: with <code>-b 4096</code> held, every expert layer in RAM and a 131,072 window, one 3,658-token prompt read at 32.3 t/s at <code>-ub 128</code> and 564.0 at <code>-ub 4096</code>; and its 96,000-token check, which the record had scored &ldquo;l128 recall 0/3&rdquo; when the turn ended at 1,800.4 seconds, had timed out against that flag (measured 2026-09-19 and 2026-09-21).</td></tr>
+        <tr><th scope="row">Record</th><td>The <a href="../batch-size/">batch-size study</a>, sections 03, 06 and 13; the <a href="../field-notes-2026-09/">September field notes</a>, section 03 for the 1,800.4 seconds and the <code>-ub 128</code> cause, and section 15 with its package file <code>wave2/CORRECTION.md</code> for the score string.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>The first read after a start pages the file in</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>The first long request after a start reads at a fraction of the model's rate. The second request of the same length reads at the full rate. No message says the file was still coming off the disk.</td></tr>
+        <tr><th scope="row">Check</th><td>Time the second request as well as the first. To see it directly, read the file's share of the page cache before the first request (<code>fincore</code> from util-linux, or <code>vmtouch</code>; our record used a small <code>mincore</code> script that ships with the batch-size study).</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Qwen3.8-Flash-Next, 26 September, one start with none of its 90&nbsp;GB file in memory and 43.5&nbsp;GB of it there after the load: the first request, 3,035 tokens, read at 87.7 t/s while the file's share grew to 57.7&nbsp;GB; the next 3,019 tokens on the same server read at 517.6. A server started with 60.05&nbsp;GB already in memory read its first request at 253.7 and its second at 255.7 (measured 2026-09-26). It is the only start recorded with the file out of memory, so it shows what this start did, not a rule.</td></tr>
+        <tr><th scope="row">Record</th><td>The <a href="../batch-size/">batch-size study</a>, section 04; the <a href="../context-256k/">256K study</a>, section 04.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Every expert in system memory leaves the card idle</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>A mixture-of-experts model served with <code>-cmoe</code>, every expert layer in system RAM, shows a card with room to spare after load. Nothing suggests moving a layer or two back.</td></tr>
+        <tr><th scope="row">Check</th><td><code>nvidia-smi --query-gpu=memory.used,memory.total --format=csv</code> after load, then a short ladder of <code>--n-cpu-moe</code> values with one prompt, reading card use and decode at each step. On this model the first step below the layer count bought nothing and the third did, so one step is not a test.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>MiniMax M2.7, 19 September (Unsloth's UD-IQ4_XS file, llama.cpp build 10919, a 131,072 window, an 8-bit cache, <code>-ub 4096</code>, one 43,909-token prompt with a 32-token answer, one run per placement): with every expert layer in RAM the card held 24,296&nbsp;MiB after load, 8,311 below its 32,607 total (arithmetic), and the answer decoded at 9.04 t/s. The first step back, the experts of 61 of its 62 layers in RAM, was slower on both counts (8.97 t/s, and 636.2 t/s reading against 640.2); 60 gained 0.23 t/s; the speed moved at 59 (29,094&nbsp;MiB, 9.83 t/s) and 58 (30,695&nbsp;MiB, 10.02 t/s), with reading at 656.5 and 666.1 t/s (measured 2026-09-19; all five rows are below). The script's default at 131,072 is 59; at the 196,608 window it now serves by default it forces every expert into RAM with <code>-ub 1024</code>, the one shape that loads there, and a start with no window passed on 26 September held 31,512&nbsp;MiB at load. These are 32-token answers, not prose speed; the whole gain is under one token a second; and the only repeat in each file is the same prompt sent again, a cache hit, whose decode moved by up to 0.34 t/s (58 layers: 10.02, then 9.68), more than the 0.19 step from 59 to 58. A 17 September pass that changed the placement in four other scripts kept no per-arm logs, so its gains are not printed here.</td></tr>
+        <tr><th scope="row">Record</th><td>This page's package: <code>records/minimax-m2.7-placement-2026-09-19/</code>, the five result files and <code>placement.tsv</code>; <code>excerpts/minimax-m2.7-window-and-placement.txt</code> for the script's two windows; the <a href="../roster-2026-09/">September roster</a>'s <code>installed-starts-2026-09-26.txt</code> for the 31,512.</td></tr>
+      </table>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Experts in RAM</th><th>Card after load, MiB</th><th>Spare of 32,607</th><th>Reading, t/s</th><th>Decode, first request</th><th>Decode, repeat</th></tr></thead>
+        <tbody>
+          <tr><td class="t">all 62 layers (<code>-cmoe</code>)</td><td>24,296</td><td>8,311</td><td>640.2</td><td>9.04</td><td>8.95</td></tr>
+          <tr><td class="t">61 of 62</td><td>25,884</td><td>6,723</td><td class="neg">636.2</td><td class="neg">8.97</td><td>9.08</td></tr>
+          <tr><td class="t">60 of 62</td><td>27,483</td><td>5,124</td><td>644.9</td><td>9.27</td><td>9.48</td></tr>
+          <tr><td class="t">59 of 62 (the script's 131,072 default)</td><td>29,094</td><td>3,513</td><td>656.5</td><td>9.83</td><td>9.77</td></tr>
+          <tr><td class="t">58 of 62</td><td>30,695</td><td>1,912</td><td>666.1</td><td>10.02</td><td>9.68</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One run per row, 2026-09-19: one 43,909-token prompt, a 32-token answer, then the same prompt again (the repeat, a cache hit). Card memory is read after load, not during the read; the spare is arithmetic against the card's 32,607&nbsp;MiB. Decode on 32 tokens is not prose speed.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Sparse attention that runs dense</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>MiniMax M3's sparse attention (MSA) runs as dense attention unless flash attention is on and the cache has one sequence per stream, which means one slot, or a cache that is not unified. The source's own warning says output may be degraded; the only sign is that one warning line at load, which says <code>running DENSE attention</code>.</td></tr>
+        <tr><th scope="row">Check</th><td><code>grep -E 'running DENSE|MSA requires' server.log</code> after every load; keep <code>--flash-attn on</code> and <code>--parallel 1</code>.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>This door has not cost us a number: the harness that measured M3 greps its log for those strings before taking one, and the installed script sets <code>--flash-attn on --parallel 1</code>. The door beside it did. The first M3 file here predated llama.cpp's support for this attention, with zero indexer tensors among its 948, so every M3 number we had before the correct file arrived on 20 September was a dense fallback (measured 2026-09-19).</td></tr>
+        <tr><th scope="row">Record</th><td>llama.cpp <code>src/models/minimax-m3.cpp</code> at commit <span class="n">d3146f2b5</span> (build 10919), lines 228 to 244, excerpted in this page's package and checked against the upstream file at that commit on 26 September; the <a href="../field-notes-2026-09/">September field notes</a>, section 04.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>A cache the script promised and never set</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>A start script's comment above its window check says the 262,144 rung sets an 8-bit cache &ldquo;for you below&rdquo;. The launch line expands an array named <code>KVARGS</code>. Nothing assigns it. The server starts with the default 16-bit cache and says nothing, because an array that was never assigned expands to nothing: bash 5.2, <code>set -u</code> on, no error.</td></tr>
+        <tr><th scope="row">Check</th><td><code>grep -n KVARGS start_server.sh</code>: every array the launch line expands needs an assignment line. Or read the cache type back from the server log instead of from the comment.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Nine days, by the file times, 17 September 16:10 to 26 September, in which the Qwen3.6-27B script offered a 262,144 window that its comment said it could serve and its launch line could not. The error text two lines below the check still said 262,144 was &ldquo;deliberately not offered&rdquo;. The assignment was added on 26 September; the copy dated 2026-09-26 22:28 says in its own comment that the rung had &ldquo;started with an f16 cache that cannot fit&rdquo;. No run through the script at that window in those nine days is in the records we read.</td></tr>
+        <tr><th scope="row">Record</th><td>This page's package: <code>excerpts/qwen3.6-27b-start-script-kvargs.txt</code> (both versions, with line numbers and file times) and <code>excerpts/kvargs-expansion-check.txt</code>.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>A settings file wins over your environment</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>You export a variable, a test port or a window, and run the start script. It binds its usual port. Nothing says the file overrode you.</td></tr>
+        <tr><th scope="row">Check</th><td><code>FOO_PORT=8199 bash -c '. settings.env; echo $FOO_PORT'</code> prints what the script will see. Nineteen of the 26 start scripts here source their settings file before any <code>${VAR:-default}</code> read; the twentieth, MiniMax M2.7, reads only the file's own location first and sources it on the next lines; six have no settings file. In all twenty a plain <code>NAME=value</code> line in the file wins. That is the design, not a fault: the file is the operator's control surface. The trap is expecting the environment to win.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>A 17 September session note records two verification runs misread as failures for this reason. The runs' logs were not kept, so that is a dated note, not a measurement.</td></tr>
+        <tr><th scope="row">Record</th><td>This page's package: <code>excerpts/settings-file-order.txt</code>, the line numbers for every script and the transcript of the check above.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>A header that said the draft head did not work</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>The GLM-4.7 Full script's header said <code>--spec-type draft-mtp</code> &ldquo;DOES NOT WORK on this model here&rdquo; and put it down to the source. The shared library the script loads implements it: <code>graph_mtp</code> appears 252 times in its strings, and the source tree it was built from carries a 444-line <code>glm4-moe.cpp</code> with the head, against a 284-line older tree with a TODO where the head would be. The note described a different tree from the one the binary came from.</td></tr>
+        <tr><th scope="row">Check</th><td>Test the flag on a small window and read the log. When a note blames a build, grep the tree the binary was built from (<code>grep -c graph_mtp src/models/&lt;arch&gt;.cpp</code>), not the tree you remember.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>From 12 September, when this model was serving at 131,072, to 17 September, GLM-4.7 Full served without its draft head. The September roster's row 13 prints its speaking then as 5.51 t/s on paragraph replies, the better of two, on 2026-09-12, at 131,072 with a 5-bit cache and llama.cpp's default batch, before the head was switched on; the script's rung table puts that figure at <code>131072/92/q5_1</code>, the experts of 92 layers in RAM. The script's own dated note, written when the head was switched on, records 7.02 t/s for the rung <code>131072/93/q5_1</code> with the draft head, every expert in RAM (at 92 the draft context did not fit and died with &ldquo;failed to create MTP context&rdquo;); 7.41 at 65,536 with <code>--n-cpu-moe 92</code> and the head on; and one matched pair at 32,768 and <code>--n-cpu-moe 92</code>, 5.23 without the head and 6.54 with it, three runs per arm. The run logs were not kept: a dated note, not a measurement, and no kept log compares the head on and off at the same window and the same placement.</td></tr>
+        <tr><th scope="row">Record</th><td>This page's package: <code>excerpts/glm-4.7-full-start-script-mtp.txt</code>, both headers, the rung table and the library checksums. The <a href="../roster-2026-09/">September roster</a>, row 13, prints the 5.51 &ldquo;before a draft head was switched on&rdquo;.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>A flag in <code>--help</code> the build cannot load</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td><code>llama-server --help</code> lists <code>draft-dspark</code> among the speculation types. Loading DeepSeek V4 Flash's DSpark draft file on that build dies with <code>key not found in model: dflash.attention.sliding_window_pattern</code>.</td></tr>
+        <tr><th scope="row">Check</th><td>A name in <code>--help</code> comes from a parser table (<code>common/speculative.cpp</code>, one line per type). Whether the loader can read the file is a separate question, answered by one load.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>A 17 September note records the failure on the older build here (commit <span class="n">5f55650</span>); the log was not kept. What the files show: the draft's header carries <code>dflash.attention.sliding_window = 128</code> and no <code>sliding_window_pattern</code> key; that build's DFlash loader requires the pattern key whenever a window is set (its <code>src/models/dflash.cpp</code>, lines 25 to 27); the newer build (commit <span class="n">d3146f2b5</span>) reads the DSpark draft through a branch of its own that does not. The two builds are not interchangeable for this draft, and the help text of the older one does not say so.</td></tr>
+        <tr><th scope="row">Record</th><td>This page's package: <code>excerpts/deepseek-draft-flag.txt</code> and <code>records/deepseek-draft-header-keys.txt</code>.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">13</div>
+      <h2>Ollama's default thread count on the CPU</h2>
+      <table class="facts">
+        <tr><th scope="row">Symptom</th><td>A vision model run on the CPU takes minutes on its first picture. When the request sets no thread count, Ollama's server picks one and logs it once, at load; nothing on the request says what it chose.</td></tr>
+        <tr><th scope="row">Check</th><td>Read the server's load line, <code>system_info: n_threads = ...</code> (on a standard Linux install, <code>journalctl -u ollama | grep n_threads</code>); then pass <code>num_thread</code> explicitly and cap the picture's long side, and compare the prompt-processing time on one picture.</td></tr>
+        <tr><th scope="row">What it cost us</th><td>Qwen3-VL 30B-A3B through Ollama 0.30.10 (the version the serving process logged when it started on 19 September) on the CPU, 20 September, the same 4K picture first each time, cold, with the model load included, and the card all but empty (1,040&nbsp;MiB in use): with no thread count set, the server's log reported <code>n_threads = 4 (n_threads_batch = 4) / 24</code>, and the picture took 273.17 seconds of wall time, its 4,154 image-and-prompt tokens processed in 242.93 seconds; 157.31 seconds at 8 threads (123.53 processing); 111.01 at 16 (87.77); 107.88 at 24 (76.57). At 16 threads with the picture capped at 1,536 pixels: 1,370 tokens in 18.17 seconds, 38.52 of wall time (measured 2026-09-20). The answers ran from 174 to 303 tokens, so the wall times include unequal output.</td></tr>
+        <tr><th scope="row">Record</th><td><a href="../describing-pictures/">Describing pictures locally</a>, which publishes with this page and ships the server log excerpt with the thread and version lines; this page's package, <code>records/ollama-threads-2026-09-20.tsv</code> and the log line beside it.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">14</div>
+      <h2>The checks, together</h2>
+      <p>Everything above reduces to a few lines, run in this order: before
+      the start, on the script; after the start, on the process, the log
+      and the card; then on the first two reads. Each is a command we ran
+      or a log line our records show; on another build the log wording can
+      differ.</p>
+<pre class="log">grep -n -E '\[@\]|=\(' start_server.sh                    # every array the launch line expands has an assignment (item 09)
+FOO_PORT=8199 bash -c '. settings.env; echo $FOO_PORT'    # what the script will see, not what you exported (item 10)
+
+tr '\0' ' ' &lt; /proc/PID/cmdline                             # the arguments the server really got (item 05)
+curl -s http://127.0.0.1:PORT/props                        # the window it serves, n_ctx (items 02, 03)
+grep -E 'n_ctx_slot|capping|compute buffer|running DENSE|MSA requires' server.log   # (items 02, 03, 04, 08)
+nvidia-smi --query-gpu=memory.used,memory.total --format=csv   # the spare, at load and at the peak of a long read (items 03, 04, 07)
+
+journalctl -u ollama | grep n_threads                       # what Ollama's server chose when the request set nothing (item 13)
+
+# then time the second long request as well as the first (item 06)</pre>
+      <p>Two of the twelve have no command: a note that blames a build
+      (item 11) is checked by testing the flag on the binary you run, and a
+      name in <code>--help</code> (item 12) is checked by one load of the
+      file. Ollama's thread count (item 13) is read from its server's load
+      line, then set.</p>
+    </section>
+
+    <section>
+      <div class="secnum">15</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>One machine, one fortnight, twelve items.</strong> This
+        is a list of what our records caught, not a survey; it says nothing
+        about how common any of these is elsewhere.</li>
+        <li><strong>Three items rest on dated notes.</strong> The settings-file
+        misreads (item 10), the GLM-4.7 Full speeds (item 11) and the
+        DSpark load failure (item 12) are recorded in a session note or a
+        script note whose run logs were not kept. The page prints them as
+        notes; what the files on disk show for items 11 and 12 is verified
+        and labelled separately.</li>
+        <li><strong>The M2.7 placement rows are one run each.</strong> One
+        prompt, 32-token answers; the only second request in each file is
+        the same prompt sent again, a cache hit, whose decode moved by up to
+        0.34 t/s, more than the 0.19 step between 59 and 58 layers. The
+        ladder is not monotonic (61 was slower than every expert in RAM), the
+        whole gain is under one token a second, and nothing here tests it
+        against run-to-run variation. The card-memory figures are the point,
+        and those are read after load, not at the peak of a read.</li>
+        <li><strong>The Ollama rows are one picture, one run each,</strong>
+        with answers of unequal length. The thread count and the version come
+        from the server's own log, which the sibling page ships; our harness
+        recorded neither.</li>
+        <li><strong>The M3 launch-flag fallback was read from source, not
+        observed.</strong> No log here shows the warning firing; what we
+        measured was the other door, the old file.</li>
+        <li><strong>Builds move.</strong> The source lines are at commit
+        <span class="n">d3146f2b5</span> (build 10919) and, for the older
+        build, <span class="n">5f55650</span>; the M3 lines matched the
+        upstream file at that commit on 26 September, and a later commit
+        can change any of them, including whether a log prints a batch
+        size.</li>
+        <li><strong>Nothing here measures output quality</strong> beyond the
+        planted codes and planted strings the linked pages describe.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">16</div>
+      <h2>What we got wrong</h2>
+      <p>This site publishes corrections of its own records as a genre, and
+      this page is made of them. Three items correct a wrong record of ours
+      that an earlier page had already put right: the served windows on the
+      <a href="../roster-2026-09/">September roster</a> (its section 05,
+      item 02); the inherited micro-batches on the
+      <a href="../batch-size/">batch-size study</a> (its section 13, item
+      05) and the timed-out check on the
+      <a href="../field-notes-2026-09/">September field notes</a> (its
+      sections 03 and 15, item 05); the M3 file without its index on the field notes
+      (its section 04, item 08). Three more are traps those pages measured
+      and printed without an earlier wrong record: the capped window (field
+      notes section 09, item 03), the per-window ceilings and the cold first
+      read (batch-size section 04, items 04 and 06). Five are corrected here
+      for the first time: an idle card that a first placement step did not
+      fix (item 07), a start script that promised a cache it could not set
+      for nine days (item 09), a settings order that misled two verification
+      runs (item 10), a header that blamed a build for a head the binary
+      carried all along (item 11), and a note that took a name in
+      <code>--help</code> for a capability (item 12). The twelfth, the thread
+      default (item 13), is measured on the page that publishes with this
+      one. The scripts are ours; so were the notes.</p>
+    </section>
+
+    <section>
+      <div class="secnum">17</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../batch-size/">batch-size study</a> is the record for
+      three of the twelve (items 04, 05 and 06). The
+      <a href="../field-notes-2026-09/">September field notes</a> are the
+      record for item 03 and share items 05 and 08. The
+      <a href="../roster-2026-09/">September roster</a> is the record for
+      item 02 and supplies the 31,512&nbsp;MiB start and the 5.51 cell. The
+      <a href="../context-256k/">256K study</a> shares the cold first read.
+      <a href="../l3-threads/">The wrong
+      flag</a> is the same kind of finding on a different default, llama.cpp's
+      thread count on a hybrid CPU, and <a href="../speculation-gate/">Slower
+      by default</a> traces a shipped default that costs one workload speed.
+      <a href="../empty-answer/">The empty answer</a> is a silent setting of
+      another kind, a thinking budget that returns no text.
+      <a href="../describing-pictures/">Describing pictures locally</a>
+      measures the Ollama rows in item 13 in full, and the
+      <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> package holds the
+      card-capacity record this page's arithmetic uses.</p>
+    </section>
+
+    <section>
+      <div class="secnum">18</div>
+      <h2>Sources and artifacts</h2>
+      <p>The records that exist nowhere else on this site ship as this page's
+      data package: the files the runs and reads produced, not a summary. If
+      a number on this page disagrees with a file in the package, the file is
+      right and the page is wrong; tell us and we will fix the page.
+      <a href="data/README.md">data/README.md</a> maps every file, states
+      its provenance and states the package's redactions plainly;
+      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on this
+      page to its file and field, or to the page and package that own it.</p>
+      <ul class="plain">
+        <li><strong>Script excerpts</strong> with line numbers and file
+        times: the Qwen3.6-27B script in its 17 to 26 September state and
+        after (<a href="data/excerpts/qwen3.6-27b-start-script-kvargs.txt">qwen3.6-27b-start-script-kvargs.txt</a>),
+        the GLM-4.7 Full headers and rung table
+        (<a href="data/excerpts/glm-4.7-full-start-script-mtp.txt">glm-4.7-full-start-script-mtp.txt</a>),
+        and the settings-file order of all 26 scripts
+        (<a href="data/excerpts/settings-file-order.txt">settings-file-order.txt</a>).</li>
+        <li><strong>Source excerpts</strong>: llama.cpp's MiniMax M3 fallback
+        (<a href="data/excerpts/minimax-m3-msa-fallback.txt">minimax-m3-msa-fallback.txt</a>)
+        and the DFlash loader in two builds beside the DSpark draft's header
+        keys (<a href="data/excerpts/deepseek-draft-flag.txt">deepseek-draft-flag.txt</a>,
+        <a href="data/records/deepseek-draft-header-keys.txt">deepseek-draft-header-keys.txt</a>).</li>
+        <li><strong>Two shell transcripts</strong> reproducing the
+        mechanisms of items 09 and 10 on this machine
+        (<a href="data/excerpts/kvargs-expansion-check.txt">kvargs-expansion-check.txt</a>,
+        and the end of <code>settings-file-order.txt</code>).</li>
+        <li><strong>Result files</strong>: the five MiniMax M2.7 placement
+        runs of 19 September as their harness wrote them, with a derived
+        table (<code>records/minimax-m2.7-placement-2026-09-19/</code>), and
+        the Ollama rows of 20 September with the log line they come from
+        (<a href="data/records/ollama-threads-2026-09-20.tsv">ollama-threads-2026-09-20.tsv</a>,
+        <a href="data/records/qwen3vl30b_cpu.log">qwen3vl30b_cpu.log</a>).</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-09-12 to 09-17</th><td>GLM-4.7 Full serves at 131,072 without its draft head; its header says the head does not work (item 11). The Qwen3.6-27B script gains a 262,144 rung with a promised cache and no assignment (item 09, from 17 September 16:10).</td></tr>
+        <tr><th scope="row">2026-09-17</th><td>The GLM-4.7 Full head is tested and switched on; the placement pass over four other scripts runs without keeping its logs (items 07 and 11); the session note on the settings-file order and the DSpark flag (items 10 and 12).</td></tr>
+        <tr><th scope="row">2026-09-19 to 09-21</th><td>MiniMax M2.7's <code>-ub 128</code> is found and the batch sweep runs (items 04, 05, 07); the M3 file is replaced (item 08); the Flash-Next rope trap (item 03) and the Ollama thread rows (item 13, 20 September).</td></tr>
+        <tr><th scope="row">2026-09-26</th><td>Flash-Next's cold first read (item 06); four starts with no window passed (item 02); the GLM-5.3-Flash ceiling at 262,144 (item 04); the Qwen3.6-27B assignment added (item 09); this page's source and header checks.</td></tr>
+      </table>
+      <p class="fineprint">Every claim on this page is dated. A default, a
+      log line or a loader can change between builds; if today is much later
+      than the dates above, treat the build-specific items as unverified since
+      then.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: llama.cpp is a project of
+    ggml-org and its contributors; Ollama is a project or mark of Ollama;
+    Qwen, Qwen3-VL, Qwen3.5, Qwen3.6 and Qwen3.8 are marks of Alibaba Group
+    Holding Limited; GLM, GLM-4.7 and GLM-5.3 are marks of Z.ai; MiniMax is a
+    mark of MiniMax; DeepSeek is a mark of DeepSeek; Poolside and Laguna are
+    marks of Poolside; Gemma is a mark of Google LLC; Mistral, Mistral Small,
+    Mistral Medium and Mistral Large are marks of Mistral AI; Kimi, Kimi K2.7
+    and Kimi K3 are marks of Beijing Moonshot Technology Co., Ltd. and
+    Moonshot AI PTE. LTD.; Inkling and Inkling-Small are marks of Thinking
+    Machines Lab; Ling is a project or mark of inclusionAI; Meta and Muse
+    Glimmer are marks of Meta Platforms, Inc.; Ornith is a project or mark of
+    Ornith AI; Unsloth is a project or mark of its owners; GeForce,
+    RTX and CUDA are marks of NVIDIA Corporation; Intel and Core Ultra are
+    marks of Intel Corporation; bash is a project of the GNU Project;
+    util-linux and vmtouch are projects of their authors. All are referenced
+    for identification only. Not affiliated with, endorsed by, or sponsored by
+    any of them or their affiliates. Product names and marks belong to their
+    respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

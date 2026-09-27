@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</title>
+<meta name="description" content="A measured study of local picture describers on one desktop (RTX 5090, 32 GB card; Intel Core Ultra 9 285K, 24 cores; 188 GiB of RAM), 20 September 2026: six Qwen vision models through Ollama 0.30.10, seven test pictures holding 39 known strings, one run per configuration. On the card, Qwen3-VL 30B-A3B found all 39 at 1.31 to 3.16 seconds a warm picture; Qwen3-VL 8B and Qwen3.6 35B-A3B also found all 39. On the CPU, reading the picture is most of the wait: with no thread count in the request, the server Ollama started reported 4 of 24 threads, and Qwen3-VL 30B-A3B took 273.17 seconds on a 3840 x 2160 picture, 242.93 of them reading it; 16 threads took 111.01, and 16 threads with pictures capped at 1,536 pixels took 38.52, with all 39 strings found. With 26,396 MiB of the card already in use by another program, Ollama's default request split the model 89/11 between CPU and card and took 206.87 seconds on that picture; a CPU-only request with 16 threads, a smaller window, a larger batch, memory mapping off and the cap took 39.39 and added nothing to the card. The cap has a cost: on a 4K screenshot of small text the 30B misread 4 of 24 codes at 1,536 pixels and none uncapped. Includes what a string count cannot see, the settings to use, and the records behind every figure.">
+<link rel="canonical" href="https://graphometer.ai/describing-pictures/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
+<meta property="og:description" content="Six Qwen vision models through Ollama on one RTX 5090 desktop. On the card, Qwen3-VL 30B-A3B found all 39 known strings at 1.3 to 3.2 seconds a warm picture. On the CPU, Ollama's server ran 4 of 24 threads unless told otherwise, and its first 4K picture took 273 seconds; 16 threads and a 1,536-pixel cap brought it to 38.5, at a cost on small text.">
+<meta property="og:url" content="https://graphometer.ai/describing-pictures/">
+<meta property="og:image" content="https://graphometer.ai/og/describing-pictures.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
+<meta name="twitter:description" content="Six Qwen vision models through Ollama on one RTX 5090 desktop. On the card, Qwen3-VL 30B-A3B found all 39 known strings at 1.3 to 3.2 seconds a warm picture. On the CPU, Ollama's server ran 4 of 24 threads unless told otherwise, and its first 4K picture took 273 seconds; 16 threads and a 1,536-pixel cap brought it to 38.5, at a cost on small text.">
+<meta name="twitter:image" content="https://graphometer.ai/og/describing-pictures.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  .rule{height:1px;background:var(--line)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  .facts .asstated{color:var(--warn)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; 20 September 2026 &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 24-core CPU, 188&nbsp;GiB RAM) &middot; Ollama 0.30.10 &middot; six Qwen vision models, seven test pictures and one screenshot, one run per configuration</div>
+      <h1>Describing pictures <em>locally</em></h1>
+      <p class="subtitle">On the card, Qwen3-VL 30B-A3B found all 39 known
+      strings at 1.3 to 3.2 seconds a warm picture. On the CPU, its first 4K
+      picture took 273 seconds at Ollama's default 4 threads, 111 at 16, and
+      38.5 at 16 with a 1,536-pixel cap.</p>
+      <p class="lead">A picture describer is a vision model that writes down
+      what a picture shows, so that a person or a text-only model can use it.
+      On 20 September 2026 we timed six Qwen vision models doing that job
+      through Ollama 0.30.10 on one desktop, with the describer settings we
+      use: a plain description of what is visible, including any text in the
+      picture, a reply of at most 2,048 tokens, and 150 seconds per picture. The
+      test set is seven pictures holding 39 strings we knew were there, one run
+      per configuration. On the RTX&nbsp;5090, Qwen3-VL 30B-A3B, Qwen3-VL 8B
+      and Qwen3.6 35B-A3B found all 39, at 1.3 to 3.8 seconds a picture once
+      loaded. The CPU is where a describer can go when a large model holds the
+      card, and there most of the wait is the model reading the picture. With
+      no thread count in the request, the server Ollama started reported 4
+      threads out of 24, and Qwen3-VL 30B-A3B took 273 seconds on the first
+      4K picture, 243 of them reading it. At 16 threads the same picture took
+      111 seconds; at 16 threads with every picture capped at 1,536 pixels on
+      its longest side, 38.5, and that run found all 39 strings. With
+      26,396&nbsp;MiB of the card already in use by another program, Ollama's
+      default request put 11 percent of the model on the card and took 207
+      seconds on that first picture, past the 150-second limit, while a
+      CPU-only request with 16 threads, an 8,192-token window and the cap took
+      39.4 and added nothing to the card; its launch also used a larger batch
+      and turned memory mapping off (section 06). The
+      cap has a cost the 39 strings did not show: on a 4K screenshot of small
+      text, the 30B, on the card, misread 4 of 24 codes at 1,536 pixels and
+      none uncapped, and every miss was a wrong code, not a gap. Section 08
+      shows what else a string count cannot see. One desktop, one run per configuration, one
+      Ollama version: this measures speed and string recall, not the quality
+      of a description.</p>
+      <div class="nonaff">Independent measurements; no affiliation with
+      Alibaba Group or the Qwen team, Ollama, the llama.cpp project, NVIDIA,
+      Intel, Google, Mistral AI, NASA, ESA, or System76.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>A vision model reads a picture as tokens, much as it reads words. On
+      this desktop a 3840&nbsp;x&nbsp;2160 picture came to 4,154 prompt tokens
+      with the Qwen3-VL models, against 1,974 for a 1200&nbsp;x&nbsp;1600
+      poster. Reading those tokens is prompt processing; writing the
+      description is generation. On the graphics card both are quick. On the
+      CPU, reading a large picture is most of the time, and two settings
+      decide how long it takes: how many CPU threads the server uses, and how
+      big the picture is when it arrives.</p>
+      <p>The card is fast, but the models here took 4.3 to 23&nbsp;GB of memory
+      as Ollama reported it (section 02), and a card that already holds a
+      large model may not have that to spare. The CPU path uses system memory
+      instead and leaves the card alone. This page measures both, with the
+      settings that decide the CPU's speed, and checks what the fast settings
+      cost.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we ran, exactly</h2>
+      <p>Every figure on this page is measured on this machine on 20 September
+      2026 unless it is marked arithmetic. The screenshot's counts in section
+      07 were made on 26 September from the replies recorded on 20
+      September, and the logo file's pixels were read on 26 September
+      (section 08).</p>
+      <table class="facts">
+        <tr><th scope="row">Machine</th><td>One desktop: an NVIDIA GeForce RTX&nbsp;5090 (32&nbsp;GB card), an Intel Core Ultra 9 285K (24 cores: 8 performance and 16 efficiency, no hyperthreading, as <a href="../l3-threads/">The wrong flag</a> records), 188&nbsp;GiB of RAM. Runs from 08:19 to 09:16 local time, one at a time.</td></tr>
+        <tr><th scope="row">Server</th><td>Ollama 0.30.10: the version the serving process logged when it started on 19 September. The same process served every request here; our harness did not record the version itself. For each model Ollama started a llama-server process (llama.cpp's server, as Ollama ships it) with a 32,768-token window unless the request set one, and one request at a time. Every Qwen3-VL launch also asked for at least 1,024 image tokens per picture (<code>--image-min-tokens 1024</code>); the Qwen3.5 4B, Qwen3.5 9B and Qwen3.6 launches did not carry that flag. The log does not give that server's build. Its launch lines are in the package.</td></tr>
+        <tr><th scope="row">The request</th><td>The describer prompt we use, sent with each picture. In our words: it asks for a description limited to what is plainly visible (what the picture shows, how it is laid out, its colours, its mood and style, and any text that can be read), with no guessing at things that are absent, and it allows a question to be answered afterwards. We sent no question. Options: <code>num_predict</code> 2048 (the longest reply allowed), <code>keep_alive</code> 60 seconds, no sampling options, so each model used its own defaults. Qwen3.5 and Qwen3.6 were sent <code>think: false</code> and returned no reasoning text. Where a table says so, the request also set <code>num_gpu</code> 0 (CPU only), <code>num_thread</code> or <code>num_ctx</code>.</td></tr>
+        <tr><th scope="row">The limit</th><td>The describer settings we use allow 150 seconds per picture. The harness recorded whether each picture finished inside it; it did not cut any request short.</td></tr>
+        <tr><th scope="row">Time</th><td>&ldquo;Total&rdquo; is the harness's wall clock around one request, from sending the picture to the end of the reply. Load, reading and writing are Ollama's own durations from its reply (<code>load_duration</code>, <code>prompt_eval_duration</code>, <code>eval_duration</code>); reading includes turning the picture into tokens.</td></tr>
+        <tr><th scope="row">First picture and warm</th><td>Before each run the harness told Ollama to unload the model, so the first picture of every run includes starting the server and loading the model; the pictures after it are &ldquo;warm&rdquo;. The first picture is always the 3840&nbsp;x&nbsp;2160 nebula photograph (or, in section 07, the screenshot). The operating system's file cache was not recorded: the first card load of the 30B that morning took 36.97 seconds, and its later card loads 4.56 to 4.86.</td></tr>
+        <tr><th scope="row">Scoring</th><td><code>score.py</code> (in the package) lowercases each reply, drops &pound;, $ and commas, collapses spaces, and checks whether each expected string appears in it. The 39 strings are 34 pieces of text drawn into the pictures and 5 plain subject words: nebula, stars, earth, house, sun.</td></tr>
+        <tr><th scope="row">Overlaps</th><td>Downloads of four other models ran from 08:35 to 08:40, during the Qwen3.6 and Qwen3-VL 4B card runs and the first two minutes of the 4B's full-size CPU run. Two runs against hosted services finished during the default-thread CPU run.</td></tr>
+      </table>
+      <h3>The models</h3>
+      <p>Ollama's library tags, each a Q4_K_M file (the load log's &ldquo;Q4_K - Medium&rdquo;). &ldquo;Memory&rdquo; is what <code>ollama ps</code> reported with the model on the card at the 32,768-token window.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Ollama tag</th><th class="t" style="text-align:left">Model</th><th>Parameters</th><th>Memory</th></tr></thead>
+        <tbody>
+          <tr><td>qwen3-vl:30b-a3b-instruct</td><td class="t">Qwen3-VL 30B-A3B, mixture of experts; the log calls its model type 30B.A3B (about 3B active per token by that name, not a figure from this page)</td><td>30.53 B</td><td>22 GB</td></tr>
+          <tr><td>qwen3.6:35b</td><td class="t">Qwen3.6 35B-A3B, mixture of experts, thinking off</td><td>35.51 B</td><td>23 GB</td></tr>
+          <tr><td>qwen3-vl:8b-instruct</td><td class="t">Qwen3-VL 8B</td><td>8.19 B</td><td>10 GB</td></tr>
+          <tr><td>qwen3-vl:4b-instruct</td><td class="t">Qwen3-VL 4B</td><td>4.02 B</td><td>7.9 GB</td></tr>
+          <tr><td>qwen3.5:9b</td><td class="t">Qwen3.5 9B, thinking off</td><td>9.20 B</td><td>6.7 GB</td></tr>
+          <tr><td>qwen3.5:4b</td><td class="t">Qwen3.5 4B, thinking off</td><td>4.33 B</td><td>4.3 GB</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>The pictures</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Picture</th><th class="t" style="text-align:left">What it is</th><th>Pixels</th><th>Strings</th></tr></thead>
+        <tbody>
+          <tr><td>1 nebula</td><td class="t">Hubble's Orion Nebula photograph (credit in section 12)</td><td>3840 x 2160</td><td>2</td></tr>
+          <tr><td>2 earth</td><td class="t">Earth photographed from the International Space Station (credit in section 12)</td><td>3840 x 2160</td><td>1</td></tr>
+          <tr><td>3 poster</td><td class="t">A made-up event poster: title, date, time, hall, address, price, phone number, contact name, printer, job number</td><td>1200 x 1600</td><td>10</td></tr>
+          <tr><td>4 invoice</td><td class="t">A made-up bicycle-repair invoice with small print: five line items, total, terms</td><td>1240 x 1754</td><td>13</td></tr>
+          <tr><td>5 chart</td><td class="t">A bar chart, rainfall for January to June with each value printed on its bar</td><td>1400 x 900</td><td>9</td></tr>
+          <tr><td>6 cottage</td><td class="t">A drawn cottage with sun, grass and caption, stored on its side with a rotation tag that says to turn it upright for display</td><td>1200 x 900</td><td>3</td></tr>
+          <tr><td>7 logo</td><td class="t">The COSMIC wordmark (a mark of System76): dark gray letters with a coloured bar under the O, on an opaque light gray field, with thin coloured curves in two corners. A third-party mark, described here and not shipped. Our notes called it a white logo on a transparent background; its file has no transparent pixels (section 08)</td><td>3840 x 2160</td><td>1</td></tr>
+          <tr><td>8 screenshot</td><td class="t">Section 07 only: a made-up 4K screenshot, 24 codes in text 28, 20, 16 and 13 pixels high</td><td>3840 x 2160</td><td>24 codes</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Pictures 3 to 6 and 8 were drawn by our build scripts, which are in the package with the
+      strings each picture is expected to yield.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Observed: six models on the card</h2>
+      <p>All seven pictures at full size, each model on the card at the
+      32,768-token window. The server reported 4 threads for each of these
+      runs; the request set none.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Strings</th><th>First picture, s (load)</th><th>Warm pictures, s</th><th>Card, MiB before &rarr; after the first picture</th></tr></thead>
+        <tbody>
+          <tr><td>Qwen3-VL 30B-A3B</td><td>39 / 39</td><td>41.69 (36.97)</td><td>1.31 to 3.16</td><td>1,077 &rarr; 24,755</td></tr>
+          <tr><td>Qwen3.6 35B-A3B</td><td>39 / 39</td><td>39.60 (36.11)</td><td>1.82 to 3.47</td><td>1,011 &rarr; 25,764</td></tr>
+          <tr><td>Qwen3-VL 8B</td><td>39 / 39</td><td>8.85 (5.16)</td><td>1.81 to 3.82</td><td>24,208 &rarr; 13,348</td></tr>
+          <tr><td>Qwen3-VL 4B</td><td>38 / 39</td><td>8.74 (3.86)</td><td>1.15 to 2.61</td><td>1,001 &rarr; 10,656</td></tr>
+          <tr><td>Qwen3.5 9B</td><td>37 / 39</td><td>9.12 (4.73)</td><td>2.14 to 4.49</td><td>1,139 &rarr; 9,537</td></tr>
+          <tr><td>Qwen3.5 4B</td><td class="neg">30 / 39</td><td>6.63 (4.19)</td><td>3.02 to 9.35</td><td>946 &rarr; 6,732</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Card memory is <code>nvidia-smi</code>'s reading in MiB, desktop included.
+      The 8B run started with the 30B still loaded from the run before it; Ollama evicted the 30B
+      first (its log, 08:57:36), so that 24,208 is not an empty card. Downloads ran during the
+      Qwen3.6 and 4B runs (section 02).</p>
+      <p><strong>Three models read everything.</strong> Qwen3-VL 30B-A3B,
+      Qwen3.6 35B-A3B and Qwen3-VL 8B found all 39 strings, with warm pictures
+      between 1.31 and 3.82 seconds. The first picture is where the model load
+      shows: 36.97 and 36.11 seconds for the two large models, loaded for the
+      first time that morning, and 3.86 to 5.16 for the others.</p>
+      <p><strong>The misses say different things.</strong> Qwen3-VL 4B's one
+      miss was &ldquo;house&rdquo; on the sideways cottage, which it called
+      &ldquo;an arrow pointing leftward&rdquo;. Qwen3.5 9B's two misses were
+      correct readings in other words: it wrote &ldquo;&pound;2/day&rdquo; and
+      &ldquo;12 months&rdquo; where the invoice says &ldquo;&pound;2 per
+      day&rdquo; and &ldquo;twelve-month&rdquo;. Qwen3.5 4B missed four
+      poster details (the address, the price, the phone number and the contact
+      name) and five of the six chart values, and three of its replies ran to
+      1,562, 2,048 and 2,048 tokens (section 08).</p>
+      <p><strong>A smaller window saves card memory.</strong> A picture plus the
+      longest reply our settings allow fits in 8,192 tokens (4,158 + 2,048 =
+      6,206; arithmetic, with the largest prompt recorded here). At
+      <code>num_ctx</code> 8192, <code>ollama ps</code> reported 19&nbsp;GB for
+      the 30B instead of 22, and 4.2&nbsp;GB for the 4B instead of 7.9. The
+      card read 22,562&nbsp;MiB with the 30B loaded (1,150 before) and
+      7,343 with the 4B (1,148 before), on runs of two pictures (the nebula and
+      the invoice, 4 threads) that found all 15 of their strings. A later 30B run at 8,192 with 16 threads found all
+      39 strings at 1.23 to 2.95 seconds a warm picture.</p>
+      <p><strong>For reference, two hosted services.</strong> On the same
+      morning the same seven pictures went, with the describer settings we use,
+      to two hosted services. Google's found 39 of 39. Mistral AI's found 22 of
+      39 with one model (2 of the invoice's 13) and 39 of 39 with Mistral
+      Medium. Every hosted reply ends with a line that repeats the picture's
+      file name, and we count the description only: <code>score.py</code>,
+      which reads that line too, gives the first Mistral run 23, its extra hit
+      the word &ldquo;earth&rdquo; in the file name, not in the description.
+      The result files name the provider, not the model version, and the
+      Medium name is the run's own label. We publish only these counts, not
+      the replies.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>On the CPU, the thread count sets the wait</h2>
+      <p>Qwen3-VL 30B-A3B with <code>num_gpu</code> 0, the 32,768-token
+      window, full-size pictures, one run per thread count. The first picture
+      is the 3840&nbsp;x&nbsp;2160 nebula (4,154 prompt tokens), including the
+      model load; the second is the poster (1,974 tokens).</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Threads, as the server reported</th><th>Nebula: total, s</th><th>Load</th><th>Reading</th><th>Writing</th><th>Poster: total, s</th><th>Reading</th><th>Writing</th></tr></thead>
+        <tbody>
+          <tr><td>4 of 24 (request set none)</td><td class="neg">273.17</td><td>12.60</td><td>242.93</td><td>174 tokens, 17.36 s</td><td class="t">not run</td><td></td><td></td></tr>
+          <tr><td>8 of 24</td><td class="neg">157.31</td><td>12.62</td><td>123.53</td><td>303 tokens, 20.89 s</td><td>60.30</td><td>40.14</td><td>364 tokens, 19.74 s</td></tr>
+          <tr><td>16 of 24</td><td>111.01</td><td>13.13</td><td>87.77</td><td>193 tokens, 9.85 s</td><td>41.87</td><td>29.57</td><td>278 tokens, 11.90 s</td></tr>
+          <tr><td>24 of 24</td><td>107.88</td><td>14.56</td><td>76.57</td><td>208 tokens, 16.47 s</td><td>45.77</td><td>26.55</td><td>235 tokens, 18.82 s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Amber: over the 150-second limit. The 4-thread run was stopped after its first
+      picture, so it left no reply text and no string count; its figures are from the harness's console
+      log and the server's own timing lines. The 8, 16 and 24-thread runs found all 12 strings in their two
+      pictures.</p>
+      <p><strong>Where the 4 comes from.</strong> When the request set no thread
+      count, Ollama's launch line for the server carried no thread flag, and the
+      server reported <code>n_threads = 4 (n_threads_batch = 4) / 24</code>.
+      With <code>num_thread</code> 8, 16 or 24 the launch line carried
+      <code>-t</code> with that number and the server reported it back. Four
+      is also what llama.cpp's own default chose on this CPU in
+      <a href="../l3-threads/">The wrong flag</a>, where we traced it through
+      llama.cpp's code; we did not read the code of the server Ollama ships.
+      The card runs that set no thread count were launched with the same
+      4.</p>
+      <p><strong>Reading and writing peak in different places.</strong> Reading
+      the nebula ran at 17.1, 33.6, 47.3 and 54.3 tokens a second with 4, 8,
+      16 and 24 threads (arithmetic, tokens over reading time), so it kept
+      improving all the way to 24. Writing did not: 10.0, 14.5, 19.6 and 12.6
+      tokens a second on the nebula's reply, and 18.4, 23.4 and 12.5 on the
+      poster's with 8, 16 and 24 (arithmetic). Over a whole picture, 24 threads
+      were 3.1 seconds faster than 16 on the nebula, and 16 was 3.9 seconds
+      faster on the poster (arithmetic). This CPU has 8 performance and 16
+      efficiency cores; we did not record which cores the threads ran
+      on.</p>
+      <p><strong>The smaller model reads faster, but not enough.</strong>
+      Qwen3-VL 4B at 16 threads, full-size pictures: 95.69 seconds on the
+      nebula (71.48 reading), 23.07 to 80.80 seconds on the warm pictures
+      (the two slowest, 80.80 and 80.66, were the other 4K pictures), and 38
+      of 39 strings. Model downloads were running during its first two
+      minutes.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>On the CPU, the picture size sets the rest</h2>
+      <p>The capped sets were made by one script (in the package): it applies
+      each picture's rotation tag, then shrinks any picture whose longest side
+      is over the cap. Prompt tokens as Ollama counted them for the Qwen3-VL
+      models, instruction included:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Picture</th><th>Full size</th><th>Capped at 1,536</th><th>Capped at 1,024</th></tr></thead>
+        <tbody>
+          <tr><td>nebula, earth, logo (3840 x 2160)</td><td>4,154</td><td>1,370</td><td>1,106</td></tr>
+          <tr><td>poster (1200 x 1600)</td><td>1,974</td><td>1,802</td><td>1,110</td></tr>
+          <tr><td>invoice (1240 x 1754)</td><td>2,219</td><td>1,706</td><td>1,127</td></tr>
+          <tr><td>chart (1400 x 900)</td><td>1,306</td><td>1,306 (under the cap)</td><td>1,114</td></tr>
+          <tr><td>cottage (1200 x 900 stored)</td><td>1,138</td><td>1,138 (turned upright, not shrunk)</td><td>1,110</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">At the 1,024 cap every picture came to 1,106 to 1,127 tokens; that run's
+      Qwen3-VL 4B launch carried <code>--image-min-tokens 1024</code>, which suggests a floor there (our
+      reading of the flag). The
+      Qwen3.5 and Qwen3.6 models counted 4 more tokens per picture.</p>
+      <p>Then the same CPU settings as section 04 at 16 threads, 32,768-token
+      window, all seven pictures unless stated:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Cap</th><th>Nebula: total, s (load, reading)</th><th>Warm pictures, s</th><th>Strings</th></tr></thead>
+        <tbody>
+          <tr><td>Qwen3-VL 30B-A3B</td><td>none</td><td>111.01 (13.13, 87.77)</td><td>41.87 (poster only)</td><td>12 / 12, two pictures</td></tr>
+          <tr><td>Qwen3-VL 30B-A3B</td><td>1,536</td><td>38.52 (12.30, 18.17)</td><td>22.64 to 38.93</td><td>39 / 39</td></tr>
+          <tr><td>Qwen3-VL 4B</td><td>none</td><td>95.69 (5.50, 71.48)</td><td>23.07 to 80.80</td><td>38 / 39</td></tr>
+          <tr><td>Qwen3-VL 4B</td><td>1,536</td><td>29.11 (6.73, 14.30)</td><td>19.83 to 39.36</td><td>39 / 39</td></tr>
+          <tr><td>Qwen3-VL 4B</td><td>1,024</td><td>27.20 (5.24, 10.95)</td><td>18.12 to 32.64</td><td>39 / 39</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><strong>The cap took the 4K picture's reading from 87.77 seconds to
+      18.17</strong> on the 30B, and the whole first picture from 111.01 to
+      38.52. With the cap, the 30B's warm pictures took 22.64 to 38.93
+      seconds, close to the 4B's 19.83 to 39.36 at the same cap (174.27 against
+      172.17 seconds for the six warm pictures together; arithmetic). The log
+      calls the 30B's model type 30B.A3B, a mixture of experts that by that name
+      uses about 3B parameters per token (the name's figure, not a measurement
+      here); on this CPU it cost little more time than the 4B while needing 22&nbsp;GB of memory to the 4B's 8.0, as
+      <code>ollama ps</code> reported them.</p>
+      <p><strong>The 4B's one miss.</strong> Its only full-size miss was
+      &ldquo;house&rdquo;, on the cottage. At the 1,536 cap the cottage was
+      turned upright and not shrunk (1,138 prompt tokens both ways), and that
+      reply contains &ldquo;house&rdquo;. With one run each, that is all the
+      evidence.</p>
+      <p><strong>On the card the cap barely matters.</strong> There the 30B read
+      the 4K screenshot in 1.85 seconds uncapped and 0.49 at the 1,536 cap
+      (section 07).</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>With the card mostly full</h2>
+      <p>Four runs started while another program already held 26,390 to
+      26,405&nbsp;MiB of the card (<code>nvidia-smi</code>, desktop included);
+      Ollama's log put the card's free memory at 5.1&nbsp;GiB. What that
+      program was, and whether it was working during these runs, is not in
+      our records. Two pictures each: the nebula first, including the load,
+      then the poster.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th class="t" style="text-align:left">Request</th><th>Where it ran (ollama ps)</th><th>Threads</th><th>Window</th><th>Batch</th><th>Cap</th><th>Nebula: total, s (reading)</th><th>Poster: total, s (reading)</th><th>Card, MiB before &rarr; after load</th></tr></thead>
+        <tbody>
+          <tr><td>Qwen3-VL 30B-A3B</td><td class="t">nothing set</td><td>89% CPU, 11% card</td><td>4</td><td>32,768</td><td>512</td><td>none</td><td class="neg">206.87 (180.68)</td><td>74.91 (54.52)</td><td>26,396 &rarr; 29,453</td></tr>
+          <tr><td>Qwen3-VL 30B-A3B</td><td class="t"><code>num_thread</code> 16, <code>num_ctx</code> 8192</td><td>88% CPU, 12% card</td><td>16</td><td>8,192</td><td>512</td><td>none</td><td>85.45 (65.20)</td><td>31.02 (21.29)</td><td>26,390 &rarr; 29,408</td></tr>
+          <tr><td>Qwen3-VL 30B-A3B</td><td class="t"><code>num_gpu</code> 0, <code>num_thread</code> 16, <code>num_ctx</code> 8192</td><td>100% CPU</td><td>16</td><td>8,192</td><td>1,024</td><td>1,536</td><td>39.39 (18.52)</td><td>42.68 (26.14)</td><td>26,405 &rarr; 26,391</td></tr>
+          <tr><td>Qwen3-VL 4B</td><td class="t"><code>num_thread</code> 16, <code>num_ctx</code> 8192</td><td>52% CPU, 48% card</td><td>16</td><td>8,192</td><td>512</td><td>none</td><td>56.27 (45.20)</td><td>18.56 (13.19)</td><td>26,391 &rarr; 29,816</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Threads as the server reported them; batch is the launch line's <code>-b</code> and
+      <code>-ub</code>. The CPU-only launch also carried <code>--no-mmap</code> (memory mapping off); the
+      other three did not. All four runs found all 12 strings in their two pictures. The capped run's pictures were smaller: 1,370 and 1,802 prompt tokens, against 4,154 and
+      1,974 for the others.</p>
+      <p><strong>The default request was the slowest thing we measured with a
+      full card.</strong> Ollama fitted part of the model into the free memory,
+      kept the picture encoder off the card (its launch line said
+      <code>--no-mmproj-offload</code>, and the encoder's log line says it ran
+      on the CPU), and ran everything left on the CPU with 4 threads. The
+      first picture took 206.87 seconds.</p>
+      <p><strong>Setting 16 threads and an 8,192-token window</strong>, two
+      changes at once, brought a similar split (88 percent on the CPU) to 85.45
+      seconds on the nebula and 31.02 on the poster.</p>
+      <p><strong>CPU only, with 16 threads, the 8,192 window and the
+      cap</strong>, the nebula took 39.39 seconds, on a picture capped to a
+      third of the tokens (1,370 against 4,154; arithmetic), and the poster
+      42.68, slower than the split's 31.02. Against the default request its
+      launch also changed the batch (1,024 against 512) and turned memory
+      mapping off, so the fall from 206.87 to 39.39 seconds is all of those
+      changes together, not the threads and the cap alone. It is the only one
+      of the four that took no
+      card memory: the split runs raised the card's reading by 3,057, 3,018
+      and 3,425&nbsp;MiB (arithmetic, after load minus before), memory the
+      program already on the card could no longer use.</p>
+      <p><strong>The CPU path took about as long with the card full.</strong>
+      The capped CPU settings with the card empty (section 05; the two launches
+      differ only in the window, 32,768 against 8,192) took 38.52 seconds on the nebula and 38.93 on the
+      poster, against 39.39 and 42.68 here, one run each.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>What the 1,536-pixel cap costs on small text</h2>
+      <p>The seven pictures have fairly large text, so they did not show what
+      shrinking does to small print. The screenshot does: 24 codes such as
+      <code>F12-zephyr-6823</code>, six in each of four text sizes, on a
+      3840&nbsp;x&nbsp;2160 page. Qwen3-VL 30B-A3B on the card, 4 threads,
+      32,768-token window, one run per cap, each the first picture after a
+      load (8.56 to 9.88 seconds including a 4.56 to 4.84-second load).
+      score.py has no expected strings for this picture, so we counted the
+      codes on 26 September with its matching rule (<code>score_hires.py</code>
+      in the package).</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Cap</th><th>Prompt tokens</th><th>28 px</th><th>20 px</th><th>16 px</th><th>13 px</th><th>Codes found</th></tr></thead>
+        <tbody>
+          <tr><td>none (3840)</td><td>4,154</td><td>6</td><td>6</td><td>6</td><td>6</td><td>24 / 24</td></tr>
+          <tr><td>2,560</td><td>3,674</td><td>6</td><td>6</td><td>6</td><td>6</td><td>24 / 24</td></tr>
+          <tr><td>2,048</td><td>2,378</td><td>6</td><td>6</td><td>6</td><td>5</td><td>23 / 24</td></tr>
+          <tr><td>1,536</td><td>1,370</td><td>5</td><td>6</td><td>6</td><td>3</td><td class="neg">20 / 24</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><strong>Every missing code was replaced by a wrong one.</strong> At
+      2,048 the model wrote <code>F12-zephyr-6829</code> for
+      <code>F12-zephyr-6823</code>. At 1,536 it wrote
+      <code>D14-kettle-B104</code> for <code>D14-kettle-8104</code> (28&nbsp;px
+      text), and, in the 13&nbsp;px lines, <code>F12-pebble-4823</code>,
+      <code>E28-ribbon-7319</code> and <code>H40-pebble-8359</code> for
+      <code>F12-zephyr-6823</code>, <code>E26-ribbon-7519</code> and
+      <code>H20-pebble-8359</code>. A reader of those replies would have no
+      way to tell the four wrong codes from the twenty right ones. At the
+      1,536 cap, text drawn 13 pixels high becomes 5.2 pixels high, and at
+      2,048 about 6.9 (arithmetic).</p>
+      <p>This ran on the card. On the CPU the model receives the same pixels,
+      so we expect the same kind of misreading there, but we did not measure
+      it (transferred).</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What 39 strings show, and what they do not</h2>
+      <p>The count shows whether a model copied specific text and named
+      obvious subjects, and it separated the models: three found everything,
+      and Qwen3.5 4B dropped nine strings. It is also a narrow instrument. We
+      read the cottage replies of all eleven seven-picture runs, the chart
+      replies of five, three logo replies, and Qwen3.5 4B's long replies; this
+      is what the count could not see.</p>
+      <ul class="plain">
+        <li><strong>A picture on its side.</strong> The cottage is stored
+        lying on its side with a tag that says to turn it upright. All six
+        models on the card described it as stored: a green band down the
+        right-hand side and the caption running vertically, and the 4B called
+        the house an arrow. Five of them scored 3 of 3. When the capped sets
+        sent it upright, the 30B and the 4B described sky at the top and green
+        ground at the bottom. As far as
+        these replies show, the picture reached the models without its
+        rotation applied.</li>
+        <li><strong>Wrong statements beside right numbers.</strong> On the card,
+        the 30B listed all six chart values correctly and then wrote that
+        &ldquo;the bars increase in height from January to April&rdquo;;
+        February's 35 is lower than January's 42. The 8B called the bars
+        &ldquo;arranged in ascending order from left to right, except for the
+        peak in April&rdquo;. Both scored 9 of 9.</li>
+        <li><strong>Replies that run away.</strong> Qwen3.5 4B's replies to the
+        Earth photograph, the poster and the chart ran to 2,048, 1,562 and
+        2,048 tokens. Within its first 1,400 characters each became one long
+        unpunctuated stream, ending in lists of loosely related words
+        (winemaking terms, music genres, military ranks). The Earth reply still
+        scored 1 of 1.</li>
+        <li><strong>Right readings in other words.</strong> &ldquo;&pound;2/day&rdquo;
+        and &ldquo;12 months&rdquo; counted as misses (section 03), and so did a
+        full-size CPU reply that called the house &ldquo;a building or
+        cottage&rdquo;.</li>
+        <li><strong>Answers nobody asked for.</strong> Some replies, most of
+        them the 4B's, wrote a question of their own after the description and
+        answered it, though we sent none; the 30B did it in three replies.</li>
+        <li><strong>Wrong text that looks right.</strong> A misread code
+        (section 07) scores as a miss, but in a reply it reads as a fact.</li>
+        <li><strong>Our own notes, wrong.</strong> Our notes and the file's name
+        call picture 7 a white logo on a transparent background. Its pixels,
+        read on 26 September, are all opaque: a light gray field, dark gray
+        letters with a coloured bar under the O, and thin coloured curves in the
+        top-right and bottom-left corners. The card replies we read (the 30B's,
+        the 8B's and Qwen3.6's) describe that picture: a dark wordmark, a TM
+        mark (which we did not check in the pixels) and coloured curves in
+        those corners. &ldquo;COSMIC&rdquo; matched either way, so the count
+        could not have told which account was right, and the set has no
+        transparency test.</li>
+      </ul>
+      <p>We did not grade the replies for invented details beyond these
+      examples. All the local replies are in the package, with 13 prompt
+      passages and one word removed (section 12).</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What to run</h2>
+      <p>From one desktop's measurements; your card, CPU and pictures will
+      move every number. Each line says what it rests on.</p>
+      <ol class="plain">
+        <li><strong>If the card has room, use it.</strong> Qwen3-VL 30B-A3B
+        found all 39 strings at 1.31 to 3.16 seconds a warm picture in
+        22&nbsp;GB, as Ollama reported it (19&nbsp;GB at an 8,192-token window).
+        Qwen3-VL 8B found all 39 at 1.81 to 3.82 seconds in 10&nbsp;GB. Qwen3.5
+        4B did worst here: 30 of 39, and three runaway replies.</li>
+        <li><strong>If a large model holds the card, go to the CPU on
+        purpose.</strong> Set <code>num_gpu</code> 0. Left to itself, Ollama
+        fitted part of the model into the card's last free memory, using
+        3,018 to 3,425&nbsp;MiB of it in our runs (arithmetic), and still ran
+        the picture encoder and most of the model on the CPU (section 06).</li>
+        <li><strong>Set the thread count.</strong> With no
+        <code>num_thread</code>, the server here ran 4 threads of 24. On this
+        CPU, 16 and 24 threads were within 4 seconds of each other on both
+        pictures we timed (arithmetic; 24 read faster, 16 wrote faster), 16 leaves more of
+        the CPU for everything else, and 8 missed the 150-second limit on a 4K
+        picture. Check your own server: on every load, Ollama 0.30.10's log
+        printed <code>system_info: n_threads = &hellip;</code> (on a standard
+        Linux install, <code>journalctl -u ollama | grep n_threads</code>).</li>
+        <li><strong>Shrink large pictures before sending them, and turn them
+        upright first.</strong> A 1,536-pixel cap cut a 4K picture from 4,154
+        tokens to 1,370, and the 30B's first picture from 111.01 seconds to
+        38.52 at 16 threads, with all 39 strings found. Apply the rotation tag
+        yourself: as far as the replies show, nothing on the way did.</li>
+        <li><strong>Keep more pixels for small text.</strong> The same cap
+        misread 4 of 24 codes on a 4K screenshot, where 2,560 found all 24 (one
+        run each, on the card). For screenshots and fine print, cap at 2,560 or
+        send them to the card.</li>
+        <li><strong>Set <code>num_ctx</code> 8192 for single pictures.</strong>
+        A 4K picture and the longest reply we allow need 6,206 tokens
+        (arithmetic), and at the smaller window <code>ollama ps</code> put the
+        30B at 19&nbsp;GB on the card instead of 22. Raise it if you send
+        several pictures or a long question at once.</li>
+        <li><strong>Budget the wait.</strong> With 16 threads and the 1,536 cap,
+        the 30B took 22.64 to 38.93 seconds a warm picture on this CPU, plus
+        12.30 seconds of model load on the first, at the 32,768-token window;
+        <code>ollama ps</code> put its memory at 22&nbsp;GB there and 19&nbsp;GB
+        at 8,192. The 4B at a 1,024 cap took 18.12 to 32.64 seconds in
+        8.0&nbsp;GB and found all 39 strings in our set, with the small-text
+        risk of section 07.</li>
+      </ol>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this does not show</h2>
+      <ul class="plain">
+        <li><strong>One run per configuration.</strong> No repeats, so we cannot
+        say how much a second run would move any figure; a difference of a few
+        seconds or one string may be noise.</li>
+        <li><strong>A small test.</strong> Seven pictures and 39 strings, plus
+        one screenshot with 24 codes. Not a benchmark, and not a grade of
+        description quality: section 08 lists what the count misses, and we did
+        not score invented details.</li>
+        <li><strong>One machine and one CPU.</strong> The thread results belong
+        to a Core Ultra 9 285K with 8 performance and 16 efficiency cores. The
+        best thread count on another CPU may differ.</li>
+        <li><strong>One Ollama version, one quantization.</strong> Ollama
+        0.30.10, whose bundled server build is not in its log, and each model's
+        Q4_K_M library file. What the server chose when a request said nothing
+        (the 32,768-token window, 4 threads, the split on a full card) may
+        differ in other versions and setups.</li>
+        <li><strong>First pictures include loads.</strong> The file cache was not
+        recorded, so how much of each first-picture time was disk is unknown;
+        the first card load of the 30B took 36.97 seconds and the later ones 4.56
+        to 4.86.</li>
+        <li><strong>The full card was a test of memory, not of shared
+        work.</strong> We do not know what held the card or whether it was
+        busy. A large model whose experts sit in system RAM also uses the CPU,
+        and a describer on the CPU beside it would compete for threads and
+        memory bandwidth; we did not measure that.</li>
+        <li><strong>Few pictures per CPU and full-card run.</strong> The thread
+        runs and the full-card runs used two pictures each, the 4-thread run
+        one.</li>
+        <li><strong>Overlaps.</strong> Model downloads ran during three runs,
+        and two hosted-service runs during the 4-thread CPU run (section
+        02).</li>
+        <li><strong>The capped sets changed two things.</strong> They shrank
+        the large pictures and turned the cottage upright, so the string counts
+        at a cap mix both effects; for the cottage only the rotation changed
+        (section 05).</li>
+        <li><strong>No transparency test.</strong> Picture 7 was meant to be
+        one; its file has no transparent pixels (section 08).</li>
+        <li><strong>Sampling.</strong> The request set no sampling options, so
+        each reply is one sample at the model's own defaults.</li>
+        <li><strong>The hosted counts.</strong> The result files record the
+        provider, not the model version; they are counts only.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <p><a href="../l3-threads/">The wrong flag</a> traced a 4-thread default
+      on this CPU to llama.cpp's thread heuristic, on a 675B model whose
+      decode it roughly halved. <a href="../batch-size/">llama.cpp's batch
+      size</a> measures the reading settings of the models this desktop serves
+      with llama.cpp; Ollama launched the describers here with batches of 1,024
+      or 512 tokens, and we did not vary them. <a href="../speculation-gate/">Slower
+      by default</a> is another default measured on this desktop, and the
+      <a href="../method/">method page</a> explains the labels and the data
+      packages.</p>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and artifacts</h2>
+      <p>The evidence for this page ships as a data package: the files the runs
+      produced, not a summary. If a number on this page disagrees with a file
+      in the package, the file is right and the page is wrong; tell us and we
+      will fix the page.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every file, where the
+        files disagree with each other, and every redaction.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
+        page, with its file and field.</li>
+        <li><strong>The runs</strong> (<code>data/results/</code>): one result
+        file per run with every reply, timing and card reading, and the console
+        log of the 4-thread run. Where a small model repeated our private
+        prompt word for word, 13 passages in five files read
+        <code>[prompt wording removed]</code>, and one word in one reply reads
+        <code>[one word removed]</code>; data/README.md lists both.</li>
+        <li><strong>The server's log</strong>
+        (<code>data/service-log/</code>): Ollama's version line and, for these
+        runs, each launch command, thread report, file type, memory and timing
+        line.</li>
+        <li><strong>The pictures and the scripts</strong>: the test pictures
+        except the third-party logo, the scripts that drew and shrank them, the
+        harness with the prompt wording removed, <code>score.py</code>,
+        <code>score_hires.py</code>, and <code>tables.py</code>, which rebuilds
+        the derived tables in <code>data/derived/</code>.</li>
+        <li><strong>Picture credits.</strong> Nebula: NASA, ESA, M. Robberto
+        (Space Telescope Science Institute/ESA) and the Hubble Space Telescope
+        Orion Treasury Project Team (ESA/Hubble image heic0601a, licensed
+        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).
+        The JPEG we ship is a 3840&nbsp;x&nbsp;2160 derivative taken from a
+        desktop wallpaper set, not the release file. Earth: photograph ISS064-E-29444, image
+        courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson
+        Space Center. Their use here does not imply endorsement by NASA or
+        ESA.</li>
+      </ul>
+      <table class="facts">
+        <tr><th scope="row">2026-09-20</th><td>All runs, 08:19 to 09:16 local time: six models on the card, the thread ladder, the capped CPU runs, the screenshot at four caps, the 8,192-token window, and the four full-card runs.</td></tr>
+        <tr><th scope="row">2026-09-26</th><td>Scores reproduced from the recorded replies; the screenshot's codes counted; the server's log read for the version, launch lines and thread reports; the logo file's pixels read; picture credits checked against the ESA/Hubble and NASA image pages.</td></tr>
+      </table>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Qwen, Qwen3-VL, Qwen3.5
+    and Qwen3.6 are marks of Alibaba Group Holding Limited; Ollama is a project
+    or mark of its respective owner; llama.cpp is a project of ggml-org and its
+    contributors; NVIDIA, GeForce and RTX are marks of NVIDIA Corporation; Intel
+    and Core Ultra are marks of Intel Corporation; Google is a mark of Google
+    LLC; Mistral and Mistral Medium are marks of Mistral AI; COSMIC is a mark of
+    System76; the Hubble and space station photographs are credited in section
+    12 as NASA and ESA require. All are referenced for identification only.
+    Not affiliated with, endorsed by, or sponsored by any of them or their
+    affiliates. Product names
+    and marks belong to their respective owners. This site is static. No
+    scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

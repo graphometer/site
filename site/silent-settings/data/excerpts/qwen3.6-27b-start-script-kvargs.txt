@@ -1,0 +1,103 @@
+Qwen3.6-27B start script: the 262,144 rung promised an 8-bit cache and its launch line expanded an array
+nothing ever assigned. Excerpts of two versions of the same script, with their line numbers. Paths, the
+bridge address and the settings-variable prefix are redacted as data/README.md states; em dashes in our own
+comment and message lines became colons (counted there). Nothing else is changed. The comment on line 77 (line
+90 in part B) carries figures of its own, 27,947 MiB, 71.8 t/s, "healthy in 13 s" and a 16 GB f16 cache: they
+are the script's comment, no log in this package shows the run behind them, and the page does not use them.
+
+Backup copies are named for the day they were taken; a copy's file time is the last time the script had been
+edited before that day. So "bak-20260921-141932" (file time 2026-09-17 16:10) is the script as it stood from
+17 September 16:10, and "bak-20260926-256k" (file time 2026-09-21 18:37) is the script as it stood until
+the 26 September edit that added the assignment.
+
+History of the two strings across the copies on disk (grep for KVARGS and the 262144 comment):
+  start_server.sh.bak-20260917-256k             file time 2026-09-16 18:37
+      (no KVARGS, no 262144 comment)
+      lines assigning KVARGS: none
+  start_server.sh.bak-20260921-141932-m27       file time 2026-09-17 16:10
+      line  77: # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+      line 195: ${KVARGS[@]+"${KVARGS[@]}"} \
+      lines assigning KVARGS: none
+  start_server.sh.bak-20260921-batch            file time 2026-09-21 14:19
+      line  77: # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+      line 196: ${KVARGS[@]+"${KVARGS[@]}"} \
+      lines assigning KVARGS: none
+  start_server.sh.bak-20260926-256k             file time 2026-09-21 18:37
+      line  77: # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+      line 207: ${KVARGS[@]+"${KVARGS[@]}"} \
+      lines assigning KVARGS: none
+  start_server.sh                               file time 2026-09-26 22:28
+      line  90: # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+      line 191: KVARGS=()
+      line 193: KVARGS=(--cache-type-k q8_0 --cache-type-v q8_0)
+      line 234: ${KVARGS[@]+"${KVARGS[@]}"} \
+      lines assigning KVARGS: [191, 193]
+
+==== A. The script as it stood from 17 September 16:10 to 26 September (copy bak-20260921-batch, file time 2026-09-21 14:19)
+---- the settings file is sourced, then the window is read (lines 66 to 70)
+  66  set -euo pipefail
+  67  ENVF=<REDACTED_PATH>/<settings file>
+  68  [ -f "$ENVF" ] && . "$ENVF"
+  69  CTX="${QWEN36_CTX:-131072}"
+  70  HOST="${QWEN36_HOST:-<LOCAL>}"; PORT="${QWEN36_PORT:-<PORT>}"
+---- the promise, the window check that accepts 262144, and the error text that says it is not offered (lines 77 to 84;
+     line 76, a heading comment, is not shipped)
+  77  # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+  78  # q8_0 KV cache, which this rung sets for you below. At f16 the KV alone wants 16 GB and the
+  79  # context fails to allocate.
+  80  case "$CTX" in 32768|65536|131072|262144) ;; *)
+  81    echo "ERROR: QWEN36_CTX=$CTX is not a validated context (32768|65536|131072; default 131072)." >&2
+  82    echo "       262144 is the ARCHITECTURE ceiling from the GGUF and is deliberately not offered." >&2
+  83    exit 2 ;;
+  84  esac
+---- the launch line expands KVARGS, which no line of this file assigns (lines 192 to 201)
+ 192  exec "$BIN" \
+ 193    --model "$MODEL" \
+ 194    --host "${HOST}" --port "${PORT}" --alias qwen3.6-27b \
+ 195    --jinja --ctx-size "${CTX}" --parallel 1 \
+ 196    ${KVARGS[@]+"${KVARGS[@]}"} \
+ 197    ${THINKARGS[@]+"${THINKARGS[@]}"} \
+ 198    --n-gpu-layers 999 \
+ 199    --threads 24 --threads-batch 24 \
+ 200    --flash-attn on --fit off --cors-origins localhost --timeout 3600 \
+ 201    --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0
+
+==== B. The script after the 26 September edit (start_server.sh, file time 2026-09-26 22:28; another session edited the
+     file again that evening, so later copies may differ in other places)
+---- lines 66 to 70
+  66  set -euo pipefail
+  67  ENVF=<REDACTED_PATH>/<settings file>
+  68  [ -f "$ENVF" ] && . "$ENVF"
+  69  CTX="${QWEN36_CTX:-131072}"
+  70  HOST="${QWEN36_HOST:-<LOCAL>}"; PORT="${QWEN36_PORT:-<PORT>}"
+---- the same promise and check (lines 90 to 97; line 89, a heading comment, is not shipped)
+  90  # 262144 MEASURED 2026-09-17: 27,947 MiB VRAM, 71.8 t/s, healthy in 13 s: but ONLY with a
+  91  # q8_0 KV cache, which this rung sets for you below. At f16 the KV alone wants 16 GB and the
+  92  # context fails to allocate.
+  93  case "$CTX" in 32768|65536|131072|262144) ;; *)
+  94    echo "ERROR: QWEN36_CTX=$CTX is not a validated context (262144 default since 2026-09-26 | 131072 | 65536 | 32768)." >&2
+  95    echo "       262144 is offered too (q8_0 KV, MTP off; measured 2026-09-17 and 2026-09-26)." >&2
+  96    exit 2 ;;
+  97  esac
+---- the assignment that was missing, with the script's own account (lines 188 to 195)
+ 188  # --- the KV block the 262144 rung always needed (it was referenced below but never defined, so 256K started
+ 189  #     with an f16 cache that cannot fit). MTP does not fit beside a 256K cache (measured 2026-09-26: "failed to
+ 190  #     create MTP context"), so the rung turns it off, as Qwen3.8-27B's script does.
+ 191  KVARGS=()
+ 192  if [ "$CTX" = 262144 ]; then
+ 193    KVARGS=(--cache-type-k q8_0 --cache-type-v q8_0)
+ 194    [ "${#SPEC[@]}" -gt 0 ] && { echo "NOTE: ctx 262144 forces MTP off: it does not fit beside a 256K cache." >&2; SPEC=(); }
+ 195  fi
+---- the launch line (lines 229 to 240)
+ 229  exec "$BIN" \
+ 230    --model "$MODEL" \
+ 231    --host "${HOST}" --port "${PORT}" --alias qwen3.6-27b \
+ 232    --jinja --ctx-size "${CTX}" --parallel 1 \
+ 233    --batch-size "${QWEN36_BATCH}" --ubatch-size "${QWEN36_UBATCH}" \
+ 234    ${KVARGS[@]+"${KVARGS[@]}"} \
+ 235    ${SPEC[@]+"${SPEC[@]}"} \
+ 236    ${THINKARGS[@]+"${THINKARGS[@]}"} \
+ 237    --n-gpu-layers 999 \
+ 238    --threads 24 --threads-batch 24 \
+ 239    --flash-attn on --fit off --cors-origins localhost --timeout 3600 \
+ 240    --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0

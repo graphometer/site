@@ -1,0 +1,60 @@
+A flag listed in --help that the build could not load: `draft-dspark` on the older llama.cpp build here, with
+DeepSeek V4 Flash's DSpark draft file. What the two source trees and the draft's header say, read 2026-09-26.
+Internal build-tree names are replaced by <older build> and <newer build>.
+
+---- the note in our DeepSeek V4 Flash start script (a comment, quoted from "that build advertises"; the run log was not kept)
+  "that build advertises --spec-type draft-dspark in --help and then fails to load the DSpark draft ("dflash.attention.sliding_window_pattern" not found), so the two are not interchangeable for every DeepSeek profile."
+
+---- build identities
+  <older build>: int LLAMA_BUILD_NUMBER = 1;; char const * LLAMA_COMMIT = "5f55650"; (its .git/HEAD names refs/heads/master at 5f55650a78f92aff4d48d671423e888fac0469ff)
+  <newer build>: int LLAMA_BUILD_NUMBER = 10919;; char const * LLAMA_COMMIT = "d3146f2b5";
+
+---- <older build>/common/speculative.cpp, lines 31 to 42: the table that --help prints the type names from
+  31  const std::map<std::string, common_speculative_type> common_speculative_type_from_name_map = {
+  32      {"none",          COMMON_SPECULATIVE_TYPE_NONE},
+  33      {"draft-simple",  COMMON_SPECULATIVE_TYPE_DRAFT_SIMPLE},
+  34      {"draft-eagle3",  COMMON_SPECULATIVE_TYPE_DRAFT_EAGLE3},
+  35      {"draft-mtp",     COMMON_SPECULATIVE_TYPE_DRAFT_MTP},
+  36      {"draft-dflash",  COMMON_SPECULATIVE_TYPE_DRAFT_DFLASH},
+  37      {"draft-dspark",  COMMON_SPECULATIVE_TYPE_DRAFT_DSPARK},
+  38      {"ngram-simple",  COMMON_SPECULATIVE_TYPE_NGRAM_SIMPLE},
+  39      {"ngram-map-k",   COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K},
+  40      {"ngram-map-k4v", COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K4V},
+  41      {"ngram-mod",     COMMON_SPECULATIVE_TYPE_NGRAM_MOD},
+  42      {"ngram-cache",   COMMON_SPECULATIVE_TYPE_NGRAM_CACHE}
+  (common_speculative_all_types_str(), lines 2174 to 2184 of the same file, joins every name in that table for the
+  --spec-type help text at common/arg.cpp line 4048.)
+
+---- <older build>/src/models/dflash.cpp, lines 23 to 30: with a sliding window set, the pattern key is read with no "optional" argument
+  23      // optional interleaved sliding-window attention with per-layer pattern array.
+  24      // DFlash has a single rope, so the SWA rope == main rope.
+  25      if (ml.get_key(LLM_KV_ATTENTION_SLIDING_WINDOW, hparams.n_swa, false) && hparams.n_swa > 0) {
+  26          hparams.swa_type = LLAMA_SWA_TYPE_STANDARD;
+  27          ml.get_key_or_arr(LLM_KV_ATTENTION_SLIDING_WINDOW_PATTERN, hparams.is_swa_impl, hparams.n_layer());
+  28          hparams.rope_freq_base_train_swa  = hparams.rope_freq_base_train;
+  29          hparams.rope_freq_scale_train_swa = hparams.rope_freq_scale_train;
+  30      }
+
+---- <older build>/src/llama-model-loader.cpp, line 281: the message a required key produces
+ 281                  throw std::runtime_error(format("key not found in model: %s", key.c_str()));
+
+---- <newer build>/src/models/dflash.cpp, lines 38 to 42 and 82 to 88: a DSpark branch of its own, entered when the header
+     carries a hyper-connection count, which reads the window and not the pattern; the legacy branch below it still reads the pattern
+  38      // DeepSeek-V4 DSpark backbone: stages are full DSV4 blocks, uniform sliding window (the draft KV ring)
+  39      ml.get_key(LLM_KV_HYPER_CONNECTION_COUNT, hparams.dsv4_hc_mult, false);
+  40      if (hparams.dsv4_hc_mult > 0) {
+  41          ml.get_key(LLM_KV_ATTENTION_Q_LORA_RANK,                hparams.n_lora_q);
+  42          ml.get_key(LLM_KV_ATTENTION_SLIDING_WINDOW,             hparams.n_swa);
+  82      // optional interleaved sliding-window attention with per-layer pattern array.
+  83      // DFlash has a single rope, so the SWA rope == main rope.
+  84      if (ml.get_key(LLM_KV_ATTENTION_SLIDING_WINDOW, hparams.n_swa, false) && hparams.n_swa > 0) {
+  85          hparams.swa_type = LLAMA_SWA_TYPE_STANDARD;
+  86          ml.get_arr(LLM_KV_ATTENTION_SLIDING_WINDOW_PATTERN, hparams.is_swa_impl);
+  87          hparams.rope_freq_base_train_swa  = hparams.rope_freq_base_train;
+  88          hparams.rope_freq_scale_train_swa = hparams.rope_freq_scale_train;
+
+---- <newer build>/common/speculative.cpp, line 39: the same type name in the newer build's table
+  39      {"draft-dspark",  COMMON_SPECULATIVE_TYPE_DRAFT_DSPARK},
+
+The draft file's header keys are in records/deepseek-draft-header-keys.txt: it carries dflash.attention.sliding_window
+= 128 and dflash.hyper_connection.count = 4, and no dflash.attention.sliding_window_pattern key.

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-5.3-Flash on one desktop</title>
+<meta name="description" content="At 262,144 tokens, the installed micro-batch setting was measured through 47,992 tokens at 142.6 t/s. A guarded fixture passed only in isolation.">
+<link rel="canonical" href="https://graphometer.ai/glm53-flash/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="GLM-5.3-Flash on one desktop">
+<meta property="og:description" content="At 262,144 tokens, the installed micro-batch setting was measured through 47,992 tokens at 142.6 t/s. A guarded fixture passed only in isolation.">
+<meta property="og:url" content="https://graphometer.ai/glm53-flash/">
+<meta property="og:image" content="https://graphometer.ai/og/glm53-flash.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: GLM-5.3-Flash on one desktop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GLM-5.3-Flash on one desktop">
+<meta name="twitter:description" content="At 262,144 tokens, the installed micro-batch setting was measured through 47,992 tokens at 142.6 t/s. A guarded fixture passed only in isolation.">
+<meta name="twitter:image" content="https://graphometer.ai/og/glm53-flash.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);text-transform:uppercase}
+  .hero{padding:72px 0 48px}
+  .eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:56ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}
+  .note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .note p{color:var(--ink);max-width:none}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="../" style="text-decoration:none"><div class="brand">
+    <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg>
+    <span>Graphometer</span>
+  </div></a>
+  <nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav>
+</div></header>
+
+<main><div class="wrap">
+<div class="hero">
+  <div class="eyebrow">Field card &middot; measured 2026-09-16 to 2026-09-26 &middot; one desktop &middot; one NVIDIA RTX 5090 &middot; one request at a time</div>
+  <h1>GLM-5.3-Flash on <em>one desktop</em></h1>
+  <p class="subtitle">At 262,144 tokens, the installed micro-batch setting was measured through 47,992 tokens at 142.6 t/s. A guarded fixture passed only in isolation.</p>
+  <p class="lead"><strong>Measured:</strong> Unsloth's four-shard UD-Q3_K_XL file runs through a pinned GLM-specific llama.cpp fork. The installed launcher and the 21 and 26 September runs place 42 blocks' experts in system memory. The 16 September <code>-cmoe</code> launch passed no explicit expert-block count; its finished 181-token answer decoded at 9.58 tokens per second. On 21 September, the published comparison was a first request at 24,008 tokens and 80.7 tokens per second, with 62 generated tokens at 9.22 tokens per second, against a third request on the tuned load at 20,333 tokens and 446.0 tokens per second, with 60 generated tokens at 9.35 tokens per second. The fourth request on that tuned load read 48,168 tokens at 425.1 tokens per second and generated 310 tokens at 9.12 tokens per second. The prompt lengths still differ, so the 5.5 times ratio is descriptive. On 26 September, <code>-ub 1024</code> at 262,144, the setting that ships, was measured only through 47,992 tokens at 142.6 tokens per second. A separate <code>-ub 2048</code> run read 230,039 tokens and returned all three planted codes; that is not the installed setting. <code>-ub 4096</code> failed to load when a 13,281.37 MiB allocation was refused. On 17 September, one synthetic high-effort request put more reasoning and a literal <code>&lt;/think&gt;</code> in the visible answer. An isolated guard passed later that day, but the installed launcher does not carry it.</p>
+  <div class="nonaff">Independent measurements; no affiliation with Z.ai, Unsloth, NVIDIA, Intel, or the llama.cpp project.</div>
+  <div class="note"><span class="label">Correction, September 2026</span><p>The audition table calls 20.5 seconds a first-word time. Its client was non-streaming and measured the whole HTTP request. This page calls it request wall time. There is no measured time to first token for that answer.</p></div>
+</div>
+
+<section id="what"><div class="secnum">01</div><h2>What it is</h2>
+  <p>GLM-5.3-Flash is a Z.ai mixture-of-experts model. The tested GGUF is Unsloth <code>UD-Q3_K_XL</code> in four shards. The header names architecture <code>glm5next</code>, 46 blocks, 288 experts with 8 selected, and a native context length of 1,048,576 tokens. Those are file metadata, not measurements of useful context.</p>
+  <p>The four recorded shard sizes sum to <span class="n">147,535,921,955</span> bytes, or 137.404 GiB by division by 2<sup>30</sup> (arithmetic). The first shard is metadata only. Its header names Unsloth as the quantizer and MIT as the license.</p>
+</section>
+
+<section id="settings"><div class="secnum">02</div><h2>What to set</h2>
+  <p><strong>At 131,072 tokens:</strong> start with <code>-b 4096 -ub 4096</code>. That profile read 48,168 tokens at 425.1 tokens per second and peaked at 29,872 MiB. <code>-ub 8192</code> failed to load.</p>
+  <p><strong>At 262,144 tokens:</strong> use <code>-b 4096 -ub 1024</code> for the measured headroom choice. It read 47,992 tokens at 142.6 tokens per second and peaked at 29,261 MiB. Only <code>-ub 2048</code> was read beyond 47,992 tokens: it reached 230,039 tokens at 211.9 tokens per second, returned 3 of 3 codes, and peaked at 31,951 MiB. <code>-ub 4096</code> failed to load at this window when a 13,281.37 MiB compute allocation failed.</p>
+  <p>The <a href="../batch-size/">batch-size study</a> explains the risk around the <code>-ub 2048</code> shape and upstream llama.cpp issue 28282. The <a href="../context-256k/">full-window study</a> carries the cross-model comparison. This card does not generalize one setting across windows.</p>
+  <pre class="log">llama-server --ctx-size 262144 --parallel 1 \
+  --batch-size 4096 --ubatch-size 1024 \
+  --n-gpu-layers 999 --n-cpu-moe 42 \
+  --threads 24 --threads-batch 24 --flash-attn auto</pre>
+  <p class="tablenote">The command shows the measured serving shape without machine paths, bind addresses or operator-specific configuration.</p>
+</section>
+
+<section id="setup"><div class="secnum">03</div><h2>What we ran, exactly</h2>
+  <table class="facts">
+    <tr><th scope="row">Model file</th><td>GLM-5.3-Flash, Unsloth UD-Q3_K_XL, four GGUF shards, 147,535,921,955 bytes total. The header reports file type 12.</td></tr>
+    <tr><th scope="row">Machine</th><td>Intel Core Ultra 9 285K, 188 GiB RAM, one NVIDIA GeForce RTX 5090 with 32,607 MiB reported card capacity.</td></tr>
+    <tr><th scope="row">Runtime</th><td>A GLM-specific, non-mainline llama.cpp fork pinned at <code>d94f44e79aa219d8057e8de21f95360a187ebf41</code>.</td></tr>
+    <tr><th scope="row">16 September placement</th><td><code>--n-gpu-layers 999 -cmoe</code>, with no batch or micro-batch flags passed, so llama.cpp used its defaults. The 75.48 tokens per second read and 9.58 tokens per second answer are from this launch.</td></tr>
+    <tr><th scope="row">21 and 26 September placement</th><td><code>--n-gpu-layers 999 --n-cpu-moe 42</code>, memory mapped weights, one slot and one request at a time. Batch settings are scoped to each measured row below.</td></tr>
+    <tr><th scope="row">Windows</th><td>131,072 tokens on 16 and 21 September; 131,072 and 262,144 on 26 September.</td></tr>
+    <tr><th scope="row">Audition request</th><td>Temperature 0, low reasoning effort, 400-token cap. The answer stopped normally after 181 generated tokens.</td></tr>
+    <tr><th scope="row">Long-window requests</th><td>Code reads used temperature 0, seed 1 and a 1,024-token cap. Letters used temperature 0.7, seed 7 and a 1,200-token cap. The server was launched with reasoning effort <code>none</code>; the returned records still contain reasoning.</td></tr>
+    <tr><th scope="row">Repetitions</th><td>One run per serving configuration. No confidence intervals.</td></tr>
+  </table>
+</section>
+
+<section id="observed"><div class="secnum">04</div><h2>Observed</h2>
+  <div class="data-wrap"><table class="data"><caption>Selected measured answers and long reads</caption><thead><tr><th>Run and request</th><th>Prompt evaluated</th><th>Prompt processing</th><th>Generated</th><th>Decode</th><th>Visible words</th><th class="t">What came back</th></tr></thead><tbody>
+    <tr><td class="t">16 Sep, 131,072, short answer</td><td>29 of 38 tokens, 9 cached</td><td>18.89 t/s</td><td>181</td><td>9.58 t/s</td><td>not counted</td><td class="t">A finished one-paragraph explanation. Whole-request wall time was 20.5 s.</td></tr>
+    <tr><td class="t">16 Sep, 131,072, deep read</td><td>120,979 tokens</td><td>75.48 t/s</td><td>58</td><td>8.71 t/s</td><td>3 codes</td><td class="t">A finished answer with all 3 planted codes.</td></tr>
+    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, code at 48,000 depth</td><td>47,992 tokens</td><td>404.9 t/s</td><td>98</td><td>9.84 t/s</td><td>1</td><td class="t">The planted code.</td></tr>
+    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 20,000-token document</td><td>4,148 tokens</td><td>312.1 t/s</td><td>1,200</td><td>10.09 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 48,000-token document</td><td>4,148 tokens</td><td>294.8 t/s</td><td>1,200</td><td>9.85 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 100,000-token document</td><td>4,148 tokens</td><td>260.9 t/s</td><td>1,200</td><td>9.51 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, code at 48,000 depth</td><td>47,992 tokens</td><td>142.6 t/s</td><td>125</td><td>10.02 t/s</td><td>1</td><td class="t">The planted code.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, letter on the cached 20,000-token document</td><td>1,080 tokens</td><td>97.0 t/s</td><td>1,200</td><td>10.22 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, letter on the cached 48,000-token document</td><td>1,080 tokens</td><td>95.3 t/s</td><td>729</td><td>9.98 t/s</td><td>351</td><td class="t">A finished letter.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 2048</code>, code at 230,000 depth</td><td>230,039 tokens</td><td>211.9 t/s</td><td>231</td><td>8.88 t/s</td><td>3</td><td class="t">All 3 codes. Prompt processing took 1,085.744 s; whole-request wall time was 1,112.9 s.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 2048</code>, letter on the cached 230,000-token document</td><td>2,088 tokens</td><td>131.6 t/s</td><td>1,200</td><td>9.04 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+  </tbody></table></div>
+  <p class="tablenote">Prompt processing is the server's prompt-eval timing. Each letter reused the cached document from the paired read at that target depth. The paired reads evaluated 20,065, 47,992, 100,003, or 230,039 tokens. On a letter row, Prompt evaluated is only the uncached tail, and the prompt-processing rate is the rate for that tail. Decode includes reasoning tokens. Whole-request wall time includes prompt processing, generation and client overhead.</p>
+  <p>This table is not every 26 September request. On <code>-ub 2048</code>, the letters at target depths 20,000, 48,000, and 100,000 returned 102, 119, and 337 visible words; only the 230,000-depth letter returned none. The 102-word and 119-word replies reached the 1,200-token cap; the 337-word reply finished. Across the displayed 26 September rows, decode stayed near 10 tokens per second, while reading moved sharply with window and micro-batch. A short visible answer can hide far more generation. At 230,039 prompt tokens, the visible answer was three codes but the server generated 231 tokens, including 617 reasoning characters. A separate 40-prompt check on the shipped 262,144, <code>-ub 1024</code> setting recorded 36 empty answers and 0 crashes.</p>
+</section>
+
+<section id="batch"><div class="secnum">05</div><h2>The reading-side lever</h2>
+  <p>The 21 September sweep used a 131,072-token window and one request at a time. Every successful read returned the planted code in the visible answer. The default-setting and tuned rows used different prompt lengths, so their rate ratio is descriptive, not a same-prompt A/B.</p>
+  <div class="data-wrap"><table class="data"><caption>Measured 21 September batch sweep</caption><thead><tr><th>Batch and micro-batch</th><th>Request</th><th>Prompt tokens</th><th>Read t/s</th><th>Generated</th><th>Decode t/s</th><th>Peak MiB</th></tr></thead><tbody>
+    <tr><td class="t">llama.cpp defaults, 2048 / 512</td><td>first</td><td>24,008</td><td>80.7</td><td>62</td><td>9.22</td><td>24,352</td></tr>
+    <tr><td class="t">4096 / 2048</td><td>recorded long read</td><td>48,168</td><td>252.0</td><td></td><td>9.21</td><td>26,763</td></tr>
+    <tr><td class="t">4096 / 4096</td><td>third</td><td>20,333</td><td>446.0</td><td>60</td><td>9.35</td><td>29,872</td></tr>
+    <tr><td class="t">4096 / 4096</td><td>fourth</td><td>48,168</td><td>425.1</td><td>310</td><td>9.12</td><td>29,872</td></tr>
+    <tr><td class="t">8192 / 8192</td><td class="neg">Did not load</td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody></table></div>
+  <p>The published comparison, 446.0 divided by 80.7, differs by 5.5 times after rounding to one decimal place. The prompt lengths differ, so this is descriptive rather than a same-prompt comparison. The longer 48,168-token result at 425.1 tokens per second was the fourth request on the tuned load. Its 310 generated tokens decoded at 9.12 tokens per second; the default first request generated 62 tokens at 9.22 tokens per second.</p>
+</section>
+
+<section id="output"><div class="secnum">06</div><h2>The visible-output boundary</h2>
+  <p><strong>Measured failure, 17 September:</strong> one synthetic high-effort streaming request generated a correct three-sentence answer, then more reasoning, a literal <code>&lt;/think&gt;</code>, and a second final answer in the visible field. It finished normally after 689 generated tokens. The raw generation contained a second assistant control token before the restarted reasoning. Independent parsing of the saved wire bytes found the closing marker in server <code>delta.content</code>. That rules out the test client as the source of the extra visible text. It does not prove whether the checkpoint, quantization or runtime caused the generation.</p>
+  <p><strong>Measured isolated guard:</strong> the same synthetic smoke, a tool call and its tool result all passed when the server used <code>--special</code> and each request stopped on four strings:</p>
+  <pre class="log">&lt;|assistant|&gt;
+&lt;|endoftext|&gt;
+&lt;|user|&gt;
+&lt;|observation|&gt;</pre>
+  <p>The smoke returned one clean 254-character answer; its stop matched <code>&lt;|assistant|&gt;</code>. The tool cycle finished with the expected call and a visible result. This was one isolated fixture. Its own comparison record says the exact profile passed and was not production-qualified.</p>
+  <p><strong>The installed launcher is different.</strong> On 26 September it set neither <code>--special</code> nor request stop strings. It set <code>reasoning_effort</code>, with <code>high</code> as the code fallback, plus temperature 1.0 and top-p 0.95. It selected <code>-b 4096 -ub 4096</code> at windows up to 131,072 and <code>-b 4096 -ub 1024</code> above that. The launcher accepts 131,072 and 262,144, but its code fallback is 131,072 even though its comment calls 262,144 the new default. It sources an optional operator configuration first, so the deployed value can differ. The record does not establish whether the installed profile still reproduces the 17 September failure.</p>
+</section>
+
+<section id="coding"><div class="secnum">07</div><h2>One coding snapshot</h2>
+  <p>The <a href="../coding-trial/">local coding trial</a> gives this speed a little context. Across four single-run tasks, GLM-5.3-Flash scored 387 of 400 in 6,058 seconds of task wall time. Each task received 60 of 60 mechanical points; the four blind judgment scores were 34, 39, 37 and 37 of 40. A separate one-question judgment probe scored 39 of 40 in 423 seconds from question to answer.</p>
+  <p>Those are measured scores from that exercise, not a general coding rank. The coding page owns the tasks, rubric, other models and limits. This card does not duplicate them.</p>
+</section>
+
+<section id="wrong"><div class="secnum">08</div><h2>What we got wrong</h2>
+  <p>Our audition record labelled a non-streaming request's 20.5-second wall time as <code>first_word_s</code>. The client started a clock, waited for the complete JSON response, and stopped it after parsing. It never observed the first token. The 9.58 tokens-per-second decode rate remains a server timing for the finished 181-token answer. Only the latency label changes.</p>
+  <p>We also avoid calling the isolated output guard a deployed fix. The exact guarded profile passed its three-part test, but the installed launcher does not set that profile.</p>
+</section>
+
+<section id="limits"><div class="secnum">09</div><h2>What this does not show</h2>
+  <ul class="plain">
+    <li><strong>No full native window.</strong> The header states 1,048,576 tokens. The deepest measured prompt here is 230,039 tokens on the separate <code>-ub 2048</code> run, not on the installed <code>-ub 1024</code> setting.</li>
+    <li><strong>Recall is not reasoning.</strong> Returning three planted codes once does not establish reliable reasoning across the window.</li>
+    <li><strong>No stable quality ranking.</strong> The coding scores are one run per task, and the judgment probe is one question.</li>
+    <li><strong>No general output verdict.</strong> The failure and guarded pass each use one synthetic fixture on one quantization and one pinned fork. Separately, a 40-prompt check on the shipped 262,144, <code>-ub 1024</code> setting recorded 36 empty answers and 0 crashes. That is evidence of frequent empty output in that check, not a quality verdict.</li>
+    <li><strong>No measured RAM floor.</strong> The launcher carries a 150 GB availability check. The package records that figure as inferred from another deployment, not measured for this model. This page makes no claim that 150 GB is necessary or sufficient for this model.</li>
+    <li><strong>No concurrency result.</strong> Every serving measurement was one request at a time on one desktop.</li>
+  </ul>
+</section>
+
+<section id="related"><div class="secnum">10</div><h2>Related pages on this site</h2>
+  <ul class="plain">
+    <li><a href="../batch-size/">The batch-size study</a>: the tuning method, failure boundary and upstream issue.</li>
+    <li><a href="../context-256k/">What a full window costs</a>: the 262,144-token comparison and exact scoping across models.</li>
+    <li><a href="../roster-2026-09/">The September roster</a>: the installed endpoint among the full local set.</li>
+    <li><a href="../coding-trial/">The local coding trial</a>: the four tasks, rubric and model comparison.</li>
+    <li><a href="../empty-answer/">Empty Answer</a>: why reasoning can consume a reply budget before visible text appears.</li>
+    <li><a href="../method/">Method</a>: the site's labels and evidence rule.</li>
+  </ul>
+</section>
+
+<section id="sources"><div class="secnum">11</div><h2>Sources and artifacts</h2>
+  <p>The <a href="data/README.md">data package</a> contains redacted extracts from the audition, the batch sweep, the 26 September long-window rows, the shipped-profile stress check, the output diagnostic and combined guard, the installed launch profile, the GGUF header, and the coding totals. The <a href="data/NUMBERS.md">number map</a> identifies every printed figure and derivation.</p>
+  <p>Machine paths, bind addresses, request identifiers, fingerprints, service names and internal harness names are removed or replaced. The raw private coding prompts and hosted grader text are not included. The public <a href="../coding-trial/data/README.md">coding-trial package</a> holds that exercise's releasable records.</p>
+  <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong. Tell us at <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the correction goes on the page with its date.</p>
+</section>
+</div></main>
+
+<footer><div class="wrap">
+  <div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+  <div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div>
+  <p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p>
+  <p>Copyright 2026 Grant Williams. Independent work: Z.ai, Unsloth, NVIDIA, Intel, and the llama.cpp project are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+  <div class="foot-links"><a href="../">Graphometer</a></div>
+</div></footer>
+</body>
+</html>

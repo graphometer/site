@@ -1,0 +1,11 @@
+exec <LLAMA_SERVER> --model <MODEL_FIRST_SHARD> --alias Inkling \
+  -ngl 999 --n-cpu-moe "$NCMOE" --ctx-size "$CTX" --parallel 1 --flash-attn on -ctk "$KVT" -ctv "$KVT" \
+  --host 127.0.0.1 --port 8137 --jinja --reasoning-format auto --threads 24 --threads-batch 24 --timeout 7200 \
+  --temp 1.0 --top-p 1.0 --top-k 0 --min-p 0.0 -lv 3 ${EFFORTARGS[@]+"${EFFORTARGS[@]}"} ${RPCARGS[@]+"${RPCARGS[@]}"} 2>&1 | tee "$LOG"
+
+# Run A: NCMOE=66, CTX=131072, KVT=f16.
+# Run B: NCMOE=42, CTX=131072, KVT=f16.
+# Run B extra arguments, with address removed:
+--rpc <LAPTOP> --device CUDA0,RPC0 --tensor-split 1,0 --override-tensor "blk\.(42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65)\.ffn_(up|down|gate)_exps=RPC0[<LAPTOP>]"
+# Remote worker requested threads: -t 8.
+# No -b or -ub supplied. This is an archival excerpt, not an executable script.

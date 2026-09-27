@@ -1,0 +1,64 @@
+Where each start script on this machine sources its settings file, and where it first reads a variable.
+Read from the 26 scripts on 2026-09-26 (the folder names are the model names; three of the models are retired
+but their scripts remain). "sourced at line" is the line that runs the settings file with the shell's dot
+command; "first read" is the first line that takes a variable with a default (the ${NAME:-default} form)
+outside a comment. The settings files themselves were not opened.
+
+  script (model folder)                      settings file named   sourced at line   first ${VAR:-default} read at line
+  DeepSeek-V4-Flash                          line 31              32                33
+  GLM-4.7-Flash                              line 35              36                37
+  GLM-4.7-Full                               line 67              68                69
+  GLM-5.2-UD-IQ1_S                           none                 never             4
+  GLM-5.3-Flash                              line 52              53                54
+  Gemma-4-26B-A4B                            line 32              33                34
+  Inkling-Small                              line 21              22                23
+  Kimi-K2.6                                  none                 never             24
+  Kimi-K2.7-Code                             none                 never             24
+  Kimi-K3                                    none                 never             49
+  Laguna-S-2.1                               none                 never             7
+  Ling-3.0-flash                             line 74              75                76
+  MiniMax-M2.7                               line 76              80                76
+  MiniMax-M3                                 none                 never             49
+  Mistral-Large-3                            line 22              23                24
+  Mistral-Medium-3.5                         line 27              28                29
+  Mistral-Small-4                            line 20              21                22
+  Muse-Glimmer-30B                           line 49              50                51
+  Ornith-1.5-35B                             line 36              37                38
+  Qwen3-235B-A22B-Instruct-2507              line 56              57                58
+  Qwen3.5-122B-A10B                          line 24              25                26
+  Qwen3.5-397B-A17B                          line 18              19                20
+  Qwen3.6-27B                                line 67              68                69
+  Qwen3.8-27B                                line 35              36                37
+  Qwen3.8-Flash-Next                         line 64              65                70
+  gemma-4-31b-it-qat                         line 35              36                37
+
+Count: 26 scripts; 20 name and source a settings file; in 19 of those the file is sourced before
+the first variable is read. The one exception in order, MiniMax M2.7, reads the settings file's own location
+from the environment first (a variable that names the file), then sources it, then reads every other variable:
+the same order for everything but the file's name. Six scripts have no settings file.
+
+==== The pattern, from the Qwen3.6-27B script (lines 66 to 70; settings-file path and prefix redacted)
+  66  set -euo pipefail
+  67  ENVF=<REDACTED_PATH>/<settings file>
+  68  [ -f "$ENVF" ] && . "$ENVF"
+  69  CTX="${QWEN36_CTX:-131072}"
+  70  HOST="${QWEN36_HOST:-<LOCAL>}"; PORT="${QWEN36_PORT:-<PORT>}"
+
+==== The M2.7 variant (lines 76 to 82)
+  76  ENVF="${MINIMAX_M27_ENV_FILE:-<REDACTED_PATH>/<settings file>}"
+  77  if [ -n "${MINIMAX_M27_ENV_FILE:-}" ] && [ ! -f "$ENVF" ]; then
+  78    echo "ERROR: MINIMAX_M27_ENV_FILE=$ENVF does not exist." >&2; exit 2
+  79  fi
+  80  [ -f "$ENVF" ] && . "$ENVF"
+  81  CTX="${MINIMAX_M27_CTX:-131072}"
+  82  NCMOE="${MINIMAX_M27_NCMOE:-59}"
+
+==== What it means, reproduced on 2026-09-26 with a two-line demonstration file that contains only FOO_PORT=8116
+$ FOO_PORT=8199 bash -c '. demo.env; PORT="${FOO_PORT:-8116}"; echo ...'
+exported FOO_PORT=8199; after sourcing the file the script sees FOO_PORT=8116 and binds 8116
+exit code 0
+
+Reading: sourcing runs the file's assignments in the script's own shell, so a plain NAME=value line in the file
+replaces whatever the environment carried, and the script then reads the file's value. Nothing prints. The file
+winning is the design of these scripts (the file is the operator's control surface); the trap is expecting an
+exported variable to win.

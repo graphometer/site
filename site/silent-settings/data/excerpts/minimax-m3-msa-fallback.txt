@@ -1,0 +1,56 @@
+MiniMax M3: where llama.cpp decides whether the model's sparse attention (MSA) runs, and the one warning it prints
+when it does not. Source file src/models/minimax-m3.cpp of the llama.cpp tree this machine builds, at the commit
+its build-info.cpp records; the same lines were read from the upstream repository's copy of the file at that
+commit on 2026-09-26 (raw.githubusercontent.com, ggml-org/llama.cpp, commit d3146f2b56c2db4711ac8391871c9e529d1946d7)
+and match. The code comment is llama.cpp's own.
+
+---- build identity (common/build-info.cpp of the build we run)
+  int LLAMA_BUILD_NUMBER = 10919;
+  char const * LLAMA_COMMIT = "d3146f2b5";
+
+---- src/models/minimax-m3.cpp, lines 222 to 245
+ 222      // MSA calls ggml_flash_attn_ext directly and assumes the non-transposed V layout that
+ 223      // llama.cpp only provides when flash attention is enabled. Block selection is anchored
+ 224      // to absolute KV cache slots, which equal positions only for append-only per-stream
+ 225      // caches either a single sequence, or multiple sequences with kv_unified == false (each
+ 226      // stream then has its own slot space). A unified cache with multiple sequences
+ 227      // interleaves slots and would silently break block anchoring so it falls back to dense.
+ 228      const bool fa_on       = cparams.flash_attn;
+ 229      const bool streams_ok  = cparams.n_seq_max == 1 || !cparams.kv_unified;
+ 230      const bool msa_enabled = fa_on && streams_ok;
+ 231  
+ 232      auto * inp_attn = build_attn_inp_kv_msa(msa_enabled);
+ 233  
+ 234      static bool warned_no_fa = false;
+ 235      if (!fa_on && !warned_no_fa) {
+ 236          LLAMA_LOG_WARN("%s: flash attention disabled; MSA requires it -> running DENSE attention "
+ 237                         "(output may be degraded). Enable flash attention for MSA.\n", __func__);
+ 238          warned_no_fa = true;
+ 239      }
+ 240      static bool warned_unified = false;
+ 241      if (fa_on && !streams_ok && !warned_unified) {
+ 242          LLAMA_LOG_WARN("%s: unified KV cache with n_seq_max > 1; MSA needs per-sequence streams "
+ 243                         "-> running DENSE attention. Output may be degraded. Drop --kv-unified to enable MSA.\n", __func__);
+ 244          warned_unified = true;
+ 245      }
+
+---- what the installed MiniMax M3 start script passes (its launch block; paths redacted)
+ 137  exec "$BIN" \
+ 138    --model "$MODEL" \
+ 139    --host "$HOST" --port "$PORT" --alias minimax-m3 \
+ 140    --jinja --ctx-size "$CTX" --parallel 1 \
+ 141    --threads 24 --threads-batch 24 \
+ 142    --n-gpu-layers 999 -cmoe -b 4096 -ub "$UB" \
+ 143    --no-repack --flash-attn on \
+ 144    --cache-type-k q8_0 --cache-type-v q8_0 \
+ 145    --cors-origins localhost --timeout 3600 \
+
+---- how our M3 harness checked each load before taking a number (run_m3_msa.sh, lines 85 to 89; em dash changed to a colon)
+  85    if grep -qiE 'MSA requires|running DENSE|dense attention' "$LOG"; then
+  86      echo "  *** MSA IS NOT ACTIVE: fell back to DENSE. Numbers taken now describe the degraded path:"
+  87      grep -iE 'MSA|dense' "$LOG" | tail -2 | sed 's/^/      /'
+  88    else
+  89      echo "  MSA ENGAGED (no dense-fallback warning; filter verified against the source strings)"
+
+---- what a load with MSA engaged printed (one server log, 2026-09-20, the slot line; nothing about DENSE)
+  0.01.965.338 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'

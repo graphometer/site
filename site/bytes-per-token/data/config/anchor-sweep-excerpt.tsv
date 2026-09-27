@@ -1,0 +1,7 @@
+#	METHOD: llama-server invoked directly with each start script's exec flags; only --ctx-size varies.
+#	decode_tps = best of the two water-pump replies; Inkling-Small cached no prompt tokens on either reply. This column is not the page's selection. deep_* = one prompt fitted with the server's tokenizer to ~230,000 tokens
+#	CAVEAT: three model downloads (~340 GB) ran during the sweep, competing for disk and page cache , load times are upper bounds.
+label	status	load_s	n_ctx	vram_loaded_mib	vram_peak_mib	decode_tps	deep_prompt_tok	deep_prefill_tps	deep_decode_tps	codes_hit	note
+Inkling-Small_262144	OK	71.485150460	262144	15744	15814	11.772442551066042	230827	115.07	8.78	3/3	
+Qwen3.5-397B-A17B_262144	OK	235.825880458	262144	30908	31068	12.844951522175622	230803	194.51	17.00	3/3	
+DeepSeek-V4-Flash-8bit-desktop_262144	OK	220.641957820	262144	17752	18306	9.933466685766806	150475	72.97	9.14	3/3	

@@ -5,9 +5,41 @@
   <link href="https://graphometer.ai/"/>
   <link rel="self" href="https://graphometer.ai/feed.xml"/>
   <id>https://graphometer.ai/</id>
-  <updated>2026-09-26T21:58:00-04:00</updated>
+  <updated>2026-09-27T00:20:00-04:00</updated>
   <author><name>Graphometer</name></author>
   <rights>Copyright 2026 Grant Williams. Independent work: not affiliated with, endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, Meta Platforms, the Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter, DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, Thinking Machines Lab, DeepSeek, MiniMax, Google, inclusionAI, Poolside, Ornith AI, ASUS, AMD, NVIDIA, the OpenCode project, or Anthropic.</rights>
+
+  <entry>
+    <title>Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</title>
+    <link href="https://graphometer.ai/describing-pictures/"/>
+    <id>https://graphometer.ai/describing-pictures/</id>
+    <updated>2026-09-27T00:20:00-04:00</updated>
+    <summary>A measured study of local picture describers: six Qwen vision models through Ollama 0.30.10 on one desktop with an RTX 5090 and 188 GiB of RAM, 20 September 2026, seven test pictures holding 39 known strings, one run per configuration. On the card, Qwen3-VL 30B-A3B, Qwen3-VL 8B and Qwen3.6 35B-A3B found all 39, at 1.31 to 3.82 seconds a picture once loaded. On the CPU, reading the picture is most of the wait: with no thread count in the request, the server Ollama started reported 4 of 24 threads, and Qwen3-VL 30B-A3B took 273.17 seconds on its first 3840 x 2160 picture; 16 threads took 111.01, and 16 threads with pictures capped at 1,536 pixels took 38.52, with all 39 strings found. With 26,396 MiB of the card already in use by another program, Ollama's default request split the model 89/11 between CPU and card and took 206.87 seconds on that picture; a CPU-only request with 16 threads, a smaller window, a larger batch, memory mapping off and the cap took 39.39 and added nothing to the card. The cap has a cost: on a 4K screenshot of small text the 30B misread 4 of 24 codes at 1,536 pixels, writing a wrong code each time, and none uncapped. Also here: what a string count cannot see (a sideways picture described as stored, a wrong trend beside right numbers, runaway replies that still score, a logo our own notes described wrongly), the settings to use, and the records behind every figure.</summary>
+  </entry>
+
+  <entry>
+    <title>Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</title>
+    <link href="https://graphometer.ai/silent-settings/"/>
+    <id>https://graphometer.ai/silent-settings/</id>
+    <updated>2026-09-27T00:20:00-04:00</updated>
+    <summary>A guide built from dated records of 12 to 26 September 2026 on one RTX 5090 desktop: twelve settings the server accepted as tested, while the speed or the number was wrong anyway. A kept record shows the server loading under eight of them and a request returning text under six; two failed only where they had not been tried, a full-window micro-batch refused or dying at load and a --help name dying at load with a missing header key; the start script that promised a cache has no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and the settings-file override's two misreads are a dated note, its runs' logs not kept. Among the twelve: a start with no window passed that serves a different window from the one a page quoted (four starts on 26 September served 262,144, 262,144, 196,608 and 262,144); a window past the file's training length that is capped at 262,144 and still costs the card 23,816 MiB, the same as the genuine window; a micro-batch that loads at 131,072 and is refused at 196,608 or 262,144; an inherited -ub 128 that read 17.5 times slower on a 3,658-token prompt (MiniMax M2.7, -b 4096 held and only -ub changed) and 19.9 times slower on a 24,071-token prompt (Laguna S 2.1 at a 32,768 window, --batch-size 512 --ubatch-size 128 against -b 8192 -ub 8192); a first request that read at 87.7 tokens a second while the model file paged in, against 517.6 for the next; every expert in system memory leaving 8,311 MiB of a 32,607 MiB card unused on MiniMax M2.7, where the first placement step back bought nothing and the third did; MiniMax M3 numbers taken on a file with no sparse-attention index, a dense fallback until the correct file arrived on 20 September, beside the one warning line llama.cpp's source prints when the launch flags force the same fallback; a start script whose 262,144 rung promised an 8-bit cache and expanded an array nothing assigned, for nine days; a settings file that wins over an exported variable in 19 of 26 scripts, with MiniMax M2.7 reading only the file's own location first, so the file wins in all twenty that have one; a script header that said the draft head did not work while the shared library implemented it; a flag in --help that the build could not load; and Ollama 0.30.10's server running 4 of 24 threads on the CPU when the request set none, 273.17 seconds of wall time for one 4K picture against 111.01 at 16 threads and 38.52 with a 1,536-pixel cap, on answers of 174 to 303 tokens. Each item gives the symptom, the one-line check, what it cost us and the record; the records that live nowhere else on the site ship as a data package.</summary>
+  </entry>
+
+  <entry>
+  <title>Bytes per token: Predicting Inkling 975B: 5.2 to 5.7 tokens per second by arithmetic, server-reported 3.43 on short prose</title>
+  <link href="https://graphometer.ai/bytes-per-token/"/>
+  <id>https://graphometer.ai/bytes-per-token/</id>
+  <updated>2026-09-27T00:20:00-04:00</updated>
+  <summary>Count the routed expert bytes in the actual quantization before estimating a model&#x27;s speaking speed. Recorded short-prompt prose on this desktop implies an effective expert throughput of 31.0 to 34.3 GB/s, an arithmetic proxy rather than a direct RAM measurement. Inkling 975B&#x27;s 6.01 GB expert budget gives an arithmetic estimate of 5.2 to 5.7 tokens per second. Its recorded short-prose sample had a server-reported decode rate of 3.43 tokens per second alone; a different short-prose sample on the pair decoded at 3.13; tiny tool and recall replies are listed separately. The package includes every shard&#x27;s header inventory, recorded response and log evidence, and a reproducible calculator.</summary>
+</entry>
+
+  <entry>
+  <title>GLM-5.3-Flash on one desktop</title>
+  <link href="https://graphometer.ai/glm53-flash/"/>
+  <id>https://graphometer.ai/glm53-flash/</id>
+  <updated>2026-09-27T00:20:00-04:00</updated>
+  <summary type="html">GLM-5.3-Flash UD-Q3_K_XL decodes at about 10 tokens per second on one desktop, with 137.404 GiB of files. The installed launcher and the 21 and 26 September runs place 42 blocks' experts in system memory. At 131,072 tokens on 21 September, the published comparison is a first request at 24,008 tokens and 80.7 tokens per second, with 62 generated tokens at 9.22 tokens per second, against a third request on the tuned load at 20,333 tokens and 446.0 tokens per second, with 60 generated tokens at 9.35 tokens per second. The fourth request on that load read 48,168 tokens at 425.1 tokens per second and generated 310 tokens at 9.12 tokens per second. At 262,144, the installed micro-batch setting was measured through 47,992 tokens at 142.6 tokens per second. A separate micro-batch-2048 run read 230,039 tokens and returned all three planted codes; it is not the installed setting. The isolated guard passed one fixture. It is not in the installed launcher.</summary>
+</entry>
 
   <entry>
     <title>Qwen3.8-27B at 256K</title>

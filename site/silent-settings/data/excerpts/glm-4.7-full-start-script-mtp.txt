@@ -1,0 +1,86 @@
+GLM-4.7 Full start script: the header that said the draft head did not work, the header that replaced it, and
+the rung table with the script's own measured note. Both files are ours; internal build-tree names are replaced
+by placeholders (<build A> is the directory the script's binary lives in, <source tree B> the tree it was built
+from, <older source tree> an earlier llama.cpp tree on this machine), em dashes in our comments became colons
+(one pair became commas), a settings-variable prefix is redacted. The numbers in the note are the script's
+record of runs whose logs were not kept; the page says so.
+
+File times: the copy holding the old header (start_server.sh.bak-20260917-placement) 2026-09-16 18:37; the first copy holding the
+new header (start_server.sh.bak-20260921-batch) 2026-09-17 13:42; the current script 2026-09-21 18:37.
+
+==== A. The old header (copy bak-20260917-placement, lines 34 to 36; the rest of line 36 and lines 37 to 38, which
+     carry a figure no kept record supports, are not shipped)
+  34  # ** WATCH-ITEM: MTP speculative decoding DOES NOT WORK on this model here. **
+  35  # `--spec-type draft-mtp` fails in create_context: the nextn/MTP head is present in the
+  36  # GGUF but unwired upstream in this build. Do not add it back without re-testing. [the rest of this comment is cut from this copy]
+
+==== B. The new header (current script, lines 34 to 48; line 49 is not shipped)
+  34  # ** MTP speculative decoding NOW WORKS: re-tested and enabled 2026-09-17. **
+  35  # The old note here said draft-mtp was unwired upstream. That was true of the OLDER source
+  36  # (<older source tree>'s glm4-moe.cpp, 284 lines, `// TODO: when MTP is implemented`). The build
+  37  # this unit actually runs, <build A>, is byte-identical (md5 7431107a862f) to
+  38  # <source tree B>, whose glm4-moe.cpp (444 lines) implements a real graph_mtp for
+  39  # glm4_moe. The capability was here all along and was never switched on.
+  40  #
+  41  # Measured 2026-09-17 on this exact binary and GGUF, 3 runs per arm:
+  42  #     32K  · no spec   · n-cpu-moe 92 ->  5.23 t/s, 15.8 GB VRAM
+  43  #     32K  · draft-mtp · n-cpu-moe 92 ->  6.54 t/s, 18.4 GB, acceptance 0.76 -> 0.86
+  44  #     64K  · draft-mtp · n-cpu-moe 92 ->  7.41 t/s, 23.0 GB   <- fastest, roomiest
+  45  #     128K · draft-mtp · n-cpu-moe 93 ->  7.02 t/s, 31.0 GB   <- shipping default
+  46  #     128K · draft-mtp · n-cpu-moe 92 ->  FAILS, "failed to create MTP context"
+  47  # ** The 128K MTP context only fits when ALL experts go to CPU: hence NCMOE 93, not 92. **
+  48  # If you drop CTX to 65536, move NCMOE back to 92 for the faster, roomier profile.
+
+==== C. The rung table with the note's figures (current script, lines 102 to 116) and the per-rung draft flags (117 to 124)
+ 102  case "${CTX}/${NCMOE}/${KV}" in
+ 103    131072/93/q5_1) ;;   # 31,000 MiB / 1,607 free · 7.02 t/s   <- default, WITH draft-mtp (2026-09-17)
+ 104    131072/92/q5_1) ;;   # 28,839 MiB / 3,768 free · 5.51 t/s   the pre-MTP default; no draft-mtp at this rung
+ 105    98304/92/q8_0)  ;;   # 29,950 MiB / 2,657 free · 5.53 t/s   max window at q8_0
+ 106    65536/92/q5_1)  ;;   # 23,000 MiB / 9,607 free · 7.41 t/s   WITH draft-mtp: FASTEST + roomiest (2026-09-17)
+ 107    32768/92/q5_1)  ;;   # 18,437 MiB / 14,170 free · 6.54 t/s  WITH draft-mtp (2026-09-17)
+ 108    32768/87/f16)   ;;   # 30,395 MiB / 2,212 free · 5.91 t/s   [three words removed from this copy]
+ 109    *)
+ 110      echo "ERROR: GLM47_CTX/GLM47_NCMOE/GLM47_KV = ${CTX}/${NCMOE}/${KV} is not a MEASURED combination." >&2
+ 111      echo "       Measured triples: 131072/93/q5_1(mtp) · 131072/92/q5_1 · 98304/92/q8_0 · 65536/92/q5_1(mtp) · 32768/92/q5_1(mtp) · 32768/87/f16." >&2
+ 112      echo "       131072/92/q8_0 was tried and REFUSED: cudaMalloc failed allocating 25,024 MiB of KV." >&2
+ 113      echo "       Each attempt costs a ~3 minute 145 GB weight read before it fails, which is why" >&2
+ 114      echo "       this is a combination guard and not three independent allowlists." >&2
+ 115      exit 2 ;;
+ 116  esac
+ 117  # draft-mtp is per-RUNG, not global: the 131072/92 and 32768/87 rungs have no room for the
+ 118  # MTP draft context and die with "failed to create MTP context" if it is passed. Measured
+ 119  # 2026-09-17; see the header block. Adding a rung means deciding this line for it too.
+ 120  SPECARGS=()
+ 121  case "${CTX}/${NCMOE}/${KV}" in
+ 122    131072/93/q5_1|65536/92/q5_1|32768/92/q5_1)
+ 123      SPECARGS=(--spec-type draft-mtp --spec-draft-n-max 2) ;;
+ 124  esac
+
+==== D. The launch line (current script, lines 237 to 248; bridge address redacted)
+ 237  exec "$BIN" \
+ 238    --model "$MODEL" \
+ 239    --host "${HOST}" --port "${PORT}" --alias glm-4.7 \
+ 240    ${GLM47_SLOT_SAVE_PATH:+--slot-save-path "${GLM47_SLOT_SAVE_PATH}"} \
+ 241    --jinja --ctx-size "${CTX}" --parallel 1 \
+ 242    --batch-size "${GLM47_BATCH}" --ubatch-size "${GLM47_UBATCH}" \
+ 243    ${THINKARGS[@]+"${THINKARGS[@]}"} \
+ 244    --n-gpu-layers 99 --n-cpu-moe "${NCMOE}" \
+ 245    ${SPECARGS[@]+"${SPECARGS[@]}"} \
+ 246    ${KVARGS[@]+"${KVARGS[@]}"} \
+ 247    --threads 24 --threads-batch 24 \
+ 248    --flash-attn auto --cors-origins localhost --timeout 3600
+
+==== E. What the binary and its source trees say (read 2026-09-26)
+  md5 of the launcher the script names (17888 bytes) and of the launcher in <source tree B>:
+    7431107a862f5c4c7d86b135d27f5272  <build A>/bin/llama-server
+    7431107a862f5c4c7d86b135d27f5272  <source tree B>/build/bin/llama-server
+  md5 of the shared library that holds the model code, in both places (the script's library path puts <build A>/bin first):
+    1d82095e2fb6c3de2e354f53230c3e73  <build A>/bin/libllama.so.0.4.0
+    1d82095e2fb6c3de2e354f53230c3e73  <source tree B>/build/bin/libllama.so.0.4.0
+  count of the string "graph_mtp" in the strings of <build A>/bin/libllama.so.0.4.0: 252
+  <source tree B>/src/models/glm4-moe.cpp: 444 lines; lines mentioning the MTP graph:
+  line 127: return std::make_unique<graph_mtp>(*this, params);
+  line 132: llama_model_glm4_moe::graph_mtp::graph_mtp(const llama_model & model, const llm_graph_params & params)
+  <older source tree>/src/models/glm4-moe.cpp: 284 lines; its only MTP line:
+  line 26: // TODO: when MTP is implemented, this should probably be updated if needed
+  <source tree B> build identity: int LLAMA_BUILD_NUMBER = 10919;; char const * LLAMA_COMMIT = "d3146f2b5";

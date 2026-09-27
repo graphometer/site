@@ -1,0 +1,28 @@
+What bash does with an array that was never assigned, on the shell the start scripts run under.
+Run on 2026-09-26 on the desktop the page describes. GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)
+
+The scripts use the guarded form ${KVARGS[@]+"${KVARGS[@]}"} with set -euo pipefail. Three commands, their
+output and exit codes:
+
+$ bash -c 'set -euo pipefail; printf "[%s]\n" "x" ${KVARGS[@]+"${KVARGS[@]}"} "y"'
+[x]
+[y]
+exit code 0
+
+$ bash -c 'set -euo pipefail; printf "[%s]\n" "x" "${KVARGS[@]}" "y"'
+[x]
+[y]
+exit code 0
+
+$ bash -c 'set -euo pipefail; KVARGS=(--cache-type-k q8_0 --cache-type-v q8_0); printf "[%s]\n" "x" ${KVARGS[@]+"${KVARGS[@]}"} "y"'
+[x]
+[--cache-type-k]
+[q8_0]
+[--cache-type-v]
+[q8_0]
+[y]
+exit code 0
+
+Reading: with the array unset, both the guarded and the unguarded expansion produce nothing and no error on this
+bash (5.2); the launch line simply has no cache flags in it, and llama-server starts with its default cache
+type. Only the third command, with an assignment, puts the four flags into the argument list.

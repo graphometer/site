@@ -1,0 +1,26 @@
+MiniMax M2.7 start script: the placement default at 131,072, and the one shape the script forces at the 196,608
+window it serves by default. Code lines and their own messages only; the settings-variable prefix is redacted and
+em dashes in our own messages became colons. Read 2026-09-26 (file time 2026-09-26 22:28).
+
+---- the placement default and the two window checks (lines 82, 95 to 96, 100 to 101)
+  82  NCMOE="${MINIMAX_M27_NCMOE:-59}"
+  95  case "$CTX" in 131072|196608) ;; *)
+  96    echo "ERROR: MINIMAX_M27_CTX=$CTX is not a validated context: 196608 (the native ceiling; default since 2026-09-26) | 131072." >&2
+ 100  case "$NCMOE" in 58|59|60|61|cmoe) ;; *)
+ 101    echo "ERROR: MINIMAX_M27_NCMOE=$NCMOE is not a measured placement: 59 (default) | 58 (max) | 60 | 61 | cmoe (every expert in RAM)." >&2
+---- the 196,608 branch, which overrides the placement and the micro-batch (lines 112 to 123)
+ 112  if [ "$CTX" = "196608" ]; then
+ 113    # The native ceiling has exactly ONE measured shape. Set it rather than fail a 101 GiB load in
+ 114    # create_context: every expert in RAM, -ub 1024 (4096 fails in create_context, 2048 aborts).
+ 115    if [ "$NCMOE" != "cmoe" ] || [ "$MINIMAX_M27_UBATCH" != "1024" ]; then
+ 116      echo "NOTE: MINIMAX_M27_CTX=196608 has one measured shape: using every expert in RAM (cmoe) and -ub 1024" >&2
+ 117      echo "      instead of MINIMAX_M27_NCMOE=$NCMOE / MINIMAX_M27_UBATCH=$MINIMAX_M27_UBATCH. It reads roughly 3-3.5x slower than the 128K" >&2
+ 118      echo "      presets (188.8 t/s on a 4K prompt, where -ub 4096 read 564) and leaves ~1 GB of the card free." >&2
+ 119      NCMOE=cmoe; MINIMAX_M27_UBATCH=1024
+ 120    fi
+ 121  elif [ "$MINIMAX_M27_UBATCH" != "4096" ] && [ "$NCMOE" != "cmoe" ]; then
+ 122    echo "ERROR: MINIMAX_M27_UBATCH=$MINIMAX_M27_UBATCH was measured only with every expert in RAM (MINIMAX_M27_NCMOE=cmoe)." >&2
+ 123    echo "       Measured on a 4K prompt at cmoe: -ub 512 100.8 t/s · 1024 184.7 · 2048 324.3 · 4096 564.0." >&2
+---- how the placement reaches the launch line (lines 263 to 264)
+ 263  PLACE=(--n-cpu-moe "$NCMOE"); INRAM="$NCMOE of 62"
+ 264  [ "$NCMOE" = "cmoe" ] && { PLACE=(-cmoe); INRAM="all 62"; }

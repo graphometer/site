@@ -1,0 +1,573 @@
+# Ollama service log, excerpt: the serving process's version line (19 September 2026) and, for
+# 08:19:00 to 09:16:30 on 20 September 2026, only these line types: each llama-server launch
+# command; its thread report; the CPU, card and memory it saw; the model file's type, size and
+# parameters; card-memory and eviction notices; layer fitting; weight and cache buffer sizes; the
+# picture encoder's backend; and the server's own per-request timings. Host name, process name and
+# id removed; model folder, library folder, ports and the bind address replaced by placeholders.
+# Nothing else was changed. Times are the journal's, local time (UTC-4). See data/README.md.
+
+2026-09-19T06:34:57-04:00 time=2026-09-19T06:34:57.890-04:00 level=INFO source=routes.go:1981 msg="Listening on <LOCAL>:11434 (version 0.30.10)"
+2026-09-20T08:19:42-04:00 time=2026-09-20T08:19:42.410-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:19:42-04:00 time=2026-09-20T08:19:42.410-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="159.7 GiB" free_swap="72.8 GiB"
+2026-09-20T08:19:42-04:00 time=2026-09-20T08:19:42.411-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.3 GiB" free="29.8 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:19:42-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:19:42-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30513 MiB free)
+2026-09-20T08:19:42-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:19:46-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:19:46-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:19:46-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:19:46-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:19:46-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:20:15-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:20:15-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:20:17-04:00 llama_kv_cache:      CUDA0 KV buffer size =  3072.00 MiB
+2026-09-20T08:20:17-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:20:22-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    3434.57 ms /  4154 tokens (    0.83 ms per token,  1209.47 tokens per second)
+2026-09-20T08:20:22-04:00 slot print_timing: id  0 | task 0 |        eval time =     991.30 ms /   235 tokens (    4.22 ms per token,   237.06 tokens per second)
+2026-09-20T08:20:26-04:00 slot print_timing: id  0 | task 237 | prompt eval time =    1688.77 ms /  4150 tokens (    0.41 ms per token,  2457.41 tokens per second)
+2026-09-20T08:20:26-04:00 slot print_timing: id  0 | task 237 |        eval time =     860.84 ms /   206 tokens (    4.18 ms per token,   239.30 tokens per second)
+2026-09-20T08:20:28-04:00 slot print_timing: id  0 | task 444 | prompt eval time =     519.82 ms /  1970 tokens (    0.26 ms per token,  3789.76 tokens per second)
+2026-09-20T08:20:28-04:00 slot print_timing: id  0 | task 444 |        eval time =    1011.46 ms /   260 tokens (    3.89 ms per token,   257.06 tokens per second)
+2026-09-20T08:20:30-04:00 slot print_timing: id  0 | task 705 | prompt eval time =     641.01 ms /  2215 tokens (    0.29 ms per token,  3455.49 tokens per second)
+2026-09-20T08:20:30-04:00 slot print_timing: id  0 | task 705 |        eval time =    1324.93 ms /   339 tokens (    3.91 ms per token,   255.86 tokens per second)
+2026-09-20T08:20:31-04:00 slot print_timing: id  0 | task 1045 | prompt eval time =     324.83 ms /  1302 tokens (    0.25 ms per token,  4008.29 tokens per second)
+2026-09-20T08:20:31-04:00 slot print_timing: id  0 | task 1045 |        eval time =     922.21 ms /   244 tokens (    3.78 ms per token,   264.58 tokens per second)
+2026-09-20T08:20:33-04:00 slot print_timing: id  0 | task 1290 | prompt eval time =     275.62 ms /  1134 tokens (    0.24 ms per token,  4114.29 tokens per second)
+2026-09-20T08:20:33-04:00 slot print_timing: id  0 | task 1290 |        eval time =     795.11 ms /   213 tokens (    3.73 ms per token,   267.89 tokens per second)
+2026-09-20T08:20:35-04:00 slot print_timing: id  0 | task 1504 | prompt eval time =    1666.45 ms /  4150 tokens (    0.40 ms per token,  2490.33 tokens per second)
+2026-09-20T08:20:35-04:00 slot print_timing: id  0 | task 1504 |        eval time =     617.58 ms /   148 tokens (    4.17 ms per token,   239.64 tokens per second)
+2026-09-20T08:20:56-04:00 time=2026-09-20T08:20:56.749-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 --context-shift --keep 4"
+2026-09-20T08:20:56-04:00 time=2026-09-20T08:20:56.749-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="161.0 GiB" free_swap="72.4 GiB"
+2026-09-20T08:20:56-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:20:56-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:20:57-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:20:57-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:20:57-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:20:57-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:20:57-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:20:57-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T08:20:57-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T08:21:06-04:00 llama_kv_cache:        CPU KV buffer size =  3072.00 MiB
+2026-09-20T08:21:08-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:25:29-04:00 slot print_timing: id  0 | task 0 | prompt eval time =  242931.43 ms /  4154 tokens (   58.48 ms per token,    17.10 tokens per second)
+2026-09-20T08:25:29-04:00 slot print_timing: id  0 | task 0 |        eval time =   17363.53 ms /   174 tokens (   99.79 ms per token,    10.02 tokens per second)
+2026-09-20T08:26:08-04:00 time=2026-09-20T08:26:08.697-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T08:26:08-04:00 time=2026-09-20T08:26:08.697-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.5 GiB" free_swap="72.3 GiB"
+2026-09-20T08:26:08-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:26:08-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:26:09-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:26:09-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:26:09-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:26:09-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:26:09-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:26:09-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T08:26:09-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T08:26:18-04:00 llama_kv_cache:        CPU KV buffer size =  3072.00 MiB
+2026-09-20T08:26:20-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:27:59-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   87766.16 ms /  4154 tokens (   21.13 ms per token,    47.33 tokens per second)
+2026-09-20T08:27:59-04:00 slot print_timing: id  0 | task 0 |        eval time =    9846.25 ms /   193 tokens (   51.02 ms per token,    19.60 tokens per second)
+2026-09-20T08:28:41-04:00 slot print_timing: id  0 | task 195 | prompt eval time =   29574.70 ms /  1970 tokens (   15.01 ms per token,    66.61 tokens per second)
+2026-09-20T08:28:41-04:00 slot print_timing: id  0 | task 195 |        eval time =   11898.89 ms /   278 tokens (   42.80 ms per token,    23.36 tokens per second)
+2026-09-20T08:28:45-04:00 time=2026-09-20T08:28:45.692-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 24 --context-shift --keep 4"
+2026-09-20T08:28:45-04:00 time=2026-09-20T08:28:45.693-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.3 GiB" free_swap="72.3 GiB"
+2026-09-20T08:28:45-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:28:45-04:00 system_info: n_threads = 24 (n_threads_batch = 24) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:28:46-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:28:46-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:28:46-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:28:46-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:28:46-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:28:46-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T08:28:46-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T08:28:55-04:00 llama_kv_cache:        CPU KV buffer size =  3072.00 MiB
+2026-09-20T08:28:59-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:30:33-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   76568.66 ms /  4154 tokens (   18.43 ms per token,    54.25 tokens per second)
+2026-09-20T08:30:33-04:00 slot print_timing: id  0 | task 0 |        eval time =   16474.82 ms /   208 tokens (   79.21 ms per token,    12.63 tokens per second)
+2026-09-20T08:31:19-04:00 slot print_timing: id  0 | task 210 | prompt eval time =   26548.86 ms /  1970 tokens (   13.48 ms per token,    74.20 tokens per second)
+2026-09-20T08:31:19-04:00 slot print_timing: id  0 | task 210 |        eval time =   18822.89 ms /   235 tokens (   80.10 ms per token,    12.48 tokens per second)
+2026-09-20T08:31:23-04:00 time=2026-09-20T08:31:23.545-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 8 --context-shift --keep 4"
+2026-09-20T08:31:23-04:00 time=2026-09-20T08:31:23.546-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="159.7 GiB" free_swap="72.3 GiB"
+2026-09-20T08:31:23-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:31:23-04:00 system_info: n_threads = 8 (n_threads_batch = 8) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:31:24-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:31:24-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:31:24-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:31:24-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:31:24-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:31:24-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T08:31:24-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T08:31:33-04:00 llama_kv_cache:        CPU KV buffer size =  3072.00 MiB
+2026-09-20T08:31:34-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:34:00-04:00 slot print_timing: id  0 | task 0 | prompt eval time =  123534.83 ms /  4154 tokens (   29.74 ms per token,    33.63 tokens per second)
+2026-09-20T08:34:00-04:00 slot print_timing: id  0 | task 0 |        eval time =   20891.20 ms /   303 tokens (   68.95 ms per token,    14.50 tokens per second)
+2026-09-20T08:35:00-04:00 slot print_timing: id  0 | task 305 | prompt eval time =   40141.65 ms /  1970 tokens (   20.38 ms per token,    49.08 tokens per second)
+2026-09-20T08:35:00-04:00 slot print_timing: id  0 | task 305 |        eval time =   19741.99 ms /   364 tokens (   54.24 ms per token,    18.44 tokens per second)
+2026-09-20T08:35:32-04:00 time=2026-09-20T08:35:32.665-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-f5ee307a2982106a6eb82b62b2c00b575c9072145a759ae4660378acda8dcf2d --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-f5ee307a2982106a6eb82b62b2c00b575c9072145a759ae4660378acda8dcf2d --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-20T08:35:32-04:00 time=2026-09-20T08:35:32.666-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.0 GiB" free_swap="72.4 GiB"
+2026-09-20T08:35:32-04:00 time=2026-09-20T08:35:32.666-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.4 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:35:32-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:35:32-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30572 MiB free)
+2026-09-20T08:35:32-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:35:35-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:35:35-04:00 print_info: file size   = 21.45 GiB (5.19 BPW)
+2026-09-20T08:35:36-04:00 print_info: arch                  = qwen35moe
+2026-09-20T08:35:36-04:00 print_info: model type            = 35B.A3B
+2026-09-20T08:35:36-04:00 print_info: model params          = 35.51 B
+2026-09-20T08:35:36-04:00 load_tensors:          CPU model buffer size =   272.81 MiB
+2026-09-20T08:35:36-04:00 load_tensors:        CUDA0 model buffer size = 21692.56 MiB
+2026-09-20T08:36:07-04:00 llama_kv_cache:      CUDA0 KV buffer size =   640.00 MiB
+2026-09-20T08:36:07-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:36:11-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1946.17 ms /  4158 tokens (    0.47 ms per token,  2136.50 tokens per second)
+2026-09-20T08:36:11-04:00 slot print_timing: id  0 | task 0 |        eval time =    1248.81 ms /   289 tokens (    4.32 ms per token,   231.42 tokens per second)
+2026-09-20T08:36:14-04:00 slot print_timing: id  0 | task 292 | prompt eval time =    1799.38 ms /  4158 tokens (    0.43 ms per token,  2310.79 tokens per second)
+2026-09-20T08:36:14-04:00 slot print_timing: id  0 | task 292 |        eval time =    1100.16 ms /   247 tokens (    4.45 ms per token,   224.51 tokens per second)
+2026-09-20T08:36:17-04:00 slot print_timing: id  0 | task 542 | prompt eval time =     626.04 ms /  1978 tokens (    0.32 ms per token,  3159.54 tokens per second)
+2026-09-20T08:36:17-04:00 slot print_timing: id  0 | task 542 |        eval time =    1912.79 ms /   439 tokens (    4.36 ms per token,   229.51 tokens per second)
+2026-09-20T08:36:20-04:00 slot print_timing: id  0 | task 984 | prompt eval time =     741.93 ms /  2223 tokens (    0.33 ms per token,  2996.25 tokens per second)
+2026-09-20T08:36:20-04:00 slot print_timing: id  0 | task 984 |        eval time =    2072.16 ms /   472 tokens (    4.39 ms per token,   227.78 tokens per second)
+2026-09-20T08:36:22-04:00 slot print_timing: id  0 | task 1459 | prompt eval time =     378.29 ms /  1310 tokens (    0.29 ms per token,  3462.98 tokens per second)
+2026-09-20T08:36:22-04:00 slot print_timing: id  0 | task 1459 |        eval time =    1098.32 ms /   250 tokens (    4.39 ms per token,   227.62 tokens per second)
+2026-09-20T08:36:24-04:00 slot print_timing: id  0 | task 1712 | prompt eval time =     335.29 ms /  1142 tokens (    0.29 ms per token,  3406.00 tokens per second)
+2026-09-20T08:36:24-04:00 slot print_timing: id  0 | task 1712 |        eval time =    1132.13 ms /   263 tokens (    4.30 ms per token,   232.30 tokens per second)
+2026-09-20T08:36:27-04:00 slot print_timing: id  0 | task 1978 | prompt eval time =    1806.96 ms /  4158 tokens (    0.43 ms per token,  2301.10 tokens per second)
+2026-09-20T08:36:27-04:00 slot print_timing: id  0 | task 1978 |        eval time =     839.42 ms /   194 tokens (    4.33 ms per token,   231.11 tokens per second)
+2026-09-20T08:37:43-04:00 time=2026-09-20T08:37:43.957-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:37:43-04:00 time=2026-09-20T08:37:43.957-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="161.7 GiB" free_swap="72.3 GiB"
+2026-09-20T08:37:43-04:00 time=2026-09-20T08:37:43.957-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.4 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:37:44-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:37:44-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30582 MiB free)
+2026-09-20T08:37:44-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:37:45-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:37:45-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T08:37:45-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:37:45-04:00 print_info: model type            = 4B
+2026-09-20T08:37:45-04:00 print_info: model params          = 4.02 B
+2026-09-20T08:37:46-04:00 load_tensors:   CPU_Mapped model buffer size =   304.28 MiB
+2026-09-20T08:37:46-04:00 load_tensors:        CUDA0 model buffer size =  2374.62 MiB
+2026-09-20T08:37:46-04:00 llama_kv_cache:      CUDA0 KV buffer size =  4608.00 MiB
+2026-09-20T08:37:46-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:37:51-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    3768.55 ms /  4154 tokens (    0.91 ms per token,  1102.28 tokens per second)
+2026-09-20T08:37:51-04:00 slot print_timing: id  0 | task 0 |        eval time =     846.45 ms /   221 tokens (    3.83 ms per token,   261.09 tokens per second)
+2026-09-20T08:37:54-04:00 slot print_timing: id  0 | task 223 | prompt eval time =     668.55 ms /  4150 tokens (    0.16 ms per token,  6207.44 tokens per second)
+2026-09-20T08:37:54-04:00 slot print_timing: id  0 | task 223 |        eval time =     781.25 ms /   206 tokens (    3.79 ms per token,   263.68 tokens per second)
+2026-09-20T08:37:56-04:00 slot print_timing: id  0 | task 430 | prompt eval time =     259.20 ms /  1970 tokens (    0.13 ms per token,  7600.19 tokens per second)
+2026-09-20T08:37:56-04:00 slot print_timing: id  0 | task 430 |        eval time =    1837.40 ms /   509 tokens (    3.61 ms per token,   277.02 tokens per second)
+2026-09-20T08:37:58-04:00 slot print_timing: id  0 | task 940 | prompt eval time =     312.15 ms /  2215 tokens (    0.14 ms per token,  7095.86 tokens per second)
+2026-09-20T08:37:58-04:00 slot print_timing: id  0 | task 940 |        eval time =    1558.88 ms /   440 tokens (    3.54 ms per token,   282.25 tokens per second)
+2026-09-20T08:38:00-04:00 slot print_timing: id  0 | task 1381 | prompt eval time =     171.34 ms /  1302 tokens (    0.13 ms per token,  7598.79 tokens per second)
+2026-09-20T08:38:00-04:00 slot print_timing: id  0 | task 1381 |        eval time =     588.91 ms /   168 tokens (    3.51 ms per token,   285.27 tokens per second)
+2026-09-20T08:38:01-04:00 slot print_timing: id  0 | task 1550 | prompt eval time =     150.26 ms /  1134 tokens (    0.13 ms per token,  7547.07 tokens per second)
+2026-09-20T08:38:01-04:00 slot print_timing: id  0 | task 1550 |        eval time =     894.82 ms /   256 tokens (    3.50 ms per token,   286.09 tokens per second)
+2026-09-20T08:38:03-04:00 slot print_timing: id  0 | task 1807 | prompt eval time =     662.63 ms /  4150 tokens (    0.16 ms per token,  6262.89 tokens per second)
+2026-09-20T08:38:03-04:00 slot print_timing: id  0 | task 1807 |        eval time =    1010.30 ms /   264 tokens (    3.83 ms per token,   261.31 tokens per second)
+2026-09-20T08:38:23-04:00 time=2026-09-20T08:38:23.191-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T08:38:23-04:00 time=2026-09-20T08:38:23.192-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.9 GiB" free_swap="72.3 GiB"
+2026-09-20T08:38:23-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:38:23-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:38:23-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:38:23-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T08:38:24-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:38:24-04:00 print_info: model type            = 4B
+2026-09-20T08:38:24-04:00 print_info: model params          = 4.02 B
+2026-09-20T08:38:24-04:00 load_tensors:          CPU model buffer size =   688.53 MiB
+2026-09-20T08:38:24-04:00 load_tensors:   CPU_REPACK model buffer size =  1686.09 MiB
+2026-09-20T08:38:25-04:00 llama_kv_cache:        CPU KV buffer size =  4608.00 MiB
+2026-09-20T08:38:27-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:39:58-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   71480.34 ms /  4154 tokens (   17.21 ms per token,    58.11 tokens per second)
+2026-09-20T08:39:58-04:00 slot print_timing: id  0 | task 0 |        eval time =   18444.16 ms /   301 tokens (   61.28 ms per token,    16.32 tokens per second)
+2026-09-20T08:41:19-04:00 slot print_timing: id  0 | task 303 | prompt eval time =   70236.99 ms /  4150 tokens (   16.92 ms per token,    59.09 tokens per second)
+2026-09-20T08:41:19-04:00 slot print_timing: id  0 | task 303 |        eval time =    9882.38 ms /   172 tokens (   57.46 ms per token,    17.40 tokens per second)
+2026-09-20T08:41:57-04:00 slot print_timing: id  0 | task 476 | prompt eval time =   22973.11 ms /  1970 tokens (   11.66 ms per token,    85.75 tokens per second)
+2026-09-20T08:41:57-04:00 slot print_timing: id  0 | task 476 |        eval time =   15027.09 ms /   313 tokens (   48.01 ms per token,    20.83 tokens per second)
+2026-09-20T08:42:41-04:00 slot print_timing: id  0 | task 790 | prompt eval time =   27217.25 ms /  2215 tokens (   12.29 ms per token,    81.38 tokens per second)
+2026-09-20T08:42:41-04:00 slot print_timing: id  0 | task 790 |        eval time =   15580.81 ms /   319 tokens (   48.84 ms per token,    20.47 tokens per second)
+2026-09-20T08:43:04-04:00 slot print_timing: id  0 | task 1110 | prompt eval time =   13269.64 ms /  1302 tokens (   10.19 ms per token,    98.12 tokens per second)
+2026-09-20T08:43:04-04:00 slot print_timing: id  0 | task 1110 |        eval time =    9459.67 ms /   209 tokens (   45.26 ms per token,    22.09 tokens per second)
+2026-09-20T08:43:28-04:00 slot print_timing: id  0 | task 1320 | prompt eval time =   11118.48 ms /  1134 tokens (    9.80 ms per token,   101.99 tokens per second)
+2026-09-20T08:43:28-04:00 slot print_timing: id  0 | task 1320 |        eval time =   12982.82 ms /   289 tokens (   44.92 ms per token,    22.26 tokens per second)
+2026-09-20T08:44:49-04:00 slot print_timing: id  0 | task 1610 | prompt eval time =   67942.49 ms /  4150 tokens (   16.37 ms per token,    61.08 tokens per second)
+2026-09-20T08:44:49-04:00 slot print_timing: id  0 | task 1610 |        eval time =   12320.68 ms /   213 tokens (   57.84 ms per token,    17.29 tokens per second)
+2026-09-20T08:45:08-04:00 time=2026-09-20T08:45:08.470-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T08:45:08-04:00 time=2026-09-20T08:45:08.470-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.8 GiB" free_swap="71.7 GiB"
+2026-09-20T08:45:08-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:45:08-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:45:09-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:45:09-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T08:45:09-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:45:09-04:00 print_info: model type            = 4B
+2026-09-20T08:45:09-04:00 print_info: model params          = 4.02 B
+2026-09-20T08:45:09-04:00 load_tensors:          CPU model buffer size =   688.53 MiB
+2026-09-20T08:45:09-04:00 load_tensors:   CPU_REPACK model buffer size =  1686.09 MiB
+2026-09-20T08:45:11-04:00 llama_kv_cache:        CPU KV buffer size =  4608.00 MiB
+2026-09-20T08:45:13-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:45:37-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   14302.52 ms /  1370 tokens (   10.44 ms per token,    95.79 tokens per second)
+2026-09-20T08:45:37-04:00 slot print_timing: id  0 | task 0 |        eval time =    8039.94 ms /   177 tokens (   45.42 ms per token,    22.02 tokens per second)
+2026-09-20T08:45:57-04:00 slot print_timing: id  0 | task 179 | prompt eval time =   14161.36 ms /  1366 tokens (   10.37 ms per token,    96.46 tokens per second)
+2026-09-20T08:45:57-04:00 slot print_timing: id  0 | task 179 |        eval time =    5377.53 ms /   119 tokens (   45.19 ms per token,    22.13 tokens per second)
+2026-09-20T08:46:36-04:00 slot print_timing: id  0 | task 299 | prompt eval time =   20274.15 ms /  1798 tokens (   11.28 ms per token,    88.68 tokens per second)
+2026-09-20T08:46:36-04:00 slot print_timing: id  0 | task 299 |        eval time =   18791.65 ms /   395 tokens (   47.57 ms per token,    21.02 tokens per second)
+2026-09-20T08:47:13-04:00 slot print_timing: id  0 | task 695 | prompt eval time =   18791.87 ms /  1702 tokens (   11.04 ms per token,    90.57 tokens per second)
+2026-09-20T08:47:13-04:00 slot print_timing: id  0 | task 695 |        eval time =   17903.50 ms /   380 tokens (   47.11 ms per token,    21.22 tokens per second)
+2026-09-20T08:47:39-04:00 slot print_timing: id  0 | task 1076 | prompt eval time =   13235.39 ms /  1302 tokens (   10.17 ms per token,    98.37 tokens per second)
+2026-09-20T08:47:39-04:00 slot print_timing: id  0 | task 1076 |        eval time =   11856.09 ms /   260 tokens (   45.60 ms per token,    21.93 tokens per second)
+2026-09-20T08:47:59-04:00 slot print_timing: id  0 | task 1337 | prompt eval time =   11116.18 ms /  1134 tokens (    9.80 ms per token,   102.01 tokens per second)
+2026-09-20T08:47:59-04:00 slot print_timing: id  0 | task 1337 |        eval time =    8998.70 ms /   201 tokens (   44.77 ms per token,    22.34 tokens per second)
+2026-09-20T08:48:29-04:00 slot print_timing: id  0 | task 1539 | prompt eval time =   14108.56 ms /  1366 tokens (   10.33 ms per token,    96.82 tokens per second)
+2026-09-20T08:48:29-04:00 slot print_timing: id  0 | task 1539 |        eval time =   15827.18 ms /   345 tokens (   45.88 ms per token,    21.80 tokens per second)
+2026-09-20T08:48:34-04:00 time=2026-09-20T08:48:34.010-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T08:48:34-04:00 time=2026-09-20T08:48:34.011-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.6 GiB" free_swap="71.7 GiB"
+2026-09-20T08:48:34-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:48:34-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:48:34-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:48:34-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T08:48:34-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:48:34-04:00 print_info: model type            = 4B
+2026-09-20T08:48:34-04:00 print_info: model params          = 4.02 B
+2026-09-20T08:48:34-04:00 load_tensors:          CPU model buffer size =   688.53 MiB
+2026-09-20T08:48:34-04:00 load_tensors:   CPU_REPACK model buffer size =  1686.09 MiB
+2026-09-20T08:48:36-04:00 llama_kv_cache:        CPU KV buffer size =  4608.00 MiB
+2026-09-20T08:48:38-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:49:01-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   10951.76 ms /  1106 tokens (    9.90 ms per token,   100.99 tokens per second)
+2026-09-20T08:49:01-04:00 slot print_timing: id  0 | task 0 |        eval time =   10985.83 ms /   245 tokens (   44.84 ms per token,    22.30 tokens per second)
+2026-09-20T08:49:24-04:00 slot print_timing: id  0 | task 247 | prompt eval time =   10741.75 ms /  1102 tokens (    9.75 ms per token,   102.59 tokens per second)
+2026-09-20T08:49:24-04:00 slot print_timing: id  0 | task 247 |        eval time =   12373.29 ms /   276 tokens (   44.83 ms per token,    22.31 tokens per second)
+2026-09-20T08:49:51-04:00 slot print_timing: id  0 | task 524 | prompt eval time =   10781.31 ms /  1106 tokens (    9.75 ms per token,   102.58 tokens per second)
+2026-09-20T08:49:51-04:00 slot print_timing: id  0 | task 524 |        eval time =   16103.72 ms /   357 tokens (   45.11 ms per token,    22.17 tokens per second)
+2026-09-20T08:50:24-04:00 slot print_timing: id  0 | task 882 | prompt eval time =   10996.53 ms /  1123 tokens (    9.79 ms per token,   102.12 tokens per second)
+2026-09-20T08:50:24-04:00 slot print_timing: id  0 | task 882 |        eval time =   21383.67 ms /   472 tokens (   45.30 ms per token,    22.07 tokens per second)
+2026-09-20T08:50:42-04:00 slot print_timing: id  0 | task 1355 | prompt eval time =   10982.85 ms /  1110 tokens (    9.89 ms per token,   101.07 tokens per second)
+2026-09-20T08:50:42-04:00 slot print_timing: id  0 | task 1355 |        eval time =    6848.98 ms /   154 tokens (   44.47 ms per token,    22.49 tokens per second)
+2026-09-20T08:51:03-04:00 slot print_timing: id  0 | task 1510 | prompt eval time =   10784.59 ms /  1106 tokens (    9.75 ms per token,   102.55 tokens per second)
+2026-09-20T08:51:03-04:00 slot print_timing: id  0 | task 1510 |        eval time =   10244.86 ms /   229 tokens (   44.74 ms per token,    22.35 tokens per second)
+2026-09-20T08:51:27-04:00 slot print_timing: id  0 | task 1740 | prompt eval time =   10738.33 ms /  1102 tokens (    9.74 ms per token,   102.62 tokens per second)
+2026-09-20T08:51:27-04:00 slot print_timing: id  0 | task 1740 |        eval time =   13303.31 ms /   296 tokens (   44.94 ms per token,    22.25 tokens per second)
+2026-09-20T08:51:44-04:00 time=2026-09-20T08:51:44.947-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T08:51:44-04:00 time=2026-09-20T08:51:44.948-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.3 GiB" free_swap="71.8 GiB"
+2026-09-20T08:51:44-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:51:44-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T08:51:45-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:51:45-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:51:45-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:51:45-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:51:45-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:51:45-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T08:51:45-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T08:51:54-04:00 llama_kv_cache:        CPU KV buffer size =  3072.00 MiB
+2026-09-20T08:51:55-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T08:52:23-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   18169.57 ms /  1370 tokens (   13.26 ms per token,    75.40 tokens per second)
+2026-09-20T08:52:23-04:00 slot print_timing: id  0 | task 0 |        eval time =    8010.92 ms /   207 tokens (   38.70 ms per token,    25.84 tokens per second)
+2026-09-20T08:52:47-04:00 slot print_timing: id  0 | task 209 | prompt eval time =   17980.77 ms /  1366 tokens (   13.16 ms per token,    75.97 tokens per second)
+2026-09-20T08:52:47-04:00 slot print_timing: id  0 | task 209 |        eval time =    6154.30 ms /   160 tokens (   38.46 ms per token,    26.00 tokens per second)
+2026-09-20T08:53:26-04:00 slot print_timing: id  0 | task 370 | prompt eval time =   25590.54 ms /  1798 tokens (   14.23 ms per token,    70.26 tokens per second)
+2026-09-20T08:53:26-04:00 slot print_timing: id  0 | task 370 |        eval time =   13103.99 ms /   321 tokens (   40.82 ms per token,    24.50 tokens per second)
+2026-09-20T08:54:05-04:00 slot print_timing: id  0 | task 692 | prompt eval time =   23864.32 ms /  1702 tokens (   14.02 ms per token,    71.32 tokens per second)
+2026-09-20T08:54:05-04:00 slot print_timing: id  0 | task 692 |        eval time =   14554.28 ms /   361 tokens (   40.32 ms per token,    24.80 tokens per second)
+2026-09-20T08:54:30-04:00 slot print_timing: id  0 | task 1054 | prompt eval time =   16932.27 ms /  1302 tokens (   13.00 ms per token,    76.89 tokens per second)
+2026-09-20T08:54:30-04:00 slot print_timing: id  0 | task 1054 |        eval time =    8275.46 ms /   215 tokens (   38.49 ms per token,    25.98 tokens per second)
+2026-09-20T08:54:53-04:00 slot print_timing: id  0 | task 1270 | prompt eval time =   14233.03 ms /  1134 tokens (   12.55 ms per token,    79.67 tokens per second)
+2026-09-20T08:54:53-04:00 slot print_timing: id  0 | task 1270 |        eval time =    8157.56 ms /   215 tokens (   37.94 ms per token,    26.36 tokens per second)
+2026-09-20T08:55:17-04:00 slot print_timing: id  0 | task 1486 | prompt eval time =   18075.06 ms /  1366 tokens (   13.23 ms per token,    75.57 tokens per second)
+2026-09-20T08:55:17-04:00 slot print_timing: id  0 | task 1486 |        eval time =    5840.73 ms /   152 tokens (   38.43 ms per token,    26.02 tokens per second)
+2026-09-20T08:56:10-04:00 time=2026-09-20T08:56:10.703-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:56:10-04:00 time=2026-09-20T08:56:10.703-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="161.3 GiB" free_swap="71.3 GiB"
+2026-09-20T08:56:10-04:00 time=2026-09-20T08:56:10.703-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:56:10-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:56:10-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:56:10-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:56:12-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:56:12-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:56:12-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:56:12-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:56:12-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:56:12-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:56:12-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:56:14-04:00 llama_kv_cache:      CUDA0 KV buffer size =  3072.00 MiB
+2026-09-20T08:56:14-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:56:19-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1848.53 ms /  4154 tokens (    0.44 ms per token,  2247.19 tokens per second)
+2026-09-20T08:56:19-04:00 slot print_timing: id  0 | task 0 |        eval time =    3055.93 ms /   763 tokens (    4.01 ms per token,   249.68 tokens per second)
+2026-09-20T08:56:22-04:00 time=2026-09-20T08:56:22.674-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:56:22-04:00 time=2026-09-20T08:56:22.674-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="161.0 GiB" free_swap="71.3 GiB"
+2026-09-20T08:56:22-04:00 time=2026-09-20T08:56:22.674-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:56:22-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:56:22-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:56:22-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:56:24-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:56:24-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:56:24-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:56:24-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:56:24-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:56:24-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:56:24-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:56:26-04:00 llama_kv_cache:      CUDA0 KV buffer size =  3072.00 MiB
+2026-09-20T08:56:26-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:56:31-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1524.44 ms /  3674 tokens (    0.41 ms per token,  2410.07 tokens per second)
+2026-09-20T08:56:31-04:00 slot print_timing: id  0 | task 0 |        eval time =    2953.03 ms /   749 tokens (    3.94 ms per token,   253.64 tokens per second)
+2026-09-20T08:56:33-04:00 time=2026-09-20T08:56:33.859-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:56:33-04:00 time=2026-09-20T08:56:33.859-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.9 GiB" free_swap="71.3 GiB"
+2026-09-20T08:56:33-04:00 time=2026-09-20T08:56:33.859-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:56:33-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:56:34-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:56:34-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:56:35-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:56:35-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:56:35-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:56:35-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:56:35-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:56:36-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:56:36-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:56:37-04:00 llama_kv_cache:      CUDA0 KV buffer size =  3072.00 MiB
+2026-09-20T08:56:37-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:56:42-04:00 slot print_timing: id  0 | task 0 | prompt eval time =     857.96 ms /  2378 tokens (    0.36 ms per token,  2771.71 tokens per second)
+2026-09-20T08:56:42-04:00 slot print_timing: id  0 | task 0 |        eval time =    3397.74 ms /   914 tokens (    3.72 ms per token,   269.00 tokens per second)
+2026-09-20T08:56:45-04:00 time=2026-09-20T08:56:45.123-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:56:45-04:00 time=2026-09-20T08:56:45.123-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.6 GiB" free_swap="71.3 GiB"
+2026-09-20T08:56:45-04:00 time=2026-09-20T08:56:45.123-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:56:45-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:56:45-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:56:45-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:56:46-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:56:46-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:56:46-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:56:46-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:56:46-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:56:47-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:56:47-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:56:48-04:00 llama_kv_cache:      CUDA0 KV buffer size =  3072.00 MiB
+2026-09-20T08:56:48-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:56:52-04:00 slot print_timing: id  0 | task 0 | prompt eval time =     490.81 ms /  1370 tokens (    0.36 ms per token,  2791.29 tokens per second)
+2026-09-20T08:56:52-04:00 slot print_timing: id  0 | task 0 |        eval time =    3210.48 ms /   899 tokens (    3.57 ms per token,   280.02 tokens per second)
+2026-09-20T08:57:36-04:00 time=2026-09-20T08:57:36.346-04:00 level=INFO source=sched.go:557 msg="llama-server model predicted to exceed available memory, evicting" predicted="10.2 GiB" predicted_num_ctx=32768 num_batch=512 available="9.2 GiB" gpu_free="9.2 GiB" system_free="160.1 GiB" system_limited=false
+2026-09-20T08:57:38-04:00 time=2026-09-20T08:57:38.029-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-1329cd5ab37e5ef6faef37cd8ff8660ffc96ed5b47b34fddf8eb0912e6c82466 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-1329cd5ab37e5ef6faef37cd8ff8660ffc96ed5b47b34fddf8eb0912e6c82466 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:57:38-04:00 time=2026-09-20T08:57:38.030-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.7 GiB" free_swap="71.3 GiB"
+2026-09-20T08:57:38-04:00 time=2026-09-20T08:57:38.030-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:57:38-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:57:38-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:57:38-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:57:39-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:57:39-04:00 print_info: file size   = 4.67 GiB (4.90 BPW)
+2026-09-20T08:57:39-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:57:39-04:00 print_info: model type            = 8B
+2026-09-20T08:57:39-04:00 print_info: model params          = 8.19 B
+2026-09-20T08:57:40-04:00 load_tensors:   CPU_Mapped model buffer size =   333.84 MiB
+2026-09-20T08:57:40-04:00 load_tensors:        CUDA0 model buffer size =  4453.28 MiB
+2026-09-20T08:57:40-04:00 llama_kv_cache:      CUDA0 KV buffer size =  4608.00 MiB
+2026-09-20T08:57:40-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:57:45-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1834.13 ms /  4154 tokens (    0.44 ms per token,  2264.83 tokens per second)
+2026-09-20T08:57:45-04:00 slot print_timing: id  0 | task 0 |        eval time =    1572.42 ms /   309 tokens (    5.09 ms per token,   196.51 tokens per second)
+2026-09-20T08:57:48-04:00 slot print_timing: id  0 | task 311 | prompt eval time =    1680.44 ms /  4150 tokens (    0.40 ms per token,  2469.59 tokens per second)
+2026-09-20T08:57:48-04:00 slot print_timing: id  0 | task 311 |        eval time =    1438.67 ms /   282 tokens (    5.10 ms per token,   196.01 tokens per second)
+2026-09-20T08:57:51-04:00 slot print_timing: id  0 | task 594 | prompt eval time =     543.82 ms /  1970 tokens (    0.28 ms per token,  3622.55 tokens per second)
+2026-09-20T08:57:51-04:00 slot print_timing: id  0 | task 594 |        eval time =    1860.53 ms /   386 tokens (    4.82 ms per token,   207.47 tokens per second)
+2026-09-20T08:57:55-04:00 slot print_timing: id  0 | task 981 | prompt eval time =     649.01 ms /  2215 tokens (    0.29 ms per token,  3412.86 tokens per second)
+2026-09-20T08:57:55-04:00 slot print_timing: id  0 | task 981 |        eval time =    2618.73 ms /   532 tokens (    4.92 ms per token,   203.15 tokens per second)
+2026-09-20T08:57:57-04:00 slot print_timing: id  0 | task 1514 | prompt eval time =     315.99 ms /  1302 tokens (    0.24 ms per token,  4120.42 tokens per second)
+2026-09-20T08:57:57-04:00 slot print_timing: id  0 | task 1514 |        eval time =    1122.71 ms /   235 tokens (    4.78 ms per token,   209.31 tokens per second)
+2026-09-20T08:57:59-04:00 slot print_timing: id  0 | task 1750 | prompt eval time =     269.38 ms /  1134 tokens (    0.24 ms per token,  4209.64 tokens per second)
+2026-09-20T08:57:59-04:00 slot print_timing: id  0 | task 1750 |        eval time =    1402.97 ms /   294 tokens (    4.77 ms per token,   209.55 tokens per second)
+2026-09-20T08:58:02-04:00 slot print_timing: id  0 | task 2045 | prompt eval time =    1671.02 ms /  4150 tokens (    0.40 ms per token,  2483.52 tokens per second)
+2026-09-20T08:58:02-04:00 slot print_timing: id  0 | task 2045 |        eval time =    1391.80 ms /   276 tokens (    5.04 ms per token,   198.30 tokens per second)
+2026-09-20T08:58:07-04:00 time=2026-09-20T08:58:07.729-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:58:07-04:00 time=2026-09-20T08:58:07.730-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.6 GiB" free_swap="71.3 GiB"
+2026-09-20T08:58:07-04:00 time=2026-09-20T08:58:07.730-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.5 GiB" free="29.9 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:58:07-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:58:07-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30637 MiB free)
+2026-09-20T08:58:07-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:58:09-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:58:09-04:00 print_info: file size   = 2.52 GiB (5.01 BPW)
+2026-09-20T08:58:09-04:00 print_info: arch                  = qwen35
+2026-09-20T08:58:09-04:00 print_info: model type            = 4B
+2026-09-20T08:58:09-04:00 print_info: model params          = 4.33 B
+2026-09-20T08:58:09-04:00 load_tensors:          CPU model buffer size =   497.31 MiB
+2026-09-20T08:58:09-04:00 load_tensors:        CUDA0 model buffer size =  2584.74 MiB
+2026-09-20T08:58:10-04:00 llama_kv_cache:      CUDA0 KV buffer size =  1024.00 MiB
+2026-09-20T08:58:10-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:58:13-04:00 slot print_timing: id  0 | task 0 | prompt eval time =     762.95 ms /  4158 tokens (    0.18 ms per token,  5449.93 tokens per second)
+2026-09-20T08:58:13-04:00 slot print_timing: id  0 | task 0 |        eval time =    1404.97 ms /   356 tokens (    3.95 ms per token,   253.39 tokens per second)
+2026-09-20T08:58:22-04:00 slot print_timing: id  0 | task 359 | prompt eval time =     616.82 ms /  4158 tokens (    0.15 ms per token,  6741.04 tokens per second)
+2026-09-20T08:58:22-04:00 slot print_timing: id  0 | task 359 |        eval time =    8106.52 ms /  2048 tokens (    3.96 ms per token,   252.64 tokens per second)
+2026-09-20T08:58:29-04:00 slot print_timing: id  0 | task 2410 | prompt eval time =     252.03 ms /  1978 tokens (    0.13 ms per token,  7848.40 tokens per second)
+2026-09-20T08:58:29-04:00 slot print_timing: id  0 | task 2410 |        eval time =    6082.96 ms /  1562 tokens (    3.89 ms per token,   256.78 tokens per second)
+2026-09-20T08:58:32-04:00 slot print_timing: id  0 | task 3975 | prompt eval time =     284.80 ms /  2223 tokens (    0.13 ms per token,  7805.61 tokens per second)
+2026-09-20T08:58:32-04:00 slot print_timing: id  0 | task 3975 |        eval time =    2341.06 ms /   610 tokens (    3.84 ms per token,   260.57 tokens per second)
+2026-09-20T08:58:41-04:00 slot print_timing: id  0 | task 4588 | prompt eval time =     163.61 ms /  1310 tokens (    0.12 ms per token,  8006.75 tokens per second)
+2026-09-20T08:58:41-04:00 slot print_timing: id  0 | task 4588 |        eval time =    7962.58 ms /  2048 tokens (    3.89 ms per token,   257.20 tokens per second)
+2026-09-20T08:58:44-04:00 slot print_timing: id  0 | task 6639 | prompt eval time =     151.01 ms /  1142 tokens (    0.13 ms per token,  7562.41 tokens per second)
+2026-09-20T08:58:44-04:00 slot print_timing: id  0 | task 6639 |        eval time =    2812.25 ms /   725 tokens (    3.88 ms per token,   257.80 tokens per second)
+2026-09-20T08:58:47-04:00 slot print_timing: id  0 | task 7367 | prompt eval time =     615.35 ms /  4158 tokens (    0.15 ms per token,  6757.15 tokens per second)
+2026-09-20T08:58:47-04:00 slot print_timing: id  0 | task 7367 |        eval time =    2210.70 ms /   505 tokens (    4.38 ms per token,   228.43 tokens per second)
+2026-09-20T08:58:52-04:00 time=2026-09-20T08:58:52.785-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:58:52-04:00 time=2026-09-20T08:58:52.786-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.7 GiB" free_swap="71.3 GiB"
+2026-09-20T08:58:52-04:00 time=2026-09-20T08:58:52.786-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.3 GiB" free="29.8 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:58:52-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:58:53-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30489 MiB free)
+2026-09-20T08:58:53-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:58:54-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:58:54-04:00 print_info: file size   = 5.28 GiB (4.93 BPW)
+2026-09-20T08:58:54-04:00 print_info: arch                  = qwen35
+2026-09-20T08:58:54-04:00 print_info: model type            = 9B
+2026-09-20T08:58:54-04:00 print_info: model params          = 9.20 B
+2026-09-20T08:58:55-04:00 load_tensors:          CPU model buffer size =   545.62 MiB
+2026-09-20T08:58:55-04:00 load_tensors:        CUDA0 model buffer size =  4861.36 MiB
+2026-09-20T08:58:56-04:00 llama_kv_cache:      CUDA0 KV buffer size =  1024.00 MiB
+2026-09-20T08:58:56-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:59:00-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1759.41 ms /  4158 tokens (    0.42 ms per token,  2363.30 tokens per second)
+2026-09-20T08:59:00-04:00 slot print_timing: id  0 | task 0 |        eval time =    2353.39 ms /   418 tokens (    5.63 ms per token,   177.62 tokens per second)
+2026-09-20T08:59:05-04:00 slot print_timing: id  0 | task 421 | prompt eval time =    1634.67 ms /  4158 tokens (    0.39 ms per token,  2543.63 tokens per second)
+2026-09-20T08:59:05-04:00 slot print_timing: id  0 | task 421 |        eval time =    2241.26 ms /   393 tokens (    5.70 ms per token,   175.35 tokens per second)
+2026-09-20T08:59:09-04:00 slot print_timing: id  0 | task 817 | prompt eval time =     542.65 ms /  1978 tokens (    0.27 ms per token,  3645.04 tokens per second)
+2026-09-20T08:59:09-04:00 slot print_timing: id  0 | task 817 |        eval time =    3338.48 ms /   578 tokens (    5.78 ms per token,   173.13 tokens per second)
+2026-09-20T08:59:14-04:00 slot print_timing: id  0 | task 1398 | prompt eval time =     621.43 ms /  2223 tokens (    0.28 ms per token,  3577.26 tokens per second)
+2026-09-20T08:59:14-04:00 slot print_timing: id  0 | task 1398 |        eval time =    3359.55 ms /   605 tokens (    5.55 ms per token,   180.08 tokens per second)
+2026-09-20T08:59:16-04:00 slot print_timing: id  0 | task 2006 | prompt eval time =     308.72 ms /  1310 tokens (    0.24 ms per token,  4243.37 tokens per second)
+2026-09-20T08:59:16-04:00 slot print_timing: id  0 | task 2006 |        eval time =    1724.83 ms /   303 tokens (    5.69 ms per token,   175.67 tokens per second)
+2026-09-20T08:59:18-04:00 slot print_timing: id  0 | task 2312 | prompt eval time =     253.52 ms /  1142 tokens (    0.22 ms per token,  4504.58 tokens per second)
+2026-09-20T08:59:18-04:00 slot print_timing: id  0 | task 2312 |        eval time =    1545.98 ms /   276 tokens (    5.60 ms per token,   178.53 tokens per second)
+2026-09-20T08:59:22-04:00 slot print_timing: id  0 | task 2591 | prompt eval time =    1627.07 ms /  4158 tokens (    0.39 ms per token,  2555.51 tokens per second)
+2026-09-20T08:59:22-04:00 slot print_timing: id  0 | task 2591 |        eval time =    1725.92 ms /   303 tokens (    5.70 ms per token,   175.56 tokens per second)
+2026-09-20T08:59:39-04:00 time=2026-09-20T08:59:39.711-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:59:39-04:00 time=2026-09-20T08:59:39.711-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.3 GiB" free_swap="71.6 GiB"
+2026-09-20T08:59:39-04:00 time=2026-09-20T08:59:39.711-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.3 GiB" free="29.7 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:59:39-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:59:39-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30435 MiB free)
+2026-09-20T08:59:39-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:59:41-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:59:41-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T08:59:41-04:00 print_info: arch                  = qwen3vl
+2026-09-20T08:59:41-04:00 print_info: model type            = 4B
+2026-09-20T08:59:41-04:00 print_info: model params          = 4.02 B
+2026-09-20T08:59:41-04:00 load_tensors:   CPU_Mapped model buffer size =   304.28 MiB
+2026-09-20T08:59:41-04:00 load_tensors:        CUDA0 model buffer size =  2374.62 MiB
+2026-09-20T08:59:42-04:00 llama_kv_cache:      CUDA0 KV buffer size =  1152.00 MiB
+2026-09-20T08:59:42-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:59:45-04:00 slot print_timing: id  0 | task 0 | prompt eval time =     852.82 ms /  4154 tokens (    0.21 ms per token,  4870.90 tokens per second)
+2026-09-20T08:59:45-04:00 slot print_timing: id  0 | task 0 |        eval time =    1128.73 ms /   290 tokens (    3.89 ms per token,   256.93 tokens per second)
+2026-09-20T08:59:47-04:00 slot print_timing: id  0 | task 292 | prompt eval time =     330.59 ms /  2215 tokens (    0.15 ms per token,  6700.22 tokens per second)
+2026-09-20T08:59:47-04:00 slot print_timing: id  0 | task 292 |        eval time =    1687.26 ms /   456 tokens (    3.70 ms per token,   270.26 tokens per second)
+2026-09-20T08:59:52-04:00 time=2026-09-20T08:59:52.504-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 --context-shift --keep 4"
+2026-09-20T08:59:52-04:00 time=2026-09-20T08:59:52.504-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.0 GiB" free_swap="71.6 GiB"
+2026-09-20T08:59:52-04:00 time=2026-09-20T08:59:52.504-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="29.3 GiB" free="29.7 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T08:59:52-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T08:59:52-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 30433 MiB free)
+2026-09-20T08:59:52-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T08:59:53-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T08:59:53-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T08:59:54-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T08:59:54-04:00 print_info: model type            = 30B.A3B
+2026-09-20T08:59:54-04:00 print_info: model params          = 30.53 B
+2026-09-20T08:59:54-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T08:59:54-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T08:59:56-04:00 llama_kv_cache:      CUDA0 KV buffer size =   768.00 MiB
+2026-09-20T08:59:56-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T08:59:59-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1856.66 ms /  4154 tokens (    0.45 ms per token,  2237.35 tokens per second)
+2026-09-20T08:59:59-04:00 slot print_timing: id  0 | task 0 |        eval time =     662.96 ms /   158 tokens (    4.20 ms per token,   238.32 tokens per second)
+2026-09-20T09:00:02-04:00 slot print_timing: id  0 | task 160 | prompt eval time =     655.35 ms /  2215 tokens (    0.30 ms per token,  3379.89 tokens per second)
+2026-09-20T09:00:02-04:00 slot print_timing: id  0 | task 160 |        eval time =    1740.26 ms /   440 tokens (    3.96 ms per token,   252.84 tokens per second)
+2026-09-20T09:02:40-04:00 time=2026-09-20T09:02:40.370-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 32768 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+2026-09-20T09:02:40-04:00 time=2026-09-20T09:02:40.371-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="159.3 GiB" free_swap="71.6 GiB"
+2026-09-20T09:02:40-04:00 time=2026-09-20T09:02:40.371-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="4.6 GiB" free="5.1 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T09:02:40-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T09:02:40-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 5187 MiB free)
+2026-09-20T09:02:40-04:00 system_info: n_threads = 4 (n_threads_batch = 4) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T09:02:47-04:00 common_params_fit_impl:   - CUDA0 (NVIDIA GeForce RTX 5090): 22 layers,   2441 MiB used,   2746 MiB free
+2026-09-20T09:02:47-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T09:02:47-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T09:02:47-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T09:02:47-04:00 print_info: model type            = 30B.A3B
+2026-09-20T09:02:47-04:00 print_info: model params          = 30.53 B
+2026-09-20T09:02:48-04:00 load_tensors:   CPU_Mapped model buffer size = 17690.83 MiB
+2026-09-20T09:02:48-04:00 load_tensors:        CUDA0 model buffer size =   803.21 MiB
+2026-09-20T09:02:48-04:00 llama_kv_cache:        CPU KV buffer size =  1728.00 MiB
+2026-09-20T09:02:49-04:00 llama_kv_cache:      CUDA0 KV buffer size =  1344.00 MiB
+2026-09-20T09:02:49-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T09:06:06-04:00 slot print_timing: id  0 | task 0 | prompt eval time =  180684.39 ms /  4154 tokens (   43.50 ms per token,    22.99 tokens per second)
+2026-09-20T09:06:06-04:00 slot print_timing: id  0 | task 0 |        eval time =   15021.69 ms /   191 tokens (   78.65 ms per token,    12.71 tokens per second)
+2026-09-20T09:07:21-04:00 slot print_timing: id  0 | task 193 | prompt eval time =   54521.41 ms /  1970 tokens (   27.68 ms per token,    36.13 tokens per second)
+2026-09-20T09:07:21-04:00 slot print_timing: id  0 | task 193 |        eval time =   19993.63 ms /   333 tokens (   60.04 ms per token,    16.66 tokens per second)
+2026-09-20T09:07:39-04:00 time=2026-09-20T09:07:39.455-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --flash-attn auto -b 512 -ub 512 -t 16 --context-shift --keep 4"
+2026-09-20T09:07:39-04:00 time=2026-09-20T09:07:39.455-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="158.5 GiB" free_swap="71.6 GiB"
+2026-09-20T09:07:39-04:00 time=2026-09-20T09:07:39.455-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="4.6 GiB" free="5.1 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T09:07:39-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T09:07:39-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 5194 MiB free)
+2026-09-20T09:07:39-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T09:07:43-04:00 common_params_fit_impl:   - CUDA0 (NVIDIA GeForce RTX 5090): 49 layers,   2159 MiB used,   3035 MiB free
+2026-09-20T09:07:47-04:00 common_params_fit_impl:   - CUDA0 (NVIDIA GeForce RTX 5090): 49 layers (48 overflowing),   2399 MiB used,   2795 MiB free
+2026-09-20T09:07:47-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T09:07:47-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T09:07:47-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T09:07:47-04:00 print_info: model type            = 30B.A3B
+2026-09-20T09:07:47-04:00 print_info: model params          = 30.53 B
+2026-09-20T09:07:48-04:00 load_tensors:   CPU_Mapped model buffer size = 17295.54 MiB
+2026-09-20T09:07:48-04:00 load_tensors:        CUDA0 model buffer size =  1373.40 MiB
+2026-09-20T09:07:48-04:00 llama_kv_cache:      CUDA0 KV buffer size =   768.00 MiB
+2026-09-20T09:07:48-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T09:09:04-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   65197.23 ms /  4154 tokens (   15.70 ms per token,    63.71 tokens per second)
+2026-09-20T09:09:04-04:00 slot print_timing: id  0 | task 0 |        eval time =    9101.13 ms /   234 tokens (   38.89 ms per token,    25.71 tokens per second)
+2026-09-20T09:09:35-04:00 slot print_timing: id  0 | task 236 | prompt eval time =   21290.13 ms /  1970 tokens (   10.81 ms per token,    92.53 tokens per second)
+2026-09-20T09:09:35-04:00 slot print_timing: id  0 | task 236 |        eval time =    9321.75 ms /   243 tokens (   38.36 ms per token,    26.07 tokens per second)
+2026-09-20T09:09:39-04:00 time=2026-09-20T09:09:39.487-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --no-mmproj-offload --image-min-tokens 1024 --no-mmap --flash-attn auto -b 1024 -ub 1024 -ngl 0 -t 16 --context-shift --keep 4"
+2026-09-20T09:09:39-04:00 time=2026-09-20T09:09:39.488-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="157.5 GiB" free_swap="71.7 GiB"
+2026-09-20T09:09:39-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T09:09:39-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 |
+2026-09-20T09:09:40-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T09:09:40-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T09:09:40-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T09:09:40-04:00 print_info: model type            = 30B.A3B
+2026-09-20T09:09:40-04:00 print_info: model params          = 30.53 B
+2026-09-20T09:09:40-04:00 load_tensors:          CPU model buffer size =  4257.20 MiB
+2026-09-20T09:09:40-04:00 load_tensors:   CPU_REPACK model buffer size = 13433.62 MiB
+2026-09-20T09:09:49-04:00 llama_kv_cache:        CPU KV buffer size =   768.00 MiB
+2026-09-20T09:09:50-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T09:10:18-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   18518.75 ms /  1370 tokens (   13.52 ms per token,    73.98 tokens per second)
+2026-09-20T09:10:18-04:00 slot print_timing: id  0 | task 0 |        eval time =    9248.47 ms /   230 tokens (   40.21 ms per token,    24.87 tokens per second)
+2026-09-20T09:11:01-04:00 slot print_timing: id  0 | task 232 | prompt eval time =   26140.87 ms /  1798 tokens (   14.54 ms per token,    68.78 tokens per second)
+2026-09-20T09:11:01-04:00 slot print_timing: id  0 | task 232 |        eval time =   16289.62 ms /   383 tokens (   42.53 ms per token,    23.51 tokens per second)
+2026-09-20T09:11:06-04:00 time=2026-09-20T09:11:06.315-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-16b83be682148a4d8201dbf720ea7eace5de98b69f63f05e0c908b4d7977ecb5 --no-mmproj-offload --image-min-tokens 1024 --flash-attn auto -b 512 -ub 512 -t 16 --context-shift --keep 4"
+2026-09-20T09:11:06-04:00 time=2026-09-20T09:11:06.315-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="160.2 GiB" free_swap="70.8 GiB"
+2026-09-20T09:11:06-04:00 time=2026-09-20T09:11:06.315-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="4.6 GiB" free="5.1 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T09:11:06-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T09:11:06-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 5192 MiB free)
+2026-09-20T09:11:06-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T09:11:11-04:00 common_params_fit_impl:   - CUDA0 (NVIDIA GeForce RTX 5090): 28 layers,   2824 MiB used,   2367 MiB free
+2026-09-20T09:11:11-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T09:11:11-04:00 print_info: file size   = 2.32 GiB (4.95 BPW)
+2026-09-20T09:11:11-04:00 print_info: arch                  = qwen3vl
+2026-09-20T09:11:11-04:00 print_info: model type            = 4B
+2026-09-20T09:11:11-04:00 print_info: model params          = 4.02 B
+2026-09-20T09:11:12-04:00 load_tensors:   CPU_Mapped model buffer size =  2374.62 MiB
+2026-09-20T09:11:12-04:00 load_tensors:        CUDA0 model buffer size =  1852.05 MiB
+2026-09-20T09:11:12-04:00 llama_kv_cache:        CPU KV buffer size =   288.00 MiB
+2026-09-20T09:11:12-04:00 llama_kv_cache:      CUDA0 KV buffer size =   864.00 MiB
+2026-09-20T09:11:12-04:00 clip_ctx: CLIP using CPU backend
+2026-09-20T09:12:01-04:00 slot print_timing: id  0 | task 0 | prompt eval time =   45199.30 ms /  4154 tokens (   10.88 ms per token,    91.90 tokens per second)
+2026-09-20T09:12:01-04:00 slot print_timing: id  0 | task 0 |        eval time =    2945.31 ms /   134 tokens (   21.98 ms per token,    45.50 tokens per second)
+2026-09-20T09:12:20-04:00 slot print_timing: id  0 | task 136 | prompt eval time =   13192.43 ms /  1970 tokens (    6.70 ms per token,   149.33 tokens per second)
+2026-09-20T09:12:20-04:00 slot print_timing: id  0 | task 136 |        eval time =    4875.01 ms /   263 tokens (   18.54 ms per token,    53.95 tokens per second)
+2026-09-20T09:15:41-04:00 time=2026-09-20T09:15:41.198-04:00 level=INFO source=llama_server.go:406 msg="starting llama-server" cmd="<OLLAMA_LIB>/llama-server --model <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --port <PORT> --host 127.0.0.1 --no-webui --offline -c 8192 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj <OLLAMA_MODELS>/blobs/sha256-8088c24b807ccac3dbf05b0f8a92e6588ecc818a5fb29a942658308c5d8c0097 --image-min-tokens 1024 --flash-attn auto -b 1024 -ub 1024 -t 16 --context-shift --keep 4"
+2026-09-20T09:15:41-04:00 time=2026-09-20T09:15:41.198-04:00 level=INFO source=sched.go:623 msg="system memory" total="188.1 GiB" free="159.1 GiB" free_swap="71.1 GiB"
+2026-09-20T09:15:41-04:00 time=2026-09-20T09:15:41.198-04:00 level=INFO source=sched.go:630 msg="gpu memory" id=0 library=CUDA available="28.6 GiB" free="29.0 GiB" minimum="457.0 MiB" overhead="0 B"
+2026-09-20T09:15:41-04:00   - CPU     : Intel(R) Core(TM) Ultra 9 285K (192591 MiB, 192591 MiB free)
+2026-09-20T09:15:41-04:00   - CUDA0   : NVIDIA GeForce RTX 5090 (32086 MiB, 29738 MiB free)
+2026-09-20T09:15:41-04:00 system_info: n_threads = 16 (n_threads_batch = 16) / 24 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | REPACK = 1 | CUDA : ARCHS = 750,800,860,890,900,1000,1030,1100,1200,1210 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | BLACKWELL_NATIVE_FP4 = 1 |
+2026-09-20T09:15:42-04:00 print_info: file type   = Q4_K - Medium
+2026-09-20T09:15:42-04:00 print_info: file size   = 17.28 GiB (4.86 BPW)
+2026-09-20T09:15:42-04:00 print_info: arch                  = qwen3vlmoe
+2026-09-20T09:15:42-04:00 print_info: model type            = 30B.A3B
+2026-09-20T09:15:42-04:00 print_info: model params          = 30.53 B
+2026-09-20T09:15:43-04:00 load_tensors:   CPU_Mapped model buffer size =   166.92 MiB
+2026-09-20T09:15:43-04:00 load_tensors:        CUDA0 model buffer size = 17523.92 MiB
+2026-09-20T09:15:44-04:00 llama_kv_cache:      CUDA0 KV buffer size =   768.00 MiB
+2026-09-20T09:15:44-04:00 clip_ctx: CLIP using CUDA0 backend
+2026-09-20T09:15:48-04:00 slot print_timing: id  0 | task 0 | prompt eval time =    1845.71 ms /  4154 tokens (    0.44 ms per token,  2250.63 tokens per second)
+2026-09-20T09:15:48-04:00 slot print_timing: id  0 | task 0 |        eval time =    1018.63 ms /   239 tokens (    4.26 ms per token,   234.63 tokens per second)
+2026-09-20T09:15:51-04:00 slot print_timing: id  0 | task 241 | prompt eval time =    1688.03 ms /  4150 tokens (    0.41 ms per token,  2458.49 tokens per second)
+2026-09-20T09:15:51-04:00 slot print_timing: id  0 | task 241 |        eval time =     656.64 ms /   156 tokens (    4.21 ms per token,   237.57 tokens per second)
+2026-09-20T09:15:53-04:00 slot print_timing: id  0 | task 398 | prompt eval time =     525.45 ms /  1970 tokens (    0.27 ms per token,  3749.17 tokens per second)
+2026-09-20T09:15:53-04:00 slot print_timing: id  0 | task 398 |        eval time =    1489.35 ms /   373 tokens (    3.99 ms per token,   250.45 tokens per second)
+2026-09-20T09:15:55-04:00 slot print_timing: id  0 | task 772 | prompt eval time =     647.60 ms /  2215 tokens (    0.29 ms per token,  3420.34 tokens per second)
+2026-09-20T09:15:55-04:00 slot print_timing: id  0 | task 772 |        eval time =    1156.57 ms /   292 tokens (    3.96 ms per token,   252.47 tokens per second)
+2026-09-20T09:15:57-04:00 slot print_timing: id  0 | task 1065 | prompt eval time =     326.63 ms /  1302 tokens (    0.25 ms per token,  3986.16 tokens per second)
+2026-09-20T09:15:57-04:00 slot print_timing: id  0 | task 1065 |        eval time =     690.91 ms /   180 tokens (    3.84 ms per token,   260.52 tokens per second)
+2026-09-20T09:15:58-04:00 slot print_timing: id  0 | task 1246 | prompt eval time =     279.02 ms /  1134 tokens (    0.25 ms per token,  4064.25 tokens per second)
+2026-09-20T09:15:58-04:00 slot print_timing: id  0 | task 1246 |        eval time =     746.30 ms /   195 tokens (    3.83 ms per token,   261.29 tokens per second)
+2026-09-20T09:16:01-04:00 slot print_timing: id  0 | task 1442 | prompt eval time =    1682.46 ms /  4150 tokens (    0.41 ms per token,  2466.62 tokens per second)
+2026-09-20T09:16:01-04:00 slot print_timing: id  0 | task 1442 |        eval time =     684.55 ms /   160 tokens (    4.28 ms per token,   233.73 tokens per second)
