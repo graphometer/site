@@ -417,10 +417,54 @@
       every expert layer in RAM read 43,909 tokens at <code>-ub 4096</code> with
       a 131,072 window, but at its full 196,608 window 4096 failed to load (a
       2,916.16&nbsp;MiB buffer refused), 2048 failed too, and only 1024 loaded,
-      at 31,560&nbsp;MiB; its script now forces 1024 there. Four other scripts (Qwen3.5-397B,
-      Qwen3.5-122B, Mistral Small 4, Ornith-1.5-35B) return to llama.cpp's
-      default above 131,072, where the bigger value was not measured, and
-      Laguna S 2.1 drops from 8192 to 4096 above 32,768.</p>
+      at 31,560&nbsp;MiB; its script now forces 1024 there. Until 26 September, four other
+      scripts (Qwen3.5-397B, Qwen3.5-122B, Mistral Small 4 and Ornith-1.5-35B)
+      returned to llama.cpp's default above 131,072, and the bigger value had
+      not been measured there; Laguna S 2.1 drops from 8192 to 4096 above
+      32,768.</p>
+      <p><strong>Update, 26 September.</strong> Two of those four were then
+      measured at 262,144, each reading a 229,090-token document whose three
+      planted codes came back at every setting (the
+      <a href="../context-256k/">256K page</a> has the rows). Ornith-1.5-35B's
+      prompt processing took 71.7 seconds at <code>-b 2048 -ub 2048</code>
+      against 151.8 at 2048 / 512. The 151.8-second run used the start-script
+      copy's own setting above 131,072 at the time; 2048 / 2048 was passed in
+      for the other run, and is what the script now sets there. Qwen3.5-122B's
+      prompt processing took 310.0 seconds at <code>-ub 1024</code> against
+      510.6 at 512, but the card peaked at 31,785&nbsp;MiB in that series,
+      822&nbsp;MiB below the card's total of 32,607&nbsp;MiB as reported that
+      day (published in the <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>
+      package), and its script keeps 512 there. The Qwen3.5-397B and Mistral
+      Small 4 scripts still return to the default there, unmeasured.</p>
+      <p><strong>Update, 26 September: MiniMax M2.7.</strong> Its installed
+      script was then run at 196,608, where it sets the one shape that loaded:
+      every expert layer in RAM, <code>-b 4096 -ub 1024</code> and an 8-bit
+      cache. It loaded at 31,709&nbsp;MiB and peaked at 31,907. Its prompt
+      processing read 20,039 tokens at 167.9 t/s, 47,933 at 181.2 and 189,491
+      at 155.9, the last in 1,215.4 seconds, and that deepest read, a document
+      with three planted codes, returned all three, with thinking on. At
+      131,072 its shipped setting had read 43,909 tokens at 656.5 t/s, on
+      another prompt (section 06). A 40-prompt stress check at 196,608, on
+      prompts of 534 to 11,160 tokens, ran without a crash, but all 40 are
+      recorded with an empty answer, every reply running to its token limit,
+      so it checked that the server stayed up, not the answers.</p>
+      <p><strong>Update, 26 September: GLM-5.3-Flash.</strong> Its start
+      script now also offers a 262,144 window. Through a copy of the script
+      there, the setting it keeps at 131,072, <code>-b 4096 -ub 4096</code>,
+      did not load: a 13,281.37&nbsp;MiB compute buffer was refused.
+      <code>-ub 2048</code> loaded and read 20,065 to 230,039 tokens at 206.0
+      to 250.3 t/s, the deepest returning all three planted codes, but
+      peaked at 31,951&nbsp;MiB, 656 below the card's total; <code>-ub
+      1024</code> peaked at 29,261 and read 20,065 and 47,992 tokens at 135.1
+      and 142.6, and nothing longer. The script ships 1024 at 262,144, for
+      2,690&nbsp;MiB more room at the peak and, its comment says, to stay off
+      <code>-ub 2048</code>, the micro-batch that crashes in upstream report
+      #28282 (section 05); our reads at 2048 ran without that error. At
+      131,072, where it keeps 4096, the same probe read 47,992 tokens at 404.9
+      t/s, 2.8 times (arithmetic) the shipped 262,144 setting's 142.6. A
+      40-prompt stress check at 262,144 with <code>-ub 1024</code> ran without
+      a crash, but 36 of the 40 are recorded with an empty answer, so it
+      mostly checked that the server stayed up.</p>
       <p><strong>Short first reads at the served window.</strong> On 20
       September Inkling-Small and Qwen3.8-Flash-Next each read one 3,000-token
       prompt at 262,144: Inkling 3,033 tokens at 263.6 t/s (187.9 when its

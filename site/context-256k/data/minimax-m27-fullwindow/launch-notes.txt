@@ -1,0 +1,26 @@
+MiniMax M2.7, 26 September 2026: the run in this folder, at a 196,608 window. Derived notes; the primary records
+are the .result file (header, launch command, one JSON row per request, series peak) and the server log beside it.
+
+Window: 196,608 is the context length the model file declares (the GGUF key minimax-m2.context_length is 196608 in
+MiniMax-M2.7-UD-IQ4_XS-00001-of-00004.gguf, whose block_count is 62); the server log prints n_ctx_slot = 196608.
+
+Launch, from the "cmdline:" line of the .result (paths, host and port removed there), through the model's installed
+start script (script=start_server.sh; MINIMAX_M27_CTX=196608 in the header):
+  --ctx-size 196608 --parallel 1 --batch-size 4096 --ubatch-size 1024 --n-gpu-layers 999 -cmoe --no-repack
+  --cache-type-k q8_0 --cache-type-v q8_0 --threads 24 --threads-batch 24 --flash-attn on
+  -cmoe keeps every expert layer's weights in system RAM (all 62). The key and value cache is 8-bit (q8_0). No
+  --spec-type flag, so no draft head (the result rows' draft_n is null). The weights were memory-mapped (the server
+  log's own "mmap enabled" warning). The server log opens with the start script's own note: at this window it has
+  one measured shape and uses every expert in RAM and -ub 1024 in place of its 131,072 defaults (59 of 62 layers'
+  experts in RAM, -ub 4096). The batch-size study records -ub 4096 and 2048 failing to load at this window with
+  every expert in RAM (its data/runs/2026-09-19_minimax-m2.7/one_ub4096_cmoe_ctx196608.server.log and
+  one_ub2048_cmoe_ctx196608.server.log).
+
+Build: the command's llama-server build directory (removed with the paths) records build 10919, commit d3146f2b5,
+in its build-info.
+
+Requests: thinking was left on; the harness sent no thinking switch, and reasoning_chars is 395, 438 and 480 on the
+three reads. Each depth was a fresh ledger, generated with its own seed; the deepest, about 190,000 tokens, planted
+three codes and asked for all three, after reads of about 20,000 and 48,000 tokens on the same server. The prose
+requests after the two shorter reads generated 4,096 tokens each, all reasoning, and have empty answers
+(answer_words 0); the page does not use them.

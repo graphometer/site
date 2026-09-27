@@ -220,7 +220,11 @@
       file since 26 September; our records also give it a 262,144-token
       window from that day, which the runs on this page loaded by passing it
       explicitly. Qwen3.8-27B was installed at a 262,144-token window on the
-      afternoon of 26 September; its start script still accepts 131,072. Each row's
+      afternoon of 26 September; its start script still accepts 131,072.
+      Qwen3.5-122B-A10B and Ornith-1.5-35B-A3B were installed at 262,144 the
+      same afternoon, MiniMax M2.7 at 196,608, its native ceiling, that
+      evening, and GLM-5.3-Flash at 262,144 later that evening; a start of
+      each of these four with no window passed was served that window. Each row's
       window cell says whether a run that passed no
       window shows the installed default. A count of
       twenty-three installed endpoints is not a capacity claim: one runs at a
@@ -267,12 +271,14 @@
         </tr>
         <tr>
           <th scope="row">Letters at depth<br>26 September</th>
-          <td>For three Qwen rows: a ledger read cold at about 20,000, 60,000
-          and 100,000 tokens (Qwen3-235B), 20,000, 100,000 and 230,000
-          (Qwen3.6-27B) or 20,000, 48,000, 100,000 and 230,000 (Qwen3.8-27B),
-          then a letter of about 350 to 400 words written on the same cached
-          ledger: prose at depth, as are row 1's replies of about 400
-          tokens.</td>
+          <td>For five rows: a ledger read cold at about 20,000, 60,000 and
+          100,000 tokens (Qwen3-235B), 20,000, 100,000 and 230,000
+          (Qwen3.6-27B) or 20,000, 48,000, 100,000 and 230,000 (Qwen3.8-27B,
+          Qwen3.5-122B-A10B and Ornith-1.5-35B-A3B), then a letter of about
+          330 to 430 words written on the same cached ledger: prose at depth,
+          as are row 1's replies of about 400 tokens. MiniMax M2.7 had the same
+          request at about 20,000, 48,000 and 190,000 tokens, and GLM-5.3-Flash
+          at about 20,000 to 230,000; their rows say what came back.</td>
         </tr>
         <tr>
           <th scope="row">Long reads at a full window<br>15 to 16 September</th>
@@ -380,11 +386,11 @@
           <tr>
             <td>6</td>
             <td class="name">Qwen3.5-122B-A10B<span>Alibaba Group. UD-Q4_K_S, 3 shards, 73,428,564,992 bytes</span></td>
-            <td class="t">131,072 at <code>-b/-ub 4096</code>; 262,144 on request at <code>-b 2048 -ub 512</code>, where the larger buffer would not fit</td>
-            <td class="t">32.72 on a 716-token answer, most of it reasoning, after 48,027 tokens; 22.39 on a 188-token paragraph at the 262,144 rung (2026-09-15)</td>
-            <td class="t">2,101.7 on 48,027 tokens, <code>-b/-ub 4096</code>; 520.2 at the defaults</td>
-            <td class="t">48K leg only: 3 of 3 and the tool call; reading about 467.1 on 53,674; speaking 31.3 on a 240-token answer (2026-09-12)</td>
-            <td class="t">2026-09-21</td>
+            <td class="t">262,144, the installed default: a run that passed no window was served it (2026-09-26); <code>-b 2048 -ub 512</code> there, where the larger buffer would not fit; draft head on. The start script also accepts 131,072, at <code>-b/-ub 4096</code></td>
+            <td class="t">At 262,144 (2026-09-26): 24.6, 24.47, 23.84 and 21.64 on letters of about 420 words (482, 520, 508 and 491 tokens) at 20,067, 47,992, 99,872 and 229,090 tokens, thinking off. Earlier: 32.72 on a 716-token answer, most of it reasoning, after 48,027 tokens at 131,072 (2026-09-21); 22.39 on a 188-token paragraph at 262,144 (2026-09-15)</td>
+            <td class="t">At 262,144, <code>-b 2048 -ub 512</code> (2026-09-26): 505.7 on 20,067 tokens, 511.4 on 47,992, 491.6 on 99,872, 448.7 on 229,090 (510.6 s); every planted code quoted, 3 of 3 at 229,090. At 131,072 (2026-09-21): 2,101.7 on 48,027 tokens, <code>-b/-ub 4096</code>; 520.2 at the defaults</td>
+            <td class="t">48K leg only: 3 of 3 and the tool call; reading about 467.1 on 53,674; speaking 31.3 on a 240-token answer (2026-09-12, 131,072 window)</td>
+            <td class="t">2026-09-26</td>
           </tr>
 
           <tr>
@@ -400,21 +406,21 @@
           <tr>
             <td>8</td>
             <td class="name">Ornith-1.5-35B-A3B<span>Ornith AI. Q6_K, one file, 29,208,731,392 bytes. Installed 2026-09-16</span></td>
-            <td class="t">131,072 at <code>-b/-ub 4096</code></td>
-            <td class="t">89.72 on a 198-token paragraph, thinking off (2026-09-16); 73.2 on an 83-token answer after 48,027 tokens</td>
-            <td class="t">6,283.3 on 48,027 tokens, <code>-b/-ub 4096</code>; 1,649.22 on 120,334 at the defaults, 3 of 3 codes (2026-09-16)</td>
+            <td class="t">262,144, the installed default: a run that passed no window was served it (2026-09-26). At 262,144: <code>-b 2048 -ub 2048</code> since 26 September (<code>-b 2048 -ub 512</code> before). The start script also accepts 131,072, at <code>-b/-ub 4096</code></td>
+            <td class="t">At 262,144 (2026-09-26): 98.4, 89.8, 82.61 and 67.73 on letters of about 340 words (422, 405, 423 and 405 tokens) at 20,067, 47,992, 99,872 and 229,090 tokens, thinking off. At 131,072: 89.72 on a 198-token paragraph, thinking off (2026-09-16); 73.2 on an 83-token answer after 48,027 tokens (2026-09-21)</td>
+            <td class="t">At 262,144, <code>-b 2048 -ub 2048</code> (2026-09-26): 4,568.0 on 20,067 tokens, 4,626.9 on 47,992, 4,219.0 on 99,872, 3,193.3 on 229,090 (71.7 s); every planted code quoted, 3 of 3 at 229,090. At 131,072: 6,283.3 on 48,027 tokens, <code>-b/-ub 4096</code> (2026-09-21); 1,649.22 on 120,334 at the defaults, 3 of 3 codes (2026-09-16)</td>
             <td class="none">not run through the framework</td>
-            <td class="t">2026-09-21</td>
+            <td class="t">2026-09-26</td>
           </tr>
 
           <tr>
             <td>9</td>
             <td class="name">GLM-5.3-Flash<span>Z.ai. UD-Q3_K_XL, 4 shards, 147,535,921,955 bytes. Installed 2026-09-16</span></td>
-            <td class="t">131,072 at <code>-b/-ub 4096</code></td>
-            <td class="t">9.58 on a 181-token paragraph (2026-09-16); 9.12 on a 310-token answer after 48,168 tokens</td>
-            <td class="t">425.1 on 48,168 tokens, <code>-b/-ub 4096</code>; 75.48 on 120,979 at the defaults, 3 of 3 codes (2026-09-16)</td>
+            <td class="t">262,144, the installed default: a run that passed no window was served it (2026-09-26); <code>-b 4096 -ub 1024</code> there, where <code>-ub 4096</code> did not load. The start script also accepts 131,072, at <code>-b/-ub 4096</code></td>
+            <td class="t">At 262,144, <code>-ub 1024</code> (2026-09-26), reasoning effort set to none and counting the reasoning it still did: 10.22 on 1,200 tokens at 20,065 tokens deep, all reasoning, no letter; 9.98 on 729 tokens, a 351-word letter, at 47,992. At <code>-ub 2048</code>, measured and not adopted: 10.11 on 1,200 tokens (102 words, cut off) at 20,065; 9.87 on 1,200 tokens (119 words, cut off) at 47,992; 9.56 on 567 tokens, a 337-word letter, at 100,003; 9.04 on 1,200 tokens at 230,039, all reasoning, no letter. Earlier, at 131,072: 9.58 on a 181-token paragraph (2026-09-16); 9.12 on a 310-token answer after 48,168 tokens (2026-09-21)</td>
+            <td class="t">At 262,144, <code>-b 4096 -ub 1024</code> (2026-09-26): 135.1 on 20,065 tokens and 142.6 on 47,992, the only depths measured at this setting, the planted code quoted at both. At <code>-ub 2048</code>, measured and not adopted: 206.0, 250.3, 243.1 and 211.9 on 20,065, 47,992, 100,003 and 230,039 (1,085.7 s), every code quoted, 3 of 3 at 230,039. At 131,072: 425.1 on 48,168 tokens, <code>-b/-ub 4096</code> (2026-09-21); 75.48 on 120,979 at the defaults, 3 of 3 codes (2026-09-16)</td>
             <td class="none">not run through the framework</td>
-            <td class="t">2026-09-21</td>
+            <td class="t">2026-09-26</td>
           </tr>
 
           <tr>
@@ -500,11 +506,11 @@
           <tr>
             <td>18</td>
             <td class="name">MiniMax M2.7<span>MiniMax. UD-IQ4_XS, 4 shards, 108,413,781,312 bytes. Installed 2026-09-21</span></td>
-            <td class="t">131,072 at <code>-b/-ub 4096</code>; 196,608 on request at <code>-b 4096 -ub 1024</code>, every expert in system memory</td>
-            <td class="t">9.73 on a prose reply of 1,313 characters, 1,522 tokens with its hidden reasoning, after a 70-token prompt (2026-09-13, every expert in system memory); 9.83 on a 32-token answer after 43,909 tokens (2026-09-19)</td>
-            <td class="t">656.5 on 43,909 tokens, <code>-b/-ub 4096</code>, experts of 59 of 62 layers in system memory (2026-09-19)</td>
-            <td class="t">3 of 3 and the tool call at both legs; reading about 529.2 on 53,584 and 460.2 on 103,931; speaking 8.6 and 7.2 on 180 and 182-token answers (2026-09-21)</td>
-            <td class="t">2026-09-21</td>
+            <td class="t">196,608, its native ceiling and the installed default: a run that passed no window was served it (2026-09-26); there the start script sets the one shape that loads: every expert in system memory, <code>-b 4096 -ub 1024</code>, 8-bit cache. The start script also accepts 131,072. The 19 September figures at that window were measured with experts of 59 of 62 layers in system memory and <code>-b/-ub 4096</code>; the 13 September prose figure was measured with every expert in system memory and <code>-ub 128</code>.</td>
+            <td class="t">At 196,608 (2026-09-26), counting its hidden reasoning (it always thinks): 10.01 and 8.96 on 4,096 tokens at 20,039 and 47,933 tokens deep, all of it reasoning, with no letter returned; 6.05 on 515 tokens, a 275-word letter with its reasoning, at 189,491. At 131,072: 9.73 on a prose reply of 1,313 characters, 1,522 tokens with its hidden reasoning, after a 70-token prompt (2026-09-13, every expert in system memory); 9.83 on a 32-token answer after 43,909 tokens (2026-09-19)</td>
+            <td class="t">At 196,608, <code>-b 4096 -ub 1024</code>, every expert in system memory (2026-09-26): 167.9 on 20,039 tokens, 181.2 on 47,933, 155.9 on 189,491 (1,215.4 s); every planted code quoted, 3 of 3 at 189,491. At 131,072: 656.5 on 43,909 tokens, <code>-b/-ub 4096</code>, experts of 59 of 62 layers in system memory (2026-09-19)</td>
+            <td class="t">3 of 3 and the tool call at both legs; reading about 529.2 on 53,584 and 460.2 on 103,931; speaking 8.6 and 7.2 on 180 and 182-token answers (2026-09-21, 131,072 window)</td>
+            <td class="t">2026-09-26</td>
           </tr>
 
           <tr>
@@ -609,6 +615,21 @@
           the cap ends the letter before the line that quotes it.</td>
         </tr>
         <tr>
+          <th scope="row">6, Qwen3.5-122B-A10B</th>
+          <td>Installed at 262,144 on the afternoon of 26 September, at the
+          batch setting its script already used at that window. There
+          <code>-b 2048 -ub 1024</code> read faster (877.8 on 20,067 tokens,
+          738.9 on 229,090 in 310.1 s) but peaked at 31,785&nbsp;MiB of the
+          card's 32,607, so it was measured and not adopted; the setting
+          adopted held 30,898&nbsp;MiB at load and 31,124 at the peak of the
+          reads. The same day at 131,072 with <code>-b/-ub 4096</code> it read
+          about four times faster (2,088.3 on 47,992) and spoke no faster
+          (22.82 on a 516-token letter, against 24.47 at 262,144). The 26
+          September runs passed their window through a copy of the start
+          script whose flags at that window match the installed ones; the
+          draft head was on throughout.</td>
+        </tr>
+        <tr>
           <th scope="row">7, Qwen3.8-27B</th>
           <td>Installed at 262,144 on the afternoon of 26 September. On this
           file the draft head does not fit beside a 256K cache, so the start
@@ -625,6 +646,44 @@
           At 131,072, <code>-ub 4096</code> could not allocate a
           1,568.13&nbsp;MiB compute buffer and the server exited, so that
           window keeps the defaults.</td>
+        </tr>
+        <tr>
+          <th scope="row">8, Ornith-1.5-35B-A3B</th>
+          <td>Installed at 262,144 on the afternoon of 26 September, with the
+          micro-batch at that window raised from 512 to 2048: at <code>-b 2048
+          -ub 512</code> the same reads ran at 1,780.4 on 20,067 tokens and
+          1,508.7 on 229,090 (151.8 s), with speaking about the same. The card
+          held 31,270&nbsp;MiB at load and 31,417 at the peak of the reads. The
+          same day at 131,072 with <code>-b/-ub 4096</code> it read 6,114.1 on
+          47,992 and spoke at 89.64 on a 383-token letter. The 26 September
+          runs passed their window through a copy of the start script whose
+          flags at that window match the installed ones. It has not been run
+          through the agent framework.</td>
+        </tr>
+        <tr>
+          <th scope="row">9, GLM-5.3-Flash</th>
+          <td>Installed at 262,144 on the evening of 26 September at <code>-b
+          4096 -ub 1024</code>. At that window <code>-ub 4096</code> did not
+          load: its compute buffer alone asked for 13,281.37&nbsp;MiB and the
+          allocation failed. <code>-ub 2048</code> loaded and read faster but
+          peaked at 31,951&nbsp;MiB of the card's 32,607; <code>-ub 1024</code>
+          held 28,834&nbsp;MiB at load and 29,261 at the peak of its reads. The
+          reads at <code>-ub 1024</code> reach only 20,065 and 47,992 tokens. At
+          262,144, the figures past that depth (100,003 and 230,039) are the
+          <code>-ub 2048</code> run's. The 120,979-token read is the 16 September
+          default-batch run, and the 100,003-token read at 131,072 is the same
+          day's <code>-b/-ub 4096</code> run. These
+          runs set the reasoning effort to none; the model still reasoned, and
+          several letters ran out of their 1,200-token budget; the 9.04 at
+          230,039 returned no letter. The same day at
+          131,072 with <code>-b/-ub 4096</code> it read 359.4, 404.9 and 373.4
+          on 20,065, 47,992 and 100,003 tokens. A 40-prompt crash check at
+          262,144 and <code>-ub 1024</code> ran without a crash; in 36 of the
+          40 a reply came back with no visible text after using its whole
+          budget (160 tokens for the reply, 80 for the follow-up), and in the
+          other four both replies had text, the first of them, a 3,014-token
+          ledger, quoting its planted code. It has not been run through the
+          agent framework.</td>
         </tr>
         <tr>
           <th scope="row">10, Qwen3.6-27B</th>
@@ -663,7 +722,18 @@
         </tr>
         <tr>
           <th scope="row">18, MiniMax M2.7</th>
-          <td>Its first desktop run, on 13 September, used <code>-ub 128</code>,
+          <td>Installed at 196,608, its native ceiling, on the evening of 26
+          September. That window loads in one shape only, every expert in
+          system memory at <code>-ub 1024</code>, and the start script sets it
+          itself; the card held 31,709&nbsp;MiB at load and 31,907 at the peak
+          of the reads. At 131,072, with experts of 59 of 62 layers in system
+          memory and <code>-b/-ub 4096</code>, it read 656.5 on 43,909 tokens
+          (19 September), 3.6 times the 181.2 at 196,608 on 47,933. It always
+          thinks: at 20,039 and 47,933 tokens the letter request spent its
+          whole 4,096-token budget on hidden reasoning and returned no letter,
+          so those two speaking figures time reasoning only. The 26 September
+          run went through the installed start script with the window passed.
+          Its first desktop run, on 13 September, used <code>-ub 128</code>,
           a value that, per our session notes, was copied from another model's
           launcher, and read 45.6 tokens a
           second on 6,776 tokens. At llama.cpp's default it read 100.8 on 3,658
@@ -708,9 +778,10 @@
       <p>The largest movements in this table are reading speeds on models whose
       experts sit in system memory. Each read is about 48,000 tokens, the
       same prompt at both settings, except GLM-5.3-Flash's default-setting read
-      of 24,008 tokens; all six at the 131,072-token window these models
-      serve, measured on 21 September through each model's own start
-      script:</p>
+      of 24,008 tokens; all six at a 131,072-token window, measured on 21
+      September through each model's own start script (Qwen3.5-122B, Ornith
+      and GLM-5.3-Flash have served 262,144 since 26 September; rows 6, 8 and
+      9):</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th class="t">Model</th><th>Tokens read</th><th>At the defaults</th><th>At the setting it now runs</th><th class="t">Setting, at 131,072</th></tr></thead>
@@ -728,9 +799,10 @@
       in these six, the planted code came back in the answer at every setting
       that loaded. The speaking figures in those runs moved by 6.2 percent at
       most, Qwen3.5-122B's 30.81 to 32.72 (arithmetic on the same files). At
-      262,144 the start scripts of Qwen3.5-397B, Qwen3.5-122B, Mistral Small
-      4 and Ornith keep <code>-b 2048 -ub 512</code>: the larger buffer does
-      not fit there. The models that fit whole on the card kept the defaults:
+      262,144 the start scripts of Qwen3.5-397B, Qwen3.5-122B and Mistral
+      Small 4 keep <code>-b 2048 -ub 512</code>: the larger buffer does not
+      fit there; since 26 September Ornith's has used <code>-b 2048 -ub
+      2048</code> there and GLM-5.3-Flash's <code>-b 4096 -ub 1024</code>. The models that fit whole on the card kept the defaults:
       Qwen3.8-27B, GLM-4.7-Flash, the two Gemmas and Muse Glimmer. On each
       one's best rung, reading moved from a 0.6 percent loss (Muse Glimmer)
       to a 34.5 percent gain (Gemma-4-26B-A4B at <code>-ub 2048</code>, which
@@ -766,7 +838,7 @@
           <tr><td class="t">Laguna S 2.1 reads at 72 tokens a second</td><td class="t">Its script had hard-coded <code>-b 512 -ub 128</code>; at <code>-b/-ub 8192</code> the same read ran at 1,434.0, both at the old 32,768 window. At the 262,144 window it now serves it reads 898.8 on 24,013 tokens at <code>-b 8192 -ub 4096</code></td><td class="t">The window and setting it now serves (row 20)</td></tr>
           <tr><td class="t">Qwen3.8-Flash-Next reads at 511.7 with its current setting, and at the window it serves had only a 45.4 on a 3,041-token read</td><td class="t">The 511.7 was a 48,069-token read at a 131,072 window. The 45.4 was the first request after a start (load 65 s). At the 262,144 window it serves, with <code>-b 4096 -ub 2048</code>, after the server's first request and with 57.7 to 60.1 GB of the 90 GB file in memory, it reads 517.6 on 3,019 tokens, 660.6 on 48,075 and 535.4 on 229,981, against 255.7, 240.2 and 205.5 at llama.cpp's defaults (26 September)</td><td class="t">The served-window figures (row 11)</td></tr>
           <tr><td class="t">The two-machine DeepSeek speaks at 15.9 to 17.1</td><td class="t">That band is 13 September at a 131,072 window. At a 262,144 window on 21 September: 14.73 on a 400-token reply at 2,998 tokens and 12.05 at 48,024 (14.76 and 12.04 on the short code answers)</td><td class="t">The 21 September figures (row 1)</td></tr>
-          <tr><td class="t">The 15 September list: 22 endpoints, all at 128K, seven listed without speeds</td><td class="t">Three added, two retired; seven rows now serve 202,752 or 262,144 by default, shown by a run that passed no window; Qwen3.8-27B was installed at 262,144 on 26 September; two more loaded 262,144 when it was passed; two rows without a September figure</td><td class="t">23 rows, each with its served window</td></tr>
+          <tr><td class="t">The 15 September list: 22 endpoints, all at 128K, seven listed without speeds</td><td class="t">Three added, two retired; ten rows now serve more than 131,072 by default, each shown by a run that passed no window (202,752 or 262,144, and 196,608 for MiniMax M2.7); Laguna S 2.1 serves 262,144 by its start script's own default; Qwen3.8-27B was installed at 262,144 on 26 September; two more loaded 262,144 when it was passed; two rows without a September figure</td><td class="t">23 rows, each with its served window</td></tr>
         </tbody>
       </table>
       </div>
@@ -787,8 +859,8 @@
         measured. A model can be the fastest row here and the wrong choice for
         your work.</li>
         <li><strong>Short answers are not prose.</strong> Where a row's only
-        speaking figure at depth is a short answer, it says so; four rows have
-        prose at depth (1, 5, 7 and 10), and most have a paragraph at a short
+        speaking figure at depth is a short answer, it says so; eight rows have
+        prose at depth (1, 5, 6, 7, 8, 9, 10 and 18), and most have a paragraph at a short
         prompt. A thinking model's short answer counts its reasoning.</li>
         <li><strong>Figures from different exercises are not a ranking.</strong>
         Rows were measured on different days, at different depths and settings,
@@ -798,16 +870,13 @@
         throughput or with a hosted service.</li>
         <li><strong>Windows above the served one are not claimed here.</strong>
         "On request" means the start script offers a larger window and a
-        September run loaded it: the Qwen3.5 pair and Mistral Small 4 read about
+        September run loaded it: Qwen3.5-397B and Mistral Small 4 read about
         231,000 tokens at 262,144 (15 September, at <code>-b 2048 -ub
         512</code>, the setting their scripts keep there), Qwen3.8-Flash-Next
         read 344,981 and 459,911 tokens at its two larger windows (20
         September, at llama.cpp's default batch sizes, before its batch
-        change), MiniMax M3 58,307 at 196,608 (20 September, <code>-ub
-        512</code>), and MiniMax M2.7 has only a 3,658-token read at 196,608
-        (19 September, <code>-ub 1024</code>). The script of Ornith-1.5-35B
-        also offers 262,144, on the strength of a 17 September run whose logs
-        were not kept, so the table does not list it.
+        change), and MiniMax M3 58,307 at 196,608 (20 September, <code>-ub
+        512</code>).
         What a full window costs is on <a href="../context-256k/">its own
         page</a>.</li>
         <li><strong>The one-at-a-time constraint is this machine's.</strong> On
@@ -866,7 +935,9 @@
         <li>The runs of 19 to 26 September: the batch-size sweep's result files
         and logs, the long reads, the paragraph replies, the letters at depth,
         the MiniMax records, the new framework record, and the 26 September
-        runs of Qwen3.8-Flash-Next and Qwen3.8-27B at 262,144.</li>
+        runs of Qwen3.8-Flash-Next, Qwen3.8-27B, Qwen3.5-122B-A10B and
+        Ornith-1.5-35B-A3B and GLM-5.3-Flash at 262,144 and of MiniMax M2.7 at
+        196,608, and that evening's starts with no window passed.</li>
         <li>The runs of 12 to 15 September: the direct sweep, the framework
         check's ledgers and per-model records, the refusal-guard test, and what
         the model files say.</li>
@@ -879,6 +950,7 @@
         <tr><th scope="row">2026-09-15</th><td>List first compiled: 22 endpoints, runs of 12 to 15 September.</td></tr>
         <tr><th scope="row">2026-09-26</th><td>Rebuilt as this snapshot: 23 endpoints, runs of 12 to 26 September, with the corrections in section 05.</td></tr>
         <tr><th scope="row">2026-09-26, update</th><td>Qwen3.8-Flash-Next read at its served 262,144 window at both batch settings, and Qwen3.8-27B installed at 262,144 with its figures there: rows 7 and 11, their notes, and sections 01, 02, 04, 05 and 06, with the runs' files in the package.</td></tr>
+        <tr><th scope="row">2026-09-26, evening</th><td>Qwen3.5-122B-A10B, Ornith-1.5-35B-A3B and GLM-5.3-Flash installed at 262,144, and MiniMax M2.7 at 196,608, with their figures there and a start of each with no window passed: rows 6, 8, 9 and 18, their notes, and sections 01, 02, 04, 05 and 06, with the runs' files in the package.</td></tr>
       </table>
       <p class="fineprint">This page is dated on purpose. It is a snapshot as of
       26 September 2026, not a living list; a later roster will be a later page

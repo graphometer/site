@@ -1,4 +1,5 @@
-# Which window each start script serves when it is given none, from runs on 21 September 2026.
+# Which window each start script serves when it is given none, from runs on 21 September 2026 (and, for four
+# endpoints changed on 26 September, starts that evening: section E).
 # Two harnesses started the models through their own start scripts WITHOUT passing a window:
 #   the crash check (stress_chain.sh, then stress_model.py with no script arguments), and
 #   the batch-size sweep (batch_sweep.sh runs "bash start_server.sh" with no arguments).
@@ -35,19 +36,19 @@ Qwen3.5-397B-A17B
 Qwen3-235B-A22B Instruct 2507
   3.17.621.914 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
-Qwen3.5-122B-A10B
+Qwen3.5-122B-A10B (before its 26 September change)
   0.18.995.632 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
-Ornith-1.5-35B-A3B
+Ornith-1.5-35B-A3B (before its 26 September change)
   0.03.003.991 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
-GLM-5.3-Flash
+GLM-5.3-Flash (before its 26 September change)
   0.04.894.575 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
 Mistral Small 4 119B
   0.18.042.963 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
-MiniMax M2.7
+MiniMax M2.7 (before its 26 September change)
   0.02.959.559 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 131072, kv_unified = 'false'
 
 ## B. The batch-size sweep, 21 September, the "skip" run of each model (result file: header and served line)
@@ -106,3 +107,10 @@ Qwen3.8-27B since the afternoon of 26 September: installed at 262,144, by our in
 
 Laguna S 2.1: CTX="${1:-262144}" since 21 September (file-listing-2026-09-26.txt, section C).
 MiniMax M3: CTX="${1:-131072}" (same file).
+
+## E. Four endpoints changed on 26 September, started that evening through the installed script with no window passed
+
+Qwen3.5-122B-A10B (262,144), Ornith-1.5-35B-A3B (262,144), MiniMax M2.7 (196,608) and GLM-5.3-Flash (262,144): each
+  was started once, 21:06 to 21:13, through its installed start script and settings file with no window passed,
+  and served that window (GET /props and the server log agree). The records, redacted to those fields, are in
+  installed-starts-2026-09-26.txt. Section A shows the 131,072 each of the four served on 21 September, before the change.

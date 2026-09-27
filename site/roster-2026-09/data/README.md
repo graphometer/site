@@ -158,37 +158,81 @@ Read this section first. Every one of these is real, and none of them is a mista
     to 158; the two `*_draft-on.result` files in `qwen3.8-27b-2026-09-26/`). Our operator records call these
     configurations presets; the start script does not name them, so the page does not either.
 
+**Added on the evening of 26 September (Qwen3.5-122B-A10B, Ornith-1.5-35B-A3B and GLM-5.3-Flash at 262,144; MiniMax M2.7 at 196,608; the starts with no window passed)**
+
+27. **At 229,090 tokens their letters and structured replies say `code_in_answer` false and quote a code.** As in
+    point 25, the ledger at that depth holds three codes, the request asks for "the sealed reference", and the reply
+    names the first or the third while the check looks only for the middle one. The `read` line at that depth has all
+    three (`codes3_hits` 3) in every 262,144 file, and the page prints no structured figure.
+28. **Each model has three runs, and the page's lead is only one of them.** The lead is the setting installed at
+    262,144 (`Qwen3.5-122B-A10B_ctx262144_b2048_ub512`, `Ornith-1.5-35B_ctx262144_b2048_ub2048`). The 122B's `-ub
+    1024` run reads faster and was not adopted (its card peak left about 0.8 GB, the start script's comment, section
+    C line 135); Ornith's `-ub 512` run is the setting its script used at that window before the change. The 131,072
+    runs are the same day's comparison, at the other window and batch setting, and the page says so.
+29. **Their windows differ by date.** The crash check of 21 September served Qwen3.5-122B-A10B and Ornith-1.5-35B-A3B
+    131,072 (`installed-windows-2026-09-21.txt` section A); both were installed at 262,144 on 26 September, and a
+    start of each installed script with no window passed was served 262,144 that evening (section E, and
+    `installed-starts-2026-09-26.txt`), as were MiniMax M2.7 (196,608) and GLM-5.3-Flash (262,144). The 122B also
+    loaded 262,144 on 15 September, by passing it (`long-reads-2026-09-15/`).
+30. **MiniMax M2.7's 26 September letters say `code_in_answer` false, and two of them hold no letter at all.** It
+    always thinks. At 20,039 and 47,933 tokens the letter request's whole 4,096-token budget went to hidden reasoning
+    (`answer_words` 0, about 14,700 characters of reasoning), so those speaking figures time reasoning only, and the
+    page says so. At 189,491 it wrote a 275-word letter that ends with the first of the three codes, the artifact of
+    point 25. Its `read` lines quote the code at every depth, 3 of 3 at 189,491. The window came from the run's
+    `env:` line through the installed start script, which sets the one shape that loads at 196,608 itself.
+31. **GLM-5.3-Flash's installed setting was measured only to about 48,000 tokens.** `glm-5.3-flash-2026-09-26/`
+    holds its `-ub 1024` run at about 20,000 and 48,000 tokens; the deeper reads and letters, and the 3 of 3 at
+    230,039, are the `-ub 2048` run, which loaded but was not adopted (31,951 MiB at peak). The page labels each
+    figure with its setting. The runs set the reasoning effort to none, and the model still reasoned: several
+    letters stop at their 1,200-token budget with little or no visible text (`predicted_n` 1200, `answer_words` 0
+    to 119), and `code_in_answer` is false there because the letter never reached its last line. The `-ub 4096`
+    start that did not load has a result and a server log of its own.
+32. **Its crash check counts 36 "empty answers" out of 40 and no crash.** `empty` is true when either of a prompt's
+    two replies has no visible text; every such prompt used its whole budget (160 tokens, then 80). The four with
+    text in both replies are prompts 0, 4, 8 and 11; prompt 0 is a 3,014-token ledger whose reply quoted its code.
+33. **The four starts of the evening are records of another tool, cut down.** `installed-starts-2026-09-26.txt`
+    keeps the fields the page cites. Their card readings at load (30,848, 31,256, 31,512 and 28,714 MiB) sit close
+    to the measured runs' at the same settings (30,898, 31,270, 31,709 and 28,834), with the settings each script
+    applies by itself at that window.
+
 ## What was removed, and why
 
 Everything in this package was recorded on a personal machine that also does private work. The redactions remove
 where and how, never what was measured.
 
-**Files added on 26 September** (192 copied records, plus `ROSTER_23.csv`, `summary-table-corrections-2026-09-26.csv`,
+**Files added on 26 September** (218 copied records, plus `ROSTER_23.csv`, `summary-table-corrections-2026-09-26.csv`,
 `file-listing-2026-09-26.txt` and `installed-windows-2026-09-21.txt`, which were written for this revision; the fix
 pass of 26 September added ten copied records and the last of the written files, and the update of the same day
-the six files of `qwen3.8-flash-next-2026-09-26/` and the five of `qwen3.8-27b-2026-09-26/`), replacements by kind,
+the six files of `qwen3.8-flash-next-2026-09-26/` and the five of `qwen3.8-27b-2026-09-26/`, and that evening the six
+each of `qwen3.5-122b-2026-09-26/` and `ornith-1.5-35b-2026-09-26/`, three in `minimax-m2.7/` and eleven in
+`glm-5.3-flash-2026-09-26/`), replacements by kind,
 as counted by the copying scripts:
 
-- 126 absolute or working-tree paths to `<REDACTED_PATH>` (the file name is kept when it is a model shard, a
+- 164 absolute or working-tree paths to `<REDACTED_PATH>` (the file name is kept when it is a model shard, a
   library or a source file);
-- 131 bridge and loopback addresses to `<LOCAL>`; 4 link addresses to `<LAPTOP>`; 26 uses of the laptop's short name
+- 152 bridge and loopback addresses to `<LOCAL>`; 4 link addresses to `<LAPTOP>`; 26 uses of the laptop's short name
   or the desktop's host name to `<LAPTOP>` or `<DESKTOP>`;
-- 20 port numbers to `<PORT>`, two of them in the usage lines of `batch_sweep.sh`;
-- 174 of our internal keys for a model to its public name, in run tags, labels and script text (file names were
-  renamed the same way; 67 of them are the Qwen3.8-27B runs' tags in their four result files), 12 serving aliases to
-  `<ALIAS>`, and 4 build folder names to `<BUILD>`; in
+- 30 port numbers to `<PORT>`, two of them in the usage lines of `batch_sweep.sh`;
+- 371 of our internal keys for a model to its public name, in run tags, labels and script text (file names were
+  renamed the same way; 67 of them are the Qwen3.8-27B runs' tags in their four result files and 138 the evening
+  runs' tags in their twelve; in the MiniMax M2.7 run of 26 September the rule also renamed the settings file named
+  in its `env:` line), 22 serving aliases to
+  `<ALIAS>`, and 5 build folder names to `<BUILD>`; in
   `qwen3.8-flash-next-2026-09-26/run_fn.sh` the key rule also matched `grep`'s `-m3` flag, which was put back
   and is not counted;
 - 56 request identifiers removed from response JSON;
-- **lines removed:** 103. Of these, 94 were a helper process's start-up and status lines in the server logs, each
+- **lines removed:** 104. Of these, 94 were a helper process's start-up and status lines in the server logs, each
   kept as its timestamp followed by `<line removed>`, so the logs still show when each run began; four are an
-  `env:` line in each letters result that named a private folder; five are comment or command lines in the scripts
-  that described a private use (one of them the line in `stress_model.py` that stopped that helper). The three
-  sweep drivers and the crash check's `stress_model.py` also lose a block (21 lines in all) that pointed that helper
-  at an empty folder.
+  `env:` line in each letters result that named a private folder; six are comment or command lines in the scripts
+  that described a private use (two of them the lines in `stress_model.py` and `glm-5.3-flash-2026-09-26/stress_fw.py`
+  that stopped that helper). The three sweep drivers and the two crash-check scripts also lose a block (24 lines in
+  all) that pointed that helper at an empty folder.
 
 `installed-windows-2026-09-21.txt` quotes its lines through the same tool, which replaced 2 port numbers and 1
-address in them.
+address in them. `installed-starts-2026-09-26.txt` is written from four start records and keeps only the fields it
+names in its header: the name of the tool that issued the starts, the service unit names, the tool's own label for
+each model and its two status lines, the time each server took to become healthy, and the unit state at stop are
+not reproduced (a label held an em dash).
 
 **Words changed, not measurements.** The docstring of `letters-2026-09-26/prose_probe.py` was rewritten to its
 technical content, two comment lines about a private use became one, and a dash in a help string became a colon;
@@ -198,7 +242,8 @@ technical content, two comment lines about a private use became one, and a dash 
 `minimax-m3/*.measure.log` files has a phrase replaced with `<REDACTED>`; the two `minimax-m3/*launch-check.log`
 files lose the line telling the operator how to stop the server, which named a process-id file. The docstring
 of `qwen3.8-27b-2026-09-26/probe38.py` was rewritten to its technical content in the same way as
-`prose_probe.py`'s, one comment line about a private use was shortened, and a dash in a help string became a colon.
+`prose_probe.py`'s, one comment line about a private use was shortened, and a dash in a help string became a colon;
+`minimax-m2.7/2026-09-26_probe_fw.py`, the same probe with a `--read-max-tokens` option, had the same changes.
 
 **Extracts, each saying so in its first lines.** `minimax-m2.7/2026-09-13_extract.txt` (the launch block of a
 serving script, two probe lines, the result lines of two runs with their texts omitted, and the layer count from
@@ -222,7 +267,7 @@ runtime's own blocks dropped from the per-model records, private tool names rena
 
 **Nothing that carries a measurement is altered.** Every token count, time, rate, byte count, memory reading and
 verdict is as recorded. Units are the units the record used: MiB stays MiB. The typographic characters the
-recording programs printed, dashes included, are kept in the copied records and quoted script lines (eight
+recording programs printed, dashes included, are kept in the copied records and quoted script lines (seven
 quoted lines in `file-listing-2026-09-26.txt` carry an em dash from a script comment); the text written for this
 revision carries none.
 
@@ -242,12 +287,16 @@ and not a port.
 | `summary-table-corrections-2026-09-26.csv` | section 05's table: what our records said, where that figure stood, what the files show, and the files | written 2026-09-26 |
 | `file-listing-2026-09-26.txt` | every file each row serves, with byte counts from the file system; the files no longer present; and the start-script lines behind the row notes (windows, batch sizes, cache, file choice), paths and ports removed | read 2026-09-26 |
 | `batch-sweep-2026-09-21/` | the batch-size sweep through each model's own start script: results and server logs at the defaults and at the setting each model now runs, the other rungs of the models kept at the defaults (results only), the series runs (several lengths per load) for GLM-5.3-Flash, Ling-3.0-flash, Laguna S 2.1 and both DeepSeek services (each DeepSeek service also at `-ub 2048`), the 3,000-token reads at 262,144 for Inkling-Small and Qwen3.8-Flash-Next, two runs through the model manager, the three drivers and the pair's chain script; and the crash check of the same day (its chain `stress_chain.sh`, its per-model script `stress_model.py` and its summary `STRESS.txt`), whose runs passed no window | 2026-09-21 |
+| `glm-5.3-flash-2026-09-26/` | GLM-5.3-Flash at 262,144, installed as its default that evening at `-b 4096 -ub 1024` (reads and letters at about 20,000 and 48,000 tokens), at `-ub 2048` (measured to about 230,000, not adopted), the `-ub 4096` start that did not load (result and server log), and at 131,072 with `-b/-ub 4096` the same day; the 40-prompt crash check at the installed setting (summary and one line per prompt) and its script | 2026-09-26 |
+| `installed-starts-2026-09-26.txt` | four starts of installed start scripts with no window passed (Qwen3.5-122B-A10B, Ornith-1.5-35B-A3B, MiniMax M2.7, GLM-5.3-Flash), 21:06 to 21:13, redacted to date and time, the served window from the server and its log, the card before and at load, and the stop time | written 2026-09-26 from records of that evening |
+| `qwen3.5-122b-2026-09-26/` | Qwen3.5-122B-A10B at 262,144, installed as its default that evening, at the setting installed there (`-b 2048 -ub 512`) and at `-ub 1024` (measured, not adopted), and at 131,072 with `-b/-ub 4096` the same day: each run's result file (window, command line, card memory) and one JSON line per measurement, reads and letters at about 20,000, 48,000, 100,000 and 230,000 tokens (100,000 at 131,072). The probe is `qwen3.8-27b-2026-09-26/probe38.py`, the same file under another name | 2026-09-26 |
+| `ornith-1.5-35b-2026-09-26/` | Ornith-1.5-35B-A3B at 262,144, installed as its default that evening, at the setting installed there (`-b 2048 -ub 2048`) and at the old one (`-b 2048 -ub 512`), and at 131,072 with `-b/-ub 4096` the same day: result files and JSON lines as above | 2026-09-26 |
 | `qwen3.8-27b-2026-09-26/` | Qwen3.8-27B at 262,144 with the draft head off, the configuration installed as its default that afternoon: the result file (window, command line, card memory) and one JSON line per measurement, reads and letters at about 20,000, 48,000, 100,000 and 230,000 tokens, with the probe; and the result files of the two smaller files at 262,144 with the draft head on, cited for their command lines | 2026-09-26 |
 | `qwen3.8-flash-next-2026-09-26/` | Qwen3.8-Flash-Next at its served 262,144 window, the server started once at `-b 4096 -ub 2048` (from a cold start) and once at llama.cpp's defaults: one JSON line per read for each setting (`shipped_b4096_ub2048.jsonl`, `default_b2048_ub512.jsonl`), the run's own log of each load (`run_fn.out`: window, card memory, how much of the model was in memory), the driver, the read probe and the memory-residency script | 2026-09-26 |
 | `installed-windows-2026-09-21.txt` | for each endpoint that has one, a run on 21 September that passed no window, and the window its server reported; notes for the endpoints these records cannot settle | written 2026-09-26 from runs of 2026-09-21 |
 | `batch-sweep-2026-09-20/` | the runs started by hand: Inkling-Small and Qwen3.8-Flash-Next at the defaults and at `-b 4096 -ub 2048` (131,072), the same setting at 262,144 on 3,000 tokens, DeepSeek's 8-bit file at the defaults and at 8192 (48,073 tokens at 131,072; 150,324 at 262,144) with the two result summaries its verify runs printed, and the drivers | 2026-09-20 |
 | `qwen3.8-flash-next-2026-09-20/` | Qwen3.8-Flash-Next at 262,144 with the 8-bit cache: a 229,982-token read and a 5,986-token control, and the two larger windows (results only), with the driver and the probe | 2026-09-20 |
-| `minimax-m2.7/` | the 13 September desktop runs (two server logs and an extract), the 19 September micro-batch results with one server log and the probe | 2026-09-13 and 19 |
+| `minimax-m2.7/` | the 13 September desktop runs (two server logs and an extract), the 19 September micro-batch results with one server log and the probe; and the 26 September run at 196,608, installed as its default that evening (result file with window, command line and card memory, one JSON line per measurement, and its probe, `2026-09-26_probe_fw.py`) | 2026-09-13, 19 and 26 |
 | `minimax-m3/` | the Q2_K_L file alone at 131,072 (launch check, server log, measurement log, prefill and decode JSON, the 58,307-token recall read), the attempts at 262,144, and the 196,608 rung | 2026-09-20 |
 | `letters-2026-09-26/` | Qwen3-235B at its served setting and at `-ub 4096`, and Qwen3.6-27B at 262,144 with the draft head off, plus the attempt with it on: results, the probe's JSON lines, and the probe | 2026-09-26 |
 | `first-runs-2026-09-16/` | Ornith-1.5-35B-A3B and GLM-5.3-Flash on their first day: the table rows, the paragraph and 120,000-token read JSON, the server logs, the driver and the long-prompt probe | 2026-09-16 |

@@ -5,7 +5,7 @@
   <link href="https://graphometer.ai/"/>
   <link rel="self" href="https://graphometer.ai/feed.xml"/>
   <id>https://graphometer.ai/</id>
-  <updated>2026-09-26T18:05:00-04:00</updated>
+  <updated>2026-09-26T21:58:00-04:00</updated>
   <author><name>Graphometer</name></author>
   <rights>Copyright 2026 Grant Williams. Independent work: not affiliated with, endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, Meta Platforms, the Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter, DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, Thinking Machines Lab, DeepSeek, MiniMax, Google, inclusionAI, Poolside, Ornith AI, ASUS, AMD, NVIDIA, the OpenCode project, or Anthropic.</rights>
 
@@ -29,7 +29,7 @@
     <title>llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</title>
     <link href="https://graphometer.ai/batch-size/"/>
     <id>https://graphometer.ai/batch-size/</id>
-    <updated>2026-09-26T18:05:00-04:00</updated>
+    <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 and 188 GiB of RAM, 19 to 21 September 2026, across the models we serve, with one model re-measured on 26 September. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default of -b 2048 -ub 512 (DeepSeek V4 Flash's 48,073-token read went from 576.9 seconds to 79.2). Where a start script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. At the 262,144-token window it serves, Qwen3.8-Flash-Next was re-measured on 26 September: with about 58 to 60 GB of its 90 GB file in memory it read 48,075 tokens at 660.6 t/s against 240.2 at the default and 229,981 tokens at 535.4 against 205.5. On a server started with none of the file in memory, the first request (3,035 tokens) began with 43.5 GB loaded and read at 87.7 t/s, against 517.6 for the next 3,019 tokens. Inkling-Small was timed on long prompts only at half the window it serves. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Every model had its own ceiling: -ub 8192 failed to load on five models and killed one server mid-read, and one model that loaded -ub 4096 at a 131,072-token window could not load it at 196,608. One setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input and was withdrawn. Also here: what a bigger micro-batch costs when the last message is edited, two knobs we refused, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), five corrections of our own records, and the logs behind every figure.</summary>
   </entry>
 
@@ -45,7 +45,7 @@
     <title>256K on a 32 GB card: the cost of reading</title>
     <link href="https://graphometer.ai/context-256k/"/>
     <id>https://graphometer.ai/context-256k/</id>
-    <updated>2026-09-26T16:00:00-04:00</updated>
+    <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>Nine models in ten configurations retrieved all three planted strings on September 15, one deep request per configuration. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB. A later batch-tuned DeepSeek Q8 read took 313.2 seconds versus 2,062.2 seconds at similar depth, with build identity unconfirmed across dates. The short code answers are not prose-speed or long-document reasoning results.</summary>
   </entry>
 
@@ -85,7 +85,7 @@
     <title>The roster, as of 26 September 2026</title>
     <link href="https://graphometer.ai/roster-2026-09/"/>
     <id>https://graphometer.ai/roster-2026-09/</id>
-    <updated>2026-09-26T18:05:00-04:00</updated>
+    <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>A dated snapshot of the twenty-three local model endpoints installed on one RTX 5090 desktop with 188 GiB of RAM, only one of which can run at a time; one row also uses a laptop linked to it. Since the first list of 15 September, Ornith-1.5-35B-A3B, GLM-5.3-Flash and MiniMax M2.7 were added, two Kimi models left, and most reading speeds were measured again after we found that llama.cpp's batch settings had never been tuned on this desktop: at its old 32,768-token window Laguna S 2.1 went from 72.2 tokens a second (-b 512 -ub 128) to 1,434.0 (-b/-ub 8192) on the same 24,071-token read, and at the 262,144 window it now serves it reads 898.8 on 24,013 tokens; Qwen3.5-397B-A17B went from 224.5 to 932.2 on 48,029 tokens at its 131,072 window. Every reading speed now says its prompt size, window and batch setting, every window says whether a run that passed no window shows it as the installed default, and every speaking speed says what it timed, because a short answer is not prose: Qwen3-235B's 8.2 tokens a second was an 11-token answer, and on letters of about 350 words it writes at 5.51, 4.68 and 4.22 after reading 20,063, 60,180 and 99,864 tokens. Inkling-Small's 337.9 was read at a smaller window than it serves and is printed with that window; Qwen3.8-Flash-Next, measured again on 26 September at the 262,144 window it serves, reads 660.6 on 48,075 tokens and 535.4 on 229,981 with its batch setting, against 240.2 and 205.5 at llama.cpp's defaults. Eight claims in our own records, among them MiniMax M3's "194 at depth", did not survive a check against their logs; the page lists each correction with its file.</summary>
   </entry>
 

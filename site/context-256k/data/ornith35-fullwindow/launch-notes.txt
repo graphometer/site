@@ -1,0 +1,35 @@
+Ornith-1.5-35B, 26 September 2026: the two runs in this folder, both at a 262,144 window. Derived notes; the
+primary records are the two .result files (header, launch command, one JSON row per request, series peak) and
+the two server logs beside them.
+
+Launch, from the "cmdline:" line of each .result (paths, host and port removed there):
+  --ctx-size 262144 --batch-size 2048 --ubatch-size 512    (orn_256k_b2048_ub512: the start-script copy's own
+                                                            setting above 131,072 then; no batch variable passed)
+  --ctx-size 262144 --batch-size 2048 --ubatch-size 2048   (orn_256k_b2048_ub2048: ORNITH_35B_BATCH=2048 and
+                                                            ORNITH_35B_UBATCH=2048 passed, as its header shows)
+  --n-gpu-layers 999 --n-cpu-moe 6 --flash-attn on --parallel 1 --threads 24 --threads-batch 24 --timeout 7200
+  No --cache-type flag, so llama.cpp's default 16-bit key and value cache. No --spec-type flag, so no draft
+  head: MTP was not used (the result rows' draft_n is null). The weights were memory-mapped (the server log's
+  own "mmap enabled" warning).
+
+Against the failure record ../failures/ornith35_262144.log: an Ornith-1.5-35B Q6_K file of the same name
+(Ornith-1.5-35B-Q6_K.gguf), loaded from another directory (both paths are removed in these copies; neither log
+records a hash or a file size); the same window, --n-gpu-layers 999, --n-cpu-moe 6 and flash attention; no
+--cache-type flag in either. The failure launch added --spec-type draft-mtp --spec-draft-n-max 6
+--spec-draft-p-min 0.75 and set no batch values, which at this build means llama.cpp's 2048 / 512
+(common/common.h lines 443 and 444 at commit c8e03ce: n_batch 2048, n_ubatch 512); these runs wrote the batch
+out. It also set --timeout 3600 and --cors-origins localhost, where these runs set --timeout 7200 and no
+--cors-origins, and its log's first line is a preflight card reading (gpu=1113MiB); these .result files read
+the card only once the server answered ("VRAM at load"). Both launches name the same llama-server build
+directory (removed with the paths), commit c8e03ce by its build record. So these runs show a file of that name
+serving this window without the draft head. They do not show the failure's copy serving it with the head, and
+the failure stands.
+
+Requests: thinking was switched off per request (reasoning_chars is 0 in every row). Each depth was a fresh
+ledger, generated with its own seed; the deepest, about 230,000 tokens, planted three codes and asked for all
+three, after reads of about 20,000, 48,000 and 100,000 tokens on the same server.
+
+The start script installed on 26 September, its own comment lines on this window, verbatim:
+  # ** At the 262144 rung the default is 2048/2048 ** (since 2026-09-26; it was 2048/512). MEASURED 2026-09-26 at
+  # 262144 through this script, sealed codes exact at every depth, 3/3 at ~229K on both:
+  # 2.1-2.4x the reading (a ~229K read 152 s -> 72 s), speaking unchanged, for 0.9 GB of the card.

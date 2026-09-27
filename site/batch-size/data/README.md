@@ -141,6 +141,34 @@ one JSON line per read.
   empty page cache, then `-b 2048 -ub 512` on one started with 60.05 GB of the file resident; one JSON row per read (`*.jsonl`: tokens, milliseconds, t/s, decode, page-cache residency
   before and after, card after, the code check), each load's server log, and the driver's console output
   (`run.console.log`: residency before each start, load time and card memory at load). Point 15.
+- `runs/2026-09-26_ornith-1.5-35b-served-window/` and `runs/2026-09-26_qwen3.5-122b-a10b-served-window/`: Ornith-1.5-35B and Qwen3.5-122B-A10B at 262,144 through copies of their start
+  scripts on 26 September, two batch settings each (Ornith 2048 / 512 and 2048 / 2048; the 122B 2048 / 512 and
+  2048 / 1024). Each `.result` holds the header (served window, card at load, the launch command), one JSON row per
+  request at depths of about 20,000, 48,000, 100,000 and 230,000 tokens (three codes in the deepest; thinking off per
+  request), and the card peak over the series; the `.server.log` beside it is that server's log. The page's section
+  04 note quotes the deepest reads. Its 822 MiB is arithmetic: the card's reported total, 32,607 MiB, published
+  in the Qwen3.8-27B at 256K package (`/qwen38-256k/data/records/card-capacity.txt`), minus the 2048 / 1024
+  series peak, 31,785 MiB.
+- `runs/2026-09-26_minimax-m2.7-served-window/`: MiniMax M2.7 at 196,608, the context length its model file
+  declares, through its installed start script on 26 September, which at that window sets `-b 4096 -ub 1024` with
+  every expert layer in RAM (the one shape that loaded on 19 September). The `.result` holds the header, one JSON
+  row per request at depths of about 20,000, 48,000 and 190,000 tokens (three codes in the deepest; thinking on,
+  so `reasoning_chars` is above 0 in every row) and the card peak; the `.server.log` beside it is that server's
+  log. The two prose requests after the shorter reads spent all 4,096 tokens reasoning and have empty answers; the
+  page uses only the reads. `stress_MiniMax-M2.7_192k_s20260926/`: the 40-prompt stress check at the same window
+  and shape (`SUMMARY.json`, one JSON row per prompt in `results.jsonl`, the server log). Each prompt asked for a
+  reply of up to 160 tokens and a follow-up of up to 80, at temperature 0.7; every reply ran to its limit, and all
+  40 rows are flagged `empty` (set when either reply is empty), so the check shows the server staying up, not the
+  answers. The page's section 04 note quotes the three reads and the check.
+- `runs/2026-09-26_glm-5.3-flash-served-window/`: GLM-5.3-Flash through a copy of its start script on 26 September:
+  at 262,144, `-b 4096 -ub 4096` (did not load: the `.result` has the settings, its server log the refused 13,281.37 MiB
+  compute buffer), `-ub 2048` (reads of about 20,000, 48,000, 100,000 and 230,000 tokens, three codes in the deepest)
+  and `-ub 1024` (reads of about 20,000 and 48,000 only); at 131,072, `-ub 4096` (about 20,000, 48,000 and 100,000).
+  Reasoning effort none at launch, yet `reasoning_chars` is above 0 on every read. `stress_GLM-5.3-Flash_256k_ub1024_s20260926/`:
+  40 prompts at 262,144, the same request shapes as the MiniMax M2.7 check above; no crash, and 36 rows flagged
+  `empty`. Its server log does not print the micro-batch; its first prompt's last progress line before the end sits
+  1,028 tokens from it, as in the `-ub 1024` run's first read (2,052 at 2048, 4,096 at 4096). The page's section 04
+  note quotes these runs.
 - `tools/`: the harnesses that produced these files, with private paths removed (placeholders in angle
   brackets name what stood there, for example `<llama.cpp build d3146f2b5>/llama-server`):
   `batch_sweep.sh` (21 September driver), `sweep_chain.sh`, `queue_runner.sh`, `series_probe.sh`,
@@ -170,10 +198,13 @@ one JSON line per read.
   ROG Flow Z13 laptop over Thunderbolt using llama.cpp's RPC backend.
 - Dates: 15 September (one depth read), 19 September (M2.7), 20 September (first pass, DeepSeek, M3 split
   buffers, just after midnight), 21 September (everything else), 26 September (Qwen3.8-Flash-Next at its served
-  window). File times in the logs are the machine's local time.
+  window, then Ornith-1.5-35B and Qwen3.5-122B-A10B at 262,144, MiniMax M2.7 at 196,608 and GLM-5.3-Flash at
+  262,144 and 131,072). File times in the logs are the machine's local time.
 - Temperature 0 on every sweep request; `max_tokens` 900 on sealed-code reads, 32 on stress prompts, 8 on the
   16,011-token DeepSeek comparisons, 32 on the M2.7 harness, 400 on the follow-up requests, 120 with thinking off
-  on the 26 September reads.
+  on the 26 September Qwen3.8-Flash-Next reads, 300 with thinking off on the Ornith-1.5-35B and Qwen3.5-122B-A10B
+  reads, 4,096 on MiniMax M2.7's, with thinking on, and 1,024 on GLM-5.3-Flash's, with its reasoning effort none;
+  the 26 September stress checks asked for 160 and then 80 tokens at temperature 0.7.
 - Every model output shipped here comes from a model running locally on this machine. No hosted model's output
   is in the package.
 
@@ -181,33 +212,42 @@ one JSON line per read.
 
 Nothing was changed in any file except the items below. Counts are over the whole package.
 
-- **Paths:** 395 absolute paths in run files became `<REDACTED_PATH>/` plus the file's own name (a model file
-  name, a source file name, or a script name). In the tools, 44 paths became named placeholders such as
+- **Paths:** 449 absolute paths in run files became `<REDACTED_PATH>/` plus the file's own name (a model file
+  name, a source file name, or a script name; a settings file's name is not kept, it reads
+  `<REDACTED_PATH>/<settings file>`). In the tools, 44 paths became named placeholders such as
   `<MODEL_DIR>`, `<OUTPUT_DIR>`, `<CUDA 12.8 libraries>` or `<llama.cpp build d3146f2b5>`.
-- **Addresses and ports:** 153 occurrences of the desktop's bridge address in run files and 6 in the tools became
-  `<LOCAL>` (with the port, where one followed); one command-line port next to it became `<PORT>`; 5 laptop link
+- **Addresses and ports:** 179 occurrences of the desktop's bridge address in run files and 6 in the tools became
+  `<LOCAL>` (with the port, where one followed); nine command-line ports next to it became `<PORT>`; 5 laptop link
   addresses became `<LAPTOP>`, and one laptop host alias in a tool became `<LAPTOP>`. Loopback addresses
   (`127.0.0.1`) and their ports are left as they were.
-- **Process ids:** 35 became `<PID>`.
-- **Private lines:** 251 log lines were deleted: 249 written by, or naming, a private helper process that runs
+- **Process ids:** 47 became `<PID>`.
+- **Private lines:** 253 log lines were deleted: 251 written by, or naming, a private helper process that runs
   beside some of our servers and plays no part in these measurements, and 2 notices naming a private system. No
   measurement line was deleted.
 - **Internal names:** 74 run files and 14 tools were renamed from internal short names to public model names,
   and 74 occurrences of those short names inside files were changed the same way; 11 queue-log entries lost an
   internal prefix and a service port. For the 26 September run, 5 run files and 1 tool were renamed to carry
-  the public model name, and the tool's 2 mentions of its old name changed with it.
+  the public model name, and the tool's 2 mentions of its old name changed with it. For the Ornith-1.5-35B and
+  Qwen3.5-122B-A10B runs at 262,144, 8 run files were renamed to carry the public model name, and 84 occurrences
+  of their run tags, settings-knob prefixes and script-copy names inside them, plus 4 serving aliases, changed the
+  same way. For the MiniMax M2.7 run at 196,608, 2 run files and the stress check's folder were renamed the same
+  way, and 16 occurrences of its run tags and settings-knob prefixes inside them, plus 1 serving alias, changed
+  with them. For the GLM-5.3-Flash runs of 26 September, 8 run files and the stress check's folder were renamed the
+  same way, and 45 occurrences of their run tags, settings-knob prefixes and script-copy names inside them, plus 3
+  serving aliases, changed with them.
 - **Tools, by hand:** 84 edits deleted sentences and blocks that named private systems or internal studies, or configured the helper
   process (each deletion is marked in place, for example `[one sentence removed from this copy]`), removed a list
   of internal service names, and reworded one comment whose English verb tripped our own leak check.
 - **Response identifiers:** 3 fields (`id`, `system_fingerprint`, `created`) removed from one response.
-- **Punctuation:** 66 em dashes in our own harness text (15 in console logs and one result note, 51 in script
-  comments, messages and docstrings) became colons, two of them commas where a colon would not read, following
-  the site's copy rule. None was in model output or in llama.cpp's own log lines. The package holds no en
-  dash.
+- **Punctuation:** 68 em dashes in our own harness text (15 in console logs and one result note, 2 in a start
+  script's note at the top of two 26 September server logs, 51 in script comments, messages and docstrings)
+  became colons, two of them commas where a colon would not read, following the site's copy rule. None was in
+  model output or in llama.cpp's own log lines. The package holds no en dash.
 - **Not shipped:** our start scripts and their settings files (for the 26 September run: its copy of the start
   script, its driver script and its settings file), internal notes and working papers, the private reasoning
-  recorded beside some results, two small test logs about the helper process, and the 26 September run's
-  process-id files.
+  recorded beside some results, two small test logs about the helper process, the 26 September run's
+  process-id files, and, for the MiniMax M2.7 run at 196,608, its probe and stress drivers, card-memory samples and
+  process-id files; the same for the GLM-5.3-Flash runs, and their copy of the start script.
 
 Leak check: the sweep our packaging rules require (internal paths, staging-folder names, the hostname and
 network names, the bridge and link addresses, the laptop's host names, operator keys, service names, and the

@@ -212,11 +212,16 @@ Row 5, Qwen3-235B-A22B Instruct 2507: the windows it accepts; batch
     72: case "$CTX" in 131072|65536|32768) ;; *)
    211: Q235_BATCH="${Q235_BATCH:-4096}"; Q235_UBATCH="${Q235_UBATCH:-2048}"
 
-Row 6, Qwen3.5-122B-A10B: the windows it accepts; batch by window, with the reason
+Row 6, Qwen3.5-122B-A10B: window fallback (the installed window is set in settings this package does not publish), the
+windows it accepts, batch by window, with the reason and the 26 September measurement. Read again after the change of
+26 September, afternoon
+    26: CTX="${Q122_CTX:-65536}"; NCMOE="${Q122_NCMOE:-38}"
     33: case "$CTX" in 262144|32768|65536|131072) ;; *)
    130: # 4.0x the reading; speaking within run-to-run noise (MTP draft). ** At the 262144 rung the default
    131: # stays 512 ** — that rung measured 30.6 GB with the old default; a 4096 buffer would not fit.
-   133: if [ "$CTX" -gt 131072 ]; then _Q122_B_DEFAULT=2048; _Q122_UB_DEFAULT=512; else _Q122_B_DEFAULT=4096; _Q122_UB_DEFAULT=4096; fi
+   132: # Re-measured 2026-09-26 at 262144 (the default window since that day), sealed codes exact, 3/3 at ~229K on both:
+   135: # 1024 reads 1.7x faster but leaves only ~0.8 GB of the card, so 512 stays: a busy desktop must not stop it loading.
+   137: if [ "$CTX" -gt 131072 ]; then _Q122_B_DEFAULT=2048; _Q122_UB_DEFAULT=512; else _Q122_B_DEFAULT=4096; _Q122_UB_DEFAULT=4096; fi
 
 Row 7, Qwen3.8-27B: window fallback (the installed window is set in settings this package does not publish), file choice,
 the windows it accepts, the 262,144 rung (cache, draft head), batch. Read again after the change of 26 September, afternoon
@@ -234,15 +239,24 @@ the windows it accepts, the 262,144 rung (cache, draft head), batch. Read again 
    158:       SPEC+=(--cache-type-k-draft q8_0 --cache-type-v-draft q8_0)
    188: Q38_BATCH="${Q38_BATCH:-2048}"; Q38_UBATCH="${Q38_UBATCH:-512}"
 
-Row 8, Ornith-1.5-35B-A3B: the windows it accepts; batch by window
-    48: # 262144 MEASURED 2026-09-17: 30,576 MiB VRAM, 92.7 t/s decode, healthy in 43 s — FASTER than
-    51: case "$CTX" in 131072|262144) ;; *)
-   149: # ** At the 262144 rung the defaults stay 2048/512 ** — measured 30.6 GB there with the old default.
-   151: if [ "$CTX" -gt 131072 ]; then _ORN35_B_DEFAULT=2048; _ORN35_UB_DEFAULT=512; else _ORN35_B_DEFAULT=4096; _ORN35_UB_DEFAULT=4096; fi
+Row 8, Ornith-1.5-35B-A3B: window fallback (the installed window is set in settings this package does not publish), the
+windows it accepts, batch by window, the 17 September comment. Read again after the change of 26 September, afternoon
+    38: CTX="${ORN35_CTX:-131072}"
+    47: # 262144 MEASURED 2026-09-17: 30,576 MiB VRAM, 92.7 t/s decode, healthy in 43 s — FASTER than
+    50: case "$CTX" in 131072|262144) ;; *)
+   148: # ** At the 262144 rung the default is 2048/2048 ** (since 2026-09-26; it was 2048/512). MEASURED 2026-09-26 at
+   152: # 2.1-2.4x the reading (a ~229K read 152 s -> 72 s), speaking unchanged, for 0.9 GB of the card.
+   154: if [ "$CTX" -gt 131072 ]; then _ORN35_B_DEFAULT=2048; _ORN35_UB_DEFAULT=2048; else _ORN35_B_DEFAULT=4096; _ORN35_UB_DEFAULT=4096; fi
 
-Row 9, GLM-5.3-Flash: the window it accepts; batch
-    62: case "$CTX" in 131072) ;; *)
-   172: GLM53_BATCH="${GLM53_BATCH:-4096}"; GLM53_UBATCH="${GLM53_UBATCH:-4096}"
+Row 9, GLM-5.3-Flash: window fallback (the installed window is set in settings this package does not publish), the
+windows it accepts, batch by window, with the 26 September measurement. Read again after the change of 26 September,
+evening
+    54: CTX="${GLM53_CTX:-131072}"
+    63: case "$CTX" in 262144|131072) ;; *)
+   173: # ** At the 262144 rung the default is -b 4096 -ub 1024 ** (2026-09-26). MEASURED there through this script, sealed codes
+   175: #     -ub 4096   does not load: the compute buffer alone asks for 13,281 MiB
+   180: if [ "$CTX" -gt 131072 ]; then _GLM53_UB_DEFAULT=1024; else _GLM53_UB_DEFAULT=4096; fi
+   181: GLM53_BATCH="${GLM53_BATCH:-4096}"; GLM53_UBATCH="${GLM53_UBATCH:-$_GLM53_UB_DEFAULT}"
 
 Row 10, Qwen3.6-27B: window fallback, file choice, the cache block, batch; and the saved copy from before 26 September
     69: CTX="${Q36_CTX:-131072}"
@@ -292,12 +306,19 @@ Row 17, Mistral Small 4 119B: the windows it accepts; batch by window, with the 
    124: # rung measured 30.2 GB with the old default; an 8192 compute buffer would not fit.
    126: if [ "$CTX" -gt 131072 ]; then _MISTRAL_B_DEFAULT=2048; _MISTRAL_UB_DEFAULT=512; else _MISTRAL_B_DEFAULT=8192; _MISTRAL_UB_DEFAULT=8192; fi
 
-Row 18, MiniMax M2.7: window, the windows it accepts, batch, the 196,608 shape, layer count
+Row 18, MiniMax M2.7: window fallback (the installed window is set in settings this package does not publish), the
+windows it accepts, batch, the one shape that loads at 196,608, the cache, layer count. The script is unchanged since
+21 September; read again on the evening of 26 September
+    35: #   196608 (the native ceiling) loads ONLY with every expert in RAM at -ub 1024 (-ub 4096 fails in
     77: CTX="${M27_CTX:-131072}"
     79: M27_BATCH="${M27_BATCH:-4096}"; M27_UBATCH="${M27_UBATCH:-4096}"
     91: case "$CTX" in 131072|196608) ;; *)
+   108: if [ "$CTX" = "196608" ]; then
+   110:   # create_context: every expert in RAM, -ub 1024 (4096 fails in create_context, 2048 aborts).
    112:     echo "NOTE: M27_CTX=196608 has one measured shape — using every expert in RAM (cmoe) and -ub 1024" >&2
+   115:     NCMOE=cmoe; M27_UBATCH=1024
    259: PLACE=(--n-cpu-moe "$NCMOE"); INRAM="$NCMOE of 62"
+   269:   --cache-type-k q8_0 --cache-type-v q8_0 \
 
 Row 19, MiniMax M3: window fallback; the window decides the micro-batch; batch
     49: CTX="${1:-131072}"; PORT=<port>; HOST=<host>

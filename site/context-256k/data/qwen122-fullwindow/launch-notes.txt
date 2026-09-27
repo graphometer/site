@@ -1,0 +1,33 @@
+Qwen3.5-122B-A10B, 26 September 2026: the two runs in this folder, both at a 262,144 window. Derived notes; the
+primary records are the two .result files (header, launch command, one JSON row per request, series peak, draft
+acceptance lines) and the two server logs beside them.
+
+Launch, from the "cmdline:" line of each .result (paths, host and port removed there):
+  --ctx-size 262144 --parallel 1 --batch-size 2048 --ubatch-size 512    (q122_256k_b2048_ub512)
+  --ctx-size 262144 --parallel 1 --batch-size 2048 --ubatch-size 1024   (q122_256k_b2048_ub1024)
+  --n-gpu-layers 999 --n-cpu-moe 38 --no-mmap --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75
+  --threads 24 --threads-batch 24 --flash-attn on
+  No --cache-type flag, so llama.cpp's default 16-bit key and value cache. The MTP draft head was used (the
+  result rows' draft_n and draft_accepted, and the draft acceptance lines).
+
+Against its 15 September launch (../logs256/qwen122_262144.log, the [cmd] line): the same model file, window,
+--n-gpu-layers 999, --n-cpu-moe 38, --no-mmap, draft settings, flash attention and threads. That launch set no
+batch values, which at this build means llama.cpp's 2048 / 512 (common/common.h lines 443 and 444 at commit
+c8e03ce: n_batch 2048, n_ubatch 512); the 26 September 2048 / 512 run writes them out. Both launches name the same
+llama-server build directory (removed with the paths), commit c8e03ce by its build record; the 15 September
+response's commit is in ../build-records.tsv.
+
+Requests: thinking was switched off per request (reasoning_chars is 0 in every row). Each depth was a fresh
+ledger, generated with its own seed; the deepest, about 230,000 tokens, planted three codes and asked for all
+three, after reads of about 20,000, 48,000 and 100,000 tokens on the same server. The 15 September read used a
+different probe and ledger.
+
+The start script installed on 26 September, its own comment lines on this window, verbatim except that the second
+line's dash is shown as a colon:
+  # 4.0x the reading; speaking within run-to-run noise (MTP draft). ** At the 262144 rung the default
+  # stays 512 ** : that rung measured 30.6 GB with the old default; a 4096 buffer would not fit.
+  # 1024 reads 1.7x faster but leaves only ~0.8 GB of the card, so 512 stays: a busy desktop must not stop it loading.
+
+The page gives that spare as arithmetic instead: the card's reported total, 32,607 MiB (published in the
+Qwen3.8-27B at 256K package, /qwen38-256k/data/records/card-capacity.txt), minus this folder's series peak at
+2048 / 1024, 31,785 MiB ("peak VRAM during probes" in q122_256k_b2048_ub1024.result), is 822 MiB.

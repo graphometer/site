@@ -9,6 +9,10 @@
 - Qwen3.5’s main-table launches retained MTP. The Ornith failures and GLM setup note do not justify a blanket claim that draft heads cannot coexist with a 262,144 window.
 - GLM Full is a copied configuration-comment excerpt, not a raw run result. It is labelled as such on the page.
 - The two 26 September Flash-Next rows (`flashnext-fullwindow/`) used another placement than the 15 September Flash-Next row: 40 expert layers requested on CPU instead of 99, and an 8-bit cache. Their 205.5 tokens/s at the default batch is not a re-measurement of the 165.70 row.
+- The two 26 September Ornith-1.5-35B rows (`ornith35-fullwindow/`) ran without the MTP draft head that `failures/ornith35_262144.log` requested. They loaded an Ornith-1.5-35B Q6_K file of the same name from another directory (both paths are removed here; neither log records a hash or a file size), with the same window, 6 expert layers in RAM and default cache. They also wrote the batch out (2048 / 512, or 2048 / 2048), used a 7,200-second timeout and set no CORS flag, where the failed launch set no batch, a 3,600-second timeout and a localhost CORS flag; that log's first line is a preflight card reading of 1,113 MiB, and the 26 September results record no reading before launch. The 2048 / 512 row is the start-script copy's own setting at this window then; 2048 / 2048 was passed in (`ORNITH_35B_BATCH` and `ORNITH_35B_UBATCH` in its header) and is the installed script's setting since. So these rows show a file of that name serving this window without the draft head, not the failure's copy serving it with the head. That success does not contradict the failure record.
+- The two 26 September Qwen3.5-122B-A10B rows (`qwen122-fullwindow/`) use the launch of its 15 September row, the batch values now written out, but a different probe: a fresh ledger at each depth, thinking off per request, and the deep read after three shorter ones on the same server. Their card figure is at load; the `.result` files also give each series' peak. The page's 822 MiB is arithmetic: the card's reported total, 32,607 MiB, published in the Qwen3.8-27B at 256K package (`/qwen38-256k/data/records/card-capacity.txt`), minus the 31,785 MiB peak of the 2048 / 1024 series. The installed script's comment, quoted in `qwen122-fullwindow/launch-notes.txt`, gives about 0.8 GB.
+- The 26 September MiniMax M2.7 row (`minimax-m27-fullwindow/`) is at 196,608, the context length its model file declares, not 262,144, and it has no September 15 row. Unlike the other 26 September rows, thinking was left on (`reasoning_chars` 395, 438 and 480 on the reads). Its two prose requests after the shorter reads spent all 4,096 tokens reasoning and have empty answers; the page uses only the reads. Its card figure is at load; the `.result` also gives the series peak, 31,907 MiB.
+- The 26 September GLM-5.3-Flash rows (`glm53-fullwindow/`) have no September 15 row. Its reasoning effort was set to none at launch (`--chat-template-kwargs {"reasoning_effort":"none"}`), yet every reply carries reasoning (`reasoning_chars` 362 to 617 on the reads at 262,144). The -ub 1024 row stops at 47,992 tokens; nothing longer was read at 1024. `glm53_256k_ub4096` is the load failure in section 05 (13,281.37 MiB refused); `glm53_128k_default`, at 131,072, is the comparison the page quotes in its paragraph, not a table row. The page's 656 MiB is arithmetic on the card total cited for Qwen3.5-122B-A10B above: 32,607 - 31,951.
 
 If a number on the page disagrees with a file in its package, the file is right and the page is wrong.
 
@@ -36,6 +40,19 @@ The raw JSON timing fields, generated content, token usage, finish reasons and c
 | `flashnext-fullwindow/shipped_b4096_ub2048.jsonl`, `flashnext-fullwindow/default_b2048_ub512.jsonl` | Primary 26 September Flash-Next reads at 262,144, one row per request: tokens, prompt milliseconds, rates, the model file's share in memory before and after, card use, codes |
 | `flashnext-fullwindow/run.console.log` | Primary console record of the same run: the file's share in memory before each start, load time, card use at load, served window |
 | `flashnext-fullwindow/launch-flags.txt` | Excerpt of the launch flags of the start-script copy used for both rows, paths omitted |
+| `ornith35-fullwindow/orn_256k_b2048_ub512.result`, `ornith35-fullwindow/orn_256k_b2048_ub2048.result` | Primary 26 September Ornith-1.5-35B runs at 262,144: header (served window, card at load, launch command), one JSON row per request at four depths (tokens, prompt milliseconds, rates, codes), card peak over the series |
+| `ornith35-fullwindow/*.server.log` | Primary server logs of the same two runs: served window, prompt-evaluation times |
+| `ornith35-fullwindow/launch-notes.txt` | Derived notes: the two launches against the failure record's, the build, and the installed start script's comment on this window, verbatim |
+| `qwen122-fullwindow/q122_256k_b2048_ub512.result`, `qwen122-fullwindow/q122_256k_b2048_ub1024.result` | Primary 26 September Qwen3.5-122B-A10B runs at 262,144: header, one JSON row per request at four depths, draft acceptance lines, card peak over the series |
+| `qwen122-fullwindow/*.server.log` | Primary server logs of the same two runs |
+| `qwen122-fullwindow/launch-notes.txt` | Derived notes: the two launches against the 15 September launch, the build, and the installed start script's comment on this window, verbatim |
+| `minimax-m27-fullwindow/m27_192k_cmoe_ub1024.result` | Primary 26 September MiniMax M2.7 run at 196,608 through its installed start script: header (served window, card at load, launch command), one JSON row per request at three depths (tokens, prompt milliseconds, rates, codes, reasoning length), card peak over the series |
+| `minimax-m27-fullwindow/m27_192k_cmoe_ub1024.server.log` | Primary server log of the same run: the start script's note on this window, served window, prompt-evaluation times |
+| `minimax-m27-fullwindow/launch-notes.txt` | Derived notes: the window the model file declares, the launch, the build and the requests |
+| `glm53-fullwindow/glm53_256k_ub2048.result`, `glm53-fullwindow/glm53_256k_ub1024.result`, `glm53-fullwindow/glm53_128k_default.result` | Primary 26 September GLM-5.3-Flash runs through a copy of its start script, at 262,144 with -ub 2048 and 1024 and at 131,072 with 4096: header (served window, card at load, launch command), one JSON row per request (tokens, prompt milliseconds, rates, codes, reasoning length), card peak over the series |
+| `glm53-fullwindow/glm53_256k_ub4096.result` | Primary load failure at 262,144 with -ub 4096: its settings (the env lines) and the exit on load |
+| `glm53-fullwindow/*.server.log` | Primary server logs of the same four runs, the failed one with its refused 13,281.37 MiB compute buffer |
+| `glm53-fullwindow/launch-notes.txt` | Derived notes: the window, the launches, the build, the requests and the start script's setting at each window |
 | `build-records.tsv` | Derived mapping from each original deep response build identifier to its commit |
 | `CONFIGURATIONS.md` | Derived per-model command and build map from the archived primary files |
 | `NUMBERS.md` | Derived figure-to-field map, rounding and arithmetic |
@@ -44,23 +61,25 @@ Exact file inventory follows below. Original request captures and model warmup r
 
 ## Redactions
 
-Paths are replaced in full, with a model or shipped-script basename retained where useful. All fixed bound addresses and port values become `<LOCAL>`, including loopback. Process identifiers become `<REDACTED>`. Serving aliases become public model names. JSON `id` and `system_fingerprint` fields are removed; the latter’s commit component is separately documented as build provenance. The complete private-context comment block was deleted, not rephrased. Scripts with placeholders are archival evidence, not ready-to-run files.
+Paths are replaced in full, with a model or shipped-script basename retained where useful. All fixed bound addresses and port values become `<LOCAL>`, including loopback. Process identifiers become `<REDACTED>`. Serving aliases become public model names; in the 26 September Ornith-1.5-35B, Qwen3.5-122B-A10B, MiniMax M2.7 and GLM-5.3-Flash copies, so do the harness's script-copy and settings-variable names (for example `Ornith-1.5-35B_start-script-copy.sh`, `ORNITH_35B_CTX`, `MINIMAX_M27_CTX` and `GLM_5_3_FLASH_CTX`). One start-script banner line naming a private helper process, which plays no part in these measurements, was deleted from the MiniMax M2.7 server log. JSON `id` and `system_fingerprint` fields are removed; the latter’s commit component is separately documented as build provenance. The complete private-context comment block was deleted, not rephrased. Scripts with placeholders are archival evidence, not ready-to-run files.
 
 Counts below are substitutions or deleted fields/lines in the primary copied files. Derived documents reuse the already-redacted material and are not counted again. Original timing values and relative-clock log prefixes were preserved.
 
 | Redaction | Count |
 |---|---|
 | internal storage label removed | 1 |
-| internal paths replaced | 56 |
-| addresses replaced | 51 |
-| port arguments replaced | 23 |
+| internal paths replaced | 108 |
+| addresses replaced | 75 |
+| port arguments replaced | 31 |
 | comment ports replaced | 10 |
 | positional ports replaced | 10 |
-| process identifiers replaced | 48 |
-| serving aliases replaced | 23 |
-| punctuation normalized | 17 |
+| process identifiers replaced | 60 |
+| serving aliases replaced | 31 |
+| harness script-copy and settings-variable names replaced | 59 |
+| punctuation normalized | 18 |
 | synthetic punctuation escaped (same generated text) | 3 |
 | private-context comment lines deleted | 4 |
+| log line naming a private helper process deleted | 1 |
 | JSON model aliases replaced | 33 |
 | JSON identifier fields removed | 66 |
 | Comment fragment closed after paragraph deletion | 1 |
@@ -131,3 +150,25 @@ The package brief’s complete case-insensitive leak-sweep pattern was run over 
 - [flashnext-fullwindow/default_b2048_ub512.jsonl](flashnext-fullwindow/default_b2048_ub512.jsonl)
 - [flashnext-fullwindow/run.console.log](flashnext-fullwindow/run.console.log)
 - [flashnext-fullwindow/launch-flags.txt](flashnext-fullwindow/launch-flags.txt)
+- [ornith35-fullwindow/orn_256k_b2048_ub512.result](ornith35-fullwindow/orn_256k_b2048_ub512.result)
+- [ornith35-fullwindow/orn_256k_b2048_ub512.server.log](ornith35-fullwindow/orn_256k_b2048_ub512.server.log)
+- [ornith35-fullwindow/orn_256k_b2048_ub2048.result](ornith35-fullwindow/orn_256k_b2048_ub2048.result)
+- [ornith35-fullwindow/orn_256k_b2048_ub2048.server.log](ornith35-fullwindow/orn_256k_b2048_ub2048.server.log)
+- [ornith35-fullwindow/launch-notes.txt](ornith35-fullwindow/launch-notes.txt)
+- [qwen122-fullwindow/q122_256k_b2048_ub512.result](qwen122-fullwindow/q122_256k_b2048_ub512.result)
+- [qwen122-fullwindow/q122_256k_b2048_ub512.server.log](qwen122-fullwindow/q122_256k_b2048_ub512.server.log)
+- [qwen122-fullwindow/q122_256k_b2048_ub1024.result](qwen122-fullwindow/q122_256k_b2048_ub1024.result)
+- [qwen122-fullwindow/q122_256k_b2048_ub1024.server.log](qwen122-fullwindow/q122_256k_b2048_ub1024.server.log)
+- [qwen122-fullwindow/launch-notes.txt](qwen122-fullwindow/launch-notes.txt)
+- [minimax-m27-fullwindow/m27_192k_cmoe_ub1024.result](minimax-m27-fullwindow/m27_192k_cmoe_ub1024.result)
+- [minimax-m27-fullwindow/m27_192k_cmoe_ub1024.server.log](minimax-m27-fullwindow/m27_192k_cmoe_ub1024.server.log)
+- [minimax-m27-fullwindow/launch-notes.txt](minimax-m27-fullwindow/launch-notes.txt)
+- [glm53-fullwindow/glm53_256k_ub4096.result](glm53-fullwindow/glm53_256k_ub4096.result)
+- [glm53-fullwindow/glm53_256k_ub4096.server.log](glm53-fullwindow/glm53_256k_ub4096.server.log)
+- [glm53-fullwindow/glm53_256k_ub2048.result](glm53-fullwindow/glm53_256k_ub2048.result)
+- [glm53-fullwindow/glm53_256k_ub2048.server.log](glm53-fullwindow/glm53_256k_ub2048.server.log)
+- [glm53-fullwindow/glm53_256k_ub1024.result](glm53-fullwindow/glm53_256k_ub1024.result)
+- [glm53-fullwindow/glm53_256k_ub1024.server.log](glm53-fullwindow/glm53_256k_ub1024.server.log)
+- [glm53-fullwindow/glm53_128k_default.result](glm53-fullwindow/glm53_128k_default.result)
+- [glm53-fullwindow/glm53_128k_default.server.log](glm53-fullwindow/glm53_128k_default.server.log)
+- [glm53-fullwindow/launch-notes.txt](glm53-fullwindow/launch-notes.txt)

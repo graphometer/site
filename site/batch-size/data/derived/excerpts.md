@@ -196,17 +196,53 @@ restated from each script's code (the scripts' own variable names are internal a
 | Qwen3.5-397B-A17B | up to 131,072 / above | 4096 / 2048 | 4096 / 512 |
 | Qwen3.5-122B-A10B | up to 131,072 / above | 4096 / 2048 | 4096 / 512 |
 | Mistral Small 4 | up to 131,072 / above | 8192 / 2048 | 8192 / 512 |
-| Ornith-1.5-35B | up to 131,072 / above | 4096 / 2048 | 4096 / 512 |
+| Ornith-1.5-35B | up to 131,072 / above | 4096 / 2048 | 4096 / 2048 (512 above 131,072 until the 26 September update below) |
 | Laguna S 2.1 | up to 32,768 / above | 8192 / 8192 | 8192 / 4096 |
 | Ling-3.0-flash | any | 4096 | 2048 |
 | Inkling-Small | any | 4096 | 2048 |
 | Qwen3.8-Flash-Next | any | 4096 | 2048 |
-| GLM-5.3-Flash | any | 4096 | 4096 |
+| GLM-5.3-Flash | 131,072 / 262,144 | 4096 / 4096 | 4096 / 1024 (262,144 added on 26 September) |
 | Qwen3-235B-A22B-Instruct-2507 | any (it serves up to 131,072) | 4096 | 2048 |
 | MiniMax M2.7 | 131,072 / 196,608 | 4096 / 4096 | 4096 / 1024, with every expert in RAM at 196,608 |
 | DeepSeek V4 Flash, Q8 file (every expert in RAM) | any | 8192 | 8192 |
 | DeepSeek V4 Flash, IQ3 file (`--n-cpu-moe 36`) | any | 4096 | 4096 |
 | The six models that fit on the card | any | 2048 (default) | 512 (default) |
+
+Update, 26 September (evening): above 131,072, Ornith-1.5-35B now gets `-b 2048 -ub 2048` (it was 2048 / 512),
+measured at 262,144 that day, and Qwen3.5-122B-A10B keeps 2048 / 512. The two installed scripts' own lines,
+verbatim; two measurement lines are left out of the first block, and the second block's dash is shown as a colon:
+
+```
+# ** At the 262144 rung the default is 2048/2048 ** (since 2026-09-26; it was 2048/512). MEASURED 2026-09-26 at
+# 262144 through this script, sealed codes exact at every depth, 3/3 at ~229K on both:
+# 2.1-2.4x the reading (a ~229K read 152 s -> 72 s), speaking unchanged, for 0.9 GB of the card.
+```
+
+```
+# 4.0x the reading; speaking within run-to-run noise (MTP draft). ** At the 262144 rung the default
+# stays 512 ** : that rung measured 30.6 GB with the old default; a 4096 buffer would not fit.
+# 1024 reads 1.7x faster but leaves only ~0.8 GB of the card, so 512 stays: a busy desktop must not stop it loading.
+```
+
+The runs behind them are `runs/2026-09-26_ornith-1.5-35b-served-window/` and `runs/2026-09-26_qwen3.5-122b-a10b-served-window/`.
+
+Update, 26 September (later): GLM-5.3-Flash's installed script now accepts a 262,144 window as well as 131,072 (its
+previous copy accepted only 131,072) and there sets `-b 4096 -ub 1024`. Its own lines on that window, verbatim; the
+runs they cite went through a copy of the script that also admitted 262,144 (`script=GLM-5.3-Flash_start-script-copy.sh`
+in each result):
+
+```
+# ** At the 262144 rung the default is -b 4096 -ub 1024 ** (2026-09-26). MEASURED there through this script, sealed codes
+# exact (3/3 at ~230K at -ub 2048):
+#     -ub 4096   does not load: the compute buffer alone asks for 13,281 MiB
+#     -ub 2048   reads 206 / 250 / 243 / 212 t/s at 20K / 48K / 100K / 230K (a 230K read 18 min) · 31,951 MiB peak (~0.66 GB spare)
+#     -ub 1024   reads 135 / 143 t/s at 20K / 48K · 29,261 MiB peak (~3.3 GB spare)  <- default at 262144
+# Speaking is ~10 t/s on all of them. 1024 costs ~40% of the reading for 2.7 GB of headroom, and it stays off the
+# -ub 2048 shape of upstream #28282 (above).
+```
+
+The runs are in `runs/2026-09-26_glm-5.3-flash-served-window/`. "(above)" points to an earlier comment in the script
+about upstream #28282, not quoted here; the page's section 05 describes that report.
 
 DeepSeek V4 Flash, the note in its start script about the refused knobs, as written on 20 September. It is the
 record the page's section 13 corrects: runs C and D used `--n-cpu-moe 50` on a 43-layer model, so no expert

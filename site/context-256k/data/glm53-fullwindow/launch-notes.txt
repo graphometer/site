@@ -1,0 +1,35 @@
+GLM-5.3-Flash, 26 September 2026: the runs in this folder. Derived notes; the primary records are the .result files
+(header, launch command, one JSON row per request, series peak) and the server logs beside them.
+
+Window: 262,144 for glm53_256k_*, 131,072 for glm53_128k_default. The model file declares a 1,048,576-token context
+(the GGUF key glm5next.context_length in GLM-5.3-Flash-UD-Q3_K_XL-00001-of-00004.gguf); 262,144 is the window tried
+here. The same header gives block_count 46, leading_dense_block_count 3 and nextn_predict_layers 1.
+
+Launch, from the "cmdline:" line of each .result (paths, host and port removed there), through a copy of the model's
+start script (script=GLM-5.3-Flash_start-script-copy.sh):
+  --ctx-size 262144 --batch-size 4096 --ubatch-size 2048   (glm53_256k_ub2048)
+  --ctx-size 262144 --batch-size 4096 --ubatch-size 1024   (glm53_256k_ub1024; reads at about 20,000 and 48,000 only)
+  --ctx-size 131072 --batch-size 4096 --ubatch-size 4096   (glm53_128k_default)
+  --n-gpu-layers 999 --n-cpu-moe 42 --flash-attn auto --parallel 1 --threads 24 --threads-batch 24 --timeout 7200
+  --chat-template-kwargs {"reasoning_effort":"none"}
+  --n-cpu-moe 42 keeps the MoE weights of the first 42 layers on the CPU (llama.cpp's own description of the flag).
+  No --cache-type flag, so llama.cpp's default 16-bit key and value cache. No --spec-type flag, so no draft head: the
+  logs report the file's next-token layer (blk.45) as unused, and the result rows' draft_n is null. The weights were
+  memory-mapped (the server logs' own "mmap enabled" warning).
+
+The -ub 4096 launch at 262,144 (glm53_256k_ub4096): its .result has no "cmdline:" line, because the server never
+answered; its env lines give the settings (GLM_5_3_FLASH_BATCH=4096, GLM_5_3_FLASH_UBATCH=4096,
+GLM_5_3_FLASH_CTX=262144). Its server log: "allocating 13281.37 MiB on device 0: cudaMalloc failed: out of memory",
+then "failed to allocate compute pp buffers", and the server exited. No request was made.
+
+Build: the command's llama-server build directory (removed with the paths) records build 255, commit d94f44e, in its
+build-info.
+
+Requests: the reasoning effort was none in every run (the launch flag above), yet every reply carries reasoning
+(reasoning_chars 362 to 617 on the reads at 262,144, 275 to 660 at 131,072). Each depth was a fresh ledger, generated
+with its own seed, the same ledger at both windows for the same depth; at 262,144 with 2048 the deepest, about 230,000
+tokens, planted three codes and asked for all three, after reads of about 20,000, 48,000 and 100,000 tokens on the same
+server.
+
+The start script installed on 26 September accepts 262,144 and 131,072 (its previous copy accepted only 131,072). Its
+code sets -b 4096 at both, and -ub 1024 above 131,072, else 4096.
