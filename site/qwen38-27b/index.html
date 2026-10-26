@@ -162,7 +162,7 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card &middot; released 2026-08-14 about 11:00 EDT, measured the same evening &middot; one dense 27B, one community Q5-class quant, one RTX 5090, thinking off for the speed runs &middot; context ceiling corrected 2026-09-26</div>
+      <div class="eyebrow">Field card &middot; released 2026-08-14 about 11:00 EDT, measured the same evening &middot; one dense 27B, one community Q5-class quant, one RTX 5090, thinking off for the speed runs &middot; context ceiling corrected 2026-09-26 &middot; draft model added 2026-10-19</div>
       <h1>Qwen3.8-27B: <em>day zero</em></h1>
       <p class="subtitle">An early look on release day, measured on one
       desktop: one model family with two licenses (this 27B is genuine
@@ -367,6 +367,10 @@
         draft head still did not fit beside the 256K window, so it was
         forced off. A new run on 2026-09-26, with its logs kept, is
         written up on <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>.</p>
+      </div>
+      <div class="note">
+        <span class="label">Update &middot; 2026-10-19 &middot; a separate draft model</span>
+        <p>Since 19 October this model runs with a separate draft model, DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB), plus n-gram drafting, instead of the built-in draft head. A draft model guesses a few tokens ahead and the main model keeps the guesses it agrees with. It runs the same UD-Q5_K_XL file on mainline llama.cpp, with an 8-bit cache, <code>-ub 256</code> and a 229,376-token window. With thinking on, 3,500 tokens of reasoning with no visible answer came out at 186.61 tokens a second about 20,000 tokens deep, against 60.39 for the same kind of reasoning without the draft model at a 262,144 window. With the draft model at the full 262,144 window the same reasoning ran at 189.26, so the smaller window is not what made it faster. On a plain letter with thinking off the gain was smaller: 87.61 against 60.70 at 262,144. Reading was 10 to 15 percent slower. The window is 229,376 rather than 262,144 because the card peaked at 30,647 MiB there and at 31,992 MiB at the full window. These are single runs on 19 October 2026; <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> and the <a href="../roster-2026-10/">October roster</a> carry the detail.</p>
       </div>
 
       <h3>What this costs on a smaller card</h3>

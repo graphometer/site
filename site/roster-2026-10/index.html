@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The roster, as of October 2026</title>
+<meta name="description" content="What one RTX 5090 desktop with 188 GiB of RAM ran from 27 September to 25 October 2026: thirteen models added, six re-measured, three retired, each speed with the prompt and reply it timed. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.">
+<link rel="canonical" href="https://graphometer.ai/roster-2026-10/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="The roster, as of October 2026">
+<meta property="og:description" content="Thirteen models added to one RTX 5090 desktop in a month, six re-measured, three retired. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.">
+<meta property="og:url" content="https://graphometer.ai/roster-2026-10/">
+<meta property="og:image" content="https://graphometer.ai/og/roster-2026-10.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The roster, as of October 2026">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The roster, as of October 2026">
+<meta name="twitter:description" content="Thirteen models added to one RTX 5090 desktop in a month, six re-measured, three retired. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.">
+<meta name="twitter:image" content="https://graphometer.ai/og/roster-2026-10.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.sub{margin-top:14px;max-width:60ch;color:var(--ink);font-size:1.0625rem;font-weight:600}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:1.0625rem;font-weight:650;margin:26px 0 10px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink)}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}
+  table.data td.name{font-family:inherit;white-space:normal;min-width:19ch;color:var(--ink);font-weight:600}
+  table.data td.name span{display:block;font-weight:400;font-size:13px;color:var(--faint)}
+  table.data td.none{color:var(--faint);font-family:inherit;white-space:normal;text-align:left}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Reference &middot; 27 September to 25 October 2026 &middot; one RTX 5090 desktop, 188 GiB of RAM &middot; llama.cpp &middot; one model at a time</div>
+      <h1>The <em>roster</em>, as of October 2026</h1>
+      <p class="sub">For anyone who runs open-weight models at home on one big graphics card: what one RTX 5090 desktop ran from 27 September to 25 October 2026, and how fast. Thirteen models were added, six measured again and three retired. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.</p>
+      <p class="lead">Open-weight models are models whose files you can download. Every speed below comes with the prompt and the reply it timed. The change most worth copying is a bundle of processor settings. llama.cpp is the program that runs the models. A thread is one stream of work. The bundle pins llama.cpp's threads to the chip's eight performance cores and adds an OpenMP spin setting. Pinning means the operating system may run those threads only on those cores. Some models keep part of their weights in system RAM, so the processor does part of their work. We timed 16 of them both ways on the same long prompt. On 15, both runs wrote replies with the same token count and the same word count; we call those the clean test pairs. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The faster replies were 311 to 673 tokens long. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. The sixteenth, MiniMax M2.7, wrote a reply of a different length on its run with the bundle, so it is not counted.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to any maker named on this page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>How to read this page</h2>
+      <p><strong>One machine, one model at a time.</strong> The desktop has an
+      NVIDIA GeForce RTX 5090 with 32,607 MiB of graphics memory, an Intel Core
+      Ultra 9 285K and 188 GiB of system RAM. MiB and GiB are binary units of
+      memory: mebibytes and gibibytes. One row also ran on an ASUS ROG
+      Flow Z13 laptop with 128 GB of memory, and says so. Every model is served
+      by llama.cpp's <code>llama-server</code>, which loads a model and answers
+      requests, one request at a time.</p>
+      <p>A few terms, once:</p>
+      <ul class="plain">
+        <li><strong>Speaking</strong> is how fast the model writes: generated tokens per second (t/s). A token is roughly three quarters of a word.</li>
+        <li><strong>First word</strong> is how long a cold prompt takes to read before the reply can start. Cold means the server had not read that text before. It is the server's own prompt time.</li>
+        <li><strong>Deep</strong> means how many tokens of conversation were
+        already read when the reply was written. Models write slower deep in a
+        long conversation.</li>
+        <li><strong>Window</strong> (context window) is the most text the
+        server will hold at once, prompt and reply together.</li>
+        <li><strong>Quantization</strong> is how the weights are compressed:
+        Q4 is about 4 bits a weight, Q8 about 8. Lower is smaller and less
+        exact. The names (UD-Q4_K_XL, IQ1_S, MXFP4) are the file makers'. The cache, the model's memory of the conversation so far, can be compressed the same way. Rows say so where they list a cache setting.</li>
+        <li><strong>Experts in RAM.</strong> A mixture-of-experts model uses a
+        few of its many expert blocks for each token. When the file is bigger
+        than the card, the experts live in system RAM and the processor runs
+        them. That is why processor settings matter on those rows.</li>
+        <li><strong>Thinking models</strong> write hidden reasoning before
+        they answer. Their speaking figures count that reasoning.</li>
+      </ul>
+      <p>Every speed below is a measurement from a dated run, and the files for that run are in the data package. The method page defines the label measured. Each cell says what reply it timed. A short answer and a 400-word letter are different measurements, so a row that has only a short answer says so. A draft model is a small second model that guesses the next few tokens. The main model checks the guesses and keeps the ones it agrees with.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>The change that helped most of the models we tested</h2>
+      <p>On 29 September we ran 16 models that keep part of their weights in system RAM
+      twice on the same prompt of about 96,000 tokens (48,000 on three rows,
+      24,000 on two). In the first run, llama.cpp used 24 threads spread over every core. In the second run, we pinned it to the eight performance cores (P-cores) with three settings: the operating system's
+      <code>taskset -c 0-7</code>, llama.cpp's <code>--threads 8 --threads-batch 8</code>
+      and the OpenMP setting <code>GOMP_SPINCOUNT=10000000</code>. OpenMP is the library llama.cpp uses to run its threads. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. The
+      285K has eight performance cores and sixteen efficiency cores. Fifteen of the 16 are mixture-of-experts models with their experts in RAM.
+      The sixteenth, Mistral Medium 3.5, is a dense model. On 15 of
+      the 16 rows both runs read the same prompt and wrote replies with the same token count and the
+      same word count. We call those 15 the clean test pairs.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Deep, tokens</th><th>Reply, tokens</th><th>24 threads, t/s</th><th>With the bundle, t/s</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Ornith-1.5-35B-A3B</td><td>96,498</td><td>402</td><td>76.84</td><td>139.22</td><td>+81%</td></tr>
+          <tr><td class="name">Qwen3.8-Flash-Next<span>UD-Q3_K_XL file, since replaced</span></td><td>96,498</td><td>465</td><td>17.54</td><td>27.53</td><td>+57%</td></tr>
+          <tr><td class="name">Ling-3.0-flash</td><td>99,952</td><td>328</td><td>25.87</td><td>38.74</td><td>+50%</td></tr>
+          <tr><td class="name">Mistral Small 4 119B</td><td>97,768</td><td>311</td><td>22.01</td><td>32.58</td><td>+48%</td></tr>
+          <tr><td class="name">MiniMax M2.7<span>retired since; not a clean pair, see the note</span></td><td>99,877</td><td>381; 421 with the bundle</td><td>7.19</td><td>10.62</td><td>+48%</td></tr>
+          <tr><td class="name">DeepSeek V4 Flash 0731<span>8-bit preset</span></td><td>95,754</td><td>440</td><td>8.88</td><td>12.57</td><td>+42%</td></tr>
+          <tr><td class="name">Laguna S 2.1</td><td>95,905</td><td>430</td><td>16.02</td><td>22.03</td><td>+38%</td></tr>
+          <tr><td class="name">Inkling-Small</td><td>100,053</td><td>407</td><td>10.38</td><td>14.23</td><td>+37%</td></tr>
+          <tr><td class="name">Qwen3.5-122B-A10B<span>draft model on both runs</span></td><td>96,498</td><td>555</td><td>23.57</td><td>32.24</td><td>+37%</td></tr>
+          <tr><td class="name">DeepSeek V4 Flash 0731<span>3-bit preset</span></td><td>95,731</td><td>368</td><td>12.92</td><td>17.45</td><td>+35%</td></tr>
+          <tr><td class="name">MiniMax M3</td><td>48,086</td><td>602</td><td>8.43</td><td>10.79</td><td>+28%</td></tr>
+          <tr><td class="name">GLM-5.3-Flash</td><td>48,109</td><td>459</td><td>9.77</td><td>12.18</td><td>+25%</td></tr>
+          <tr><td class="name">Mistral Large 3 675B</td><td>24,079</td><td>673</td><td>6.43</td><td>6.88</td><td>+7%</td></tr>
+          <tr><td class="name">Qwen3.5-397B-A17B<span>draft model on both runs</span></td><td>96,498</td><td>620</td><td>13.27</td><td>14.15</td><td>+6.6%</td></tr>
+          <tr><td class="name">Mistral Medium 3.5<span>dense 128B, retired since; draft model on both runs; letter cut at 500 tokens</span></td><td>24,091</td><td>500</td><td>1.80</td><td>1.65</td><td>&minus;8%</td></tr>
+          <tr><td class="name">GLM-4.7 Full<span>retired since; draft model on both runs</span></td><td>48,109</td><td>286</td><td>5.61</td><td>4.68</td><td>&minus;17%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured 2026-09-29, one run per setting. The reply was a letter
+      of 230 to 534 words, written in the same request that read a synthetic ledger (an invented long document), from a cold cache. The
+      percentage is arithmetic on the two speeds. MiniMax M2.7 is the one
+      row that is not a clean pair. Its run with the bundle restored the ledger from a
+      saved copy, so its ledger was already cached, and it wrote a different reply
+      (421 tokens against 381), so it is outside the 13 of 15. Four rows ran
+      a draft model on both runs, so their speeds include its help; each pair is
+      still like for like. Mistral Medium 3.5's letter stopped at the 500-token
+      cap on both runs.</p>
+      <p><strong>What to do with it.</strong> If your model keeps experts in
+      system RAM on a chip with performance and efficiency cores, try the
+      same bundle. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. Pin the prompt threads too (<code>--threads-batch</code>), because
+      reading a prompt runs on them. Measure your own model both ways, because two of
+      ours got slower. Prompt-reading speed moved by 2 percent or less on 11 of the 15 clean pairs.
+      It rose 5 to 11 percent on the two DeepSeek presets and on GLM-5.3-Flash, and fell 4.4 percent
+      on Mistral Medium 3.5.</p>
+      <p>Our explanation of why it helps, which we have not proven: for every layer held in
+      RAM, each token sends a short burst of work to the processor. A layer is one stage of the model's computation. A burst ends only when the slowest thread finishes. With 24
+      threads, the slowest is often on an efficiency core.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>Installed since 27 September</h2>
+      <p>Thirteen models, newest first. Every row is on the desktop unless it
+      says laptop. "Letter" means a request for a letter of about 300 to 400
+      words. The model wrote it after reading a long synthetic ledger (an invented document) for the first time. The length of that ledger in tokens is what "deep" counts.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model and file</th><th>Window as served</th><th>Speaking, what was timed</th><th>First word</th><th>Card peak, MiB</th><th>Date</th><th>The caveat that matters</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Ornith-1.5-122B<span>Ornith AI. Q4_K_M, one file, 75,843,911,648 bytes. Experts of 38 blocks in RAM, 8-bit cache</span></td>
+            <td>262,144</td>
+            <td class="t">21.61 t/s on a 372-word letter, 1,954 tokens with its reasoning, 239,533 deep. 28.4 at 20,065 deep.</td>
+            <td class="t">288.9 s for 239,533 tokens (829.2 t/s)</td><td>26,881</td><td>2026-10-23</td>
+            <td class="t">Thinks on every turn as served. Its built-in draft head would not load at this placement.</td></tr>
+          <tr><td class="name">Aura 4o Rebirth<span>a community fine-tune of Gemma 4 31B. Q5_K_M, 21,845,569,632 bytes, plus a vision projector</span></td>
+            <td class="t">65,536 with images; 131,072 text only also measured</td>
+            <td class="t">39.22 t/s on a 326-word letter, 57,586 deep. At 131,072: 28.67 on a 330-word letter, 122,907 deep.</td>
+            <td class="t">25.2 s for 57,586 tokens; 80.5 s for 122,907</td><td>27,444; 29,463 at 131,072</td><td>2026-10-22</td>
+            <td class="t">One GPU timeout fault on 21 October; the last request before it stopped at 113,568 tokens. Two later starts read prompts of 80,062 and 113,205 tokens, plus later prompts, the longest of those 7,419 tokens, with no CUDA line in those logs. See the field notes.</td></tr>
+          <tr><td class="name">Hemmingway-1<span>Altworld. Q6_K, 23,860,566,080 bytes, 8-bit cache</span></td>
+            <td class="t">196,608; 229,376 also loads; 262,144 does not</td>
+            <td class="t">37.15 t/s at 174,307 deep, timing 3,000 tokens of reasoning that ended before any letter. No visible prose was timed at depth.</td>
+            <td class="t">117.4 s for 174,307 tokens (1,485.3 t/s)</td><td>30,586</td><td>2026-10-22</td>
+            <td class="t">Thinks first and long. Qwen3.8-27B's draft model loads beside it at 131,072 but only 18% of its guesses were kept.</td></tr>
+          <tr><td class="name">Muse Spark Open 816B-A42B<span>Meta. unsloth UD-IQ1_S, a 1-bit-class file, 5 files, 175,639,574,392 bytes, 8-bit cache</span></td>
+            <td>131,072</td>
+            <td class="t">Median 5.67 t/s over 61 replies of 100 tokens or more, after a 106,469-token prompt; always reasons.</td>
+            <td class="t">686.9 s for 106,469 tokens (155.0 t/s)</td><td class="none">not recorded at this window</td><td>2026-10-21</td>
+            <td class="t">Under 6 t/s. A separate run, served at a 262,144 window with the default 16-bit cache, wrote a 327-word letter at 0.97 t/s after a 99,842-token ledger, on 22 October.</td></tr>
+          <tr><td class="name">DeepSeek V4.1-Flash-1017<span>DeepSeek. Converted here to MXFP4, 11 files, 501,809,974,432 bytes</span></td>
+            <td>131,072</td>
+            <td class="t">9.48 t/s on a 315-token answer, 110,231 deep, thinking off. 11.27 on 380 tokens at 8,161 deep.</td>
+            <td class="t">716.9 s for 110,052 tokens (153.5 t/s). The next turn, 20 new tokens on that cached prompt, took 2.32 s.</td><td>31,456</td><td>2026-10-18</td>
+            <td class="t">Runs on a community port of llama.cpp that streams experts from the drive and locks 122 GiB of RAM. Not mainline.</td></tr>
+          <tr><td class="name">Beam 1.0 501B-A23B<span>Reflection AI. unsloth UD-Q2_K_XL, 5 files, 186,877,720,196 bytes</span></td>
+            <td class="t">131,072; 262,144 also measured</td>
+            <td class="t">8.14 t/s on a 500-token answer, reasoning included, 56,320 deep. Served at 262,144: 7.80 on 379 tokens, 102,924 deep.</td>
+            <td class="t">312.2 s for 56,320 tokens (180.4 t/s); 660.3 s for 102,924</td><td class="none">not recorded</td><td>2026-10-17</td>
+            <td class="t">Always reasons. Only the answers about the reading were timed, not letters.</td></tr>
+          <tr><td class="name">Nemotron 3.5 Bolt 74B-A9B<span>NVIDIA. NVIDIA's own 2-bit file, 22,018,326,528 bytes, with a 998,242,560-byte draft model; all on the card</span></td>
+            <td>262,144</td>
+            <td class="t">184.91 t/s on a 352-token answer, 190,620 deep. 154.38 on 169 tokens, 58,936 deep.</td>
+            <td class="t">62.8 s for 190,620 tokens (3,035.9 t/s)</td><td class="none">not recorded</td><td>2026-10-17</td>
+            <td class="t">A draft model speeds it up, so the speed depends on how predictable the text is. These are answers, not letters.</td></tr>
+          <tr><td class="name">Nemotron 3.5 Bolt, on the laptop<span>same 2-bit file, no draft model</span></td>
+            <td class="none">not recorded</td>
+            <td class="t">25.45 t/s on a 318-token answer, 58,936 deep.</td>
+            <td class="t">165.0 s for 58,936 tokens (357.2 t/s)</td><td class="none">not recorded</td><td>2026-10-17</td>
+            <td class="t">Run without the draft model, so it does not compare directly with the desktop row.</td></tr>
+          <tr><td class="name">GPT-OSS 120B<span>OpenAI. F16 GGUF file, 65,369,017,728 bytes; experts of 23 blocks in RAM</span></td>
+            <td>131,072</td>
+            <td class="t">34.86 t/s on a 400-word letter, 1,046 tokens with its reasoning, 105,698 deep.</td>
+            <td class="t">40.0 s for 105,698 tokens (2,644.6 t/s)</td><td>31,502</td><td>2026-10-15</td>
+            <td class="t">1,105 MiB of the card left at peak.</td></tr>
+          <tr><td class="name">GPT-OSS 20B<span>OpenAI. F16 GGUF file, 13,792,639,168 bytes; all on the card</span></td>
+            <td>131,072</td>
+            <td class="t">156.44 t/s on a 403-word letter, 925 tokens with its reasoning, 105,758 deep.</td>
+            <td class="t">9.8 s for 105,758 tokens (10,809.2 t/s)</td><td>17,439</td><td>2026-10-15</td>
+            <td class="t">The fastest reader on this page by far. About 15,000 MiB of the card stays free.</td></tr>
+          <tr><td class="name">MiMo-V2.6-Flash-RL<span>Xiaomi. MXFP4 GGUF, 2 files, 167,369,465,152 bytes</span></td>
+            <td>131,072</td>
+            <td class="t">12.28 t/s over the uncapped 24,000-token generation that wrote no answer, after a 24,975-token prompt. A capped speaking figure was not measured. The same log shows 12.41 t/s over 6,349 tokens on a later request, after a 948-token prompt.</td>
+            <td class="t">135.8 s for 24,975 tokens (183.9 t/s)</td><td class="none">not recorded</td><td>2026-10-12</td>
+            <td class="t">Its start script sets a 14,000-token reasoning cap. The script's note says that without the cap the model spent all 24,000 tokens thinking and wrote no answer.</td></tr>
+          <tr><td class="name">Qwen3.5-27B<span>Alibaba Group. Dense. UD-Q5_K_XL, 20,171,253,664 bytes, 8-bit cache, 24 threads</span></td>
+            <td>262,144</td>
+            <td class="t">45.24 t/s on a 484-word reply, 582 tokens, 106,129 deep, thinking off.</td>
+            <td class="t">54.7 s for 106,129 tokens (1,939.5 t/s)</td><td>30,123</td><td>2026-10-04</td>
+            <td class="t">The whole model is on the card, so no expert work runs on the processor.</td></tr>
+          <tr><td class="name">Qwen3.6-35B-A3B<span>Alibaba Group. UD-Q6_K, 29,308,320,736 bytes; experts of 8 of 40 blocks in RAM; 8 P-cores</span></td>
+            <td>262,144</td>
+            <td class="t">112.32 t/s on a 510-word reply, 636 tokens, 106,129 deep, no reasoning in that reply.</td>
+            <td class="t">31.6 s for 106,129 tokens (3,355.3 t/s)</td><td>30,542</td><td>2026-10-03</td>
+            <td class="t">Served with thinking on by default; this reply had none.</td></tr>
+          <tr><td class="name">Qwen3-30B-A3B-Instruct-2507<span>Alibaba Group. Q8_0, 32,483,932,576 bytes; every expert in RAM; 16-bit cache; 8 P-cores</span></td>
+            <td>262,144</td>
+            <td class="t">24.79 t/s on a 349-word reply, 469 tokens, 105,979 deep.</td>
+            <td class="t">38.8 s for 105,979 tokens (2,733.6 t/s)</td><td>30,607</td><td>2026-10-03</td>
+            <td class="t">Every expert runs on the processor in this shape, so a model with about 3B active writes at 25 t/s.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Card peak is the most graphics memory in use at any sample during the run, in MiB, including the desktop's own use.
+      Window is the default that each start script serves, read on 25 October. A start script is the command file that launches a model.
+      Muse Spark's row, MiMo's row and the 131,072 figures in the notes below
+      were timed on long prompts we do not publish. Only their token counts
+      and the server's timing lines ship.</p>
+      <h3>Row notes</h3>
+      <ul class="plain">
+        <li><strong>Ornith-1.5-122B.</strong> Two other placements were
+        measured the same day. A placement is how many blocks keep their experts in RAM. Both read the same 239,533-token ledger. With experts of 36 blocks in RAM, the
+        letter came out at 22.15 t/s (349 words) and the ledger read at 868.4 t/s, but the
+        card peaked higher (29,462 MiB against 26,881). With the file's built-in draft head
+        at 40 blocks, the letter came out at 22.69 t/s (345 words), 1,278 of 1,616 drafted
+        tokens were kept, the ledger read slower (779.3 t/s) and the card peaked at 29,919 MiB. A draft head is a small built-in predictor that does the same job as a draft model. At a
+        131,072 window, after a 111,235-token prompt, its median (middle) speed over 123
+        replies was 26.15 t/s.</li>
+        <li><strong>Hemmingway-1.</strong> At a 131,072 window, after a 111,235-token
+        prompt, its median (middle) speed over 119 replies was 41.69 t/s without a draft
+        model and 53.68 over 42 replies with Qwen3.8-27B's draft model, which
+        kept 58,728 of 319,380 guesses (18%). Those medians mix reasoning and
+        visible text.</li>
+        <li><strong>Aura 4o Rebirth.</strong> Thinking is off by the server's
+        default. At 98,304 with images it spoke 33.12 on a 319-word letter,
+        90,242 deep, peaking at 29,099 MiB. After a 113,205-token prompt at
+        131,072 its median speed over 21 replies was 30.86.</li>
+        <li><strong>Nemotron 3.5 Bolt.</strong> unsloth's larger UD-Q4_K_XL
+        file without a draft model spoke 53.37 on a 215-token answer, 58,935
+        deep. On the same public text, read as 24 chunks of 4,096 tokens, its
+        perplexity was 3.0970 &plusmn; 0.0285 against 3.2931 &plusmn; 0.0319
+        for NVIDIA's 2-bit file. Perplexity measures how surprised a model is
+        by text. Lower is closer to the original weights' behaviour.</li>
+        <li><strong>DeepSeek V4.1-Flash-1017.</strong> On the same run, with thinking
+        off, a tool call and the model's reply to the tool's result both completed. It also quoted 3 of 3 planted codes (short codes hidden in the prompt to test recall) from the 110,052-token
+        read. The conversion is in the field notes.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Re-measured: the models that changed</h2>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>What changed</th><th>Before</th><th>Now</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Qwen3.8-27B<span>Alibaba Group. UD-Q5_K_XL, 20,218,178,624 bytes</span></td>
+            <td class="t">A separate draft model (DFlash 2 for Qwen3.8-27B, Q4_K_M, 1,143,006,816 bytes) plus n-gram drafting. Window 262,144 to 229,376. Mainline llama.cpp. The micro-batch (how many prompt tokens are read in one step) was <code>-ub 512</code> on the runs without the draft model and <code>-ub 256</code> on the draft runs at 262,144. The installed run kept no start line, so its micro-batch is not given here.</td>
+            <td class="t">Same day, no draft model, 262,144, <code>-ub 512</code>: letters at 60.70 t/s (20,067 deep) and 49.08 (99,872 deep). Thinking on, 3,500 tokens of reasoning with no visible answer: 60.39 and 47.30.</td>
+            <td class="t">Thinking off, 262,144, <code>-ub 256</code>: letters at 87.61 (+44%) and 63.87 (+30%). Thinking on, 229,376 as installed, the same 3,500 tokens of reasoning: 186.61 and 141.25, about 3 times faster. With the draft model at 262,144 that reasoning ran at 189.26 and 143.68, so the smaller window is not what made it faster. At 262,144 no pair holds the micro-batch fixed, so the letter gains and the reasoning speeds of 189.26 and 143.68 were measured with the draft model, <code>-ub 256</code> against <code>-ub 512</code>, and a shorter request all at once: the new text sent after the long read was 570 tokens without the draft model and 314 with it, on the letters and on the reasoning. Reading was 14.8 and 10.1% slower as installed and 14.4 and 9.3% slower at 262,144, each against the thinking-on runs without the draft model.</td><td>2026-10-19</td></tr>
+          <tr><td class="name">GLM-5.3-Flash<span>Z.ai. UD-Q3_K_XL, 4 files, 147,535,921,955 bytes</span></td>
+            <td class="t">Default window 262,144 to 131,072 (8 October). A GLM-specific fork to mainline llama.cpp b11552 (11 October). The thread-pinning bundle of section 02 (29 September).</td>
+            <td class="t">Fork at 131,072: 12.14 t/s on 503 tokens, 401.2 t/s read of 16,160 tokens, 30,619 MiB. September at 262,144, <code>-ub 2048</code>: 230,039 tokens read at 211.9 t/s.</td>
+            <td class="t">Mainline at 131,072: 12.59 on 707 tokens, 394.3 read, 27,100 MiB. Mainline at 262,144, <code>-ub 2048</code>: 230,039 tokens read at 264.3 t/s in 870.5 s, 3 of 3 codes, then a 339-word letter at 12.46. A shorter run at that setting peaked at 28,846 MiB.</td><td>2026-10-11</td></tr>
+          <tr><td class="name">DeepSeek V4 Flash 0731, desktop<span>8-bit preset UD-Q8_K_XL</span></td>
+            <td class="t">The thread-pinning bundle of section 02 (29 September). Mainline llama.cpp (11 October).</td>
+            <td class="t">Old build, 262,144: 12.88 t/s on a 1,256-token answer after an 18,031-token read at 457.4, 26,197 MiB.</td>
+            <td class="t">Mainline, 262,144: 12.96 on 1,192 tokens after an 18,028-token read at 505.7, 25,921 MiB. Same speaking, reading 10.6% faster.</td><td>2026-10-11</td></tr>
+          <tr><td class="name">Qwen3.8-Flash-Next<span>Alibaba Group</span></td>
+            <td class="t">UD-Q3_K_XL file replaced by UD-Q4_K_XL (4 files, 111,334,654,784 bytes) on mainline llama.cpp.</td>
+            <td class="t">Q3, with the bundle of section 02: 27.53 t/s on a 388-word letter, 96,498 deep (29 September).</td>
+            <td class="t">Q4 at 262,144: one row only, the first request after a cold load, 32.2 t/s on a 777-token answer after a 17,650-token read at 442.3 t/s; 27,198 MiB. It does not compare with the Q3 letter: our records hold no deep reading of the Q4 file yet.</td><td>2026-10-11</td></tr>
+          <tr><td class="name">Qwen3-235B-A22B Instruct 2507<span>Alibaba Group. UD-Q3_K_XL, 3 files</span></td>
+            <td class="t">Q4_K_M file with a 0.6B draft model and 8-bit cache, replaced by UD-Q3_K_XL, a 16-bit cache, no draft model, and 6 of its 8 experts per token.</td>
+            <td class="t">September roster: 4.22 t/s on a letter at 99,864 deep, on the Q4_K_M file with its draft model. A different file, so not a matched pair.</td>
+            <td class="t">8.89 on a 307-word letter, 109,694 deep; 109,712 tokens read in 235.1 s (466.7 t/s); 30,712 MiB at load.</td><td>2026-09-29</td></tr>
+          <tr><td class="name">Muse Glimmer 30B<span>Meta. Q4_K_M with its block drafter</span></td>
+            <td class="t">Measured on a long conversation for the first time.</td>
+            <td class="t">September roster: 193.65 t/s on a 139-token answer, most of it reasoning, after 48,090 tokens.</td>
+            <td class="t">Median 97.17 over 62 replies (81.75 to 211.54) on a 106,352-token conversation, always thinking; that read took 41.9 s (2,538.8 t/s). A median over a long conversation, not a second measurement of the September answer.</td><td>2026-10-21</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>Why the Qwen3.8-27B gain depends on what it writes</h3>
+      <p>A draft model guesses the next few tokens. The big model checks the
+      guesses in one pass and keeps the ones it agrees with. On thinking text the
+      draft's guesses were kept 57% of the time (2,838 of 4,957) and the gain
+      was about 3 times. On the two plain letters about 19% were kept: 244 of
+      1,274 on the letter that gained 44 percent, and 268 of 1,428 on the one
+      that gained 30 percent. We think the share of guesses kept explains the
+      difference, but these runs did not test that on its own. The letter runs
+      with the draft model also used the smaller micro-batch, and their new text
+      after the long read was 314 tokens against 570, so the letter gains cannot
+      be given to the draft model alone. One draft run kept <code>-ub 512</code>,
+      at a 196,608 window. On the same 570 tokens of new text, 100,000 tokens
+      deep, its 3,500 tokens of reasoning ran at 133.92 t/s against 47.30
+      without the draft model, 2.8 times. The window changed in that pair, so
+      no run here measures the draft model on its own. Our <a href="../speculation-gate/">speculation-gate
+      study</a> explains why the shape of the output matters.</p>
+      <p>The installed window is 229,376 because the card is tight. In a test run at 229,376 the card peaked at 30,647 MiB. The installed speed run kept no peak reading. In test runs at 262,144 it peaked at 32,028 MiB on the thinking-on run and 31,992 on the thinking-off letters, about 600 MiB
+      from full.</p>
+      <h3>What the Qwen3-235B records isolate</h3>
+      <p>Every run here used the UD-Q3_K_XL file and the same 109,712-token ledger on
+      29 September, one letter each. The expert count was measured on its own. The cache comparison also changed the window. The cache:
+      with all 8 experts, a 16-bit cache wrote at 5.71 t/s, an 8-bit cache at 4.24 and a
+      4-bit cache at 2.86, and prompt reading ran at 640 to 649 t/s for all three. The 16-bit
+      run used a 118,784 window, the other two 131,072. The experts: at that same 118,784
+      window and 16-bit cache, running 6 of the model's 8 experts per token raised the letter
+      from 5.71 to 6.77 t/s. The installed 8.89 came from a later server start that also
+      changed the window to 131,072 and the micro-batch to <code>-ub 1024</code>, and its
+      prompt read at 466.7 t/s. How its extra speed over 6.77 splits between those settings
+      was not isolated. Running 6 of 8 experts is a change to the model's
+      computation, and we did not measure what it does to answer quality.
+      The thread-pinning bundle of section 02 came later the same day and was not
+      re-measured on this model.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Retired or removed</h2>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Date</th><th>What left</th><th>Last figure</th></tr></thead>
+        <tbody>
+          <tr><td>2026-10-11</td><td class="t">GLM-4.7 Full (IQ3_XXS, 145,120,517,024 bytes), retired and its weights deleted.</td><td class="t">4.68 t/s with the bundle of section 02, 5.61 without, at 48,109 deep (section 02). It failed our agent-framework check in September.</td></tr>
+          <tr><td>2026-10-11</td><td class="t">Qwen3-235B's Q4_K_M file and the two-machine DeepSeek V4 Flash UD-Q4_K_XL preset, deleted. Both models stay on other files.</td><td class="t">On the <a href="../roster-2026-09/">September roster</a> and the <a href="../two-boxes/">two-box study</a>.</td></tr>
+          <tr><td>2026-10-12</td><td class="t">MiniMax M2.7 (UD-IQ4_XS), retired.</td><td class="t">7.19 t/s without the bundle of section 02 at 99,877 deep; 10.62 with it, on a ledger restored from a saved copy (section 02).</td></tr>
+          <tr><td>2026-10-12</td><td class="t">Mistral Medium 3.5 (dense 128B, UD-Q4_K_XL), retired.</td><td class="t">1.80 t/s without the bundle of section 02 and 1.65 with it, on a 390-word letter cut at the 500-token cap, 24,091 deep (section 02).</td></tr>
+          <tr><td>2026-10-12</td><td class="t">Qwen3.8-Flash-Next's UD-Q3_K_XL files (89,986,353,824 bytes), deleted; the model serves its Q4 file.</td><td class="t">27.53 t/s with the bundle (section 02).</td></tr>
+          <tr><td>2026-10-22</td><td class="t">The first DeepSeek V4.1 Flash weights, deleted after an archive copy passed a sha256 check on all 11 files. The 1017 weights replaced them on 18 October.</td><td class="t">The <a href="../deepseek-v4-flash/">DeepSeek field card</a>, section 09.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Dates come from the notes we keep of changes to this desktop.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>What we got wrong</h2>
+      <ul class="plain">
+        <li><strong>Muse Spark's reading speed.</strong> Our own records
+        listed 191 t/s for "a 106K read". The server log shows the
+        106,469-token cold read at 155.0 t/s, 686.9 seconds. The 191 belongs
+        to two later reads of about 77,000 tokens (190.52 and 192.92). This
+        page prints the log's figure.</li>
+        <li><strong>GLM-5.3-Flash's "reasoning effort none".</strong> Our
+        September runs, and the <a href="../glm53-flash/">GLM-5.3-Flash card</a>,
+        say the server ran with reasoning effort none. Reasoning effort is how much hidden thinking a model does before it answers. The model's own chat template (the text pattern that turns a conversation into the model's input) accepts only <code>low</code> and <code>high</code>. It turns
+        every other word into <code>max</code>. Those runs
+        were at maximum effort.</li>
+        <li><strong>The September roster's "now" sentences.</strong> They were
+        true on 26 September. Many of its rows have since changed or left
+        (sections 02, 04 and 05). This page is the current list.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>What this does not show</h2>
+      <p>This page does not measure answer quality. The only figures near quality are
+      planted codes read back and one perplexity pair. Rows were measured on
+      different days with different prompts, so compare within a row, not
+      down a column. These are single runs on one desktop, not benchmarks. Some speeds include a draft model's help, and the rows say so.
+      The thread-pinning bundle's gain was measured on one processor, and its cause is unproven.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>Related pages on this site</h2>
+      <ul class="plain">
+        <li><a href="../field-notes-2026-10/">October field notes</a>: the
+        month's faults and traps, including five GPU timeout faults.</li>
+        <li><a href="../roster-2026-09/">The roster, as of 26 September 2026</a>:
+        the previous snapshot, kept as a dated record.</li>
+        <li><a href="../batch-size/">The batch-size study</a> and
+        <a href="../silent-settings/">Silent settings</a>: the September
+        settings work this page builds on.</li>
+        <li><a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>,
+        <a href="../glm53-flash/">GLM-5.3-Flash</a> and
+        <a href="../deepseek-v4-flash/">DeepSeek V4 Flash</a>: field cards
+        with dated updates for this month.</li>
+        <li><a href="../method/">Method</a>: the labels used on this page.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Sources and artifacts</h2>
+      <p>The data package holds the result files behind most figures: the
+      probe results, card-memory samples and selected server lines for each
+      run, a listing of the model files with their byte counts, and the
+      served windows read from the start scripts. A few figures come from
+      records that do not ship, or from our earlier published pages, and
+      data/NUMBERS.md names each one. Machine paths, addresses, process
+      numbers and our internal names for each model are removed, and so is
+      every reply's text: only token counts, timings and pass or fail flags
+      ship. For Muse Spark, MiMo and the 131,072-window medians, the prompts
+      are not published, and only the server's timing lines ship.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every file, where it
+        came from, what was removed, and where the package looks like it argues
+        with itself.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
+        page mapped to its file and field.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with a file in
+      its package, the file is right and the page is wrong. Tell us at
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the
+      correction goes on the page with its date.</p>
+      <p class="fineprint">This page is dated on purpose. It is a snapshot as
+      of 25 October 2026; a later roster will be a later page.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: DeepSeek is a mark of
+    DeepSeek; Qwen, Qwen3, Qwen3.5, Qwen3.6 and Qwen3.8 are marks of Alibaba
+    Group Holding Limited; GLM is a mark of Z.ai; Gemma is a mark of Google
+    LLC; GPT-OSS, GPT-4o and OpenAI are marks of OpenAI; Meta, Muse Spark and
+    Muse Glimmer are marks of Meta Platforms, Inc.; Nemotron, NVIDIA, GeForce
+    and RTX are marks of NVIDIA Corporation; MiMo and Xiaomi are marks of
+    Xiaomi; Beam is a project or mark of Reflection AI; Ornith is a project or
+    mark of Ornith AI; Hemmingway-1 is a project of Altworld; Aura 4o Rebirth
+    is a community project; Inkling and Inkling-Small are marks of Thinking
+    Machines Lab; Ling is a project or mark of inclusionAI; Mistral is a mark
+    of Mistral AI; MiniMax is a mark of MiniMax; Poolside and Laguna are marks
+    of Poolside; Unsloth publishes the community files named unsloth or UD-; Core and Intel are marks of Intel Corporation; ROG and Flow Z13 are
+    marks of ASUSTeK Computer Inc.; llama.cpp is a project of ggml-org and its
+    contributors. All are referenced for identification only. Not affiliated
+    with, endorsed by, or sponsored by any of them or their affiliates.
+    Product names and marks belong to their respective owners. This site is
+    static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -262,29 +262,31 @@
     <h2 class="eyebrow">Latest measurements</h2>
     <div class="stats">
       <div class="card stat">
-        <div class="n">1.17</div>
-        <p>What one pinned GPT-4o snapshot reads against itself at
-        temperature zero, on 81 prompts, set by markup. The nearest other
-        model reads 2.23 on 178 prompts; a prompt change of ours reads 3.05
-        on the same 178.</p>
-        <div class="date">Measured 3 to 5 September 2026</div>
-        <div class="links"><a class="cardlink" href="gpt4o-measured/">The study</a></div>
+        <div class="n">14 January 2027</div>
+        <p>The day GPT-4o's August and November 2024 snapshots leave OpenAI's
+        API; the May 2024 snapshot left on 23 October 2026. Friends of 4o
+        gathers the dates, what the model says about itself, what we
+        measured, what two rounds of fine-tuning did and did not carry, and
+        the replacements people report.</p>
+        <div class="date">Dates read 2026-10-25</div>
+        <div class="links"><a class="cardlink" href="friends-of-4o/">The capsule</a></div>
       </div>
       <div class="card stat">
-        <div class="n">2.5 to 7.3x</div>
-        <p>How much faster long prompts read on twelve models whose experts sit in
-        system RAM, after raising llama.cpp's micro-batch from its default, with
-        the planted answer still correct.</p>
-        <div class="date">Measured 2026-09-19 to 09-21</div>
-        <div class="links"><a class="cardlink" href="batch-size/">The study</a></div>
+        <div class="n">About +7 to +81%</div>
+        <p>A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent
+        faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8
+        threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin
+        setting was not run on its own.</p>
+        <div class="date">Measured 29 September 2026</div>
+        <div class="links"><a class="cardlink" href="roster-2026-10/">The roster</a></div>
       </div>
       <div class="card stat">
-        <div class="n">75.2 s</div>
-        <p>One desktop answering a 48,024-token DeepSeek V4 Flash request after
-        tuning; the same file split across two machines took 416.4 seconds at
-        its best completed setting.</p>
-        <div class="date">Measured 2026-09-21</div>
-        <div class="links"><a class="cardlink" href="deepseek-v4-flash/">The field card</a></div>
+        <div class="n">5</div>
+        <p>GPU timeout faults (Xid 8) in the kernel log in the first week on
+        NVIDIA's 595 driver, against none in six boots on 580. The cause is not
+        established.</p>
+        <div class="date">Kernel log, 12 to 25 October 2026</div>
+        <div class="links"><a class="cardlink" href="field-notes-2026-10/">The field notes</a></div>
       </div>
     </div>
   </section>
@@ -362,7 +364,8 @@
 
   <section class="workshop">
     <h2 class="eyebrow">In the works</h2>
-    <p>More measurements from this desktop and the laptop beside it. No
+    <p>More measurements from this desktop and the laptop beside it,
+    starting with the questions the October pages leave open. No
     promises on timing: they land when they are measured and checked.</p>
   </section>
 
@@ -383,6 +386,14 @@
     <section class="sidegroup">
       <h2>Studies and reports</h2>
       <ul class="sidelist">
+        <li><a href="friends-of-4o/">Friends of 4o: a resource for people whose companion or workflow ran on GPT-4o</a><span class="when">25 October 2026</span></li>
+        <li><a href="friends-of-4o/says/">What the Model Says About Itself: 27 of GPT-4o's own answers, with snapshot, date, temperature and prompt hash</a><span class="when">25 October 2026</span></li>
+        <li><a href="friends-of-4o/snapshots/">Three GPT-4o snapshots, counted against each other: November puts an em dash in 86% of replies and asks 2.55 questions per reply; August writes 77 words to November's 155</a><span class="when">Runs 4 July 2026, counted 25 October 2026</span></li>
+        <li><a href="companion-audition/">Auditioning a model for a companion role: plain traps read by hand, and the judges that failed</a><span class="when">25 September to 23 October 2026</span></li>
+        <li><a href="small-finetune/">What a small fine-tune does and does not do: six LoRA adapters on 20B and 27B open models, measured</a><span class="when">18 to 20 October 2026</span></li>
+        <li><a href="note-before-the-message/">The note before the message: where an instruction has to sit</a><span class="when">29 September to 17 October 2026</span></li>
+        <li><a href="local-reviewers/">Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.</a><span class="when">9 to 12 October 2026</span></li>
+        <li><a href="field-notes-2026-10/">October field notes: nine faults and traps on one RTX 5090 desktop</a><span class="when">19 September to 23 October 2026</span></li>
         <li><a href="describing-pictures/">Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</a><span class="when">20 September 2026</span></li>
         <li><a href="silent-settings/">Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</a><span class="when">12 to 26 September 2026</span></li>
         <li><a href="bytes-per-token/">Bytes per token: Predicting Inkling 975B: 5.2 to 5.7 tokens per second by arithmetic, server-reported 3.43 on short prose</a><span class="when">26 September 2026</span></li>
@@ -406,12 +417,12 @@
     <section class="sidegroup">
       <h2>Model field cards</h2>
       <ul class="sidelist">
-        <li><a href="glm53-flash/">GLM-5.3-Flash on one desktop</a><span class="when">16 to 26 September 2026</span></li>
-        <li><a href="qwen38-256k/">Qwen3.8-27B at 256K</a><span class="when">26 September 2026</span></li>
-        <li><a href="deepseek-v4-flash/">DeepSeek V4 Flash 0731, on one desktop and on two</a><span class="when">12 to 21 September 2026</span></li>
+        <li><a href="glm53-flash/">GLM-5.3-Flash on one desktop</a><span class="when">16 to 26 September 2026, updated 25 October 2026</span></li>
+        <li><a href="qwen38-256k/">Qwen3.8-27B at 256K</a><span class="when">26 September 2026, updated 25 October 2026</span></li>
+        <li><a href="deepseek-v4-flash/">DeepSeek V4 Flash 0731, on one desktop and on two</a><span class="when">12 to 21 September 2026, updated 25 October 2026</span></li>
         <li><a href="inkling-small/">Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</a><span class="when">14 to 21 September 2026</span></li>
         <li><a href="muse-glimmer-30b/">Muse Glimmer 30B: trained at 16, asked for 3</a><span class="when">16 August 2026</span></li>
-        <li><a href="qwen38-27b/">Qwen3.8-27B: day zero</a><span class="when">14 August 2026</span></li>
+        <li><a href="qwen38-27b/">Qwen3.8-27B: day zero</a><span class="when">14 August 2026, updated 25 October 2026</span></li>
         <li><a href="mistral-medium-35/">Mistral Medium 3.5</a><span class="when">6 August 2026</span></li>
         <li><a href="qwen35/">Qwen3.5 (122B and 397B)</a><span class="when">5 to 6 August 2026</span></li>
         <li><a href="lfm25-26b/">LFM2.5-2.6B</a><span class="when">4 August 2026, updated 7 August 2026</span></li>
@@ -433,7 +444,7 @@
     <section class="sidegroup">
       <h2>Reference</h2>
       <ul class="sidelist">
-        <li><a href="roster-2026-09/">The roster, as of 26 September 2026</a><span class="when">12 to 26 September 2026</span></li>
+        <li><a href="roster-2026-10/">The roster, as of October 2026</a><span class="when">27 September to 25 October 2026</span></li>
         <li><a href="about/">About Graphometer</a><span class="when">Updated 26 September 2026</span></li>
         <li><a href="method/">How Graphometer measures</a><span class="when">Published 16 August 2026</span></li>
         <li><a href="qwen/">Which Qwen should I run?</a><span class="when">9 August 2026, updated 14 August 2026</span></li>

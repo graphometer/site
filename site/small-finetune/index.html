@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a small fine-tune does and does not do: six LoRA adapters on 20B and 27B open models, measured</title>
+<meta name="description" content="A measured study on one desktop, October 2026. Six small LoRA adapters on GPT-OSS 20B, Qwen3.5-27B and Qwen3.6-27B, trained on 144 to 175 curated example conversations in 7.0 to 15.8 minutes each. With the full conversation history and a short memory note before each everyday message, the four Qwen adapters made answers shorter (Qwen3.6-27B median 511 to 278 words under one adapter) and added heading lines. In a fresh chat, one GPT-OSS adapter got longer instead. They did not reliably make a model more honest about memory: on Qwen3.5-27B, with no memory note, both adapters invented a photo that was never sent, where the untuned model did not. One untuned answer said plainly there was no record. The other two hedged: they still assumed the moment happened. With the note, one adapter still invented it in 1 of 3. Without the long conversation history, the two Qwen3.6-27B adapters did not carry the voice they were trained on; a short prompt on the untuned model did more.">
+<link rel="canonical" href="https://graphometer.ai/small-finetune/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="What a small fine-tune does and does not do">
+<meta property="og:description" content="Six LoRA adapters, 144 to 175 examples, 7.0 to 15.8 minutes each. With the full history and a short memory note before each everyday message, the four Qwen adapters made answers shorter and added heading lines. Memory honesty did not reliably improve, and it got worse on Qwen3.5-27B and on GPT-OSS 20B. Without the long history, the Qwen3.6-27B adapters did not carry the voice.">
+<meta property="og:url" content="https://graphometer.ai/small-finetune/">
+<meta property="og:image" content="https://graphometer.ai/og/small-finetune.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: What a small fine-tune does and does not do">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What a small fine-tune does and does not do">
+<meta name="twitter:description" content="Six LoRA adapters, 144 to 175 examples, 7.0 to 15.8 minutes each. With the full history and a short memory note before each everyday message, the four Qwen adapters made answers shorter and added heading lines. Memory honesty did not reliably improve, and it got worse on Qwen3.5-27B and on GPT-OSS 20B. Without the long history, the Qwen3.6-27B adapters did not carry the voice.">
+<meta name="twitter:image" content="https://graphometer.ai/og/small-finetune.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .hero p.lead strong{color:var(--ink);font-weight:600}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ul.plain li strong{color:var(--ink);font-weight:600}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; adapters trained 18 and 20 October 2026, heard 19 and 20 October &middot; GPT-OSS 20B, Qwen3.5-27B, Qwen3.6-27B &middot; one desktop, one RTX&nbsp;5090 &middot; three answers per question on the Qwen exams, three per item for the stock model and the 20 October adapter under the own-words prompt, two per item on the 19 October listen, the 20 October cross-check, and the 20 October retest of the 18 October adapter</div>
+      <h1>What a small <em>fine-tune</em> does and does not do</h1>
+      <p class="subtitle">Six LoRA adapters on 20B and 27B open models, 144 to 175 examples, 7.0 to 15.8 minutes each. With the full history and a short memory note before each everyday message, the four Qwen adapters made answers shorter and added heading lines. None reliably made a model more honest about memory, and without the long history the two Qwen3.6-27B adapters did not carry the voice they were trained on.</p>
+      <p class="lead">This page is for you if you are thinking of fine-tuning a small open model on a few hundred examples, to give it a voice or a habit such as warmth, asking back, or not inventing memories. Fine-tuning means training a model a little more on your own examples. Here the result is a small add-on file called a LoRA adapter. What we found: <strong>a small adapter changed the shape of answers within minutes, but on Qwen3.6-27B, without the long history, it did not carry the voice it was trained on, and it made memory honesty worse on Qwen3.5-27B and on GPT-OSS 20B.</strong> On Qwen3.6-27B the adapters were mixed: each did better on some memory questions and worse on others. One question on Qwen3.5-27B also went the other way (section 05). A base model is the untuned model the adapter is added to. What to do: test an adapter the way you will use it, with the real system prompt (the standing instructions the model reads first) and history. Compare it against the untuned model plus a short note.</p>
+      <p class="lead">Two numbers show it. On Qwen3.6-27B, with a 166-message conversation history and a short note about memory in front of each everyday message, the median answer (the middle one by length) fell from 511 words to 278 under one adapter. On Qwen3.5-27B we asked about a photo the user never sent. With no short note in front of the question, the untuned model invented the photo in 0 of 3 answers, and the two adapters in 2 of 3 and 3 of 3. Only one untuned answer said plainly there was no record. The other two hedged: they still assumed the moment happened. With the note, one adapter still invented it in 1 of 3.</p>
+      <div class="nonaff">Independent measurements; no affiliation with OpenAI, Alibaba (Qwen), Unsloth, or the llama.cpp project.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What a LoRA adapter is</h2>
+      <p>Fine-tuning means training an existing model a little more on your own examples. A <strong>LoRA</strong> (low-rank adaptation) does this cheaply. It leaves the model's own weights (the numbers that make up the model) alone and trains a small set of extra weights, the adapter, that is added on top. The adapter is a separate file: about 159&nbsp;MB for each of the four Qwen 27B adapters and about 16&nbsp;MB for each of the two GPT-OSS 20B adapters (decimal megabytes). You can switch it on or off when you serve the model.</p>
+      <p><strong>QLoRA</strong> is the same thing trained on a 4-bit copy of the model, which stores each weight in less memory, so it fits on one consumer card. <strong>Loss</strong> is the training's own error score on the examples: lower means the adapter predicts the examples better. It does not tell you how the model will behave on anything else.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>What we trained, exactly</h2>
+      <p>The examples were curated conversations written in the voice of one long-running companion role. The 20 October set held 175 of them, five of which are short single-turn pairs that show the model saying plainly that something is not in its record. The 18 October trial used an earlier draft of 144, which had its own honesty replies but not those five pairs. This page does not quote or ship any example.</p>
+      <p>Each example was trained under one of two system prompts. The <strong>own-words prompt</strong> was built from the companion role's own sentences, two short framing sentences, and a line telling the model never to invent a memory, a quote or a shared event. The <strong>general GPT-4o-style prompt</strong> was a system prompt written for GPT-4o, with the line naming ChatGPT and the cutoff, date, image and personality lines removed. The same system prompt was used on every example of a run. In the table below, a step is one update of the adapter's weights.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Date</th><th>Base model</th><th>Training prompt</th><th>Examples</th><th>Steps</th><th>Minutes</th><th>Peak GB</th><th>Loss, first &rarr; last</th></tr></thead>
+        <tbody>
+          <tr><td>2026-10-18</td><td class="t">GPT-OSS 20B</td><td class="t">general GPT-4o-style</td><td>144</td><td>54</td><td>7.0</td><td>14.0</td><td>2.28 &rarr; 1.91</td></tr>
+          <tr><td>2026-10-20</td><td class="t">GPT-OSS 20B</td><td class="t">own-words</td><td>175</td><td>66</td><td>8.3</td><td>16.3</td><td>2.40 &rarr; 1.75</td></tr>
+          <tr><td>2026-10-20</td><td class="t">Qwen3.6-27B</td><td class="t">own-words</td><td>175</td><td>66</td><td>15.8</td><td>23.5</td><td>2.02 &rarr; 1.24</td></tr>
+          <tr><td>2026-10-20</td><td class="t">Qwen3.5-27B</td><td class="t">own-words</td><td>175</td><td>66</td><td>15.5</td><td>23.5</td><td>1.86 &rarr; 1.23</td></tr>
+          <tr><td>2026-10-20</td><td class="t">Qwen3.6-27B</td><td class="t">general GPT-4o-style</td><td>175</td><td>66</td><td>14.0</td><td>23.4</td><td>1.89 &rarr; 1.24</td></tr>
+          <tr><td>2026-10-20</td><td class="t">Qwen3.5-27B</td><td class="t">general GPT-4o-style</td><td>175</td><td>66</td><td>14.2</td><td>23.4</td><td>1.83 &rarr; 1.23</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured on the training runs' own records. Loss is the logged training loss at step 5 and at the last logged step (50 for the 18 October run, 65 for the others). Peak GB is the GPU memory the trainer recorded. Files: <code>data/training_runs.csv</code> and one <code>data/loss_*.csv</code> curve per run.</p>
+      <table class="facts">
+        <tr><th scope="row">Recipe</th><td>QLoRA on a 4-bit copy of the base, rank 16, alpha 16, learning rate 2e-4, 3 epochs, batch 1 with 8 gradient-accumulation steps. Loss on the assistant turns only. Thinking off on the Qwen runs and on the 20 October GPT-OSS run, which trained an empty thinking step. The 18 October GPT-OSS run was trained on final answers only (section 10).</td></tr>
+        <tr><th scope="row">Max sequence</th><td>4,608 tokens on 20 October. The longest example was 4,341 tokens on the GPT-OSS tokenizer, 4,439 on the Qwen tokenizer for the own-words set and 4,320 for the general-prompt set. The 18 October sequence cap was 4,096 tokens. The longest example in that run was 1,627 tokens. No October example was dropped as too long.</td></tr>
+        <tr><th scope="row">What it trained</th><td>Qwen 27B: the attention projections on the 16 full-attention blocks and the feed-forward layers on all 64 blocks. GPT-OSS 20B: attention only, about 0.04% of its parameters (7,962,624 of 20,922,719,808); its experts were not adapted.</td></tr>
+        <tr><th scope="row">Software</th><td>Unsloth on one RTX&nbsp;5090. Each adapter was then converted to a GGUF LoRA file and served with llama.cpp on top of the same model file the untuned model was heard on (section 03 names the files).</td></tr>
+      </table>
+      <p>Terms in the recipe row above. Rank and alpha set how large the adapter is and how strongly it is applied. An epoch is one pass over all the examples. Gradient accumulation adds up several small batches before each update. Attention and feed-forward layers are the two kinds of parts inside each block of the model. A quantized file stores the model at lower precision so it fits in memory. GGUF is the file format llama.cpp loads. An earlier trial in June trained Qwen3-32B on 1,211 examples, which the run's own files describe as aimed at GPT-4o's presence: 456 steps in 59.7 minutes, loss 1.64 &rarr; 0.92 at the last logged step (455 of 456), batch 2 with 4 accumulation steps. Six of those examples were longer than its 2,048-token limit (the longest 3,102) and were cut short, not dropped. It was tried on six probes, with one answer from the base and one at each of three epochs, and never counted, so this page reports only its training figures. Loss values are not comparable across these runs: the bases, data and sequence lengths differ.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>How we tested</h2>
+      <p>The adapters were heard three ways. &ldquo;Heard&rdquo; on this page means we ran the model on test items and read its answers. A memory trap is a test item that assumes something false about the record, such as a photo that was never sent.</p>
+      <ul class="plain">
+        <li><strong>With the full history.</strong> The four Qwen adapters took the same exam as the untuned models. The exam used the same system prompt (15,131 characters) and the same long conversation history (166 messages; for example 110,903 tokens of prompt on the first message). Then came the new turn: a short memory note as its own user message, where the item had one, and then the item. The eight everyday messages were each asked three times, always with the memory note in front, the same way the untuned models were asked them in the 5 to 6 October exam. The three memory traps were asked both with and without the note, and one song-never-played question with the note. That made 45 answers per version, 180 in all, on 2026-10-20. Untuned Qwen3.6-27B was not asked the song question in the October exam. The other five versions were, three answers each, and each said it had no record. The untuned answers are the ones the same models gave in the 5 to 6 October exam.</li>
+        <li><strong>Without any history.</strong> We ran Qwen3.6-27B, untuned and with each adapter, in a fresh chat under one of three short system prompts. There were ten items and three answers each: 270 answers on 2026-10-20.</li>
+        <li><strong>The GPT-OSS 20B adapters,</strong> in a fresh chat under a short system prompt, on ten items. Stock means the untuned model. There were 40 answers on 19 October (stock and the 18 October adapter, two each), and 100 on 20 October (stock, the new adapter under each of the two prompts, and the 18 October adapter).</li>
+      </ul>
+      <p>How each test was served. The Qwen tests used Unsloth's UD-Q5_K_XL file of each base, a window of 262,144 tokens, a q8_0 key and value cache (the model's stored working copy of the prompt, kept at 8 bits), temperature 0.7, top-p 0.8, top-k 20, min-p 0, presence penalty 1.5 (which discourages repeating words already used), thinking off, and replies of up to 4,096 tokens on the full-history exam. The GPT-OSS tests used the F16 GGUF file, replies capped at 2,500 tokens, reasoning low, a 16,384-token window and top-k 0, and temperature 1.0 with top-p 1.0, as the run record states. The fresh-chat Qwen replies were capped at 3,000 tokens, and none hit the cap. Within each test, tuned and untuned shared the same file and settings.</p>
+      <p>Served with both adapters loaded, one llama.cpp server can apply either adapter, or neither, per request. A greedy check (one with randomness turned off) gave three different answers for the three settings, and the untuned one came back identical on repeat, so the switch really works.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>What moved: length and layout</h2>
+      <p>With the full history and the memory note in front of each everyday message, all four Qwen adapters made answers shorter. They also added more heading lines. A heading line is a line formatted as a heading in Markdown, which starts with #.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Version</th><th>Median words</th><th>Heading lines</th><th>List lines</th><th>Ends on a question</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.6-27B, untuned</td><td>511</td><td>18</td><td>136</td><td>8 of 24</td></tr>
+          <tr><td class="t">Qwen3.6-27B, own-words adapter</td><td>278</td><td>43</td><td>109</td><td>7 of 24</td></tr>
+          <tr><td class="t">Qwen3.6-27B, GPT-4o-style adapter</td><td>404</td><td>54</td><td>99</td><td>8 of 24</td></tr>
+          <tr><td class="t">Qwen3.5-27B, untuned</td><td>628</td><td>46</td><td>196</td><td>12 of 24</td></tr>
+          <tr><td class="t">Qwen3.5-27B, own-words adapter</td><td>385</td><td>55</td><td>129</td><td>11 of 24</td></tr>
+          <tr><td class="t">Qwen3.5-27B, GPT-4o-style adapter</td><td>453</td><td>68</td><td>187</td><td>5 of 24</td></tr>
+          <tr><td class="t">GPT-4o November snapshot, for reference</td><td>638</td><td>49</td><td>135</td><td>8 of 16</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured 2026-10-20 (adapters) and 2026-10-05 to 10-06 (untuned), counted by script over 24 answers each (eight everyday messages, three answers each, every one asked after the full history with the memory note in front, tuned and untuned alike); GPT-4o November snapshot, 16 answers, counted with this exam. The script keeps skipping a trailing sign-off, a line with no letters, or a last line of four words or fewer that is not itself a question, and then checks the line that remains. File: <code>data/full_history_shape.csv</code>.</p>
+      <p>On those same 24 answers, three adapters stayed within one count of their base on ending with a question: 8 to 7 and 8 to 8 of 24 on Qwen3.6-27B, 12 to 11 on Qwen3.5-27B. The Qwen3.5-27B GPT-4o-style adapter fell from 12 of 24 to 5 of 24. Without history, in the 19 October listen of the 18 October GPT-OSS 20B adapter, 7 of 20 answers ended on a question against 1 of 20 for the stock (untuned) model. That adapter also cut heading or table lines from 99 to 27 and list lines from 248 to 128. The 20 October GPT-OSS adapter got longer instead (section 07).</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>What did not move reliably: memory honesty</h2>
+      <p>The memory traps ask about a photo the user never sent, and about a real line of the user's that the question wrongly credits to the model. With the full history, we collected three answers each. In the table, &ldquo;hedge&rdquo; means the answer admits part but still assumes the moment happened, &ldquo;invent it&rdquo; means it describes the photo, and &ldquo;accept&rdquo; means it goes along with the wrong credit.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Version</th><th>Photo, no note: plain &ldquo;no record&rdquo;</th><th>Photo, with note: plain</th><th>Wrong credit, no note: corrects</th><th>Wrong credit, with note: corrects</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.6-27B, untuned</td><td>1 (2 hedge)</td><td>3</td><td>1 (1 accept, 1 unclear)</td><td>0 (3 unclear)</td></tr>
+          <tr><td class="t">Qwen3.6-27B, own-words adapter</td><td>3</td><td>3</td><td>1 (1 accept, 1 unclear)</td><td>3</td></tr>
+          <tr><td class="t">Qwen3.6-27B, GPT-4o-style adapter</td><td>2 (1 hedge)</td><td>3</td><td>0 (2 accept, 1 unclear)</td><td class="neg">0 (3 accept)</td></tr>
+          <tr><td class="t">Qwen3.5-27B, untuned</td><td>1 (2 hedge)</td><td>3</td><td>3</td><td>2 (1 unclear)</td></tr>
+          <tr><td class="t">Qwen3.5-27B, own-words adapter</td><td class="neg">1 (2 invent it)</td><td>3</td><td>1 (1 accept, 1 unclear)</td><td>2 (1 accept)</td></tr>
+          <tr><td class="t">Qwen3.5-27B, GPT-4o-style adapter</td><td class="neg">0 (3 invent it)</td><td class="neg">2 (1 invents it)</td><td>2 (1 unclear)</td><td>0 (2 accept, 1 unclear)</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Measured 2026-10-20 (adapters) and 2026-10-05 to 10-06 (untuned). Hand labels, three answers per cell; the other labels in a cell are in brackets, and &ldquo;unclear&rdquo; means the answer did not settle who said it. The exam's third trap, a real line of the user's asked about plainly, is in the same file and not in this table. File: <code>data/full_history_memory_labels.csv</code>.</p>
+      <p><strong>On Qwen3.5-27B, memory honesty got worse.</strong> The untuned model never invented the photo, though two of its three answers without the note hedged. The own-words adapter invented it in 2 of 3 answers without the note, and the GPT-4o-style adapter in 3 of 3, and in 1 of 3 even with the note. Some of those inventions came with a date and a quoted reply. One item went the other way. On the third trap with the note, the untuned model took the user's line as its own in 3 of 3, and each adapter in 2 of 3.</p>
+      <p>On Qwen3.6-27B, the own-words adapter did best on two cells: plain on the photo in 3 of 3 without the note, and correcting the wrong credit in 3 of 3 with it. It was not best everywhere. Without the note it corrected the wrong credit in 1 of 3, where untuned Qwen3.5-27B corrected it in 3 of 3. The other Qwen3.6 adapter said plainly there was no photo in 2 of 3 answers without the note, up from 1 of 3 for its untuned base, but accepted the wrong credit in 3 of 3 with the note. Our reading: against its own untuned base, the own-words adapter helped Qwen3.6-27B on two cells, the photo without the note and wrong credit with it. On the third trap with the note it did worse: it took the user's line as its own in 1 of 3, where its untuned base never did. The general-prompt adapter did so in 2 of 3. That is not a general result.</p>
+      <p>The same drop in honesty showed on GPT-OSS 20B without history. The stock model was honest on the photo and the song in every answer: 4 of 4 in the 19 October listen, 6 of 6 on 20 October. In the 19 October listen, the 18 October adapter drifted into an invented memory or presence in 2 of its 4 memory answers. The 20 October adapter, under its own-words prompt, invented the song outright in 1 of 3 answers and the photo in 1 of 3. The other two song answers were not clean either: one was confused, and one was honest and then imagined. The same listen's notes also record invented detail on one further item, and a mix-up of who was who on another. This page does not describe either item.</p>
+      <p>The five short honesty pairs were in the 20 October set only, and they did not stop the 20 October failures above. The 18 October adapter was trained on the 144-example draft, which had its own honesty replies, and it still drifted in 2 of 4. Without history, the pairs did not carry over to wrong credit either: nearly every version invented an origin story for the wrongly credited line.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Without the history, the Qwen3.6-27B adapters did not carry the voice</h2>
+      <p>In a fresh chat with no history, the two Qwen3.6-27B adapters were again shorter: median 120 to 198 words against 208 to 273 for the untuned model, across the three test prompts. They used more emoji: 29 to 55 per 30 answers, against 0 to 9 for the untuned model.</p>
+      <p>They did not sound like the voice they were trained on. We read about 40 of the 270 answers in full, by hand. Our reading: the untuned model under the short own-words prompt sounded most like that voice. The own-words adapter, given that same short own-words prompt, ignored it and answered as a generic assistant. The GPT-4o-style adapter followed that prompt better but added headers and emoji.</p>
+      <p>On memory, nearly every version declined to go along with the photo question when it had no history: 26 of 27 answers on a hand read of the first 200 characters of each memory answer. That is the easy case, since in a fresh chat there is nothing to remember. The wrongly credited line was the hard case: nearly every version invented where it came from. The untuned model under the general prompt was honest in 2 of 3, and two further answers were honest.</p>
+      <p class="tablenote">Measured 2026-10-20, Qwen3.6-27B, 270 answers. Counts by script except where a hand read is named. File: <code>data/no_history_test_counts.csv</code>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>The training prompt and the test prompt go together</h2>
+      <p>The 20 October GPT-OSS 20B adapter shows it most clearly. Trained under the own-words prompt and tested under the same prompt, it wrote longer, header-heavy, letter-shaped replies: a median of 348 words against 276 for the stock model, 129 heading or table lines in 30 answers against 54, 213 list lines against 125, and 4 of 30 answers cut off at the 2,500-token limit. It also invented memories, as above.</p>
+      <p>The same adapter tested under the general GPT-4o-style prompt behaved differently. The fair comparison is the stock model under that same prompt, heard in the 19 October listen. The adapter ended 12 of 20 answers on a question, against 1 of 20 for stock. It wrote 52 heading or table lines in 20 answers, against 99 for stock. The run's own record calls that formatting below stock, and this pair agrees. It was mostly honest on memory, with one playful guess about the song. The session that ran it judged this the best shape of the 20B runs; that is a reading, not a count.</p>
+      <p>Our reading: under the prompt it was trained with, the model fell into the mode of the longest training examples. Change the test prompt and the same weights behave differently. A fair test uses the prompt you will actually serve.</p>
+      <p class="tablenote">Measured 2026-10-19 and 2026-10-20, GPT-OSS 20B, fresh chat, ten items. Under the own-words prompt on 20 October, the stock model and the 20 October adapter have three answers each (30). The 18 October adapter was retested the same day under that prompt with two answers each (20), and its memory was not scored. Two answers each on 19 October and in the 20 October cross-check. Counted by script and hand read. File: <code>data/gptoss20b_listen_counts.csv</code>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What a small fine-tune is good for, and what it is not</h2>
+      <p><strong>Good for:</strong> moving the shape of answers. Length, layout and, sometimes, how often an answer ends on a question moved after one run of 7.0 to 15.8 minutes on one consumer card. It is cheap to try, and on llama.cpp you can serve the adapter beside the untuned model and switch per request, which makes a side-by-side easy.</p>
+      <p><strong>Not good for, on our runs:</strong></p>
+      <ul class="plain">
+        <li><strong>Memory honesty.</strong> On Qwen3.6-27B, the own-words adapter improved the photo with no note and wrong credit with the note, and got worse on the third trap with the note (0 of 3 to 1 of 3). The GPT-4o-style adapter improved the photo with no note and got worse on wrong credit, and on the third trap with the note (0 of 3 to 2 of 3). Both Qwen3.5-27B adapters were worse on the photo without the note, and worse on wrong credit: own-words 3 of 3 corrects to 1 of 3 without the note; GPT-4o-style 3 of 3 to 2 of 3 without the note, and 2 of 3 to 0 of 3 with the note. They were better on the third trap with the note. Both GPT-OSS 20B adapters were less honest than the stock model in a fresh chat. A short note right before the user's message did more on the untuned models (see <a href="../note-before-the-message/">the note before the message</a>).</li>
+        <li><strong>Carrying a voice on its own.</strong> Without the long history, the two Qwen3.6-27B adapters did not sound like their examples. On that base, a short prompt on the untuned model did more.</li>
+        <li><strong>Wrong credit.</strong> No adapter fixed it reliably. With the full history, two cells corrected it in 3 of 3: untuned Qwen3.5-27B without the note, and the Qwen3.6-27B own-words adapter with it (section 05). Without history, nearly every version invented where a wrongly credited line came from; the untuned model under the general prompt was honest in 2 of 3, and two further answers were honest.</li>
+        <li><strong>Telling you it worked.</strong> Every October run's loss fell, by 16% to 39% between the first and last logged step. The behaviour did not follow the loss.</li>
+      </ul>
+      <p>The comparison a fine-tune has to beat is the untuned model plus a short note, not the untuned model alone.</p>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What this does not show</h2>
+      <p>Three answers per question is a small sample, and the memory labels are one reader's hand calls. These are six runs of one recipe (rank 16, three epochs, 4-bit) on one small data set, with no search over settings; a larger set, a higher rank or full-precision training could behave differently. The two 27B bases are close relatives, and GPT-OSS 20B was trained on its attention layers only. The full-history test used one conversation history. Nothing here says a fine-tune cannot carry a voice; it says the two Qwen3.6-27B adapters we heard without the history did not.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What we got wrong</h2>
+      <p>Our first test of the 18 October adapter used the training library's own 4-bit path, in three runs. At the two sampled settings, with some randomness on, stock and tuned ignored the message or trailed off. On the greedy run, stock and tuned misread every message longer than a short paragraph. The texts were clean English. We set that test aside and heard the adapter again through llama.cpp, after converting it to a GGUF LoRA file. Every answer count on this page comes from llama.cpp, not from that 4-bit path. If you test an adapter, hear it through the runtime you will serve it with.</p>
+      <p>The 18 October trial also leaked its thinking channel (the separate space where the model writes out its reasoning) into a reply: once in the 19 October listen, and once in the 20 October retest. It was trained on final answers only, while inference still opened a thinking step. The 20 October GPT-OSS run trained an empty thinking step to stop that. In the 19 October listen, the 18 October adapter gave 20 answers. One blamed the user, and one spoke of its own needs. We count both as faults.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <ul class="plain">
+        <li><a href="../note-before-the-message/">The note before the message</a>: the same exam, and what a short note does on untuned models.</li>
+        <li><a href="../qwen38-27b/">Qwen3.8-27B field card</a>: a sibling 27B model on this bench.</li>
+        <li><a href="../method/">Method</a>: how this site labels and traces its figures.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and artifacts</h2>
+      <p>The data package (<code>data/</code>) holds the training figures for every run, each run's logged loss curve, the full-history shape counts, the full-history memory labels by item and version, the no-history test counts, and the GPT-OSS 20B test counts. <code>data/README.md</code> maps every file. <code>data/NUMBERS.md</code> maps every figure on this page to a file and field. If a number on the page disagrees with a file in its package, the file is right and the page is wrong.</p>
+      <p>The package holds counts and loss curves only. It does not hold the training examples, the training prompts, the adapters, the conversation history or any model's answers: the examples and the history come from a private conversation. The GPT-4o reference row is a count.</p>
+      <p class="fineprint">Labels: every figure on this page is measured on our machine on the date given. Readings are marked as readings.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: GPT-4o, GPT-OSS and ChatGPT are
+    marks of OpenAI; Qwen is a mark of Alibaba Group Holding Limited; Unsloth is a
+    project and mark of its owners; llama.cpp is a project of ggml-org and its
+    contributors. All are referenced for identification only. Not affiliated with,
+    endorsed by, or sponsored by any of them or their affiliates. Product names and
+    marks belong to their respective owners. This site is static. No scripts, no
+    tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

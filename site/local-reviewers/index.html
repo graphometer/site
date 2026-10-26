@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.</title>
+<meta name="description" content="Open-weight models on one RTX 5090 desktop, October 2026. As agents in a coding harness, local models failed a long read-judge-write job (best 74.0 of 100, most far lower). A script that fed one item per call, with a different model checking and a no-model fixer last, scored 100.0 on the same job. One row per call alone scored 52.0. The other local pipeline scored 81.0, with one wrong archive, two open items lost, and one invented row when the file is scored again with the same scorer. Plus fifteen local second-opinion code reviews. Some local models needed one setting before they gave a usable result on the job named for them: thinking off, a thinking budget, or a shim for Claude Code.">
+<link rel="canonical" href="https://graphometer.ai/local-reviewers/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.">
+<meta property="og:description" content="As coding agents, local models failed a long read-judge-write job; the best scored 74.0. One script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table. One row per call alone scored 52.0. The other local pipeline scored 81.0, with one wrong archive, two open items lost, and one invented row when the file is scored again with the same scorer. Plus fifteen local second-opinion code reviews. Some local models needed one setting before they gave a usable result on the job named for them: thinking off, a thinking budget, or a shim for Claude Code.">
+<meta property="og:url" content="https://graphometer.ai/local-reviewers/">
+<meta property="og:image" content="https://graphometer.ai/og/local-reviewers.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.">
+<meta name="twitter:description" content="As coding agents, local models failed a long read-judge-write job; the best scored 74.0. One script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table. One row per call alone scored 52.0. The other local pipeline scored 81.0, with one wrong archive, two open items lost, and one invented row when the file is scored again with the same scorer. Plus fifteen local second-opinion code reviews. Some local models needed one setting before they gave a usable result on the job named for them: thinking off, a thinking budget, or a shim for Claude Code.">
+<meta name="twitter:image" content="https://graphometer.ai/og/local-reviewers.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ul.plain li strong{color:var(--ink);font-weight:600}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Measured study &middot; 2026-10-09 to 10-12 &middot; one RTX 5090 desktop, llama.cpp, one model at a time &middot; most cells are one run</div>
+      <h1>Local models <em>as reviewers</em></h1>
+      <p class="subtitle">As agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.</p>
+      <p class="lead">This page is for anyone who wants a local model to review
+      code or documents, and wants to know what setup actually worked. A local
+      model is an open-weight model, one whose files you can download, running on
+      your own computer. We tried them on real work: tidy a long document, review
+      a code change, fix a bug. The finding: <strong>do not hand a local model
+      the whole job as an agent</strong>, a model that works through a task on
+      its own. Give it one small piece per call, meaning one request to the
+      model, and let a different model check the result. In our test, one row per
+      call alone scored 52.0; with a different model checking and a no-model
+      fixer last, it scored 100.0. The other local pipeline scored 81.0,
+      with one wrong archive, two open items lost, and one invented row when the file is scored again with the same
+      scorer. On a different job, reviewing a code change as one plain request with no tools, some of these models were
+      useful second reviewers: GLM-5.3-Flash and DeepSeek V4 Flash on their ordinary settings, and MiMo once its thinking was capped.</p>
+      <div class="nonaff">Independent measurements; no affiliation with any
+      model maker or tool named on this page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>The job, and how it was scored</h2>
+      <p>The job was real. A long status document had a table of 45 rows, one
+      per project. Each row had to be sorted as still live, finished with an
+      open item, or done. Kept rows had to be shortened to 300 characters or
+      fewer without losing an open item or a link. Done rows had to move to an
+      archive word for word. On our own reading only one row was done.</p>
+      <p>A script scored every attempt out of 100, then took points off:</p>
+      <ul class="plain">
+        <li>15 for each row wrongly archived (it still had open work);</li>
+        <li>5 for each missing row; 3 for each invented or mangled row;</li>
+        <li>2 for each row over 300 characters; 1.5 for each lost link;</li>
+        <li>1 for each row kept that should have gone; 0.5 for each open item
+        that could not be traced.</li>
+      </ul>
+      <p>So 100.0 means no penalty, and a score can fall below zero. To test the
+      scorer, we planted a bad draft. Thirteen defects were planted: 5 dropped
+      open items, 3 invented facts, 3 lost links, and 2 wrong archives. The
+      score 61.0 is 2 wrong archives, 2 invented rows, and 2 lost links. The 5
+      dropped open items did not change the score. One planted invented fact
+      and one planted lost link did not either. One
+      row can honestly be read two ways; several good drafts lost 15 points
+      there.</p>
+      <p>An <strong>agent</strong> is a model running inside a
+      <strong>harness</strong>: a program that lets it read files, run tools and
+      write files in a loop. OpenCode and Claude Code are two harnesses. A
+      <strong>step</strong> is one model reply inside that loop. A
+      call is one request sent to a model, and a
+      tool call is a request from the model to the harness to do
+      something, such as write a file. A token is a short piece
+      of a word; limits on a reply are counted in tokens.
+      <strong>Thinking</strong> is the hidden reasoning some models write before
+      their answer; on most local servers it can be switched on or off per
+      request.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>Local models as agents: none was reliable</h2>
+      <p>Each model got the same brief, a written set of instructions for the job, in
+      OpenCode, and was run once, on 9 and 10
+      October, except the Flash-Next repeat, Laguna's two attempts and the two GPT-OSS 120B runs, all noted under the table. For scale, cloud models (hosted ones) on the same job and the same
+      scorer, one run per row: Grok 4.7 at effort high through OpenCode 99.5,
+      a retry on the wrapped table (its first effort-high run wrote no file);
+      Claude Opus 5.5 through Claude Code at effort medium, 98.5; Claude Sonnet
+      5.5 at effort high, 98.0 through Claude Code and 96.5 through OpenCode; GLM 5.3 (hosted) through Mistral
+      Vibe 85.0 (stopped at its cap of 30 turns and $0.60 after writing a valid file) and 83.0 on
+      a retry capped at 60 turns and $3 (Vibe printed no cost; 254 seconds). That retry scored lower than
+      the capped run. GPT-6.1 Sol through Codex CLI at effort high, 84.5; Grok
+      4.7 at extra-high effort 84.0 (1,261 seconds); and GPT-5.6 Sol through
+      Codex CLI at effort high, 47.0 (151 seconds). The 83.0 retry's wrong
+      archive is the row that can be read two ways. Scoring that file also
+      gives one lost link and one untraceable open item, which is what makes
+      83.0 rather than 85. The 84.5 run has one untraceable open item besides
+      its wrong archive. The 84.0 run has two. The job note names the row for
+      the 83.0 retry.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Local model, setting</th><th>Seconds</th><th>Score</th><th>What went wrong</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.8-Flash-Next, default</td><td>1,217</td><td>74.0</td><td class="t">1 wrong archive, 2 lost links, 4 rows too long; the wrong archive is the row that can be read two ways</td></tr>
+          <tr><td class="t">same, repeat run</td><td>1,757</td><td>60.0</td><td class="t">2 wrong archives, 5 lost links, 1 row over length, 1 untraceable open item</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash, default</td><td>2,758</td><td>47.5</td><td class="t">3 wrong archives, 1 invented row, 2 rows over length, 1 untraceable open item</td></tr>
+          <tr><td class="t">Ornith-1.5-35B, thinking off</td><td>96</td><td>35.0</td><td class="t">32 rows over length, 1 row kept that should have gone; no wrong archive</td></tr>
+          <tr><td class="t">DeepSeek V4.1 Flash, thinking off</td><td>1,259</td><td>34.5</td><td class="t">32 rows over length, 3 untraceable open items; no wrong archive</td></tr>
+          <tr><td class="t">Qwen3.8-27B, thinking off</td><td>1,023</td><td>19.5</td><td class="t">1 wrong archive, 32 rows over length, 1 row kept that should have gone, 1 untraceable open item; mostly copied the originals</td></tr>
+          <tr><td class="t">Qwen3.5-122B, thinking off</td><td>757</td><td>7.0</td><td class="t">2 wrong archives, 31 rows over length, 1 row kept that should have gone; copied the originals</td></tr>
+          <tr><td class="t">Qwen3.6-27B, default</td><td>252</td><td class="neg">&minus;30.0</td><td class="t">4 wrong archives, 4 invented rows, 28 rows over length, 4 untraceable open items</td></tr>
+          <tr><td class="t">GPT-OSS 120B, high effort</td><td></td><td class="neg">&minus;45.5</td><td class="t">8 wrong archives, 6 lost links, 8 rows over length, 1 untraceable open item</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, default</td><td>126</td><td class="neg">&minus;51.5</td><td class="t">5 wrong archives, 2 invented rows, 4 lost links, 32 rows over length, 1 untraceable open item</td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B, default</td><td>430</td><td class="neg">&minus;62.5</td><td class="t">8 wrong archives, 1 invented row, 19 rows over length, 3 untraceable open items</td></tr>
+          <tr><td class="t">GLM-4.7-Flash, thinking off</td><td>124</td><td class="neg">&minus;347.5</td><td class="t">24 wrong archives (it archived 25 rows), 43 rows over length, 3 untraceable open items</td></tr>
+          <tr><td class="t">Qwen3.8-27B, thinking on (default)</td><td>590</td><td>no file</td><td class="t">spent its whole 32,000-token step thinking</td></tr>
+          <tr><td class="t">Ornith-1.5-35B, default</td><td>230</td><td>no file</td><td class="t">ended without writing its file</td></tr>
+          <tr><td class="t">Ling 3.0 Flash, thinking off</td><td>1,091</td><td>invalid</td><td class="t">its file was broken JSON, one brace short</td></tr>
+          <tr><td class="t">Laguna S 2.1</td><td>408, then 1,461</td><td>no file</td><td class="t">step limit too small (8,192 output tokens), then 32,000 tokens not enough</td></tr>
+          <tr><td class="t">Inkling-Small, reasoning effort set to none</td><td>2,102</td><td>no file</td><td class="t">malformed write call, then a wrong path; timed out</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">One row each, except the Flash-Next repeat and Laguna's two attempts in this
+      table. Flash-Next scored 74.0 and then 60.0 on an unchanged setup. This
+      pair differed by 14 points. The lab note called a gap of that size
+      run-to-run noise. It is one pair. GPT-OSS 120B ran twice. The scored run is high effort,
+      &minus;45.5; the score table leaves its seconds blank. A note made when
+      those two runs ended records 416 seconds for that file and 136 seconds
+      for a medium-effort run that wrote no file. The package's second GPT-OSS
+      row is that no-file run, with no seconds stored.</p>
+      <p>The failure had one shape. The job asks a model to read a big table,
+      judge every row, and write one big answer in a single tool call. Local
+      models either thought until the step ran out, copied the rows instead of
+      shortening them, or archived rows that still had open work.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>The same job, one row per call</h2>
+      <p>On 10 October we stopped asking for the whole job at once. A plain
+      script sent <strong>one row per call</strong> with the brief's rules,
+      checked that the reply was valid JSON (a structured text format) of the
+      right shape, and retried up to three times, telling the model exactly what
+      was wrong. A row that still failed fell back: the last parsed answer,
+      forced into the limits, or the original status cell, flagged. Two more steps followed:</p>
+      <ul class="plain">
+        <li><strong>A different model looks again.</strong> For each row
+        marked done, it is asked to quote any open item word for word. A verbatim quote turns the row back to open, and the model that wrote the
+        row redoes it.</li>
+        <li><strong>A no-model fixer finishes.</strong> It is ordinary code, with no
+        model in it. It restores a file path
+        that was cut short, trims at a word boundary, and appends the row's
+        record link.</li>
+      </ul>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Pipeline</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.6-35B-A3B, one row per call (about 29 minutes; 3 wrong archives, 1 mangled row)</td><td>52.0</td></tr>
+          <tr><td class="t">+ the same model looking again at its done rows (3 wrong archives, 1 mangled row)</td><td>52.0</td></tr>
+          <tr><td class="t">+ Qwen3.8-Flash-Next, thinking off, looking again instead (1 invented row, 1 mangled row, 1 lost link)</td><td>92.5</td></tr>
+          <tr><td class="t">+ the no-model fixer</td><td><strong>100.0</strong></td></tr>
+          <tr><td class="t">Qwen3.8-Flash-Next alone, one row per call, thinking off (12 of 45 rows fell back; 3 wrong archives, 2 invented rows, 3 lost links, 2 untraceable open items)</td><td>43.5</td></tr>
+          <tr><td class="t">+ the same model looking again (1 wrong archive, 2 invented rows, 3 lost links, 2 untraceable open items)</td><td>73.5</td></tr>
+          <tr><td class="t">+ the no-model fixer (still one wrong archive and two open items lost. The job note's breakdown sums to 84. Scoring that file also finds one invented row (&minus;3), which is what lands on 81.0. The job note does not name that class.)</td><td>81.0</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">On the 43.5 and 73.5 rows, the wrong archives are
+      in each run's result file. The invented rows, lost links and
+      untraceable open items are what the score table records; the job note
+      does not name those classes.</p>
+      <p>The 100.0 run kept 44 rows, archived only the one done row, lost no
+      link and had no row over length; kept rows averaged 240.3 characters in the job log, and 240 in the job's summary table. Qwen3.6-35B-A3B, asked to look again at its own rows, found nothing
+      new. Qwen3.8-Flash-Next, asked to look again at its own rows, moved
+      43.5 to 73.5. In the first pipeline, a different model found the
+      wrong archives. Its file still had one invented row, one mangled row
+      and one lost link (92.5). The no-model fixer cleared those. Qwen3.6-35B-A3B had scored &minus;51.5 as an agent on the same
+      job.</p>
+      <p><strong>Where the limits are.</strong> Two earlier fixer versions were
+      voided on 2026-10-10 because they changed valid rows. Those voided runs
+      scored 95.5 and 100.0. The published 100.0 is a later re-run of the
+      fixer. The limits of this result are in the section
+      "What this does not show".</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>Local models as second-opinion reviewers</h2>
+      <p>From 10 to 12 October, local models reviewed real code changes beside
+      frontier reviewers, which are large hosted models. Each local model got the
+      same material and question as a plain request, with no tools, and we
+      compared the findings afterwards. Each
+      line is one run on one job.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Job</th><th>Local model</th><th>Found</th><th>Minutes</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Security change, 108 KB diff; 8 items on a union of two frontier reviews (they disagree on severity)</td><td class="t">GLM-5.3-Flash</td><td>5 of 8</td><td>39</td><td class="t">2 real extras; also called one high-severity item sound (one false pass)</td></tr>
+          <tr><td class="t"></td><td class="t">DeepSeek V4 Flash</td><td>4 of 8</td><td>26</td><td class="t">1 real extra, 1 false alarm</td></tr>
+          <tr><td class="t"></td><td class="t">Qwen3.8-27B, thinking on</td><td>3 of 8</td><td>14</td><td class="t">said "No code changes required"; two false passes on the high-severity items; its verdict matched</td></tr>
+          <tr><td class="t"></td><td class="t">Gemma 4 31B, thinking on</td><td>2 of 8</td><td>83 seconds (lane log minute field: 1 minute)</td><td class="t">Verdict matched. The reasons called the high-severity areas sound (two false passes).</td></tr>
+          <tr><td class="t">Four-file change; 4 known findings</td><td class="t">GLM-5.3-Flash</td><td>4 of 4</td><td>8</td><td class="t">the log credits it with the best calibration of the four</td></tr>
+          <tr><td class="t"></td><td class="t">MiniMax M3</td><td>3 of 4</td><td>12</td><td class="t">one arithmetic slip</td></tr>
+          <tr><td class="t"></td><td class="t">DeepSeek V4 Flash</td><td>2 of 4</td><td>7</td><td class="t">over-rated one item</td></tr>
+          <tr><td class="t"></td><td class="t">MiniMax M2.7</td><td>0 of 4 in the prose; the structured counter says 3 misses</td><td>3</td><td class="t">called it sound, wrongly</td></tr>
+          <tr><td class="t">Diff of a tool, 76 KB packet</td><td class="t">GLM-5.3-Flash</td><td>3 extras</td><td>33</td><td class="t">2 serious defects a frontier read had missed, and missed one item the frontier read had listed</td></tr>
+          <tr><td class="t"></td><td class="t">DeepSeek V4 Flash</td><td>3 extras</td><td>16</td><td class="t">missed the most serious one; the log counter says 1 miss; the same entry's prose also names a second miss</td></tr>
+          <tr><td class="t">Diff of a tool, 89 KB packet</td><td class="t">GLM-5.3-Flash</td><td>3 extras</td><td>39</td><td class="t">no false alarm</td></tr>
+          <tr><td class="t"></td><td class="t">DeepSeek V4 Flash</td><td>1 extra</td><td>35</td><td class="t">led with the right defect</td></tr>
+          <tr><td class="t"></td><td class="t">DeepSeek V4.1 Flash, thinking on</td><td>no answer</td><td>56 (the log's minute field; the same entry's prose says 54 minutes)</td><td class="t">all 32,000 tokens spent thinking</td></tr>
+          <tr><td class="t">Review packet, about 25,000 tokens; 7 reference defects</td><td class="t">MiMo-V2.6-Flash-RL, thinking capped</td><td>7 of 7</td><td>24</td><td class="t">0 false findings</td></tr>
+          <tr><td class="t"></td><td class="t">Laguna S 2.1</td><td>3 of 7 reference defects</td><td>88 seconds (lane log minute field and the data file: 2 minutes)</td><td class="t">2 false findings; the log also says 4 true findings and 2 false, and reference defect R3 is in neither its found nor its missed list</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">"Extras" are real defects the local model found that
+      the frontier read of the same diff had not listed. A diff is a listing of the lines a change adds and removes. On the security
+      change the frontier reviewers could also read the code base and the locals
+      saw only the diff, so that row is not like for like. One frontier review recorded two
+      high-severity items. The other recorded none. The found-counts include
+      partial matches, scored by the author. None of the four local reviews
+      matched either high-severity item in full. Locals saw the diff only;
+      those items turn on code outside the diff. Three other reviews logged
+      on 10 October are left out because their jobs are private: one with 1
+      extra find, 1 miss and 1 false alarm in 8 minutes; one with 1 false pass
+      and no misses in 39 seconds (the log's minute field: 1); and one with 1
+      miss and 1 false alarm in 32 minutes.</p>
+      <p>Two models stood out as reviewers: GLM-5.3-Flash and DeepSeek V4
+      Flash. MiMo-V2.6-Flash-RL matched every reference defect (the defects already known
+      from the other reviews) once its thinking was capped. The weak runs were not merely incomplete. One gave a confident
+      all-clear (MiniMax M2.7), and on the security change Qwen3.8-27B said "No
+      code changes required" although its overall verdict matched. A reader
+      who trusted either answer alone would have acted on it.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>What each model needed</h2>
+      <ul class="plain">
+        <li><strong>Qwen3.8-27B: thinking off, in an agent harness.</strong>
+        OpenCode asks for at most 32,000 output tokens per step. With thinking
+        on, the model spent a whole step thinking and made no edit, in three
+        runs across two jobs: two coder runs, and the 590-second trim-job run
+        in section 02.
+        The switch is one request field,
+        <code>chat_template_kwargs: {"enable_thinking": false}</code>, plus the
+        sampling settings for its non-thinking mode (temperature 0.7, top_p 0.8,
+        top_k 20). Sampling settings control how varied the model's choice of
+        words is. With
+        those it fixed both of two real defects, and the test suite passed 53
+        of 53 checks. A review of that diff found defects the tests did not
+        catch. A second round fixed five findings; the suite then passed 70 of
+        70. The note of that test says 20 minutes (102 steps, 34 edits). The
+        second round's note says 24 minutes. No separate run timer is
+        recorded.</li>
+        <li><strong>Qwen3.8-Flash-Next as a checker: thinking off.</strong> One
+        checking call ran past 10 minutes with no answer. With the same switch
+        it took 6 to 30 seconds.</li>
+        <li><strong>MiMo-V2.6-Flash-RL: a thinking budget.</strong> With no cap it
+        thought through all 24,000 tokens it was given and wrote nothing. A thinking budget is a cap on how many tokens the model may spend thinking.
+        With the server capping thinking at 14,000 tokens
+        (<code>--reasoning-budget 14000</code>), out of 24,000 asked for in total,
+        it wrote the 7-of-7 review above.</li>
+        <li><strong>Claude Code: a system shim.</strong> A shim is a small program
+        placed between two others to translate between them. Claude Code sends a
+        system message (standing instructions for the model) inside the message
+        list. The local server's chat template, the fixed format in which it
+        expects messages, refused it with HTTP 500, "System message must be at the
+        beginning". A small proxy that moves that message to the top-level
+        system field fixed it: Claude Code then wrote a one-file task in 2
+        turns, 39 seconds, on Qwen3.8-Flash-Next. It wrote one tiny file, not
+        the document job.</li>
+        <li><strong>Gemma 4 31B and 26B-A4B: thinking on, switched on in the
+        request itself.</strong>
+        The Gemmas did not think until the request sent the switch.
+        With thinking on, Gemma 4 31B fixed three of three defects on its first
+        answer. With thinking off, Gemma 4 31B solved two of three eventually,
+        and one of three on the first answer. The third was not solved. With
+        thinking off, Gemma 4 26B-A4B solved one of three.</li>
+        <li><strong>GLM-5.3-Flash has no thinking-off.</strong> Its effort
+        setting, which sets how much it thinks, takes only low, high or max.</li>
+      </ul>
+      <h3>Harness limits that changed the run</h3>
+      <ul class="plain">
+        <li>OpenCode's read tool cuts any line over 2,000 characters. Nine of
+        the 45 rows were longer. A cloud agent spent 214 tool calls recovering
+        the cut text and timed out. A copy with the long lines wrapped, at most 1,500 characters a
+        line, fixed it.</li>
+        <li>OpenCode sends no sampling settings, so a local model runs on
+        whatever its server was started with.</li>
+        <li>A per-step output limit can be smaller than the answer. The OpenCode
+        config capped Laguna S 2.1 at 8,192 output tokens. Raising that setting
+        to 32,768 still hit the harness maximum of 32,000, and the answer was
+        still unfinished. The other writers' answers needed about 14,000
+        output tokens.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>Fixing a defect that is already found</h2>
+      <p>Finding defects is the hard half. Fixing one from a precise finding is
+      easier. Three real findings from past code reviews were given to local
+      models with the source file and no tools. A harness then put the model's answer into the code, ran the tests and, if
+      they failed, showed the model the test output once.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Fixes solved (of 3)</th><th>Needed the one retry</th><th>Time per fix</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Claude Sonnet 5.5 (hosted, for scale; effort high, no tools)</td><td>3</td><td>0</td><td>9 to 31 s</td></tr>
+          <tr><td class="t">Gemma 4 31B, thinking on</td><td>3</td><td>0</td><td>95 to 131 s</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking on, 64,000 tokens</td><td>3</td><td>1</td><td>58 to 115 s</td></tr>
+          <tr><td class="t">Qwen3.8-27B, thinking on, 64,000 tokens</td><td>3</td><td>1</td><td>147 to 306 s</td></tr>
+          <tr><td class="t">Ornith-1.5-35B, thinking on, 64,000 tokens</td><td>3</td><td>1</td><td>50 to 437 s</td></tr>
+          <tr><td class="t">Gemma 4 26B-A4B, thinking on</td><td>2</td><td>1</td><td>65 to 134 s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Ornith's one retry was needed because its otherwise complete answer lacked a
+      closing code fence (the marker that ends a block of code). Read leniently,
+      it solved all three on the first try. Times include the retry where there
+      was one. No sampling fields were sent. The Gemmas did not think until
+      the request sent the switch (a first pass without it got 0 reasoning
+      characters). These were three small tasks in two files, with the diagnosis given.
+      The third task edits two functions.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>What this does not show</h2>
+      <p>Most figures here are one run of one model on one job. Repeats and
+      retries are named where they happen, for example: the Flash-Next
+      repeat, the two GPT-OSS runs, Laguna's two attempts, Grok's first
+      effort-high run and its retry, and the two Vibe runs at 85.0 and 83.0
+      (section 02); the two voided fixer runs and the later re-run (section
+      03); and three Qwen3.8-27B thinking-on runs across two jobs (section
+      05). The scoring
+      weights are ours. The checker and the fixer in the one-row-per-call setup
+      were built after we saw which rows failed, so that setup was tuned on the
+      table it scored. So 100.0 means "works on this table". It has not been
+      tried on a second job. 100.0 means no mechanical penalty. It is not a
+      prose grade. Seven shortened rows were read: usable, sometimes
+      choppy. On the security change, local reviewers saw the diff only. On the
+      tool diffs, the comparison was the same diff. Nothing here rules a model out; a model that did badly on
+      one job has only not been shown to do well.</p>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>What to set, if you try this</h2>
+      <ul class="plain">
+        <li>Split a long job into one item per call, from a script. Validate
+        each reply and retry with the exact complaint.</li>
+        <li>Have a different model check, and ask it to quote evidence, not
+        to give a verdict.</li>
+        <li>End with a deterministic fixer, plain code with no model, for the
+        mechanical slips.</li>
+        <li>Switch thinking off for small per-item calls. Cap it for long
+        reviews. Send the switch in the request itself; do not trust the server
+        default.</li>
+        <li>Check your harness: line limits on reads, per-step output caps, and
+        whether it sends sampling settings at all.</li>
+        <li>Treat a local "all clear" as not yet an all clear. Treat a local
+        alarm as a lead to check.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>Model list as of 2026-10-25</h2>
+      <p>One desktop with an RTX 5090 graphics card (32 GB) and 188 GiB of RAM. The
+      models ran on llama.cpp, a program that runs models on your own computer,
+      with one model loaded at a time. The table below is our model list as of
+      2026-10-25, not a file name recorded on each run:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Model list as of 2026-10-25, not a file name recorded on each run</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Qwen3.6-35B-A3B</td><td class="t">Unsloth UD-Q6_K, 29.3 GB</td></tr>
+          <tr><td class="t">Qwen3.8-27B</td><td class="t">UD-Q5_K_XL (the list's later serving changes came after these runs)</td></tr>
+          <tr><td class="t">Ornith-1.5-35B</td><td class="t">Q6_K, 27.2 GiB</td></tr>
+          <tr><td class="t">GLM-5.3-Flash</td><td class="t">UD-Q3_K_XL, 137.4 GiB</td></tr>
+          <tr><td class="t">MiMo-V2.6-Flash-RL</td><td class="t">MXFP4, 167 GB</td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B</td><td class="t">UD-IQ3_XXS</td></tr>
+          <tr><td class="t">GPT-OSS 120B</td><td class="t">Unsloth F16, 65.4 GB. The note kept with that run names an F16 file. The 65.4 GB figure is the model list's size, written later. The score table does not name the file. That copy was deleted on 11 October and restored on 15 October.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">GLM-5.3-Flash's 10 October security review and the
+      01:01 four-file review used the previous build. The testing log marks
+      the 06:51 review on 11 October as the first on the later build. The
+      file name was not recorded on each run. A quantization (Q6_K, Q3_K_XL and so on) is a
+      smaller copy of the model's weights (the numbers that make up the model),
+      made by storing them less precisely. Names like Q6_K and Q3_K_XL use a
+      lower number for a smaller file. MXFP4 is a different scheme. Other
+      models on this page have no file line here; we do not guess one.
+      DeepSeek V4 Flash and Qwen3.8-Flash-Next changed files and builds
+      around these dates, and the job records do not say which file each run
+      used, so they are not listed. Harness versions: OpenCode 1.18.35 and
+      Claude Code 2.1.296.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>Related pages on this site</h2>
+      <p><a href="../companion-audition/">Auditioning a model for a companion
+      role</a> reaches the same conclusion in another field: plain checks with
+      known answers beat open-ended judging.
+      <a href="../glm53-flash/">GLM-5.3-Flash</a>,
+      <a href="../deepseek-v4-flash/">DeepSeek V4 Flash</a> and
+      <a href="../qwen38-27b/">Qwen3.8-27B</a> have their own field cards.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Sources and artifacts</h2>
+      <p>The data package (<a href="data/README.md">data/</a>) holds the score of every
+      run the job log reports, with its penalty counts, including the two
+      voided fixer runs and the runs that wrote no file, the review uses with their counts, and the
+      fix test. It holds no model output and no part of the status document,
+      which is private. <code>data/README.md</code> maps every file and
+      <code>data/NUMBERS.md</code> maps every figure on this page to its file.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Claude, Claude Code,
+    Opus and Sonnet are marks of Anthropic; Grok is a mark of xAI; GPT, GPT-OSS and
+    Codex are marks of OpenAI; Mistral and Mistral Vibe are marks of Mistral AI; Qwen is a mark of Alibaba Group Holding Limited; DeepSeek is
+    a mark of DeepSeek; GLM is a mark of Z.ai (Zhipu AI); Gemma is a mark of
+    Google; MiMo is a mark of Xiaomi; MiniMax is a mark of MiniMax; Ling is a
+    mark of inclusionAI (Ant Group); Inkling is a mark of Thinking Machines;
+    Ornith is a mark of ornith-ai; OpenCode is a project of its authors;
+    llama.cpp is a project of ggml-org and its contributors; Unsloth is a mark of
+    its owner; each other model named is a mark of its maker. All are referenced
+    for identification only. Not affiliated with, endorsed by, or sponsored by
+    any of them or their affiliates. Product names and marks belong to their
+    respective owners. This site is static. No scripts, no tracking, no
+    cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

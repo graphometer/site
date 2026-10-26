@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>October field notes: nine faults and traps on one RTX 5090 desktop</title>
+<meta name="description" content="Nine faults and traps on one RTX 5090 desktop, 19 September to 23 October 2026, each with its check. Five GPU timeout faults in the first week on NVIDIA's 595 driver, none in six boots on 580. A knowledge-base search that failed with no error. A converter that would have held about 289 GB in memory, on a machine with 188 GiB of RAM.">
+<link rel="canonical" href="https://graphometer.ai/field-notes-2026-10/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="October field notes: nine faults and traps on one RTX 5090 desktop">
+<meta property="og:description" content="Nine faults and traps on one RTX 5090 desktop, 19 September to 23 October 2026, each with its check. Five GPU timeout faults in the first week on NVIDIA's 595 driver, none in six boots on 580. A knowledge-base search that failed with no error. A converter that would have held about 289 GB in memory, on a machine with 188 GiB of RAM.">
+<meta property="og:url" content="https://graphometer.ai/field-notes-2026-10/">
+<meta property="og:image" content="https://graphometer.ai/og/field-notes-2026-10.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="October field notes: nine faults and traps on one RTX 5090 desktop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="October field notes: nine faults and traps on one RTX 5090 desktop">
+<meta name="twitter:description" content="Nine faults and traps on one RTX 5090 desktop, 19 September to 23 October 2026, each with its check. Five GPU timeout faults in the first week on NVIDIA's 595 driver, none in six boots on 580. A knowledge-base search that failed with no error. A converter that would have held about 289 GB in memory, on a machine with 188 GiB of RAM.">
+<meta name="twitter:image" content="https://graphometer.ai/og/field-notes-2026-10.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:40px;height:40px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.sub{margin-top:14px;max-width:60ch;color:var(--ink);font-size:1.0625rem;font-weight:600}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:1.0625rem;font-weight:650;margin:26px 0 10px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:11rem}
+  .facts td{color:var(--ink)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Field notes &middot; 19 September to 23 October 2026, kernel log read 25 October &middot; one RTX 5090 desktop &middot; llama.cpp and Open WebUI &middot; nine entries</div>
+      <h1><em>October</em> field notes</h1>
+      <p class="sub">Nine faults and traps on one RTX 5090 desktop, each with what it cost and the one-line check. The first entry is five GPU timeout faults in the first week on NVIDIA's 595 driver, against none in six boots on driver 580.</p>
+      <p class="lead">This page is for anyone who runs AI models on their own machine and wants to avoid mistakes we already made. Each entry is something that went wrong on our desktop between 19 September and 23 October 2026, four of them from September. It says what the problem cost, how we caught it, and the one check that would have caught it sooner. The first entry matters most if you upgraded your NVIDIA driver this autumn. After we moved to the 595 driver, the graphics card timed out five times: twice while a test server was stopping, and three times inside Gemma 4 31B fine-tunes.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to any maker or project named on this page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>Five GPU timeout faults since the 595 driver</h2>
+      <p><strong>What happened.</strong> Five times, the kernel log (the operating system's own log) recorded an Xid 8 (NVIDIA's error code for this fault). The driver's watchdog, a timer that checks the card is still responding, decided the card was stuck
+      (<code>GPU is probably locked! Notify Timeout Seconds: 7</code>) and
+      reset the work in progress. A driver is the software that lets the operating system use the card. Each line names the program whose work was
+      reset.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>When</th><th>Work that was reset</th><th>What was running</th></tr></thead>
+        <tbody>
+          <tr><td>2026-10-19 19:19:30</td><td class="t">a desktop app</td><td class="t">A Qwen3.8-27B test server (UD-Q5_K_XL; a 196,608-token context window, which is how many tokens the server will hold; an 8-bit cache (a shorter way to store the conversation so far); a draft model (a small second model that guesses ahead) plus n-gram drafting (guesses drawn from phrases already in the text); micro-batch <code>-ub 512</code>, which is how many tokens it handles at once; the run is named thinkON; card peak 29,977 MiB during the run; MiB and GiB are binary megabytes and gigabytes, so that is about 29.3 GiB) was stopping. Its run record logs the stop at 19:19:30.</td></tr>
+          <tr><td>2026-10-19 19:23:42</td><td class="t">the desktop's compositor, which draws the screen</td><td class="t">The next test server (the same file, 8-bit cache and draft setup, 229,376 window, <code>-ub 256</code>, run named thinkON; card peak 30,647 MiB during the run) was stopping; its record logs the stop at 19:23:44. Our operator note records that the screen froze when the compositor's work was reset. The boot ended at 19:41:05 and the next began at 19:41:44; that this restart was forced is also from the operator note.</td></tr>
+          <tr><td>2026-10-21 18:05:18</td><td class="t">llama-server</td><td class="t">Artemis-31B v1.2 (TheDrummer), a Gemma 4 31B fine-tune (a version of the model that someone retrained), Q5_K_M. Its last request before the fault stopped at 114,792 tokens. The server died with <code>CUDA error: the launch timed out and was terminated</code>.</td></tr>
+          <tr><td>2026-10-21 18:12:00</td><td class="t">llama-server</td><td class="t">The same fine-tune on a newer llama.cpp build. Its last request before the fault stopped at 115,805 tokens. Same error.</td></tr>
+          <tr><td>2026-10-21 21:21:37</td><td class="t">llama-server</td><td class="t">Aura 4o Rebirth, another Gemma 4 31B fine-tune. Its last request before the fault stopped at 113,568 tokens. Same error.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><strong>Before and after.</strong> The kernel journal on this machine
+      reaches back to 12 October. A boot is one start of the machine. Six boots on driver 580.173.02, from 12
+      October to 18 October 11:47, logged no Xid line. Driver 595.104.02
+      loaded at 11:48:03 on 18 October. The faults came in two of the eight
+      boots since. None has been logged after 21 October 21:21, through the
+      journal's last line, 25 October 02:03. In that time the same machine read
+      239,533 tokens on Ornith-1.5-122B and 206,883 on Hemmingway-1 without a
+      fault. On two later starts, Aura 4o Rebirth read prompts of 80,062 and
+      113,205 tokens, plus later prompts, the longest of those 7,419 tokens (44 prompt-eval lines in all, one per prompt read: 20 and 24), with no CUDA line in those files.</p>
+      <p><strong>What it cost.</strong> A restart at 19:41, which our operator
+      note calls a frozen screen and a forced restart. Three crashed test servers, and the runs they were in the
+      middle of.</p>
+      <p><strong>What we do not know.</strong> The cause. Two faults came while a
+      test server that had peaked at 29,977 and 30,647 MiB of the card was stopping. Three came
+      inside Gemma 4 31B fine-tunes, whose last requests stopped at 114,792, 115,805 and 113,568 tokens. Five events show a pattern. They do not show a mechanism.</p>
+      <p><strong>The check.</strong> After a restart like that one, read the kernel log
+      of the boot before this one, because each restart starts a new
+      log:</p>
+      <pre class="log">journalctl -b -1 -k | grep -E 'NVRM|Xid'
+journalctl --list-boots</pre>
+      <p>The first line reads the previous boot's kernel log and keeps only lines that mention NVRM or Xid. The second line maps boot numbers to dates, so you can count faults per driver version.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>A knowledge base whose meaning search failed with no error</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>A knowledge base in Open WebUI (a self-hosted chat interface) is a set of documents the model can search. Each passage is stored as a vector, a list of numbers made by an embedding model. To search, the instance turns the question into a vector with its current embedding model and looks for close matches. On 18 October, four knowledge bases on three of our Open WebUI 0.12.3 instances held vectors of the wrong length for the model now asking: 768 numbers where bge-m3 makes 1,024 (two bases), and 384 where nomic-embed-text makes 768 (two bases). Vectors of different lengths cannot be compared. Meaning search on those bases failed with no error. Keyword matches still came back, except on the one instance where hybrid search (meaning and keywords together) was off.</td></tr>
+        <tr><th scope="row">What it cost</th><td>Answers that should have drawn on those knowledge bases by meaning went without it, for as long as the mismatch had stood. We do not know when it began.</td></tr>
+        <tr><th scope="row">How it was caught</th><td>An audit read the vector sizes from copies of each instance's vector store. The bases were rebuilt on 20 October through Open WebUI's own re-index function, which makes the vectors again.</td></tr>
+        <tr><th scope="row">The check</th><td>On a copy of <code>data/vector_db/chroma.sqlite3</code>, run <code>select name, dimension from collections;</code> The dimension is the vector length. Every knowledge base's dimension should equal your embedding model's output size.</td></tr>
+        <tr><th scope="row">A second trap</th><td>When you copy a stopped instance's <code>webui.db</code> to inspect it, copy <code>webui.db-wal</code> and <code>webui.db-shm</code> with it. The WAL (write-ahead log) file holds recent writes that the main file does not yet have. The database alone looks out of date.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>A downloaded shard with the wrong hash</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On 17 October, part 3 of 5 of Beam 1.0's UD-IQ2_M file failed its check. A model file is split into parts like this, called shards. The fetch script's note records that the <code>hf</code> tool's default transfer path produced a bad part 3 twice, with a sha256 (a fingerprint of the file's contents) that did not match the published hash (the published hash begins <code>7478bfa7</code>), and that the tool hung at the end of the transfer.</td></tr>
+        <tr><th scope="row">What it cost</th><td>Two downloads of one shard, by that note. Beam is now served from the UD-Q2_K_XL file instead (see the October roster).</td></tr>
+        <tr><th scope="row">How it was caught</th><td>The fetch script compared the shard's sha256 with the published value before the file was used.</td></tr>
+        <tr><th scope="row">The check</th><td>Hash every shard and compare it with the repository's LFS sha256 (the hash the model repository publishes for each large file) before loading. A file of the right size can still be wrong. Our third attempt turned off the default transfer path (<code>HF_HUB_DISABLE_XET=1</code>), downloaded into a scratch folder, and moved the file into place only if the hash matched.</td></tr>
+        <tr><th scope="row">A related trap</th><td>In one download round the same week, the <code>hf</code> tool printed a warning that it was ignoring <code>--include</code>, the option that selects files by pattern, because file names had also been given. It fetched only the named files. Use one pattern per <code>--include</code>, give no bare file names, and check the folder's size afterwards.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>A half-finished download that reports itself as mostly done</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>The <code>hf</code> tool sets aside the full size of each file before the data arrives. Those partial files are sparse: they claim their full length, but most of it is holes that hold no data yet. <code>du -sb</code> reports the apparent size, holes included, so a download looked far more complete than it was. In the same download the tool exited with an error on a temporary server fault partway through.</td></tr>
+        <tr><th scope="row">What it cost</th><td>Wrong progress figures and wrong time estimates on a large download. It was recorded in the download staged on 19 and 20 September. It belongs with the download entry above and was missing from last month's page.</td></tr>
+        <tr><th scope="row">The check</th><td>Measure real blocks (the disk space actually used) with <code>du -sB1</code>, not <code>du -sb</code>. At the end, check the shard count and the exact byte count of each shard against the repository's list, not the tool's exit code. Wrap the tool in a retry loop, because it resumes from its partial files.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>A converter that would have held about 289 GB in memory</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On 18 October we converted DeepSeek V4.1-Flash-1017 to a GGUF file (the single-file format llama.cpp loads) with the conversion script that ships with the community port we run it on. A port is a community-modified version of llama.cpp. The script builds each layer's routed experts as one stacked array and keeps them in memory until it writes the file. The gate and up arrays here are shaped 5,120 by 2,304 by 384, and the down arrays 2,304 by 5,120 by 384: the same number of weights, about 2.4 GB each once packed to MXFP4, a compressed number format (arithmetic: weights times 4.25 bits). The finished file holds 120 of them, so the script would have held about 289 GB (268.9 GiB) of arrays on a machine with 188 GiB of RAM.</td></tr>
+        <tr><th scope="row">What it cost</th><td>The first attempt ran 90 seconds, through 10 of the 120 arrays (the operator note counted 9; the log has 10 repack lines, and the page uses 10), and ended with exit code 143, a terminate signal. Our operator note says it was stopped by hand before the machine ran out of memory. Nothing had been written.</td></tr>
+        <tr><th scope="row">The fix</th><td>A copy of the converter, changed to build the same array one expert at a time as it writes. We ran it inside a systemd scope (a Linux way to put a memory limit on a job), so that a memory limit could stop the job and not the desktop. It ran from 00:41:36 to 03:29:07, 2 hours 47 minutes. The output matched the earlier V4.1 file's layout: 11 files, 1,012 tensors (the arrays of weights), 501.80 GB, with no tensor differing in shape, type or size. Two metadata keys differ: the name field became <code>Source</code>, and the chat template's new value is <code>None</code>.</td></tr>
+        <tr><th scope="row">The check</th><td>Before converting a very large model, multiply the size of its biggest per-layer tensor by the number of them and compare with your RAM. Run the job under a memory cap: <code>systemd-run --user --scope -p MemoryMax=64G -p MemorySwapMax=0 python convert.py ...</code> The second setting stops the job from spilling into swap instead of stopping.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>A reasoning setting that means the opposite of what it says</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>GLM-5.3-Flash's own chat template (the text pattern that turns a conversation into the model's input) accepts two reasoning-effort words, <code>low</code> and <code>high</code>. Reasoning effort is how much hidden thinking a model does before it answers. Any other word, including <code>none</code> and <code>medium</code>, becomes <code>max</code>, its slowest mode. Our September runs asked for <code>none</code> and got maximum effort. This template line turns every effort word other than <code>low</code> and <code>high</code> into <code>max</code>.</td></tr>
+        <tr><th scope="row">What it cost</th><td>A September field card describes those runs as effort none. Reasoning tokens (the hidden thinking) also count against the reply's token limit. The same card reports a separate 40-prompt check on the shipped 262,144, <code>-ub 1024</code> setting that recorded 36 empty answers out of 40; the file behind that check does not record which effort word it sent, so that count is not the measured cost of the none mapping.</td></tr>
+        <tr><th scope="row">A related trap</th><td>MiMo-V2.6-Flash's server log shows a 24,000-token reply at 12.28 tokens a second, 32.6 minutes. Its start script's note says that without a reasoning cap the model spent all 24,000 tokens thinking and wrote no answer. The script now sets llama.cpp's <code>--reasoning-budget</code> flag, which caps the reasoning, to 14,000.</td></tr>
+        <tr><th scope="row">The check</th><td>Read the template before trusting a word: search the model's chat template for <code>reasoning_effort</code> and see which values it tests for. Give thinking models a reasoning cap, and a reply limit well above it.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>A saved conversation that failed after a restore on a server with a draft model</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>llama.cpp can save a conversation's cache to disk and load it back later. The cache is the model's memory of the conversation so far, so a long conversation does not have to be read again. On 29 September GLM-4.7 Full, served with a draft model (a small second model that guesses ahead to speed up the main one), loaded back 48,396 tokens in 0.93 seconds. The next request failed. The server log first reports that the tokens of sequence 0 had inconsistent sequence positions. Then the draft model's decode step, the step that writes the next tokens, failed at position 48,110, and then came "failed to process speculative batch".</td></tr>
+        <tr><th scope="row">For comparison</th><td>MiniMax M2.7, served with no draft model, loaded back 100,264 tokens the same evening and carried on normally. It is a different model with a different saved length, so it shows only that restores can work, not that the draft model is the cause.</td></tr>
+        <tr><th scope="row">What it cost</th><td>One failed measurement run. It would have been worse as a production shortcut.</td></tr>
+        <tr><th scope="row">The check</th><td>After restoring a saved cache, send one real next turn and read its answer before you rely on the restore. On a server with a draft model, treat a speculative-decode error as a failed restore until a later turn finishes.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>A smaller cache that makes the model slower</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>The cache holds what the model remembers of the conversation. Storing it in 8 or 4 bits (fewer bits per value) saves card memory. On Qwen3-235B's UD-Q3_K_XL file, 109,712 tokens deep on 29 September, it cost speed instead: a reply came out at 5.71 tokens a second with a 16-bit cache (at a 118,784-token context window), 4.24 with 8-bit and 2.86 with 4-bit (both at 131,072). Reading the prompt took the same time with all three, 640 to 649 tokens a second.</td></tr>
+        <tr><th scope="row">What it cost</th><td>This model had been served with the 8-bit cache until that day. On these single replies at different windows, the 8-bit cache was about a quarter slower (4.24 against 5.71). It was switched to 16-bit on 29 September.</td></tr>
+        <tr><th scope="row">The check</th><td>Measure a long reply at your real depth with each cache type before you accept the smaller one. The saving in memory is easy to see; the loss in speed only shows deep in a conversation.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>A first read longer than your client will wait, and one that finished and never answered</h2>
+      <p>The first time a server reads a long prompt, it must read all of it
+      before it can write the first word. On a large model that does not fit the card,
+      that can take longer than a client's timeout. DeepSeek V4.1-Flash-1017's server
+      also read expert weights from the drive during its read. A client is the program that sends requests to the server, and its timeout is how long it waits before giving up. These are the server's
+      own prompt times, each one request at a time:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model and file</th><th>Prompt, tokens</th><th>Read, t/s</th><th>Time to read</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td class="t">DeepSeek V3-0324, unsloth UD-IQ1_S</td><td>108,315</td><td>56.9</td><td>1,902.6 s (31.7 min)</td><td>2026-10-23</td></tr>
+          <tr><td class="t">DeepSeek R1-0528, unsloth UD-TQ1_0</td><td>108,315</td><td>100.9</td><td>1,073.7 s (17.9 min)</td><td>2026-10-23</td></tr>
+          <tr><td class="t">DeepSeek V4.1-Flash-1017, MXFP4</td><td>110,052</td><td>153.5</td><td>716.9 s (11.9 min)</td><td>2026-10-18</td></tr>
+          <tr><td class="t">Muse Spark Open 816B-A42B, UD-IQ1_S</td><td>106,469</td><td>155.0</td><td>686.9 s (11.4 min)</td><td>2026-10-21</td></tr>
+          <tr><td class="t">Mistral Large Instruct 2411, Q4_K_M</td><td>122,880</td><td>222.8</td><td>551.5 s to finish the read; the client timed out at 5,400.1 s with no finished reply</td><td>2026-10-21</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Minutes are arithmetic on the seconds. Mistral
+      Large Instruct 2411 is a different failure from the four long reads: its read finished at 551.5 seconds, inside the 5,400.1-second client timeout, and then no generation finished. The client's
+      5,400.1-second timeout comes from a hand-written note, because the client's own log
+      names a private folder; the server log shows the read finished and no generation
+      finished. Context windows: DeepSeek V3-0324 and R1-0528 were read at 114,688 tokens,
+      the other three at 131,072.</p>
+      <p><strong>What it cost.</strong> DeepSeek V3-0324's read alone is
+      longer than the 1,800.4 seconds at which a September turn through an agent
+      framework ended with no answer, recorded in our
+      <a href="../field-notes-2026-09/">September field notes</a>. An agent framework
+      is software that lets a model call tools in a loop.</p>
+      <p><strong>The check.</strong> Before you set a client timeout, time one
+      cold read of your real prompt length on the real server. Set the
+      timeout from the measurement, with room to spare, or keep the prompt
+      shorter. A timeout set from the read does not cover a server that
+      finishes the read and then never finishes a reply; watch for a reply
+      starting, not only for the read ending.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this page does not show</h2>
+      <p>These are single events on one desktop. None of them is a bug report
+      against any project: each is an interaction between a driver, a file, a
+      tool and our own scripts, and several of the mistakes were ours. The
+      GPU faults have no proven cause. The thread-pinning result from the
+      same weeks is on the <a href="../roster-2026-10/">October roster</a>,
+      because it changed most rows there.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <ul class="plain">
+        <li><a href="../roster-2026-10/">The roster, as of October 2026</a>:
+        every model on this desktop and its speed.</li>
+        <li><a href="../silent-settings/">Silent settings</a>: settings that
+        cost speed or correctness without an error.</li>
+        <li><a href="../field-notes-2026-09/">September field notes</a>: the
+        previous month's entries.</li>
+        <li><a href="../glm53-flash/">GLM-5.3-Flash</a>: the field card for
+        the model in entry 06.</li>
+        <li><a href="../method/">Method</a>: how figures are labelled.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and artifacts</h2>
+      <p>The data package holds the kernel log lines for the five faults, the
+      server lines around each crash, the run records for the two stops on 19
+      October, both conversion logs and the layout check, the fetch script
+      with its published hash, the slot-restore records, the cache-type
+      results, the timing lines for the long reads, and the template line for
+      the reasoning words. Machine names, account and disk names, paths and process
+      numbers are removed, and so is all reply text: the probe files keep only
+      counts, timings and pass or fail flags. The knowledge-base sizes ship as a short table with the
+      instance names withheld.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every file, where it
+        came from and what was removed.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
+        page mapped to its file and field.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with a file in
+      its package, the file is right and the page is wrong. Tell us at
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the
+      correction goes on the page with its date.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: NVIDIA, GeForce and RTX
+    are marks of NVIDIA Corporation; Open WebUI is a project of its
+    contributors; bge-m3 is a model of BAAI; nomic-embed-text is a model of
+    Nomic AI; Hugging Face and its hf tool are marks and projects of Hugging
+    Face, Inc.; DeepSeek is a mark of DeepSeek; GLM is a mark of Z.ai; MiMo is
+    a mark of Xiaomi; Qwen and Qwen3.8 are marks of Alibaba Group Holding
+    Limited; Gemma is a mark of Google LLC; MiniMax is a mark of MiniMax; Muse
+    Spark is a mark of Meta Platforms, Inc.; Mistral is a mark of Mistral AI;
+    Beam is a project or mark of Reflection AI; Ornith is a project or mark of
+    Ornith AI; Hemmingway-1 is a project of Altworld; Artemis-31B is a project of
+    TheDrummer; Aura 4o Rebirth is a community project; GPT-4o is a mark of OpenAI; Unsloth
+    publishes the community files named unsloth or UD-; llama.cpp is a project of
+    ggml-org and its contributors; systemd is a project of its contributors.
+    All are referenced for identification only. Not affiliated with, endorsed
+    by, or sponsored by any of them or their affiliates. Product names and
+    marks belong to their respective owners. This site is static. No scripts,
+    no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

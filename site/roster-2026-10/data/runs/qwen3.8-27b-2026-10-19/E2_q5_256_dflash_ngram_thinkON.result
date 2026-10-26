@@ -1,0 +1,14 @@
+[run] E2_q5_256_dflash_ngram_thinkON · depths=20000,100000 · RAM avail 160 GB · card 713 MiB · 2026-10-19 19:12:44
+  cmd: <REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Qwen3.8-27B-UD-Q5_K_XL.gguf --ctx-size 262144 --ubatch-size 256 --cache-type-k q8_0 --cache-type-v q8_0 --spec-type draft-dflash,ngram-mod --spec-draft-model <REDACTED_PATH>/Qwen3.8-27B-DFlash2-Q4_K_M.gguf --spec-draft-ngl 999 --spec-draft-n-max 7 --spec-draft-n-min 1 --host <LOCAL> --port <PORT> --alias qwen3.8-27b --jinja --parallel 1 --batch-size 2048 --n-gpu-layers 999 --threads 24 --threads-batch 24 --flash-attn on --timeout 3600 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0
+  healthy in 3 s · VRAM at load 31919 MiB
+  served: n_ctx_slot = 262144
+{"tag": "E2_q5_256_dflash_ngram_thinkON", "depth_target": 20000, "kind": "read", "prompt_n": 20103, "prompt_ms": 7561, "prefill_tps": 2658.8, "predicted_n": 122, "decode_tps": 106.24, "draft_n": 260, "draft_accepted": 92, "wall_s": 8.7, "code_in_answer": true, "code_anywhere": true, "answer_words": 1, "reasoning_chars": 413}
+{"tag": "E2_q5_256_dflash_ngram_thinkON", "depth_target": 20000, "kind": "prose", "prompt_n": 314, "prompt_ms": 377, "prefill_tps": 832.0, "predicted_n": 3500, "decode_tps": 189.26, "draft_n": 4957, "draft_accepted": 2838, "wall_s": 18.9, "code_in_answer": false, "code_anywhere": true, "answer_words": 0, "reasoning_chars": 10464}
+{"tag": "E2_q5_256_dflash_ngram_thinkON", "depth_target": 100000, "kind": "read", "prompt_n": 99870, "prompt_ms": 56107, "prefill_tps": 1780.0, "predicted_n": 82, "decode_tps": 99.87, "draft_n": 154, "draft_accepted": 60, "wall_s": 57.7, "code_in_answer": true, "code_anywhere": true, "answer_words": 1, "reasoning_chars": 298}
+{"tag": "E2_q5_256_dflash_ngram_thinkON", "depth_target": 100000, "kind": "prose", "prompt_n": 314, "prompt_ms": 530, "prefill_tps": 592.2, "predicted_n": 3500, "decode_tps": 143.68, "draft_n": 5056, "draft_accepted": 2861, "wall_s": 25.0, "code_in_answer": false, "code_anywhere": true, "answer_words": 0, "reasoning_chars": 10359}
+  probe rc=0 · peak VRAM: 32028 MiB
+  srv: 0.11.768.838 I slot print_timing: id  0 | task 0 | draft acceptance = 0.35385 (   92 accepted /   260 generated), mean len =  4.17
+  srv: 0.30.648.914 I slot print_timing: id  0 | task 44 | draft acceptance = 0.57252 ( 2838 accepted /  4957 generated), mean len =  5.30
+  srv: 1.28.405.895 I slot print_timing: id  0 | task 709 | draft acceptance = 0.38961 (   60 accepted /   154 generated), mean len =  3.73
+  srv: 1.53.357.574 I slot print_timing: id  0 | task 783 | draft acceptance = 0.56586 ( 2861 accepted /  5056 generated), mean len =  5.52
+  stopped · card 713 MiB · 19:14:42

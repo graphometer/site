@@ -1,0 +1,39 @@
+Thread placement of each pin-run server, from the 'healthy' line each run record printed after start (2026-09-29).
+cpus = the server process's Cpus_allowed_list; env = the OpenMP spin setting in the server's environment. Process ids removed.
+
+deepseek-v4-flash-iq3    24 threads  cpus 0-23 · threads now 54 · env none
+deepseek-v4-flash-iq3    8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+deepseek-v4-flash-q8     24 threads  cpus 0-23 · threads now 53 · env none
+deepseek-v4-flash-q8     8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+glm-4.7-full             24 threads  cpus 0-23 · threads now 54 · env none
+glm-4.7-full             8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+glm-5.3-flash            24 threads  cpus 0-23 · threads now 54 · env none
+glm-5.3-flash            8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+inkling-small            24 threads  cpus 0-23 · threads now 54 · env none
+inkling-small            8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+laguna-s-2.1             24 threads  cpus 0-23 · threads now 53 · env none
+laguna-s-2.1             8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+ling                     24 threads  cpus 0-23 · threads now 54 · env none
+ling                     8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+minimax-m2.7             24 threads  cpus 0-23 · threads now 54 · env none
+minimax-m2.7             8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+minimax-m3               24 threads  cpus 0-23 · threads now 54 · env none
+minimax-m3               8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+mistral-large-3          24 threads  cpus 0-23 · threads now 53 · env none
+mistral-large-3          8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+mistral-medium-3.5       24 threads  cpus 0-23 · threads now 53 · env none
+mistral-medium-3.5       8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+mistral-small-4          24 threads  cpus 0-23 · threads now 53 · env none
+mistral-small-4          8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+ornith-1.5-35b           24 threads  cpus 0-23 · threads now 53 · env none
+ornith-1.5-35b           8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+qwen3.5-122b             24 threads  cpus 0-23 · threads now 53 · env none
+qwen3.5-122b             8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+qwen3.5-397b             24 threads  cpus 0-23 · threads now 53 · env none
+qwen3.5-397b             8 P-cores   cpus 0-7 · threads now 37 · env GOMP_SPINCOUNT=10000000
+qwen3.8-flash-next       24 threads  cpus 0-23 · threads now 54 · env none
+qwen3.8-flash-next       8 P-cores   cpus 0-7 · threads now 38 · env GOMP_SPINCOUNT=10000000
+
+The pinned setting, as written into each launcher by the generator script (one line, quoted):
+  pcores) PIN=(taskset -c 0-7); THREADS=(--threads 8 --threads-batch 8); export GOMP_SPINCOUNT=10000000 ;;
+  all)    PIN=(); THREADS=(--threads 24 --threads-batch 24) ;;

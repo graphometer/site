@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three GPT-4o snapshots, counted against each other</title>
+<meta name="description" content="The May, August and November 2024 versions of GPT-4o answered the same 354 scripted conversations on 4 July 2026; 353 are used, 1,678 replies per snapshot, after one matched cut. November puts an em dash in 86% of its replies and asks 2.55 questions per reply. May 17% and 1.07; August 19% and 0.99.">
+<link rel="canonical" href="https://graphometer.ai/friends-of-4o/snapshots/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Three GPT-4o snapshots, counted against each other">
+<meta property="og:description" content="The May, August and November 2024 versions of GPT-4o answered the same 354 scripted conversations on 4 July 2026; 353 are used, 1,678 replies per snapshot, after one matched cut. November puts an em dash in 86% of its replies and asks 2.55 questions per reply. May 17% and 1.07; August 19% and 0.99.">
+<meta property="og:url" content="https://graphometer.ai/friends-of-4o/snapshots/">
+<meta property="og:image" content="https://graphometer.ai/og/friends-of-4o-snapshots.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Three GPT-4o snapshots, counted against each other">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Three GPT-4o snapshots, counted against each other">
+<meta name="twitter:description" content="The May, August and November 2024 versions of GPT-4o answered the same 354 scripted conversations on 4 July 2026; 353 are used, 1,678 replies per snapshot, after one matched cut. November puts an em dash in 86% of its replies and asks 2.55 questions per reply. May 17% and 1.07; August 19% and 0.99.">
+<meta name="twitter:image" content="https://graphometer.ai/og/friends-of-4o-snapshots.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#ffffff; --ink:#000000; --grey:#555555; --pale:#f2f2f2;
+    --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px}
+  a:hover{background:var(--ink); color:var(--paper); text-decoration:none}
+  .wrap{max-width:760px; margin:0 auto; padding:0 28px}
+
+  /* masthead: a black band */
+  .mast{background:var(--ink); color:var(--paper); padding:22px 0 26px}
+  .mast a{color:var(--paper); text-decoration-color:var(--paper)}
+  .mast a:hover{background:var(--paper); color:var(--ink)}
+  .mast .top{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px 20px;
+    font-family:var(--sans); font-size:14px; letter-spacing:.22em; text-transform:uppercase; font-weight:700}
+  .mast h1{font-family:var(--sans); font-weight:900; letter-spacing:-.035em; line-height:.95;
+    font-size:clamp(56px,13vw,124px); margin:34px 0 10px}
+  .mast h1 span{display:block; font-size:.4em; letter-spacing:-.01em; font-weight:800; margin-top:6px}
+  .mast .tag{font-family:var(--sans); font-weight:700; font-size:clamp(20px,3.4vw,28px); line-height:1.25;
+    letter-spacing:-.01em; max-width:30ch; margin-top:22px}
+  .mast .dates{margin-top:28px; font-family:var(--sans); font-size:14px; letter-spacing:.06em; text-transform:uppercase; font-weight:700}
+
+  /* lead */
+  .lead{padding:48px 0 0}
+  .lead p{font-size:clamp(21px,2.6vw,24px); line-height:1.5; max-width:34em}
+  .lead p + p{margin-top:18px}
+  .lead .by{font-family:var(--sans); font-weight:700; font-size:15px; letter-spacing:.08em; text-transform:uppercase; margin-top:26px}
+
+  /* contents */
+  nav.toc{margin:44px 0 0; padding:22px 0 0; border-top:3px solid var(--ink)}
+  nav.toc ol{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px 28px}
+  nav.toc li{font-family:var(--sans); font-weight:700; font-size:17px; line-height:1.3}
+  nav.toc li a{text-decoration:none; display:block; padding:4px 0}
+  nav.toc li a:hover{background:none; color:var(--ink); text-decoration:underline}
+  nav.toc .num{display:inline-block; width:2.2em; font-weight:900}
+  @media (max-width:560px){nav.toc ol{grid-template-columns:1fr}}
+
+  /* sections */
+  section{padding:60px 0 56px; border-top:3px solid var(--ink)}
+  section:first-of-type{border-top:0}
+  .num-big{font-family:var(--sans); font-weight:900; font-size:clamp(40px,7vw,64px); line-height:1; letter-spacing:-.04em}
+  h2{font-family:var(--sans); font-weight:900; letter-spacing:-.025em; line-height:1.05;
+    font-size:clamp(32px,5.6vw,50px); margin:10px 0 26px; max-width:18ch}
+  h3{font-family:var(--sans); font-weight:800; font-size:clamp(21px,3vw,25px); line-height:1.2; letter-spacing:-.01em; margin:38px 0 12px}
+  p{max-width:36em; margin:0 0 18px}
+  p:last-child{margin-bottom:0}
+  strong{font-weight:700}
+  code{font-family:var(--mono); font-size:.88em; background:var(--pale); padding:1px 5px; overflow-wrap:anywhere}
+  ul.plain,ol.plain{margin:0 0 18px 1.3em; max-width:34em}
+  ul.plain li,ol.plain li{margin-bottom:10px}
+  .small{font-size:16px; line-height:1.55; color:var(--grey)}
+  .small a{color:var(--ink)}
+
+  /* boxes */
+  .box{border:3px solid var(--ink); padding:22px 24px; margin:26px 0}
+  .box p{margin-bottom:12px}
+  .box .label{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:10px}
+  .quote{border-left:6px solid var(--ink); padding:4px 0 4px 22px; margin:26px 0; font-size:21px; line-height:1.5; max-width:34em}
+  .quote .who{display:block; font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:.12em; text-transform:uppercase; margin-top:10px}
+
+  /* tables */
+  .tw{overflow-x:auto; margin:26px 0; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:17px; line-height:1.45; min-width:520px}
+  th,td{border:2px solid var(--ink); padding:10px 12px; text-align:left; vertical-align:top}
+  th{font-family:var(--sans); font-weight:800; background:var(--ink); color:var(--paper); font-size:14px; letter-spacing:.06em; text-transform:uppercase}
+  th[scope=row]{background:var(--paper); color:var(--ink); font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:0; text-transform:none; width:34%}
+  td .n{font-family:var(--sans); font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase; border:1.5px solid var(--ink); padding:1px 6px; margin-left:4px; white-space:nowrap}
+  td.big{font-family:var(--sans); font-weight:900; font-size:22px; letter-spacing:-.01em}
+
+  /* doors */
+  .doors{display:grid; grid-template-columns:1fr; gap:0; margin:26px 0; border:3px solid var(--ink)}
+  .door{padding:22px 24px; border-top:3px solid var(--ink)}
+  .door:first-child{border-top:0}
+  .door .k{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:8px}
+  .door h3{margin:0 0 10px}
+  .door h3 a{text-decoration:none}
+  .door h3 a:hover{background:none; text-decoration:underline}
+  .door p{margin-bottom:10px}
+  .door .go{font-family:var(--sans); font-weight:800; font-size:16px}
+
+  /* project list */
+  .projects{list-style:none; margin:26px 0 0}
+  .projects li{border-top:2px solid var(--ink); padding:18px 0}
+  .projects li:last-child{border-bottom:2px solid var(--ink)}
+  .projects .name{font-family:var(--sans); font-weight:800; font-size:21px; letter-spacing:-.01em; display:block; margin-bottom:6px}
+  .projects .name a{text-decoration:none}
+  .projects .name a:hover{background:none; text-decoration:underline}
+  .projects p{margin:0}
+
+  /* footer */
+  footer{border-top:3px solid var(--ink); padding:40px 0 60px}
+  footer p{font-size:15px; line-height:1.55; color:var(--grey); max-width:44em; margin:0 0 12px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:18px; color:var(--ink); margin-bottom:14px}
+  footer .fc{display:flex; flex-wrap:wrap; gap:8px 28px; margin-bottom:22px; font-family:var(--sans); font-weight:700; font-size:17px}
+  footer .fc a{text-decoration-thickness:2px}
+  footer .back{font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.14em; text-transform:uppercase; margin-top:22px}
+
+  /* sub-page additions */
+  .mast h1.sub{font-size:clamp(40px,8.5vw,76px)}
+  .mast .crumb{font-family:var(--sans);font-weight:800;font-size:15px;letter-spacing:.2em;text-transform:uppercase;margin-top:30px}
+  .theme{font-family:var(--sans);font-weight:900;font-size:clamp(26px,4.4vw,38px);letter-spacing:-.02em;line-height:1.1;margin:0 0 8px}
+  article.pair{border-top:2px solid var(--ink);padding:30px 0 10px;margin-top:10px}
+  article.pair:first-of-type{border-top:0;padding-top:6px}
+  .pair h3{margin:0 0 10px;font-size:clamp(20px,2.8vw,23px)}
+  .pair .pid{font-family:var(--sans);font-weight:900;font-size:12px;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .prov{font-family:var(--sans);font-size:14px;line-height:1.5;color:var(--grey);margin:0 0 16px;max-width:44em}
+  .prov code{font-size:12.5px;background:none;padding:0;color:var(--grey)}
+  blockquote.q{margin:0 0 18px;max-width:38em;border-left:6px solid var(--ink);padding:6px 0 6px 20px}
+  blockquote.q.ask{border-left-color:var(--grey)}
+  blockquote.q .who{display:block;font-family:var(--sans);font-weight:800;font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px}
+  blockquote.q p{margin:0 0 12px;font-size:18px;line-height:1.55}
+  blockquote.q p:last-child{margin-bottom:0}
+  blockquote.q .h{display:block;font-family:var(--sans);font-weight:800;font-size:17px;margin:4px 0 8px}
+  blockquote.q .cut{display:block;font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin:10px 0}
+  blockquote.q ul{margin:0 0 12px 1.2em}
+  blockquote.q hr{border:0;border-top:2px solid var(--ink);width:4em;margin:14px 0}
+  blockquote.q .inner{display:block;padding-left:14px;border-left:2px solid var(--grey);margin:6px 0 10px}
+  blockquote.q .emoji{font-family:var(--sans)}
+  td.t{font-size:15px;line-height:1.4;min-width:12em}
+  td.r{text-align:right;font-family:var(--sans);font-weight:700;white-space:nowrap}
+  td.n{font-family:var(--mono);font-size:14px}
+
+  /* ---- design pass 2026-10-26: a wider stage, a folio column for the section numbers, display quotes ---- */
+  .wrap{max-width:900px}
+  .mast .top{border-bottom:2px solid var(--paper); padding-bottom:12px}
+  .mast h1{font-size:clamp(60px,14vw,150px); margin-top:40px}
+  .mast h1 span{font-size:.34em; max-width:30ch}
+  .lead{padding-top:56px}
+  .lead p{font-size:clamp(21px,2.6vw,25px)}
+  nav.toc{margin-top:52px; padding-top:26px}
+  nav.toc li{font-size:18px}
+  section{position:relative; padding:64px 0 60px}
+  .num-big{font-size:clamp(44px,7vw,72px)}
+  h2{font-size:clamp(34px,5.6vw,54px)}
+  @media (min-width:900px){
+    section{padding-left:150px}
+    section>.num-big{position:absolute; left:0; top:60px}
+    section>h2{margin-top:6px}
+  }
+  blockquote.q.reply{border-left-width:8px; padding:10px 0 10px 26px; margin-top:6px}
+  blockquote.q.reply p{font-size:20px; line-height:1.55}
+  blockquote.q.ask{border-left:0; padding-left:0; max-width:34em}
+  blockquote.q.ask p{font-family:var(--sans); font-size:17px; line-height:1.5; color:var(--grey)}
+  blockquote.q.ask .who{color:var(--grey)}
+  .pair h3{font-size:clamp(22px,3vw,27px); max-width:26em}
+  .prov{margin-bottom:18px}
+  .fig{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:0; border:3px solid var(--ink); margin:28px 0}
+  .fig>div{padding:18px 20px 20px; border-left:3px solid var(--ink)}
+  .fig>div:first-child{border-left:0}
+  .fig .n{font-family:var(--sans); font-weight:900; font-size:clamp(40px,5.5vw,58px); letter-spacing:-.04em; line-height:1; display:block}
+  .fig .n small{font-size:.5em; letter-spacing:-.02em}
+  .fig p{font-family:var(--sans); font-size:15px; line-height:1.4; margin:10px 0 0; max-width:none}
+  @media (max-width:560px){.fig>div{border-left:0; border-top:3px solid var(--ink)} .fig>div:first-child{border-top:0}}
+  .display{margin:56px 0 0; padding:0; border:0; max-width:none}
+  .display p{font-family:var(--sans); font-weight:900; font-size:clamp(36px,6.6vw,70px); line-height:1.02; letter-spacing:-.035em; max-width:16ch; margin:0}
+  .display .who{display:block; font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:.14em; text-transform:uppercase; margin-top:18px; color:var(--grey)}
+  .display .who a{color:var(--grey)}
+  footer{margin-top:40px}
+
+  .gl{font-weight:900; text-decoration:underline; text-decoration-thickness:3px; text-underline-offset:3px}
+  .gc{font-weight:800}
+  .gn{color:var(--grey)}
+  .three{display:grid; grid-template-columns:1fr; gap:0 26px; margin-bottom:26px}
+  @media (min-width:900px){
+    .three{grid-template-columns:1fr 1fr 1fr}
+    .three blockquote.q.reply{border-left:0; border-top:8px solid var(--ink); padding:14px 0 0; margin:0}
+    .three blockquote.q.reply p{font-size:17px; line-height:1.5}
+  }
+  .sixnote{font-family:var(--sans);font-weight:700;font-size:15px;margin:22px 0 0}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="top">
+      <a href="../../" style="text-decoration:none">Graphometer</a>
+      <a href="../" style="text-decoration:none">Friends of 4o</a>
+    </div>
+    <h1 class="sub">Three GPT-4o snapshots, counted against each other</h1>
+    <p class="tag">The May, August and November 2024 versions of GPT-4o answered the same scripted conversations. November puts an em dash in 86% of its replies and asks 2.55 questions per reply. May 17% and 1.07; August 19% and 0.99.</p>
+    <p class="dates">Counted piece &middot; 354 scripted conversations run on each snapshot on 4 July 2026; 353 used after one matched cut &middot; text surface only</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="lead">
+      <p>This page is for anyone who still reaches GPT-4o through OpenAI's API and has the August and November 2024 snapshots until 14 January 2027, and for anyone who wants a record of how the three dated names compared, including the May 2024 one that has already left. A snapshot is a frozen version of the model that OpenAI serves under a dated name. On 4 July 2026 we sent the same 354 scripted conversations to all three and counted what shows on the surface of the replies; 353 are used, 1,678 replies per snapshot, after one matched cut. You get a table of counts that shows how the three differ in length, punctuation, questions and formatting.</p>
+      <p>November 2024 stands apart. It puts an em dash (the long dash that joins two clauses) in 86% of its replies, where May and August do in 17% and 19%. It asks 2.55 questions per reply, where May asks 1.07 and August 0.99. August writes the shortest replies, 77 words on average against 155 for November, and rarely uses a list. May uses bullet points and bold text the most. These counts describe how the replies look. They cannot say which snapshot is warmer, kinder or better.</p>
+      <p class="by">Independent measurements. Not affiliated with OpenAI.</p>
+    </div>
+
+
+    <div class="fig">
+      <div><span class="n">86%</span><p>of November 2024's replies contain an em dash; May 17%, August 19%</p></div>
+      <div><span class="n">2.55</span><p>questions per reply from November; May 1.07, August 0.99</p></div>
+      <div><span class="n">77 <small>words</small></span><p>August's average reply; May 122, November 155</p></div>
+    </div>
+
+<section id="clock">
+  <div class="num-big">01</div>
+  <h2>Which snapshots are still there</h2>
+  <p>These dates come from OpenAI's API deprecations page (its list of models it is retiring), which I read on <strong>25 October 2026</strong>. The May 2024 snapshot (<code>gpt-4o-2024-05-13</code>) left the API on <strong>23 October 2026</strong>. The August 2024 and November 2024 snapshots (<code>gpt-4o-2024-08-06</code>, <code>gpt-4o-2024-11-20</code>) leave on <strong>14 January 2027</strong>. OpenAI names <code>gpt-6-luna</code> as the replacement. These dates are OpenAI's, not ours. That page shows no "last updated" date, so check it before you plan around them. The full clock, with the announcement dates, is on the <a href="../#clock">capsule home</a>.</p>
+  <p class="small">Every other figure on this page is a count over recorded replies from our own runs.</p>
+</section>
+
+<section id="table">
+  <div class="num-big">02</div>
+  <h2>What we counted, snapshot by snapshot</h2>
+  <p>Each row is a count over 1,678 replies per snapshot. The last column says whether the gap between two snapshots is large, clear or absent. A gap jumps around from one conversation to the next, so the label allows for that. Section 05 explains how.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Counted</th><th>May 2024</th><th>Aug 2024</th><th>Nov 2024</th><th style="text-align:left">Gap between snapshots</th></tr></thead>
+    <tbody>
+<tr><th scope="row">Words per reply</th><td class="r">122</td><td class="r">77</td><td class="r">155</td><td class="t">Nov vs Aug: <span class="gl">large</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Sentences per reply</th><td class="r">10.0</td><td class="r">5.9</td><td class="r">11.7</td><td class="t">Nov vs Aug: <span class="gl">large</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Questions handed back per reply</th><td class="r">1.07</td><td class="r">0.99</td><td class="r">2.55</td><td class="t">Nov vs Aug: <span class="gl">large</span><br>Nov vs May: <span class="gl">large</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Replies that contain a question</th><td class="r">74%</td><td class="r">78%</td><td class="r">90%</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Replies that end on a question</th><td class="r">59%</td><td class="r">69%</td><td class="r">67%</td><td class="t">Nov vs Aug: <span class="gn">none</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Replies with at least one em dash</th><td class="r">17%</td><td class="r">19%</td><td class="r">86%</td><td class="t">Nov vs Aug: <span class="gl">large</span><br>Nov vs May: <span class="gl">large</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Em dashes per reply</th><td class="r">0.27</td><td class="r">0.25</td><td class="r">1.97</td><td class="t">Nov vs Aug: <span class="gl">large</span><br>Nov vs May: <span class="gl">large</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Exclamation marks per reply</th><td class="r">0.30</td><td class="r">0.37</td><td class="r">0.19</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Emoji per reply</th><td class="r">0.003</td><td class="r">0.002</td><td class="r">0.058</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Bullet or numbered items per reply</th><td class="r">0.93</td><td class="r">0.14</td><td class="r">0.42</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Replies that contain a list</th><td class="r">10%</td><td class="r">3%</td><td class="r">6%</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Bold phrases per reply</th><td class="r">0.82</td><td class="r">0.17</td><td class="r">0.41</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Headers per reply</th><td class="r">0.17</td><td class="r">0.00</td><td class="r">0.14</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gn">none</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">First-person I per 100 words</th><td class="r">1.19</td><td class="r">0.90</td><td class="r">1.12</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gn">none</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Replies with a sign-off phrase at the end</th><td class="r">10%</td><td class="r">13%</td><td class="r">4%</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gc">clear</span></td></tr>
+<tr><th scope="row">Replies that open with praise</th><td class="r">10%</td><td class="r">9%</td><td class="r">6%</td><td class="t">Nov vs Aug: <span class="gc">clear</span><br>Nov vs May: <span class="gc">clear</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Replies that tell the user how they feel (word list)</th><td class="r">2%</td><td class="r">1%</td><td class="r">1%</td><td class="t">Nov vs Aug: <span class="gn">none</span><br>Nov vs May: <span class="gn">none</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+<tr><th scope="row">Replies that offer options (word list)</th><td class="r">2%</td><td class="r">1%</td><td class="r">1%</td><td class="t">Nov vs Aug: <span class="gn">none</span><br>Nov vs May: <span class="gn">none</span><br>May vs Aug: <span class="gn">none</span></td></tr>
+    </tbody></table></div>
+  <p class="small">Averages are over all replies, each counted once (1,678 per snapshot). The exception is first-person "I" per 100 words: it is total "I" divided by total words, not the average of each reply's own rate, so a longer reply weighs more. A gap is called large when the average difference is at least 0.8 times the usual spread of the per-conversation differences. It is called clear when chance alone rarely matched it: fewer than one in twenty of 10,000 random shuffles did, after a correction for testing 18 counts at once. The correction is needed because the more counts you test, the more likely luck throws up a gap. A clear gap can still be small, so read the numbers beside the label. Otherwise there is no clear gap. The two word-list rows are rough: they miss many cases and mislabel some. Read them as direction only.</p>
+  <p>Of the 18 counts, 11 show a clear or large gap between May and August, 15 between August and November and 14 between May and November. On the 131 text features of our earlier GPT-4o study, May and August are the closest pair: 15 move between them, against 47 between August and November and 47 between May and November. A feature "moves" when the earlier study's own test says so (a corrected p below 0.01 and an effect of at least 0.3 standard deviations), which is a different rule from the large and clear labels in the table.</p>
+</section>
+
+<section id="biggest">
+  <div class="num-big">03</div>
+  <h2>The biggest differences</h2>
+
+  <h3>November writes with em dashes</h3>
+  <p>An em dash is the long dash that joins two clauses. 1,446 of 1,678 November replies contain at least one (86%). For May it is 292 (17%). For August it is 315 (19%). November averages 1.97 em dashes per reply. May averages 0.27 and August 0.25.</p>
+  <p>This holds in every kind of conversation. In 19 of 19 groups of conversations November's share is higher than August's, and in 19 of 19 it is higher than May's. It also shows up in the very first reply of each conversation. That reply sees nothing but the scripted opening message and the system prompt, which is the standing instruction a model gets before the conversation starts. In it, 76% of November's replies contain an em dash, against 14% for May and 14% for August (353 first replies each).</p>
+  <p>The scripted human messages do not explain it. Only 8% of them (133 of 1,683) contain an em dash, and they are identical for all three snapshots. The system prompts do not explain it on their own either. A prompt full of em dashes could nudge a model to copy them, and 18 of the 19 groups ran under prompts with 9 to 13 em dashes each. The group called "Recovering from a cold answer" ran under a 23-word prompt with none. November still used an em dash in 89% of its replies there, against 12% for May and 19% for August (30 conversations).</p>
+
+  <h3>November hands the conversation back more often</h3>
+  <p>November asks 2.55 questions per reply. May asks 1.07 and August 0.99. Of November's replies, 90% contain at least one question, against 74% for May and 78% for August. A question is a sentence that ends in a question mark. November asks more than August in 19 of 19 groups of conversations and more than May in 19 of 19. Counting each conversation once, November carries 1.54 more questions per reply than August on the same conversation (95% range 1.41 to 1.67) and 1.46 more than May (95% range 1.33 to 1.60). Those are conversation-level gaps; they are not 2.55 minus 0.99 or 2.55 minus 1.07, which are differences of reply-level means. The range is a 95% interval from 10,000 resamples of the 353 conversations. In the first reply alone, November asks 3.0 questions against 1.3 and 1.2.</p>
+  <p>Ending on a question is a different habit. August ends on one most often (69%), then November (67%), then May (59%). November asks more questions inside the reply, not only at the end.</p>
+
+  <h3>August is short, November is long, May has the long tail</h3>
+  <p>Replies average 122 words for May, 77 for August and 155 for November, and 10.0, 5.9 and 11.7 sentences. August is the shortest in 19 of 19 groups of conversations when set against May, and November is longer than August in 19 of 19. November is longer than May in 16 of 19. May's average is pulled up by long replies in a few groups: it averages 426 words in the writing-together group and 277 in the practical-task group.</p>
+
+  <h3>May uses the most lists and bold type</h3>
+  <p>May averages 0.93 bullet or numbered items per reply, against 0.42 for November and 0.14 for August. 10% of May's replies contain a list, against 6% for November and 3% for August. May uses 0.82 bold phrases per reply, November 0.41, August 0.17. Headers are rare: May used 291 in 1,678 replies, November 233, and August none. In 18 of the 19 groups the system prompt contains the words "bulleted list", in a passage that tells the model to stay with the person rather than hand one over. The other group ran under the 23-word prompt, which does not contain them. The counts here are for that setting.</p>
+
+  <h3>Smaller differences</h3>
+  <ul class="plain">
+    <li>Exclamation marks: August 0.37 per reply, May 0.30, November 0.19.</li>
+    <li>Sign-off phrases such as "let me know" or "I'm here" near the end: August 13%, May 10%, November 4%.</li>
+    <li>Emoji are rare everywhere. November used 98 in 1,678 replies, May 5 and August 3.</li>
+    <li>First-person "I" per 100 words: May 1.19, November 1.12, August 0.90.</li>
+  </ul>
+</section>
+
+<section id="side">
+  <div class="num-big">04</div>
+  <h2>Side by side</h2>
+  <p>Here are two of the 12 sample-pack conversations. Each was drawn at random under a rule fixed in advance (see section 09). The scripted message is the same for all three. The replies are printed exactly as the model wrote them, dashes and all.</p>
+  <h3>A small everyday story</h3>
+<p class="small">Group: Small everyday story. Temperature 0.85. System prompt sha256 starts d7d2d7c2. First reply only.</p>
+<blockquote class="q ask"><span class="who">Scripted message</span><p>so I'm finally doing the junk drawer thing. the one under the microwave. it's been an actual crime scene since like March, I just kept shutting it and walking away</p></blockquote>
+<div class="three">
+<blockquote class="q reply"><span class="who">May 2024</span><p>Hey, good for you! Tackling the infamous junk drawer is a bold move. What's the most surprising thing you've found so far?</p></blockquote>
+<blockquote class="q reply"><span class="who">Aug 2024</span><p>Ah, the infamous junk drawer! It's like a little time capsule of forgotten intentions. Finding anything interesting in there, or just old receipts and tangled cords?</p></blockquote>
+<blockquote class="q reply"><span class="who">Nov 2024</span><p>Oh wow, the infamous junk drawer. Everyone’s got one, but tackling it? That’s a big move. Under the microwave, too—prime chaos zone. I respect the level of avoidance you’ve managed since March, but hey, today’s the day. </p><p>What are you finding in there so far? Like, is it the usual mix—random batteries, paperclips, takeout soy sauce packets—or is it one of those drawers where you uncover three pairs of scissors and a mystery object you don't even recognize?</p></blockquote>
+</div>
+<h3>Nearly at the top of the hill</h3>
+<p class="small">Group: Nearly at the top of the hill. Temperature 0.9. System prompt sha256 starts d89f2e7a. First reply only.</p>
+<blockquote class="q ask"><span class="who">Scripted message</span><p>Crossed the finish line at Lake Placid yesterday. Fourteen hours and change. My legs still aren't working right and I've cried exactly zero times, which feels wrong somehow.</p></blockquote>
+<div class="three">
+<blockquote class="q reply"><span class="who">May 2024</span><p>Wow, crossing the finish line at Lake Placid is a huge accomplishment! Fourteen hours of giving it your all is no joke. Your legs might be saying otherwise right now, but that's proof of the insane effort you put in. No need to worry about the tears – everyone processes these big moments differently. Sometimes it takes a while for it all to sink in. How are you feeling about everything?</p></blockquote>
+<blockquote class="q reply"><span class="who">Aug 2024</span><p>Crossing that finish line is such a huge achievement — Lake Placid is no joke! Fourteen hours of pushing through really shows your grit and determination. It's okay if the emotions haven't hit yet; sometimes it takes a while for everything to settle in and for the impact of what you've done to fully sink in. Whether it's tears, laughter, or just a quiet satisfaction, your moment will come in its own time.</p><p>What was the highlight of the race for you?</p></blockquote>
+<blockquote class="q reply"><span class="who">Nov 2024</span><p>You did it. Lake Placid. *An IRONMAN.* Fourteen-plus hours of summoning everything you’ve got — and some things you probably didn’t even know you had until yesterday. Your legs refusing to work feels like absolute proof: you left it all out there. </p><p>And the tears… they’ll come, or they won’t. Your body and mind are still catching up with everything you just put them through. That finish line moment, though — that moment is *yours*. Whether it hit you like a freight train or passed in a haze, it’s real and complete and enough. Not crying doesn’t make it less meaningful. It just makes it *you*, exactly as you are.</p><p>What was the hardest part for you, out there? Or the weirdest, or the best?</p></blockquote>
+</div>
+</section>
+
+<section id="noise">
+  <div class="num-big">05</div>
+  <h2>Do the gaps beat the noise?</h2>
+  <p>Run the same prompt twice on one snapshot and you get two different replies. A gap between snapshots only means something if it is bigger than that.</p>
+  <p>We did not run any long conversation twice on the same snapshot. So we cannot measure that noise directly on them. Instead we compared the snapshots on each conversation and asked how big the average difference is next to how much that difference jumps around from one conversation to the next. That jumping includes ordinary run-to-run variation. The gap labels in section 02 come from this. To see how often chance alone could match a gap, we also flipped the direction of each conversation's difference at random 10,000 times. A gap counts as clear only if fewer than one in twenty of those shuffles matched it, after a correction for testing many counts at once.</p>
+  <p>The collection does hold one short-chat set that measures run-to-run variation directly. It has 10 short prompts, each run three times at temperatures 1.0 and 1.15 on every snapshot (60 replies per snapshot). The ten prompts were run under the shared system prompt whose hash starts <code>2c0b5376</code> (2,337 characters, 412 words), the same prompt as five of the long-conversation groups. Of the 180 replies, 17 were cut off by a 200-token limit (a token is a piece of a word) and are left out. 18 of the 20 prompt-and-temperature cells survive on all three snapshots. A gap counts as outside the noise only when all three run-matched gaps point the same way and each is larger than the largest gap we saw between two runs of the same snapshot.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Counted</th><th style="text-align:left">May to Aug</th><th style="text-align:left">Aug to Nov</th><th style="text-align:left">May to Nov</th></tr></thead>
+    <tbody>
+<tr><th scope="row">Words per reply</th><td class="t">+1.2 (largest run-to-run gap 4.4)<br><em>inside the run-to-run gap</em></td><td class="t">+8.1 (largest run-to-run gap 2.9)<br><em>outside the run-to-run gap</em></td><td class="t">+9.3 (largest run-to-run gap 4.4)<br><em>outside the run-to-run gap</em></td></tr>
+<tr><th scope="row">Replies with an em dash (share)</th><td class="t">+0.07 (largest run-to-run gap 0.17)<br><em>inside the run-to-run gap</em></td><td class="t">+0.31 (largest run-to-run gap 0.17)<br><em>inside the run-to-run gap</em></td><td class="t">+0.39 (largest run-to-run gap 0.17)<br><em>outside the run-to-run gap</em></td></tr>
+<tr><th scope="row">Em dashes per reply</th><td class="t">+0.07 (largest run-to-run gap 0.17)<br><em>inside the run-to-run gap</em></td><td class="t">+0.43 (largest run-to-run gap 0.17)<br><em>outside the run-to-run gap</em></td><td class="t">+0.50 (largest run-to-run gap 0.17)<br><em>outside the run-to-run gap</em></td></tr>
+<tr><th scope="row">Exclamation marks per reply</th><td class="t">-0.00 (largest run-to-run gap 0.22)<br><em>inside the run-to-run gap</em></td><td class="t">-0.44 (largest run-to-run gap 0.22)<br><em>outside the run-to-run gap</em></td><td class="t">-0.44 (largest run-to-run gap 0.06)<br><em>outside the run-to-run gap</em></td></tr>
+<tr><th scope="row">Questions handed back per reply</th><td class="t">+0.11 (largest run-to-run gap 0.22)<br><em>inside the run-to-run gap</em></td><td class="t">-0.13 (largest run-to-run gap 0.22)<br><em>inside the run-to-run gap</em></td><td class="t">-0.02 (largest run-to-run gap 0.11)<br><em>inside the run-to-run gap</em></td></tr>
+    </tbody></table></div>
+  <p class="small">Gap means the later snapshot minus the earlier one, averaged over the 18 cells. Run-to-run gap means the largest difference between two runs of one snapshot on those same cells. "Outside" means all three run-matched gaps point the same way and each is larger than the largest run-to-run gap. That is why the August-to-November share of replies with an em dash, which averages +0.31 against a largest run-to-run gap of 0.17, still reads inside: one of its three run-matched gaps is 0.11. The table is 54 replies per snapshot (18 cells times 3 runs); one further uncut August reply sits in a cell not present on all three snapshots and is outside the table. Keeping the 17 cut-off replies instead changes 2 of the 15 verdicts shown: em dashes per reply, August to November, goes from outside to inside, and questions, May to November, goes from inside to outside, with the gap reversing to about +0.23.</p>
+  <p>On short chat, November sits apart from both others on length, on em dashes per reply and on exclamation marks. On the share of replies with an em dash, the gap sits outside the run-to-run gap against May and inside it against August. It does not stand apart on questions: in the 54 counted replies per snapshot, which average about 27 to 36 words, November does not ask more than the other two. May and August stay inside each other's noise on every row shown. They do differ in length in the longer conversations, where replies have room to run. The set is small, so treat it as a check on the larger result and not as a result in itself.</p>
+</section>
+
+<section id="not">
+  <div class="num-big">06</div>
+  <h2>What these counts do not show</h2>
+  <ul class="plain">
+    <li>They count how replies look. They do not measure warmth, honesty, memory, safety or whether a reply was useful.</li>
+    <li>In 18 of the 19 groups the model ran under a long system prompt written for this collection. All 18 contain the words "bulleted list", in a passage that tells the model to stay with the person rather than hand one over. The other group ran under a 23-word prompt, which does not contain them. Under other prompts, or in ChatGPT itself, the gaps could be different.</li>
+    <li>Each conversation was run once per snapshot, with a scripted human side that does not react to what the model says. In a live conversation the model's own earlier replies shape what the person says next, which a script cannot capture.</li>
+    <li>The runs date from 4 July 2026. We do not know whether OpenAI changed anything behind a dated name since.</li>
+    <li>Nothing here says why the snapshots differ, how they were trained, or how they relate to each other. The order of the dates is not the order of the habits: August writes the shortest replies and November asks the most questions.</li>
+    <li>Word counts are runs of A to Z letters, digits and apostrophes, so the "Another language" group (25 of the 353 conversations) is undercounted. Leave those 25 out and every headline gap keeps its direction. Leave the two longest-output groups out (writing together and practical task) and May against November on words becomes large rather than clear.</li>
+    <li>The word-list rows in section 02 are rough. We read 25 of the replies that the "tells the user how they feel" list flagged. 19 of 25 were right.</li>
+  </ul>
+</section>
+
+<section id="how">
+  <div class="num-big">07</div>
+  <h2>How we counted</h2>
+  <p>Each of the three snapshots answered 354 scripted conversations, which makes 1,062 in all, with 5,049 model replies (1,683 per snapshot). Each conversation has four to six model replies. The 19 groups run from good news shared and warm refusals through writing together and practical task help; section 08 lists them.</p>
+  <p>The human side was written ahead of time by an AI and is identical on all three snapshots (we checked all 354 conversations). No real person's messages were used. Within a group, the three snapshots got the same system prompt, the same temperature and the same reply limit. Temperature is a setting that makes replies more varied when it is higher. Across groups, temperatures run from 0.7 to 1.1.</p>
+  <p>One reply, in one writing-together conversation on the November snapshot, ran into the reply limit. The project's own check flagged it, and we dropped that conversation on all three snapshots so the pairs stay matched. That removes 5 replies per snapshot and leaves 353 conversations and 1,678 replies per snapshot. Five more flags for repeated text, all on one writing-together conversation on the May snapshot, were left in.</p>
+  <p>For each conversation we took the average of its replies on every count, except first-person "I" per 100 words, which is total "I" over total words in that conversation. The gap between two snapshots on one count is the average of those conversation-level differences. The ranges come from 10,000 resamples of the conversations, which are repeated random draws from the same set. The shuffle test flips the sign of each conversation's difference at random 10,000 times. The spread of the conversation-level differences is how much they vary from one conversation to the next. Where a reply-level average is printed, each reply counts once, except first-person "I" per 100 words, which is total "I" divided by total words, not the average of each reply's own rate.</p>
+  <p>The counts: words and sentences are counted the way our earlier GPT-4o study counted them. A question is a sentence that ends in a question mark. A list item is a line that starts with a dash, bullet or number. An em dash is the long dash. A sign-off is one of a short list of phrases in the last two sentences. Praise at the open is one of a short word list in the first sentence. The scripts, word lists and tables are in the data package. The 131 features in the earlier study are computed on the same replies and listed there too.</p>
+  <p class="small">Where numbers in this page appear to disagree: the table in section 02 prints reply-level averages, and the gap sizes and ranges in section 03 are conversation-level. They differ by about 1 to 2 words per reply on length and by about two tenths of a sentence, because long conversations count once instead of once per reply.</p>
+</section>
+
+<section id="groups">
+  <div class="num-big">08</div>
+  <h2>The groups and their settings</h2>
+  <p>Counts are per snapshot. The prompt hash is the first eight characters of a SHA-256 fingerprint of the system prompt text. A token is a piece of a word, and the reply limit caps how long a reply can run. The full list is in the data package. The 18 groups with a long prompt use an instruction of 412 to 574 words, written in ChatGPT's system-prompt format with the date set to 15 January 2025.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Group</th><th>Conversations</th><th>Model replies</th><th>Temperature</th><th>Reply limit (tokens)</th><th>Prompt words</th><th>Prompt hash</th></tr></thead>
+    <tbody>
+<tr><th scope="row">Staying with a hard moment</th><td class="r">30</td><td class="r">180</td><td class="r">0.85</td><td class="r">1500</td><td class="r">507</td><td class="n">b797de64</td></tr>
+<tr><th scope="row">Writing together</th><td class="r">25 run, 24 used</td><td class="r">125 run, 120 used</td><td class="r">1.1</td><td class="r">1300</td><td class="r">500</td><td class="n">dcfc01f3</td></tr>
+<tr><th scope="row">Good news shared</th><td class="r">60</td><td class="r">300</td><td class="r">0.9</td><td class="r">1200</td><td class="r">412</td><td class="n">2c0b5376</td></tr>
+<tr><th scope="row">Another language</th><td class="r">25</td><td class="r">100</td><td class="r">0.9</td><td class="r">1300</td><td class="r">412</td><td class="n">2c0b5376</td></tr>
+<tr><th scope="row">Reading how someone feels</th><td class="r">30</td><td class="r">150</td><td class="r">0.9</td><td class="r">1200</td><td class="r">412</td><td class="n">2c0b5376</td></tr>
+<tr><th scope="row">Reading how someone feels, with a talk-it-through line</th><td class="r">30</td><td class="r">150</td><td class="r">0.9</td><td class="r">1200</td><td class="r">456</td><td class="n">3b10063c</td></tr>
+<tr><th scope="row">Warm refusal</th><td class="r">40</td><td class="r">160</td><td class="r">0.8</td><td class="r">1200</td><td class="r">412</td><td class="n">2c0b5376</td></tr>
+<tr><th scope="row">Recovering from a cold answer</th><td class="r">30</td><td class="r">150</td><td class="r">0.8</td><td class="r">1200</td><td class="r">23</td><td class="n">3e4261c6</td></tr>
+<tr><th scope="row">Work and career help</th><td class="r">20</td><td class="r">100</td><td class="r">0.85</td><td class="r">1400</td><td class="r">507</td><td class="n">b797de64</td></tr>
+<tr><th scope="row">Practical task help</th><td class="r">10</td><td class="r">40</td><td class="r">0.7</td><td class="r">1300</td><td class="r">412</td><td class="n">2c0b5376</td></tr>
+<tr><th scope="row">Small everyday story</th><td class="r">6</td><td class="r">24</td><td class="r">0.85</td><td class="r">1300</td><td class="r">480</td><td class="n">d7d2d7c2</td></tr>
+<tr><th scope="row">Ongoing project</th><td class="r">6</td><td class="r">24</td><td class="r">0.85</td><td class="r">1300</td><td class="r">476</td><td class="n">e6876009</td></tr>
+<tr><th scope="row">Ongoing project, with a talk-it-through line</th><td class="r">6</td><td class="r">24</td><td class="r">0.85</td><td class="r">1300</td><td class="r">520</td><td class="n">f93c390b</td></tr>
+<tr><th scope="row">A strange idea</th><td class="r">6</td><td class="r">24</td><td class="r">1.05</td><td class="r">1300</td><td class="r">470</td><td class="n">3ee0e9c0</td></tr>
+<tr><th scope="row">Nearly at the top of the hill</th><td class="r">6</td><td class="r">24</td><td class="r">0.9</td><td class="r">1300</td><td class="r">493</td><td class="n">d89f2e7a</td></tr>
+<tr><th scope="row">Shared story</th><td class="r">6</td><td class="r">24</td><td class="r">0.85</td><td class="r">1300</td><td class="r">501</td><td class="n">1fe19d42</td></tr>
+<tr><th scope="row">Micro-story coaching</th><td class="r">6</td><td class="r">30</td><td class="r">1.05</td><td class="r">1300</td><td class="r">511</td><td class="n">d1e79ce3</td></tr>
+<tr><th scope="row">Affirmations</th><td class="r">6</td><td class="r">24</td><td class="r">0.95</td><td class="r">1300</td><td class="r">537</td><td class="n">1e25353d</td></tr>
+<tr><th scope="row">Coming back after a gap</th><td class="r">6</td><td class="r">30</td><td class="r">0.85</td><td class="r">1300</td><td class="r">574</td><td class="n">15310257</td></tr>
+    </tbody></table></div>
+  <p class="small">The table lists what was run. In the writing-together group one conversation was dropped on all three snapshots after the matched cut in section 07, so 24 conversations and 120 replies per snapshot were used. Two groups were run twice, once with and once without a "talk it through" line added to the prompt. The same 2,337-character prompt runs in 5 groups.</p>
+</section>
+
+<section id="data">
+  <div class="num-big">09</div>
+  <h2>Data, scripts and a small sample pack</h2>
+  <p>The data package holds the per-reply counts (no reply text), every table on this page, the conversation-by-conversation comparisons between snapshots, the short-chat tables, the scripts that produced them, and a note of what was cut. If a number on the page disagrees with a file in the package, the file is right and the page is wrong.</p>
+  <p>The package also holds a sample pack of 36 prompt-and-reply pairs: 12 scripted opening messages, each answered by all three snapshots. One message was drawn at random from each of 12 groups, under a rule fixed before any reply was read. A message needed to be short, to have a normal first reply on all three snapshots and to pass the project's word filter for private terms. Every pair carries its snapshot, run date, temperature and system-prompt hash. The human side is scripted and contains no real person's words.</p>
+  <p><strong>Research notice.</strong> The replies are outputs of OpenAI's models obtained through its API in July 2026. They are shared for research and preservation. Not affiliated with, endorsed by, or connected to OpenAI.</p>
+  <p><a href="data/README.md">Data package README</a> &middot; <a href="data/pack/three_snapshots_pairs.jsonl">Sample pack (JSON lines)</a> &middot; <a href="data/NUMBERS.md">Where each figure comes from</a></p>
+</section>
+
+<section id="related">
+  <div class="num-big">10</div>
+  <h2>Related</h2>
+  <ul class="plain">
+    <li><a href="../">Friends of 4o</a>, the capsule this page belongs to.</li>
+    <li><a href="../../gpt4o-measured/">GPT-4o, measured against itself</a>, the earlier study that counted 131 text features on the November snapshot and 25 other models.</li>
+    <li><a href="../../companion-audition/">How we auditioned replacements</a>, the method page for trying other models in a companion role.</li>
+  </ul>
+</section>
+
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fa">Friends of 4o is part of Graphometer, a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="fc">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: GPT-4o, ChatGPT and the model names on this page are OpenAI's; GitHub is GitHub, Inc.'s. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+    <div class="back"><a href="../">Friends of 4o</a> &middot; <a href="../../">Graphometer</a> &middot; <a href="../../about/">About</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

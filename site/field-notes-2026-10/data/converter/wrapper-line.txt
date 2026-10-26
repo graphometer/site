@@ -1,0 +1,7 @@
+The line that started the successful conversion, from the wrapper script (2026-10-18), with paths and the source
+folder name removed and nothing else changed:
+
+PYTHONPATH=<REDACTED_PATH>/gguf-py systemd-run --user --scope -p MemoryMax=64G -p MemorySwapMax=0 nice -n 10 ionice -c2 -n7 python <REDACTED_PATH>/convert_hf_to_gguf.py <SOURCE> --outtype bf16 --engram --split-max-size 48G --outfile <REDACTED_PATH>/DeepSeek-V4.1-Flash-1017-MXFP4-engram.gguf &
+
+The CONVERT-START line's "free" figure comes from the same wrapper: df -BG --output=avail on the output drive, which is
+free disk space, not memory.

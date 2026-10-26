@@ -1,0 +1,16 @@
+[run] F1_q5_192k_dflash_ngram_thinkON · depths=20000,100000 · RAM avail 160 GB · card 723 MiB · 2026-10-19 19:14:53
+  cmd: <REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Qwen3.8-27B-UD-Q5_K_XL.gguf --ctx-size 196608 --ubatch-size 256 --cache-type-k q8_0 --cache-type-v q8_0 --spec-type draft-dflash,ngram-mod --spec-draft-model <REDACTED_PATH>/Qwen3.8-27B-DFlash2-Q4_K_M.gguf --spec-draft-ngl 999 --spec-draft-n-max 7 --spec-draft-n-min 1 --host <LOCAL> --port <PORT> --alias qwen3.8-27b --jinja --parallel 1 --batch-size 2048 --n-gpu-layers 999 --threads 24 --threads-batch 24 --flash-attn on --timeout 3600 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0
+  healthy in 3 s · VRAM at load 29464 MiB
+  served: n_ctx_slot = 196608
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 20000, "kind": "read", "prompt_n": 20103, "prompt_ms": 7553, "prefill_tps": 2661.6, "predicted_n": 122, "decode_tps": 106.23, "draft_n": 260, "draft_accepted": 92, "wall_s": 8.7, "code_in_answer": true, "code_anywhere": true, "answer_words": 1, "reasoning_chars": 413}
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 20000, "kind": "prose", "prompt_n": 314, "prompt_ms": 372, "prefill_tps": 843.8, "predicted_n": 3500, "decode_tps": 190.26, "draft_n": 4957, "draft_accepted": 2838, "wall_s": 18.8, "code_in_answer": false, "code_anywhere": true, "answer_words": 0, "reasoning_chars": 10464}
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 20000, "kind": "struct", "prompt_n": 265, "prompt_ms": 359, "prefill_tps": 739.0, "predicted_n": 1600, "decode_tps": 214.14, "draft_n": 1961, "draft_accepted": 1333, "wall_s": 7.8, "code_in_answer": false, "code_anywhere": true, "answer_words": 226, "reasoning_chars": 2810}
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 100000, "kind": "read", "prompt_n": 99870, "prompt_ms": 56117, "prefill_tps": 1779.7, "predicted_n": 82, "decode_tps": 99.68, "draft_n": 154, "draft_accepted": 60, "wall_s": 57.7, "code_in_answer": true, "code_anywhere": true, "answer_words": 1, "reasoning_chars": 298}
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 100000, "kind": "prose", "prompt_n": 314, "prompt_ms": 526, "prefill_tps": 596.8, "predicted_n": 3500, "decode_tps": 143.96, "draft_n": 5056, "draft_accepted": 2861, "wall_s": 24.9, "code_in_answer": false, "code_anywhere": true, "answer_words": 0, "reasoning_chars": 10359}
+{"tag": "F1_q5_192k_dflash_ngram_thinkON", "depth_target": 100000, "kind": "struct", "prompt_n": 265, "prompt_ms": 503, "prefill_tps": 526.9, "predicted_n": 1600, "decode_tps": 130.74, "draft_n": 2423, "draft_accepted": 1275, "wall_s": 12.8, "code_in_answer": false, "code_anywhere": true, "answer_words": 32, "reasoning_chars": 4392}
+  probe rc=0 · peak VRAM: 29562 MiB
+  srv: 0.38.380.444 I slot print_timing: id  0 | task 709 | draft acceptance = 0.67976 ( 1333 accepted /  1961 generated), mean len =  6.05
+  srv: 1.36.155.217 I slot print_timing: id  0 | task 979 | draft acceptance = 0.38961 (   60 accepted /   154 generated), mean len =  3.73
+  srv: 2.01.052.426 I slot print_timing: id  0 | task 1053 | draft acceptance = 0.56586 ( 2861 accepted /  5056 generated), mean len =  5.52
+  srv: 2.13.855.555 I slot print_timing: id  0 | task 1695 | draft acceptance = 0.52621 ( 1275 accepted /  2423 generated), mean len =  4.96
+  stopped · card 685 MiB · 19:17:11
