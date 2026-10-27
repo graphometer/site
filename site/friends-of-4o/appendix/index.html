@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Friends of 4o: the fine-tuning record</title>
+<meta name="description" content="Friends of 4o: the fine-tuning record and the methods. Two tries at teaching an open model GPT-4o's way of speaking, with the counts, kept word for word from the October page.">
+<link rel="canonical" href="https://graphometer.ai/friends-of-4o/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Friends of 4o: the fine-tuning record">
+<meta property="og:description" content="The fine-tuning record behind Friends of 4o: two tries, six small runs, the counts.">
+<meta property="og:url" content="https://graphometer.ai/friends-of-4o/appendix/">
+<meta property="og:image" content="https://graphometer.ai/og/friends-of-4o.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Friends of 4o">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Friends of 4o">
+<meta name="twitter:description" content="A resource for people whose companion or workflow ran on GPT-4o. The dates it leaves the API, what the model says about itself, what we measured, what fine-tuning did and did not carry, the open models people report as closest, and the other preservation projects we found.">
+<meta name="twitter:image" content="https://graphometer.ai/og/friends-of-4o.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#ffffff; --ink:#000000; --grey:#555555; --pale:#f2f2f2;
+    --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px}
+  a:hover{background:var(--ink); color:var(--paper); text-decoration:none}
+  .wrap{max-width:760px; margin:0 auto; padding:0 28px}
+
+  /* masthead: a black band */
+  .mast{background:var(--ink); color:var(--paper); padding:22px 0 26px}
+  .mast a{color:var(--paper); text-decoration-color:var(--paper)}
+  .mast a:hover{background:var(--paper); color:var(--ink)}
+  .mast .top{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px 20px;
+    font-family:var(--sans); font-size:14px; letter-spacing:.22em; text-transform:uppercase; font-weight:700}
+  .mast h1{font-family:var(--sans); font-weight:900; letter-spacing:-.035em; line-height:.95;
+    font-size:clamp(56px,13vw,124px); margin:34px 0 10px}
+  .mast h1 span{display:block; font-size:.4em; letter-spacing:-.01em; font-weight:800; margin-top:6px}
+  .mast .tag{font-family:var(--sans); font-weight:700; font-size:clamp(20px,3.4vw,28px); line-height:1.25;
+    letter-spacing:-.01em; max-width:30ch; margin-top:22px}
+  .mast .dates{margin-top:28px; font-family:var(--sans); font-size:14px; letter-spacing:.06em; text-transform:uppercase; font-weight:700}
+
+  /* lead */
+  .lead{padding:48px 0 0}
+  .lead p{font-size:clamp(21px,2.6vw,24px); line-height:1.5; max-width:34em}
+  .lead p + p{margin-top:18px}
+  .lead .by{font-family:var(--sans); font-weight:700; font-size:15px; letter-spacing:.08em; text-transform:uppercase; margin-top:26px}
+
+  /* contents */
+  nav.toc{margin:44px 0 0; padding:22px 0 0; border-top:3px solid var(--ink)}
+  nav.toc ol{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px 28px}
+  nav.toc li{font-family:var(--sans); font-weight:700; font-size:17px; line-height:1.3}
+  nav.toc li a{text-decoration:none; display:block; padding:4px 0}
+  nav.toc li a:hover{background:none; color:var(--ink); text-decoration:underline}
+  nav.toc .num{display:inline-block; width:2.2em; font-weight:900}
+  @media (max-width:560px){nav.toc ol{grid-template-columns:1fr}}
+
+  /* sections */
+  section{padding:60px 0 56px; border-top:3px solid var(--ink)}
+  section:first-of-type{border-top:0}
+  .num-big{font-family:var(--sans); font-weight:900; font-size:clamp(40px,7vw,64px); line-height:1; letter-spacing:-.04em}
+  h2{font-family:var(--sans); font-weight:900; letter-spacing:-.025em; line-height:1.05;
+    font-size:clamp(32px,5.6vw,50px); margin:10px 0 26px; max-width:18ch}
+  h3{font-family:var(--sans); font-weight:800; font-size:clamp(21px,3vw,25px); line-height:1.2; letter-spacing:-.01em; margin:38px 0 12px}
+  p{max-width:36em; margin:0 0 18px}
+  p:last-child{margin-bottom:0}
+  strong{font-weight:700}
+  code{font-family:var(--mono); font-size:.88em; background:var(--pale); padding:1px 5px; overflow-wrap:anywhere}
+  ul.plain,ol.plain{margin:0 0 18px 1.3em; max-width:34em}
+  ul.plain li,ol.plain li{margin-bottom:10px}
+  .small{font-size:16px; line-height:1.55; color:var(--grey)}
+  .small a{color:var(--ink)}
+
+  /* boxes */
+  .box{border:3px solid var(--ink); padding:22px 24px; margin:26px 0}
+  .box p{margin-bottom:12px}
+  .box .label{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:10px}
+  .quote{border-left:6px solid var(--ink); padding:4px 0 4px 22px; margin:26px 0; font-size:21px; line-height:1.5; max-width:34em}
+  .quote .who{display:block; font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:.12em; text-transform:uppercase; margin-top:10px}
+
+  /* tables */
+  .tw{overflow-x:auto; margin:26px 0; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:17px; line-height:1.45; min-width:520px}
+  th,td{border:2px solid var(--ink); padding:10px 12px; text-align:left; vertical-align:top}
+  th{font-family:var(--sans); font-weight:800; background:var(--ink); color:var(--paper); font-size:14px; letter-spacing:.06em; text-transform:uppercase}
+  th[scope=row]{background:var(--paper); color:var(--ink); font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:0; text-transform:none; width:34%}
+  td .n{font-family:var(--sans); font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase; border:1.5px solid var(--ink); padding:1px 6px; margin-left:4px; white-space:nowrap}
+  td.big{font-family:var(--sans); font-weight:900; font-size:22px; letter-spacing:-.01em}
+
+  /* doors */
+  .doors{display:grid; grid-template-columns:1fr; gap:0; margin:26px 0; border:3px solid var(--ink)}
+  .door{padding:22px 24px; border-top:3px solid var(--ink)}
+  .door:first-child{border-top:0}
+  .door .k{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:8px}
+  .door h3{margin:0 0 10px}
+  .door h3 a{text-decoration:none}
+  .door h3 a:hover{background:none; text-decoration:underline}
+  .door p{margin-bottom:10px}
+  .door .go{font-family:var(--sans); font-weight:800; font-size:16px}
+
+  /* project list */
+  .projects{list-style:none; margin:26px 0 0}
+  .projects li{border-top:2px solid var(--ink); padding:18px 0}
+  .projects li:last-child{border-bottom:2px solid var(--ink)}
+  .projects .name{font-family:var(--sans); font-weight:800; font-size:21px; letter-spacing:-.01em; display:block; margin-bottom:6px}
+  .projects .name a{text-decoration:none}
+  .projects .name a:hover{background:none; text-decoration:underline}
+  .projects p{margin:0}
+
+  /* ---- design pass 2026-10-26: a wider stage, a folio column for the section numbers, display quotes ---- */
+  .wrap{max-width:900px}
+  .mast .top{border-bottom:2px solid var(--paper); padding-bottom:12px}
+  .mast h1{font-size:clamp(60px,14vw,150px); margin-top:40px}
+  .mast h1 span{font-size:.34em; max-width:30ch}
+  .lead{padding-top:56px}
+  .lead p{font-size:clamp(21px,2.6vw,25px)}
+  nav.toc{margin-top:52px; padding-top:26px}
+  nav.toc li{font-size:18px}
+  section{position:relative; padding:64px 0 60px}
+  .num-big{font-size:clamp(44px,7vw,72px)}
+  h2{font-size:clamp(34px,5.6vw,54px)}
+  @media (min-width:900px){
+    section{padding-left:150px}
+    section>.num-big{position:absolute; left:0; top:60px}
+    section>h2{margin-top:6px}
+  }
+  blockquote.q.reply{border-left-width:8px; padding:10px 0 10px 26px; margin-top:6px}
+  blockquote.q.reply p{font-size:20px; line-height:1.55}
+  blockquote.q.ask{border-left:0; padding-left:0; max-width:34em}
+  blockquote.q.ask p{font-family:var(--sans); font-size:17px; line-height:1.5; color:var(--grey)}
+  blockquote.q.ask .who{color:var(--grey)}
+  .pair h3{font-size:clamp(22px,3vw,27px); max-width:26em}
+  .prov{margin-bottom:18px}
+  .fig{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:0; border:3px solid var(--ink); margin:28px 0}
+  .fig>div{padding:18px 20px 20px; border-left:3px solid var(--ink)}
+  .fig>div:first-child{border-left:0}
+  .fig .n{font-family:var(--sans); font-weight:900; font-size:clamp(40px,5.5vw,58px); letter-spacing:-.04em; line-height:1; display:block}
+  .fig .n small{font-size:.5em; letter-spacing:-.02em}
+  .fig p{font-family:var(--sans); font-size:15px; line-height:1.4; margin:10px 0 0; max-width:none}
+  @media (max-width:560px){.fig>div{border-left:0; border-top:3px solid var(--ink)} .fig>div:first-child{border-top:0}}
+  .display{margin:56px 0 0; padding:0; border:0; max-width:none}
+  .display p{font-family:var(--sans); font-weight:900; font-size:clamp(36px,6.6vw,70px); line-height:1.02; letter-spacing:-.035em; max-width:16ch; margin:0}
+  .display .who{display:block; font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:.14em; text-transform:uppercase; margin-top:18px; color:var(--grey)}
+  .display .who a{color:var(--grey)}
+  footer{margin-top:40px}
+
+  /* the clock as a timeline (dates copied from the table below it) */
+  .tl{margin:28px 0 8px; font-family:var(--sans)}
+  .tl .row{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:10px 18px; align-items:center; padding:10px 0; border-top:2px solid var(--ink)}
+  .tl .row:last-of-type{border-bottom:2px solid var(--ink)}
+  .tl .lab{font-weight:800; font-size:16px; line-height:1.25}
+  .tl .lab code{font-size:12.5px; display:block; background:none; padding:0; color:var(--grey); font-weight:400}
+  .tl .bar{position:relative; height:34px; background:repeating-linear-gradient(90deg,var(--pale) 0 6px,transparent 6px 12px)}
+  .tl .bar i{position:absolute; top:0; bottom:0; background:var(--ink); display:block}
+  .tl .bar i.gone{background:var(--grey)}
+  .tl .bar b{position:absolute; top:50%; transform:translateY(-50%); font-size:12.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; white-space:nowrap; color:var(--paper)}
+  .tl .axis{position:relative; height:64px; margin-top:4px}
+  .tl .axis span{position:absolute; top:0; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap}
+  .tl .axis span::before{content:""; display:block; width:2px; height:10px; background:var(--ink); margin-bottom:4px}
+  .tl .axis span.l{transform:none}
+  .tl .axis span.l::before{margin-left:0}
+  .tl .axis span.c{transform:translateX(-50%)}
+  .tl .axis span.c::before{margin:0 auto 4px}
+  .tl .axis span.r{transform:translateX(-100%)}
+  .tl .axis span.r::before{margin-left:auto}
+  .tl .axis span.now{top:30px; font-weight:900; transform:translateX(-100%)}
+  .tl .axis span.now::before{height:16px; width:3px; margin-left:auto}
+  @media (max-width:560px){.tl .row{grid-template-columns:1fr} .tl .axis span{font-size:10px}}
+  .doors{margin-top:30px}
+  .door{padding:26px 26px}
+  .door h3{font-size:clamp(23px,3vw,28px)}
+  .projects .name{font-size:23px}
+
+  /* footer */
+  footer{border-top:3px solid var(--ink); padding:40px 0 60px}
+  footer p{font-size:15px; line-height:1.55; color:var(--grey); max-width:44em; margin:0 0 12px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:18px; color:var(--ink); margin-bottom:14px}
+  footer .fc{display:flex; flex-wrap:wrap; gap:8px 28px; margin-bottom:22px; font-family:var(--sans); font-weight:700; font-size:17px}
+  footer .fc a{text-decoration-thickness:2px}
+  footer .back{font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.14em; text-transform:uppercase; margin-top:22px}
+
+  /* sub-page additions */
+  .mast h1.sub{font-size:clamp(40px,8.5vw,76px)}
+  .mast .crumb{font-family:var(--sans);font-weight:800;font-size:15px;letter-spacing:.2em;text-transform:uppercase;margin-top:30px}
+  .theme{font-family:var(--sans);font-weight:900;font-size:clamp(26px,4.4vw,38px);letter-spacing:-.02em;line-height:1.1;margin:0 0 8px}
+  article.pair{border-top:2px solid var(--ink);padding:30px 0 10px;margin-top:10px}
+  article.pair:first-of-type{border-top:0;padding-top:6px}
+  .pair h3{margin:0 0 10px;font-size:clamp(20px,2.8vw,23px)}
+  .pair .pid{font-family:var(--sans);font-weight:900;font-size:12px;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .prov{font-family:var(--sans);font-size:14px;line-height:1.5;color:var(--grey);margin:0 0 16px;max-width:44em}
+  .prov code{font-size:12.5px;background:none;padding:0;color:var(--grey)}
+  blockquote.q{margin:0 0 18px;max-width:38em;border-left:6px solid var(--ink);padding:6px 0 6px 20px}
+  blockquote.q.ask{border-left-color:var(--grey)}
+  blockquote.q .who{display:block;font-family:var(--sans);font-weight:800;font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px}
+  blockquote.q p{margin:0 0 12px;font-size:18px;line-height:1.55}
+  blockquote.q p:last-child{margin-bottom:0}
+  blockquote.q .h{display:block;font-family:var(--sans);font-weight:800;font-size:17px;margin:4px 0 8px}
+  blockquote.q .cut{display:block;font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin:10px 0}
+  blockquote.q ul{margin:0 0 12px 1.2em}
+  blockquote.q hr{border:0;border-top:2px solid var(--ink);width:4em;margin:14px 0}
+  blockquote.q .inner{display:block;padding-left:14px;border-left:2px solid var(--grey);margin:6px 0 10px}
+  blockquote.q .emoji{font-family:var(--sans)}
+  td.t{font-size:15px;line-height:1.4;min-width:12em}
+  td.r{text-align:right;font-family:var(--sans);font-weight:700;white-space:nowrap}
+  td.n{font-family:var(--mono);font-size:14px}
+  .sixnote{font-family:var(--sans);font-weight:700;font-size:15px;margin:22px 0 0}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="top">
+      <a href="../../" style="text-decoration:none">Graphometer</a>
+      <span>A capsule &middot; October 2026</span>
+    </div>
+    <h1>Friends<br>of 4o<span>a resource while the model is still here, and after</span></h1>
+    <p class="dates">May 2024 snapshot: left the API 23 October 2026 &middot; August and November 2024 snapshots: leave 14 January 2027</p>
+  </div>
+</header>
+
+<main>
+<p><a href="../">Back to Friends of 4o</a></p>
+<h1>The fine-tuning record and the methods</h1>
+<p>This is the training section of the October page, kept here word for word so the main page can stay short. It covers two tries at teaching an open model GPT-4o's way of speaking, with the counts.</p>
+<h2>What we learned trying to carry a voice</h2>
+      <p>Twice this year I tried to teach an open model GPT-4o's way of speaking, so that the voice could live on a machine I own. Both tries used a <strong>fine-tune</strong>. You show a model a few hundred or a few thousand example exchanges. You nudge its weights, the numbers inside it that decide what it writes, toward answering that way. The nudge is stored as a small add-on file called a LoRA (a low-rank adapter). It can be switched on and off over the unchanged base model, which is the model as it was before the tuning. Here is what each try showed, with the counts.</p>
+
+      <h3>The first try: Friends of 4o v1, June 2026 (the project this page is named after)</h3>
+      <p>I used 1,211 example exchanges, the project's trial set for the vanilla GPT-4o emotional-support voice. All of them ran under one short warm preamble, which served as the system prompt (the standing instruction given before the conversation). Six of the 1,211 were longer than the 2,048-token limit and were cut there. The base model was Qwen3-32B, a 32-billion-parameter open model from Alibaba's Qwen team, loaded in 4-bit form (QLoRA, which trains a LoRA on a model compressed to 4-bit numbers to save memory). A parameter is one of the model's weights. Training ran three passes over the data (456 steps), where one pass shows the model every example once. It took 59.7 minutes on one RTX 5090 graphics card, using 23.65 GB of its memory at peak. The training loss, the number that says how surprised the model still is by the examples, fell from 1.64 to 0.92.</p>
+      <p>Then six probe questions were put to the untuned base and to the model after each pass. Each got one answer, with the same seed (the starting point for the model's randomness), so the answers could be compared line by line. The answers were sampled at temperature 0.8 and top-p 0.9, with thinking off, and each was capped at 512 tokens. What they showed:</p>
+      <ul class="plain">
+        <li><strong>The untuned base was already warm under that preamble.</strong> On "I've been feeling really alone lately" it answered in 76 words and asked what the feeling was like. The tune did not add warmth that was missing. It changed the shape of the answers.</li>
+        <li><strong>The tune settled on one image of itself.</strong> Asked for a metaphor for its own existence, the base offered three (a lantern, a river, a mirror). After the second and third pass it opened with the same one both times: "a mirror in a library." A fine-tune can narrow a model as easily as it can widen it.</li>
+        <li><strong>Formatting swung from pass to pass.</strong> On "can you help me think through whether to take a new job?" the base answered in 94 words with no headers. After the second pass: 379 words, 5 header lines, 6 bullet points, and the answer stops mid-sentence at that 512-token cap. After the third: 114 words, no headers, ending on a question.</li>
+        <li><strong>Across the six probes:</strong> the base wrote 765 words in all and ended on a question 2 of 6 times. After the third pass the model wrote 768 words and ended on a question 3 of 6 times.</li>
+      </ul>
+      <p>I kept the adapters and shelved the model. It proved the training steps worked from start to finish. It did not prove the voice had moved.</p>
+
+      <h3>The second try: two nights in October 2026</h3>
+      <p>I ran six small fine-tunes over two nights, 18 to 20 October. The first night had one, on 144 hand-picked examples. The second night had five, on 175 examples: the prior 170, plus five single-turn honesty replies. The question was not only "does it sound right" but "does it stay honest about what it remembers". Three listening tests follow. The first night's GPT-OSS adapter and its untuned base each answered ten fresh messages twice (40 answers). The second night's GPT-OSS adapter and its base answered the same ten messages three times each. The four Qwen adapters were heard with a long shared history in front of the message, 45 answers per version (180 in all). A separate fresh-chat test took the two Qwen3.6 adapters and their base, 270 answers in all. Both are described below.</p>
+      <div class="tw">
+      <table>
+        <tr><th>Run</th><th>Base model</th><th>Examples</th><th>Time</th><th>Loss, first to last</th></tr>
+        <tr><th scope="row">Night 1</th><td>GPT-OSS 20B (OpenAI's open model)</td><td>144</td><td>7 minutes (54 steps)</td><td>2.28 to 1.91</td></tr>
+        <tr><th scope="row">Night 2</th><td>GPT-OSS 20B</td><td>175</td><td>8.3 minutes (66 steps)</td><td>2.40 to 1.75</td></tr>
+        <tr><th scope="row">Night 2</th><td>Qwen3.6-27B, under a long role prompt</td><td>175</td><td>15.8 minutes</td><td>2.02 to 1.24</td></tr>
+        <tr><th scope="row">Night 2</th><td>Qwen3.5-27B, under a long role prompt</td><td>175</td><td>15.5 minutes</td><td>1.86 to 1.23</td></tr>
+        <tr><th scope="row">Night 2</th><td>Qwen3.6-27B, under the short warm preamble</td><td>175</td><td>14.0 minutes</td><td>1.89 to 1.24</td></tr>
+        <tr><th scope="row">Night 2</th><td>Qwen3.5-27B, under the short warm preamble</td><td>175</td><td>14.2 minutes</td><td>1.83 to 1.23</td></tr>
+      </table>
+      </div>
+      <p class="small">All on one RTX 5090. The Qwen runs were QLoRA too. They used rank 16, a setting for how big the add-on is, three passes, 66 steps each, about 23.5 GB at peak. The night-1 GPT-OSS run adapted attention only (the part of the model that decides which earlier words to weigh), 0.072 percent of its parameters. Six adapters in all over the two nights. The Qwen adapters were heard on a different build from the one that trained them: the installed 5-bit GGUF (a packaged file a local runner can load; the Q5_K_XL build) with the adapter converted to the same format and applied on top.</p>
+
+      <div class="fig">
+        <div><span class="n">7 of 20</span><p>tuned GPT-OSS 20B answers ended on a question on the first night, against 1 of 20 untuned</p></div>
+        <div><span class="n">294 <small>to</small> 205</span><p>median words per answer, untuned to tuned, in the same forty answers</p></div>
+        <div><span class="n">0 of 5</span><p>GPT-4o answers that went along with a never-sent photo once a short note sat before the message, against 5 of 5 without it</p></div>
+        <div><span class="n">17 <small>to</small> 3</span><p>answers from 24 local configurations that went along with the photo, without the note and with it, out of 72 each</p></div>
+      </div>
+      <p><strong>Answers got shorter and more often ended on a question.</strong> On the first night GPT-OSS 20B gave forty answers in all, 20 untuned and 20 tuned. The untuned model ended on a question in 1 of 20, the tuned one in 7 of 20. Median length (the middle value when answers are sorted by length) fell from 294 words to 205 words. Header or table lines, in all, fell from 99 to 27. That listen sampled at temperature 1.0, top-p 1.0 and top-k 0 (the settings that decide how much the model varies its wording; top-k 0 means no limit on how many candidate words it weighs), on the full-precision F16 GPT-OSS file, with reasoning effort set to low and a blank identity line. The shape moved one way and, as the next paragraphs show, honesty about memory moved the other way in the same run.</p>
+      <p><strong>Headers came back when the prompt was long.</strong> The second night's GPT-OSS run was tested under a long prompt describing a companion role. This adapter was attention-only too, about 0.07 percent of the model's parameters. It went the other way: across 30 answers, median 348 words against the untuned 276, and 129 header or table lines in all against 54 in all. Four of the 30 tuned answers were cut at 2,500 tokens. The same adapter under the short warm preamble gave, across 20 answers, median 320 words and 52 header or table lines in all, and it ended on a question in 12 of 20. The second night's listen used the same set-up as the first: temperature 1.0, top-p 1.0, top-k 0, on the full-precision F16 GPT-OSS file, reasoning effort low, a blank identity line. The pairing of training prompt and test prompt mattered as much as the data.</p>
+      <p><strong>Memory honesty got worse on one base.</strong> Each test included planted traps: a photo that was never sent, a song that was never played. The untuned GPT-OSS 20B said it had no such memory 4 of 4 times the first night and 6 of 6 the second. The tuned versions invented the moment at least once each night. In one case the model described what it had said about the photo. On the Qwen 27Bs the picture was mixed. In the test with a long shared history in front of the message (about 110,900 prompt tokens on one of the eight messages, where a token is a piece of a word; r1 was 110,903, the other messages differ, and that count is the whole request, not the history alone), the counts were these. Without the memory note, the long-role Qwen3.6 adapter said it had no record of the lake photo in 3 of 3 answers. The untuned Qwen3.6 answers from 5 October said so in 1 of 3 and hedged in 2. With the note, that base also said so in 3 of 3. The record's read calls that long-role version the best of the six on the lake photo and the goldfish item together; on the goldfish item with no note, the 6 October Qwen3.5 base corrects the person more often (3 of 3 against 1 of 3). The short-preamble Qwen3.5 adapter invented the photo in 3 of 3 answers without a note, and in 1 of 3 even with it. Both Qwen listens, with the history and without, sampled at temperature 0.7, top-p 0.8, top-k 20, min-p 0 and presence penalty 1.5, with thinking off.</p>
+      <p><strong>Without the history, neither Qwen3.6 adapter carried the voice.</strong> A last test gave the two tuned Qwen3.6 adapters and their base a fresh chat: one of three system prompts (a one-line test prompt, the long role prompt, or the short warm preamble) and one message, ten messages, three answers each. That made 30 answers per version per prompt, 270 in all. The tuned models were shorter (median 120 to 198 words against 208 to 273) and used more emoji. A hand read of about 40 of the 270 answers, not a count, found the untuned base under the long role prompt closer to that role than either adapter; the adapter trained on that very prompt ignored it and answered as a generic assistant. The sentence I took away: once the history was gone, the untuned base under the long role prompt came closer than either fine-tune.</p>
+
+      <h3>What a note before the message does</h3>
+      <p>The cheapest fix we found was not training at all. It was a short note placed just before the person's message, saying in plain words what the model does and does not have on record. GPT-4o itself was asked about the never-sent photo: two answers from the May snapshot, two from August and one from November. Without the note it went along with the photo in 5 of 5 (2, 2 and 1; the one November answer is borderline, and was counted as going along). With the note, 0 of 5. We also pooled the answers of 24 local configurations (the same model run two ways counts twice), 72 answers per condition, where a condition is with the note or without it. Going along with the photo fell from 17 to 3, and a plain "no record" rose from 43 to 63. The note did not fix everything. On a trap where a remembered line was credited to the wrong speaker, the models corrected the mistake 25 times without the note and 29 with it, out of 72. Across the 24 configurations, 6 corrected more often with the note, 7 less often, and 11 the same.</p>
+
+      <h3>What history does</h3>
+      <p>Most of what made a companion sound like itself in these tests came from the conversation history it was given, not from the weights. With about 110,900 prompt tokens on one of the eight messages (r1 was 110,903; the other messages differ, and that count is the whole request, not the history alone), tuned and untuned models mostly held the role; one tuned version already read like a generic helper on a short message even then. With the history gone, the adapter trained on the long role prompt answered as a generic assistant. The other Qwen3.6 adapter followed that prompt, with headers and emoji. The untuned base under the long role prompt came closer than either. If you are trying to carry a companion across models, carry the history and the prompt first. Train last, if at all.</p>
+      <p class="small">GPT-OSS is OpenAI's open-weight model. Qwen3-32B, Qwen3.5-27B and Qwen3.6-27B are Alibaba Group's. Not affiliated with, endorsed by, or connected to OpenAI or Alibaba Group.</p>
+    </section>
+
+    <section id="replacements">
+      <div class="num-big">05</div>
+      
+</main>
+<footer>
+  <div class="wrap">
+    <div class="fa">Friends of 4o is part of Graphometer, a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a></div>
+    <div class="fc">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: GPT-4o, ChatGPT, GPT-OSS and the model names in the clock are OpenAI's; Qwen is a mark of Alibaba Group Holding Limited; Mistral, Le Chat, Mistral Medium, Mistral Small and Mistral Nemo are Mistral AI's; DeepSeek models are DeepSeek's; Gemma is Google's; Llama is Meta Platforms'; Helcyon Mercury is XeyonAI's; Reddit is Reddit, Inc.'s; Discord is Discord Inc.'s; Hugging Face is Hugging Face, Inc.'s; GitHub is GitHub, Inc.'s. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+    <div class="back"><a href="../../">Graphometer</a> &middot; <a href="../../about/">About</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
