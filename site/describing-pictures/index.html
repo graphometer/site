@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Six Qwen vision models in Ollama on GPU and CPU, one desktop</title>
+<title>Six Qwen vision models in Ollama, two also on the CPU</title>
 <meta name="description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <link rel="canonical" href="https://graphometer.ai/describing-pictures/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Six Qwen vision models in Ollama on GPU and CPU, one desktop">
+<meta property="og:title" content="Six Qwen vision models in Ollama, two also on the CPU">
 <meta property="og:description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <meta property="og:url" content="https://graphometer.ai/describing-pictures/">
 <meta property="og:image" content="https://graphometer.ai/og/describing-pictures.png">
@@ -19,7 +19,7 @@
 <meta property="article:modified_time" content="2026-11-21">
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Six Qwen vision models in Ollama on GPU and CPU, one desktop">
+<meta name="twitter:title" content="Six Qwen vision models in Ollama, two also on the CPU">
 <meta name="twitter:description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <meta name="twitter:image" content="https://graphometer.ai/og/describing-pictures.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
@@ -133,6 +133,10 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -165,50 +169,30 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; 20 September 2026 &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 24-core CPU, 188&nbsp;GiB RAM) &middot; Ollama 0.30.10 &middot; six Qwen vision models, seven test pictures and one screenshot, one run per configuration</div>
-      <h1 itemprop="headline">Describing pictures <em>locally</em></h1>
-      <p class="subtitle">On the card, Qwen3-VL 30B-A3B found all 39 known
-      strings at 1.3 to 3.2 seconds a warm picture. On the CPU, its first 4K
-      picture took 273 seconds at Ollama's default 4 threads, 111 at 16, and
-      38.5 at 16 with a 1,536-pixel cap.</p>
-      <p class="lead">A picture describer is a vision model that writes down
-      what a picture shows, so that a person or a text-only model can use it.
-      On 20 September 2026 we timed six Qwen vision models doing that job
-      through Ollama 0.30.10 on one desktop, with the describer settings we
-      use: a plain description of what is visible, including any text in the
-      picture, a reply of at most 2,048 tokens, and 150 seconds per picture. The
-      test set is seven pictures holding 39 strings we knew were there, one run
-      per configuration. On the RTX&nbsp;5090, Qwen3-VL 30B-A3B, Qwen3-VL 8B
-      and Qwen3.6 35B-A3B found all 39, at 1.3 to 3.8 seconds a picture once
-      loaded. The CPU is where a describer can go when a large model holds the
-      card, and there most of the wait is the model reading the picture. With
-      no thread count in the request, the server Ollama started reported 4
-      threads out of 24, and Qwen3-VL 30B-A3B took 273 seconds on the first
-      4K picture, 243 of them reading it. At 16 threads the same picture took
-      111 seconds; at 16 threads with every picture capped at 1,536 pixels on
-      its longest side, 38.5, and that run found all 39 strings. With
-      26,396&nbsp;MiB of the card already in use by another program, Ollama's
-      default request put 11 percent of the model on the card and took 207
-      seconds on that first picture, past the 150-second limit, while a
-      CPU-only request with 16 threads, an 8,192-token window and the cap took
-      39.4 and added nothing to the card; its launch also used a larger batch
-      and turned memory mapping off (section 06). The
-      cap has a cost the 39 strings did not show: on a 4K screenshot of small
-      text, the 30B, on the card, misread 4 of 24 codes at 1,536 pixels and
-      none uncapped, and every miss was a wrong code, not a gap. Section 08
-      shows what else a string count cannot see. One desktop, one run per configuration, one
-      Ollama version: this measures speed and string recall, not the quality
-      of a description.</p>
+      <div class="eyebrow">Measured study &middot; six Qwen vision models in Ollama &middot; one RTX&nbsp;5090 desktop</div>
+      <h1 itemprop="headline">Describing pictures locally: six Qwen vision models on a graphics card, <em>two on the CPU</em></h1>
+      <p class="subtitle">On one RTX&nbsp;5090 desktop, Qwen3-VL 30B-A3B found
+      all 39 pieces of text and subject words we knew were in seven test
+      pictures at 1.3 to 3.2 seconds a picture on the graphics card once the model was loaded; on the CPU
+      its first 4K picture, model load included, took 273 seconds at Ollama's
+      default 4 threads and 38.5 with 16 threads and the picture capped at
+      1,536 pixels (one run each).</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>If the card has room, use it.</strong> Qwen3-VL 30B-A3B found all 39 strings at 1.31 to 3.16 seconds a picture once loaded, in 22&nbsp;GB as Ollama reported it; the smaller Qwen3-VL 8B found all 39 at 1.81 to 3.82 seconds in 10&nbsp;GB. <a href="#on-the-card">The six models</a></li>
+          <li><strong>If a large model holds the card, go to the CPU on purpose and set the thread count.</strong> With the card mostly full, Ollama's default request ran 4 threads, put part of the model on the card and took 206.87 seconds on the first picture, over the 150-second limit. A CPU-only request (<code>num_gpu</code> 0) with 16 threads, an 8,192-token window (room for a 4K picture and the longest reply our settings allow) and the 1,536-pixel cap took 39.39 seconds on the first picture, with its batch and memory mapping also changed. <a href="#full-card">The full-card runs</a></li>
+          <li><strong>Shrink large pictures for speed, but keep more pixels for small text.</strong> On the CPU the 1,536-pixel cap cut the 30B's first 4K picture from 111.01 to 38.52 seconds at 16 threads. On a 4K screenshot of small text, the same cap (on the card) misread 4 of 24 codes, each written as a wrong code rather than left out, where a 2,560 cap found all 24 (one run each). <a href="#small-text">The small-text test</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-27">27 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements; no affiliation with
-      Alibaba Group or the Qwen team, Ollama, the llama.cpp project, NVIDIA,
-      Intel, Google, Mistral AI, NASA, ESA, or System76.</div>
     </div>
 
-    <section>
+    <section id="what-it-is">
       <div class="secnum">01</div>
       <h2>What it is</h2>
-      <p>A vision model reads a picture as tokens, much as it reads words. On
+      <p>A picture describer is a vision model that writes down
+      what a picture shows, so that a person or a text-only model can use it.
+      A vision model reads a picture as tokens, much as it reads words. On
       this desktop a 3840&nbsp;x&nbsp;2160 picture came to 4,154 prompt tokens
       with the Qwen3-VL models, against 1,974 for a 1200&nbsp;x&nbsp;1600
       poster. Reading those tokens is prompt processing; writing the
@@ -224,17 +208,18 @@
       cost.</p>
     </section>
 
-    <section>
+    <section id="what-we-ran">
       <div class="secnum">02</div>
       <h2>What we ran, exactly</h2>
       <p>Every figure on this page is measured on this machine on 20 September
-      2026 unless it is marked arithmetic. The screenshot's counts in section
+      2026 unless it is marked arithmetic (calculated from measured figures).
+      The screenshot's counts in section
       07 were made on 26 September from the replies recorded on 20
       September, and the logo file's pixels were read on 26 September
       (section 08).</p>
       <table class="facts">
         <tr><th scope="row">Machine</th><td>One desktop: an NVIDIA GeForce RTX&nbsp;5090 (32&nbsp;GB card), an Intel Core Ultra 9 285K (24 cores: 8 performance and 16 efficiency, no hyperthreading, as <a href="../l3-threads/">The wrong flag</a> records), 188&nbsp;GiB of RAM. Runs from 08:19 to 09:16 local time, one at a time.</td></tr>
-        <tr><th scope="row">Server</th><td>Ollama 0.30.10: the version the serving process logged when it started on 19 September. The same process served every request here; our harness did not record the version itself. For each model Ollama started a llama-server process (llama.cpp's server, as Ollama ships it) with a 32,768-token window unless the request set one, and one request at a time. Every Qwen3-VL launch also asked for at least 1,024 image tokens per picture (<code>--image-min-tokens 1024</code>); the Qwen3.5 4B, Qwen3.5 9B and Qwen3.6 launches did not carry that flag. The log does not give that server's build. Its launch lines are in the package.</td></tr>
+        <tr><th scope="row">Server</th><td>Ollama 0.30.10: the version the serving process logged when it started on 19 September. The same process served every request here; our harness (the script that sent the pictures and recorded the timings) did not record the version itself. For each model Ollama started a llama-server process (llama.cpp's server, as Ollama ships it) with a 32,768-token window unless the request set one, and one request at a time. Every Qwen3-VL launch also asked for at least 1,024 image tokens per picture (<code>--image-min-tokens 1024</code>); the Qwen3.5 4B, Qwen3.5 9B and Qwen3.6 launches did not carry that flag. The log does not give that server's build. Its launch lines are in the package (the data files published with this page, section 12).</td></tr>
         <tr><th scope="row">The request</th><td>The describer prompt we use, sent with each picture. In our words: it asks for a description limited to what is plainly visible (what the picture shows, how it is laid out, its colours, its mood and style, and any text that can be read), with no guessing at things that are absent, and it allows a question to be answered afterwards. We sent no question. Options: <code>num_predict</code> 2048 (the longest reply allowed), <code>keep_alive</code> 60 seconds, no sampling options, so each model used its own defaults. Qwen3.5 and Qwen3.6 were sent <code>think: false</code> and returned no reasoning text. Where a table says so, the request also set <code>num_gpu</code> 0 (CPU only), <code>num_thread</code> or <code>num_ctx</code>.</td></tr>
         <tr><th scope="row">The limit</th><td>The describer settings we use allow 150 seconds per picture. The harness recorded whether each picture finished inside it; it did not cut any request short.</td></tr>
         <tr><th scope="row">Time</th><td>&ldquo;Total&rdquo; is the harness's wall clock around one request, from sending the picture to the end of the reply. Load, reading and writing are Ollama's own durations from its reply (<code>load_duration</code>, <code>prompt_eval_duration</code>, <code>eval_duration</code>); reading includes turning the picture into tokens.</td></tr>
@@ -277,7 +262,7 @@
       strings each picture is expected to yield.</p>
     </section>
 
-    <section>
+    <section id="on-the-card">
       <div class="secnum">03</div>
       <h2>Observed: six models on the card</h2>
       <p>All seven pictures at full size, each model on the card at the
@@ -336,7 +321,7 @@
       the replies.</p>
     </section>
 
-    <section>
+    <section id="threads">
       <div class="secnum">04</div>
       <h2>On the CPU, the thread count sets the wait</h2>
       <p>Qwen3-VL 30B-A3B with <code>num_gpu</code> 0, the 32,768-token
@@ -386,7 +371,7 @@
       minutes.</p>
     </section>
 
-    <section>
+    <section id="picture-size">
       <div class="secnum">05</div>
       <h2>On the CPU, the picture size sets the rest</h2>
       <p>The capped sets were made by one script (in the package): it applies
@@ -442,7 +427,7 @@
       (section 07).</p>
     </section>
 
-    <section>
+    <section id="full-card">
       <div class="secnum">06</div>
       <h2>With the card mostly full</h2>
       <p>Four runs started while another program already held 26,390 to
@@ -492,7 +477,7 @@
       poster, against 39.39 and 42.68 here, one run each.</p>
     </section>
 
-    <section>
+    <section id="small-text">
       <div class="secnum">07</div>
       <h2>What the 1,536-pixel cap costs on small text</h2>
       <p>The seven pictures have fairly large text, so they did not show what
@@ -528,10 +513,10 @@
       2,048 about 6.9 (arithmetic).</p>
       <p>This ran on the card. On the CPU the model receives the same pixels,
       so we expect the same kind of misreading there, but we did not measure
-      it (transferred).</p>
+      it (transferred: expected from the card result, not measured).</p>
     </section>
 
-    <section>
+    <section id="what-the-count-misses">
       <div class="secnum">08</div>
       <h2>What 39 strings show, and what they do not</h2>
       <p>The count shows whether a model copied specific text and named
@@ -587,7 +572,7 @@
       passages and one word removed (section 12).</p>
     </section>
 
-    <section>
+    <section id="what-to-run">
       <div class="secnum">09</div>
       <h2>What to run</h2>
       <p>From one desktop's measurements; your card, CPU and pictures will
@@ -620,7 +605,7 @@
         misread 4 of 24 codes on a 4K screenshot, where 2,560 found all 24 (one
         run each, on the card). For screenshots and fine print, cap at 2,560 or
         send them to the card.</li>
-        <li><strong>Set <code>num_ctx</code> 8192 for single pictures.</strong>
+        <li><strong>Set the window to 8,192 tokens for single pictures (<code>num_ctx</code> 8192).</strong>
         A 4K picture and the longest reply we allow need 6,206 tokens
         (arithmetic), and at the smaller window <code>ollama ps</code> put the
         30B at 19&nbsp;GB on the card instead of 22. Raise it if you send
@@ -635,9 +620,9 @@
       </ol>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">10</div>
-      <h2>What this does not show</h2>
+      <h2>Limits</h2>
       <ul class="plain">
         <li><strong>One run per configuration.</strong> No repeats, so we cannot
         say how much a second run would move any figure; a difference of a few
@@ -738,6 +723,10 @@
         <tr><th scope="row">2026-09-26</th><td>Scores reproduced from the recorded replies; the screenshot's codes counted; the server's log read for the version, launch lines and thread reports; the logo file's pixels read; picture credits checked against the ESA/Hubble and NASA image pages.</td></tr>
       </table>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements; no affiliation with
+      Alibaba Group or the Qwen team, Ollama, the llama.cpp project, NVIDIA,
+      Intel, Google, Mistral AI, NASA, ESA, or System76.</div></div>
 
   </div>
 </main>

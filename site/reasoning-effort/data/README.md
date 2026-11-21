@@ -1,5 +1,7 @@
 # Reasoning effort is a sentence, not a dial: data package
 
+> Note, 21 November 2026: the page this file belongs to was lightly edited on this date. The top of the page changed: an "In short" summary was added, and the label line, the sentence under the headline and the opening paragraph were shortened, reworded or moved lower. Some section headings were renamed (for example "What this does not show" is now "Limits"). Section numbers and their order are unchanged. Where this file names the page's subtitle, lead or label line, it means the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the numbers on **https://graphometer.ai/reasoning-effort/**,
 as the files the two runs actually produced: the **2026-08-16** local study of
 **Qwen3.8-27B** on one RTX 5090, sixteen rendered prompts read straight out of

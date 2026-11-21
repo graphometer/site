@@ -133,6 +133,12 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .hero .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .hero .note ul.plain li:last-child{margin-bottom:0}
+  .hero .note p{color:var(--ink);margin:12px 0 0}
+  section .note + p{margin-top:18px}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -164,16 +170,39 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; 13 to 21 September 2026 &middot; one RTX 5090 desktop and a 128 GB laptop over Thunderbolt &middot; llama.cpp RPC &middot; ten models tried</div>
-      <h1 itemprop="headline">Two boxes, <em>one model</em></h1>
-      <p class="subtitle">A desktop and a laptop joined by one cable,
-      running one large model between them. The pair adds memory. With
-      llama.cpp's batch size raised, the desktop alone answered a
-      48,024-token request with the same DeepSeek V4 Flash file in 75.2
-      seconds; the pair took 416.4 at its best completed setting and 474.2
-      at the one it keeps. The pair still speaks faster on short
-      prompts.</p>
-      <div class="note">
+      <div class="eyebrow">Measured study &middot; one RTX 5090 desktop and a 128 GB laptop over Thunderbolt &middot; ten models tried</div>
+      <h1 itemprop="headline">Splitting one llama.cpp model across <em>a desktop and a laptop</em></h1>
+      <p class="subtitle">A desktop and a laptop joined by one cable (the
+      pair) can load a model too big for either alone, but on one
+      48,024-token request with the same DeepSeek V4 Flash file the desktop
+      alone finished in 75.2 seconds, while the pair took 416.4 at its best
+      setting that finished.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>If the model fits on one machine, run it there and
+          raise llama.cpp's micro-batch first</strong> (how many prompt
+          tokens it reads in one step). With the same DeepSeek V4 Flash file,
+          the desktop alone at a larger micro-batch read prompts (2,998 to
+          150,103 tokens) 3.3 to 12.3 times faster than the pair at the
+          setting it keeps as a precaution, which took 474.2 seconds on the
+          48,024-token request. <a href="#what-to-set">What to
+          set</a></li>
+          <li><strong>Use the second machine for memory, and expect slower
+          reading.</strong> A 283.03&nbsp;GiB file, larger than either
+          machine's memory, loaded and answered on the pair. With the DeepSeek
+          V4 Flash file, the pair's writing edge is a short-prompt edge: 14.76
+          tokens a second against 12.65 on a 2,998-token prompt, slower than
+          the desktop alone at 150,103 tokens.
+          <a href="#summary">Summary</a></li>
+          <li><strong>Build both ends from the same llama.cpp commit, and
+          test a larger micro-batch at your longest real prompt.</strong> A
+          mismatch answered in fluent nonsense; at <code>-ub 4096</code> the
+          laptop's side failed 40,960 tokens into a long read.
+          <a href="#traps">The two traps</a></li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
+      <div class="note" id="what-to-set">
         <span class="label">What to set, from these runs</span>
         <ul class="plain">
           <li><strong>If the model fits on one machine, run it there, and
@@ -190,9 +219,9 @@
           416.4 at <code>-b/-ub 2048</code>, its best completed
           setting.</li>
           <li><strong>Use the second machine for memory</strong>: for a
-          model that does not fit on one machine, or a dense model much
-          larger than the card (section 05). Expect it to cost reading
-          speed, more the longer the prompt.</li>
+          model that does not fit on one machine, or a dense model (one that
+          is not split into experts) much larger than the card (section 05).
+          Expect it to cost reading speed, more the longer the prompt.</li>
           <li><strong>On the pair, a larger micro-batch helped until it
           broke.</strong> <code>-ub 2048</code> finished the same request
           faster; at 4,096 the laptop's side failed 40,960 tokens into the
@@ -202,49 +231,27 @@
           commit</strong>, or a mismatch can answer in fluent nonsense
           (section 08).</li>
         </ul>
-        If your prompts stay short, the pair still speaks this model about
-        a sixth faster: 14.76 tokens a second against 12.65 on a
-        2,998-token prompt.
+        <p>If your prompts stay short, the pair still speaks (writes the
+        answer) this model about a sixth faster: 14.76 tokens a second
+        against 12.65 on a 2,998-token prompt.</p>
       </div>
       <p class="lead">llama.cpp can serve one model from two computers:
       the server runs on the desktop, and a worker program on a second
       machine lends it that machine's memory. Between 13 and 20 September
       2026 we ran ten models that way, with the desktop's RTX&nbsp;5090 and
-      an ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory on the other
-      end of a direct Thunderbolt cable. On 21 September we ran the pair's
-      best case, DeepSeek V4 Flash at 3-bit, against the same file on the
-      desktop alone: same day, same llama.cpp commit, same window, same
-      prompts. <strong>Reading</strong> is how fast a server takes a prompt
-      in; <strong>speaking</strong> is how fast it writes the answer; both
-      are llama.cpp's own timings. The pair always added memory: a
-      283.03&nbsp;GiB file, larger than either machine's memory, loaded and
-      answered on it. It did not beat a well-set desktop at reading: every
-      comparison re-run after the batch change reads faster on the desktop
-      alone. The one case that had pointed the other way, MiniMax M2.7, was
-      measured against a desktop run left at a quarter of llama.cpp's
-      default micro-batch; at the default the desktop read faster, on a
-      shorter prompt (3,658 tokens against the pair's 7,844). GLM-4.7 Full
-      and the control were not re-run after the batch change. Every speed
-      here is measured on these machines, one request at a time; the one
-      maker's figure is labelled <span class="n">vendor</span>.</p>
-      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to DeepSeek, Alibaba Group, Z.ai, Moonshot
-      AI, MiniMax, Meta, Mistral AI, NVIDIA, AMD, ASUS, Intel, or the
-      llama.cpp project.</div>
-      <div class="note">
-        <span class="label">What changed after the first runs</span>
-        Our records of the 13 to 15 September runs said the pair made
-        DeepSeek V4 Flash faster than the desktop alone, comparing the
-        3-bit file on the pair with the 8-bit file alone, both at
-        llama.cpp's default batch sizes. Once the same 3-bit file was
-        measured alone with a raised micro-batch, the answer reversed for
-        long prompts. The earlier runs stay as dated records, most of them
-        now in the data package; section 09 lists what we got wrong.
-      </div>
+      an ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory (memory its
+      processor and graphics share) on the other end of a direct
+      Thunderbolt cable. On 21 September we ran the pair's best case,
+      DeepSeek V4 Flash at 3-bit, against the same file on the desktop
+      alone: same day, same llama.cpp commit, same window (how many tokens
+      the server holds at once), same prompts. <strong>Reading</strong> is
+      how fast a server takes a prompt in; <strong>speaking</strong> is how
+      fast it writes the answer; both are llama.cpp's own timings. Every
+      speed here is measured on these machines, one request at a time; the
+      one maker's figure is labelled <span class="n">vendor</span>.</p>
     </div>
 
-    <section>
+    <section id="summary">
       <div class="secnum">01</div>
       <h2>Summary</h2>
       <p>Each finding is scoped to the runs that produced it; the dates are
@@ -273,8 +280,8 @@
         comparison re-run after the batch change. MiniMax M2.7, which our
         records had as faster on the pair, was compared with a desktop run
         at <code>-ub 128</code>; at the default the desktop read faster, on
-        a shorter prompt (section 05). GLM-4.7 Full and the control were not
-        re-run.</li>
+        a shorter prompt (section 05). GLM-4.7 Full and the control (a
+        smaller model run to prove the setup works) were not re-run.</li>
         <li><strong>A dense model is the pair's best case for
         speaking.</strong> Mistral Medium 3.5, which does not fit the card,
         spoke at 5.54 tokens a second on the pair on a 441-token prose
@@ -296,22 +303,23 @@
       </ol>
     </section>
 
-    <section>
+    <section id="what-it-is">
       <div class="secnum">02</div>
       <h2>What it is</h2>
       <p>llama.cpp has an RPC backend. One machine runs
       <code>llama-server</code> and holds the model; another machine runs
       <code>ggml-rpc-server</code>, and the first machine treats it as a
       device, in the same list as its graphics card and its processor.
-      Layers are assigned to devices at load time. Nothing is pipelined
+      Layers (the stacked blocks a model is built from) are assigned to devices at load time. Nothing is pipelined
       across requests and nothing is sharded inside a layer: when a token
       needs a layer that lives on the second machine, the work and its data
       cross the cable and come back.</p>
-      <p>That makes three places a layer can live on this bench, and the
+      <p>That makes three places a layer can live on these two machines, and the
       launcher expresses them as three numbers: <strong>whole layers on the
-      graphics card</strong>, <strong>layers whose attention stays on the
-      card while their experts sit in the desktop's system
-      memory</strong>, and <strong>whole layers on the second
+      graphics card</strong>, <strong>layers whose attention (the part of a
+      layer that looks back over earlier tokens) stays on the card while
+      their experts (weight groups each token uses only some of; see
+      below) sit in the desktop's system memory</strong>, and <strong>whole layers on the second
       machine</strong>. Every run on the pair is written as those three
       numbers in that order, for example <code>8 / 10 / 25</code>. A whole
       layer on the laptop includes its attention: the load logs put the
@@ -320,17 +328,17 @@
       <p>Every model placed with that middle number is a mixture-of-experts
       model: most of its weight sits in expert tensors that only some
       tokens use. That is why the knob exists at all, and it is why the
-      placement question has an answer worth measuring.</p>
+      placement question (which layers go where) has an answer worth measuring.</p>
       <table class="facts">
         <tr><th scope="row">Desktop</th><td>One NVIDIA GeForce RTX&nbsp;5090, 32,086&nbsp;MiB as llama.cpp reports it (32,607&nbsp;MiB as nvidia-smi reports it); Intel Core Ultra 9 285K, 16 compute threads of 24 in the control run and 24 in the others; 192,591&nbsp;MiB of system memory, which is 188&nbsp;GiB. CUDA 12.8.93, sm_120. <span class="n">measured</span></td></tr>
-        <tr><th scope="row">Second machine</th><td>An ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory: Ryzen AI Max+ 395, Radeon 8060S Graphics, served through Vulkan, which reports <code>uma: 1</code>, <code>fp16: 1</code>, <code>bf16: 0</code>, <code>fp4: 0</code>. <span class="n">measured</span></td></tr>
+        <tr><th scope="row">Second machine</th><td>An ASUS ROG Flow Z13 with 128&nbsp;GB of unified memory: Ryzen AI Max+ 395, Radeon 8060S Graphics, served through Vulkan (the graphics interface the worker used), which reports <code>uma: 1</code>, <code>fp16: 1</code>, <code>bf16: 0</code>, <code>fp4: 0</code>. <span class="n">measured</span></td></tr>
         <tr><th scope="row">Memory it offered</th><td>110,592&nbsp;MiB total, 109,602&nbsp;MiB free, as the server's own device probe reported it at launch. This is a device report, not a memory benchmark. <span class="n">measured</span></td></tr>
         <tr><th scope="row">Link</th><td>A direct Thunderbolt cable between the two machines, host to host, no switch and no router in between. Measured on 2026-09-15; figures in section 03. <span class="n">measured</span></td></tr>
         <tr><th scope="row">Model under the headline</th><td>DeepSeek V4 Flash 0731: 284 billion parameters, read from the model file's header (<span class="n">measured</span>); the maker's repository page lists 304B because a draft module ships with it (<span class="asstated">vendor, read 2026-09-15</span>). <span class="asstated">The maker's model card at the revision we retained states no parameter count at all, and we print no figure for how many parameters are active per token.</span></td></tr>
       </table>
     </section>
 
-    <section>
+    <section id="what-we-ran">
       <div class="secnum">03</div>
       <h2>What we ran, exactly</h2>
       <h3>The builds</h3>
@@ -360,7 +368,8 @@
       8,192; the 15 and 21 September runs served 262,144 where the rows say
       so. Every run on the pair from 13 to 21 September left llama.cpp's
       batch sizes at their defaults, <code>-b 2048 -ub 512</code>, except
-      the 21 September rungs that raised them.</p>
+      the 20 September MiniMax M3 tries and the 21 September runs that
+      raised them.</p>
       <h3>The probes</h3>
       <ul class="plain">
         <li><strong>13 to 15 September:</strong> a short probe (a
@@ -369,7 +378,7 @@
         middle) and, on some runs, a fresh 8,000-token prompt with a
         different code.</li>
         <li><strong>15 to 21 September:</strong> a synthetic ledger with a
-        sealed code planted halfway, read cold, answered with the code. On
+        sealed code (a hidden string the model must quote back) planted halfway, read cold, answered with the code. On
         21 September the desktop-alone and pair runs used identical prompts,
         2,998, 48,024 and 150,103 tokens long, and on the pair each cold read
         was followed by the same ledger with its last question changed, then
@@ -387,13 +396,13 @@
       <table class="facts">
         <tr><th scope="row">2026-09-13</th><td>Link brought up, both ends built from one commit, control run, then the first sweep on the pair: DeepSeek's 8-bit, 3-bit and 4-bit files, the draft model, the trillion-parameter model, GLM-4.7 Full, Qwen3.5-397B and the 400B.</td></tr>
         <tr><th scope="row">2026-09-14</th><td>Three tool-and-recall attempts on the 3-bit pair; Qwen3-235B and MiniMax M2.7 on the pair.</td></tr>
-        <tr><th scope="row">2026-09-15 to 16</th><td>The 4-bit preset on the installed service; the link measured; long reads at a 262,144-token window; Mistral Medium 3.5 on the pair on the 16th.</td></tr>
+        <tr><th scope="row">2026-09-15 to 16</th><td>The 4-bit preset (a saved set of launch settings) on the installed service; the link measured; long reads at a 262,144-token window; Mistral Medium 3.5 on the pair on the 16th.</td></tr>
         <tr><th scope="row">2026-09-17</th><td>The 3-bit DeepSeek file measured alone on the desktop for the first time.</td></tr>
         <tr><th scope="row">2026-09-19 to 21</th><td>MiniMax M3 on the pair early on the 20th. The micro-batch sweep on the desktop alone, then, on the night of the 21st, the pair re-tuned against the 3-bit file alone.</td></tr>
       </table>
     </section>
 
-    <section>
+    <section id="same-file">
       <div class="secnum">04</div>
       <h2>The same file on one machine and on two</h2>
       <p>On 21 September we ran the 3-bit DeepSeek V4 Flash file
@@ -560,11 +569,11 @@
       <a href="../z13-alone/">their own page</a>.</p>
     </section>
 
-    <section>
+    <section id="other-models">
       <div class="secnum">05</div>
       <h2>The other models</h2>
       <p>One row per model, on the pair at llama.cpp's default batch sizes,
-      one request at a time. Where a model has a desktop-alone figure, the
+      except MiniMax M3, one request at a time. Where a model has a desktop-alone figure, the
       run that produced it is named, because it was always a different
       night and often a different setting. All speeds
       <span class="n">measured</span>; parameter counts and sizes are read
@@ -644,7 +653,7 @@
       capacity demonstrations; the control is a proof of path.</p>
     </section>
 
-    <section>
+    <section id="placement">
       <div class="secnum">06</div>
       <h2>The placement rule, revised</h2>
       <div class="note">
@@ -680,7 +689,7 @@
       the default setting or below it.</p>
     </section>
 
-    <section>
+    <section id="draft">
       <div class="secnum">07</div>
       <h2>The draft model, the installed preset and the checks</h2>
       <p>DeepSeek's draft model, on the card, 2026-09-13, raised speaking at
@@ -690,20 +699,20 @@
       well. It was not re-measured at 262,144 or with a larger
       micro-batch. The 4-bit file with the draft, as a preset of the
       installed service on 2026-09-15 at 131,072, spoke 19.55 and 19.59 and
-      read 125.1 on 7,841 tokens; its check covered the short legs only.
+      read 125.1 on 7,841 tokens; its check covered the short tests only.
       <span class="n">measured</span></p>
       <p>A separate check through an agent framework, 2026-09-14, planted
       three codes in 48,000 and 96,000 tokens of history and required a
-      tool call at depth. On the 3-bit pair the long legs passed, 3 of 3
+      tool call at depth. On the 3-bit pair the long tests passed, 3 of 3
       codes and a tool call at 52,928 and 102,478 tokens with the first
       word after 543.65 and 1,537.75 seconds, only inside an attempt that
-      failed on an unrelated leg; a later attempt passed and covers the
-      short legs only. The tables, the attempts and the load figures are
+      failed on an unrelated test; a later attempt passed and covers the
+      short tests only. The tables, the attempts and the load figures are
       in the data package, and the <a href="../deepseek-v4-flash/">DeepSeek
       V4 Flash card</a> carries the model-level record.</p>
     </section>
 
-    <section>
+    <section id="traps">
       <div class="secnum">08</div>
       <h2>Two traps behind the advice</h2>
       <p>Each is an interaction between a reasonable default and a
@@ -728,18 +737,27 @@
       04). The short read gave no warning. <strong>On a pair, test any
       larger micro-batch at your longest real prompt, not a short
       one.</strong></p>
-      <p>Two more traps from the first nights, a watchdog that stopped a
+      <p>Two more traps from the first nights, a watchdog (a monitoring process) that stopped a
       healthy server by probing a busy worker's port and a worker that
       started before the laptop's graphics driver and served from its
       processor for hours, are written up in the data package with their
       dates.</p>
     </section>
 
-    <section>
+    <section id="corrections">
       <div class="secnum">09</div>
-      <h2>What we got wrong</h2>
-      <p>This site publishes corrections of its own records as a genre.
-      Where our records and the logs disagree, the log's number is
+      <h2>Corrections: what we got wrong</h2>
+      <div class="note">
+        <span class="label">What changed after the first runs</span>
+        Our records of the 13 to 15 September runs said the pair made
+        DeepSeek V4 Flash faster than the desktop alone, comparing the
+        3-bit file on the pair with the 8-bit file alone, both at
+        llama.cpp's default batch sizes. Once the same 3-bit file was
+        measured alone with a raised micro-batch, the answer reversed for
+        long prompts. The earlier runs stay as dated records, most of them
+        now in the data package; the table below lists what we got wrong.
+      </div>
+      <p>Where our records and the logs disagree, the log's number is
       printed.</p>
       <div class="data-wrap">
       <table class="data">
@@ -792,9 +810,9 @@
       default settings became a speed-up.</p>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">10</div>
-      <h2>What this does not show</h2>
+      <h2>Limits</h2>
       <ul class="plain">
         <li><strong>One same-file comparison, one model.</strong> Section 04
         compares one DeepSeek file on one machine and on two, on one day,
@@ -825,7 +843,7 @@
       </ul>
     </section>
 
-    <section>
+    <section id="sources">
       <div class="secnum">11</div>
       <h2>Sources and artifacts</h2>
       <p>The evidence ships as a data package: the files the runs actually
@@ -863,13 +881,13 @@
       then.</p>
     </section>
 
-    <section>
+    <section id="related">
       <div class="secnum">12</div>
       <h2>Related pages on this site</h2>
       <p>The <a href="../deepseek-v4-flash/">DeepSeek V4 Flash field
       card</a> is the model-level record for the model in sections 04 and
       07. The <a href="../batch-size/">batch-size study</a> is the
-      desktop-alone half of this story across the whole roster.
+      desktop-alone half of this story across every model this desktop serves.
       <a href="../context-256k/">What a full window costs</a> has the long
       reads of 15 September. The <a href="../z13-alone/">laptop-alone
       study</a> runs six models on the second machine by itself. The
@@ -878,6 +896,11 @@
       same editorial habit applied to an earlier record: a default nobody
       had checked, measured and corrected. <a href="../letta-code-local/">Running Letta Code locally</a> is a build report from the same laptop, with Letta Code agents on a local llama.cpp model.</p>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+    endorsed by, or connected to DeepSeek, Alibaba Group, Z.ai, Moonshot
+    AI, MiniMax, Meta, Mistral AI, NVIDIA, AMD, ASUS, Intel, or the
+    llama.cpp project.</div></div>
 
   </div>
 </main>

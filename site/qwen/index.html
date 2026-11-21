@@ -124,6 +124,14 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .hero p.subtitle{margin-top:14px;max-width:60ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .note ul.plain ul.plain{margin:8px 0 8px 1.2em}
+  .note ul.plain ul.plain li{margin-bottom:4px}
+  .note p{color:var(--ink);margin:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -155,62 +163,79 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Family guide · measured rows dated · vendor rows labeled</div>
+      <div class="eyebrow">Family guide · one RTX 5090 desktop</div>
       <h1 itemprop="headline">Which <em>Qwen</em> should I run?</h1>
-      <p class="lead">Qwen is an unusually wide open model family: real
-      Apache-licensed weights from under one billion parameters to a 397B
-      mixture-of-experts, plus API-only frontier tiers above that. That
-      width is the point of this page. We run the family for real on one
-      desktop, from the small daily drivers to the 122B and 397B, so the
-      guidance here is what we measured, labeled as measured, next to what
-      the vendor claims, labeled as claims. Find your hardware in the
-      chooser, install your first one with two commands once Ollama is on
-      your machine, take the serving profiles we actually run, and know
-      when the honest answer is "use the API instead."</p>
+      <p class="subtitle">On one desktop with a 32 GB RTX 5090, the Qwen3.6 35B and 27B ran fully on the graphics card at 227 and 72 tokens a second; one configuration each, July 2026.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Pick by your graphics card's memory.</strong> The chooser's picks:
+            <ul class="plain">
+              <li>No real GPU: the sub-1B and 2B-class models, as utilities and pipeline testers only; anything bigger belongs to the API (the 0.6B ran at 857 tokens a second on our GPU, July 2026; CPU-only speed untested here).</li>
+              <li>8 to 12 GB: the 4B and 9B-class at 4-bit (maker's sizing; not run here).</li>
+              <li>16 GB: a 14B-class at 4-bit, or the 27B at 4-bit with part of it on the CPU (file-size arithmetic; not run here).</li>
+              <li>24 GB: the Qwen3.6 27B at 4-bit (arithmetic; we ran it only on a 32 GB card).</li>
+              <li>32 GB: the Qwen3.6 35B, the 27B, or a 30B-class vision model, fully on the card (measured).</li>
+              <li>32 GB plus RAM: the Qwen3.5 122B at 26 to 38 tokens a second with roughly 96 GB or more of RAM, the 397B at 14 to 20 with roughly 176 GB or more (one configuration each, August 2026; we measured only on 188 GiB).</li>
+              <li>None of these: hosted Qwen.</li>
+            </ul>
+            <a href="#chooser">The chooser</a></li>
+          <li><strong>For a first Qwen, use Ollama and start with the output limit at 4,096</strong> (a starting point that worked for our jobs; some questions need more). Two commands start the Qwen3.6 27B on a card with about 20 GB of memory or more. With a low output limit, the model's thinking can use it all and return nothing. Known-good settings files are below. <a href="#first-qwen">Your first Qwen</a> · <a href="#profiles">Settings files</a></li>
+          <li><strong>As of August 2026, hosted Qwen was cheaper; local keeps your prompts on your machine.</strong> Our rule of thumb: privacy-sensitive or high-volume, predictable work runs local; frontier-quality one-offs and million-token contexts (room for a million tokens of text at once) run hosted. <a href="#hosted">Local or hosted</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-09">9 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent guidance. Not affiliated with,
-      endorsed by, or connected to the Qwen team or Alibaba Group.</div>
     </div>
 
-    <section>
+    <section id="family">
       <div class="secnum">01</div>
       <h2>The family on one screen</h2>
+      <p>Qwen is an unusually wide open model family: real
+      Apache-licensed weights from under one billion parameters to a 397B
+      mixture-of-experts (a design where only part of the model works on
+      each token; see the box in section 02), plus API-only frontier tiers
+      above that. That width is the point of this page. We run the family
+      for real on one desktop, from the small daily drivers (the models we
+      use every day) to the 122B and 397B, so the guidance here is what we
+      measured, labeled as measured, next to what the vendor claims,
+      labeled as claims.</p>
       <p>Four generations matter today. The one-line version: <strong>3.5
       and 3.6 are the open ones you can run; 3.7 is API-only; 3.8 is now
       open too, in two very different sizes and under two different
       licenses.</strong></p>
       <table class="facts">
-        <tr><th scope="row">Qwen3.5 (open)</th><td>The current big open generation: mixture-of-experts models topping out at the 397B and the 122B we serve here, Apache 2.0, with built-in speculative-decoding heads. Our measured deep-dive is the <a href="../qwen35/">Qwen3.5 pair field card</a>.</td></tr>
-        <tr><th scope="row">Qwen3.6 (open)</th><td>The newest open weights: a 27B and a 35B mixture-of-experts, Apache 2.0, files verified on the official organization. Our daily drivers below come from this generation and its predecessors.</td></tr>
+        <tr><th scope="row">Qwen3.5 (open)</th><td>The current big open generation: mixture-of-experts models topping out at the 397B and the 122B we serve here, Apache 2.0, with built-in speculative-decoding heads (built-in guessing heads). Our measured deep-dive is the <a href="../qwen35/">Qwen3.5 pair field card</a>.</td></tr>
+        <tr><th scope="row">Qwen3.6 (open)</th><td>Open weights: a 27B and a 35B mixture-of-experts, Apache 2.0, files verified on the official organization. Our daily drivers below come from this generation and its predecessors.</td></tr>
         <tr><th scope="row">Qwen3.7 (API only)</th><td><span class="asstated">Max, Plus and Flash tiers on the official API and aggregators; the vendor states they are proprietary. No 3.7 weights have ever shipped.</span></td></tr>
         <tr><th scope="row">Qwen3.8 (open, in two sizes)</th><td>The Max is live as an API, and both promised open releases have now shipped: a 2.4-trillion-parameter Max-class model on 2026-08-12 under a custom license with revenue thresholds, and a 27B on 2026-08-14 under Apache 2.0. <strong>Two models, one version number, two different licenses</strong>, so check the file in the repository you actually download. Verified status, revisions and the fake-repository warning live on our <a href="../qwen38-readiness/">Qwen3.8 release watch</a>; the 27B's measured record, taken on the day it shipped, is the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</td></tr>
       </table>
-      <p class="fineprint">Generation status checked 2026-08-09; the
+      <p class="fineprint">This page: published 9 August 2026, last updated 14 August 2026.
+      Generation status checked 2026-08-09; the
       Qwen3.8 row refreshed 2026-08-14. The release-watch page carries the
       dated table and updates as things actually ship.</p>
     </section>
 
-    <section>
+    <section id="chooser">
       <div class="secnum">02</div>
       <h2>The chooser: what your machine can actually run</h2>
       <p>Rows marked <strong>measured</strong> come from recorded runs on
-      our machine (a single RTX 5090 with 32 GB of VRAM and 188 GiB of
-      system RAM; dates given). Rows marked <strong>arithmetic</strong> are
+      our machine (a single RTX 5090 with 32 GB of VRAM, the graphics
+      card's own memory, and 188 GiB of system RAM; dates given). Rows marked <strong>arithmetic</strong> are
       file-size reasoning we consider sound but have not run. Rows marked
       <strong>vendor</strong> are the maker's sizing. Speeds are warm
-      generation, one configuration each, not benchmarks.</p>
+      generation in tokens per second (t/s), one configuration each, not
+      benchmarks.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th class="t" style="text-align:left">Your hardware</th><th class="t" style="text-align:left">What we would run</th><th>Speed seen</th><th class="t" style="text-align:left">Basis</th></tr></thead>
         <tbody>
-          <tr><td class="t">Laptop or desktop, no real GPU</td><td class="t">The sub-1B and 2B-class tags as utilities and pipeline testers; anything bigger belongs to the API</td><td>see basis</td><td class="t">transferred: the 0.6B measured 857 t/s on our 32 GB GPU (July 2026); CPU-only speed untested here, but this size class runs acceptably on CPUs generally (vendor and community consensus, labeled as such)</td></tr>
-          <tr><td class="t">8 to 12 GB VRAM</td><td class="t">The 4B and 9B-class tags at 4-bit</td><td>untested here</td><td class="t">vendor sizing; we have not run these sizes and say so</td></tr>
+          <tr><td class="t">Laptop or desktop, no real GPU</td><td class="t">The sub-1B and 2B-class tags (Ollama's model names) as utilities and pipeline testers; anything bigger belongs to the API</td><td>see basis</td><td class="t">carried over from other hardware: the 0.6B measured 857 t/s on our 32 GB GPU (July 2026); CPU-only speed untested here, but this size class runs acceptably on CPUs generally (vendor and community consensus, labeled as such)</td></tr>
+          <tr><td class="t">8 to 12 GB VRAM</td><td class="t">The 4B and 9B-class tags at 4-bit (weights compressed to about 4 bits each)</td><td>untested here</td><td class="t">vendor sizing; we have not run these sizes and say so</td></tr>
           <tr><td class="t">16 GB VRAM</td><td class="t">A 14B-class at 4-bit comfortably; the 27B at 4-bit with partial CPU offload</td><td>untested here</td><td class="t">arithmetic from file sizes</td></tr>
           <tr><td class="t">24 GB VRAM</td><td class="t">The Qwen3.6 27B at 4-bit (a 17 GB download)</td><td>see basis</td><td class="t">arithmetic; measured only on our 32 GB card (72 tokens per second, July 2026), where it never had to squeeze</td></tr>
           <tr><td class="t">32 GB VRAM</td><td class="t">The sweet spot we live on: the 35B mixture-of-experts as the fast generalist, the 27B, and a 30B-class vision model, all fully on GPU</td><td>227 / 72 / 291 t/s</td><td class="t">measured, July 2026, Ollama serving (qwen3.6:35b / qwen3.6:27b / the 30B-class vision tag, in that order)</td></tr>
-          <tr><td class="t">32 GB VRAM + roughly 96 GB or more RAM</td><td class="t">The Qwen3.5 122B: every layer on GPU, expert blocks walked to CPU, gated speculation on</td><td>26 to 38 t/s</td><td class="t">measured, 2026-08-05/06, llama.cpp serving on a 188 GiB machine; full story on the <a href="../qwen35/">field card</a></td></tr>
+          <tr><td class="t">32 GB VRAM + roughly 96 GB or more RAM</td><td class="t">The Qwen3.5 122B: every layer on GPU, expert blocks moved to the CPU side in system RAM, speculation on with its confidence gate set</td><td>26 to 38 t/s</td><td class="t">measured, 2026-08-05/06, llama.cpp serving on a 188 GiB machine; full story on the <a href="../qwen35/">field card</a></td></tr>
           <tr><td class="t">32 GB VRAM + roughly 176 GB or more RAM</td><td class="t">The Qwen3.5 397B, same technique, more patience</td><td>14 to 20 t/s</td><td class="t">measured, 2026-08-05/06, same 188 GiB machine; low end is thinking replies</td></tr>
-          <tr><td class="t">None of the above fits</td><td class="t">Hosted Qwen: the same open weights served by API providers, or the official frontier tiers</td><td>n/a</td><td class="t">section 06</td></tr>
+          <tr><td class="t">None of the above fits</td><td class="t">Hosted Qwen: the same open weights served by API providers, or the official frontier tiers</td><td>n/a</td><td class="t"><a href="#hosted">section 06</a></td></tr>
         </tbody>
       </table>
       </div>
@@ -220,15 +245,16 @@
       weights plus operating-system headroom must fit. We measured both
       models only on a 188 GiB machine. With less RAM than the weights,
       the model streams from disk instead, which we did not measure here
-      and which is dramatically slower. Quantization tier changes
-      everything; ours are named on the field card.</p>
+      and which is dramatically slower. Quantization tier (how far the
+      weights are compressed) changes everything; ours are named on the field card.</p>
       <p>Behind that table are three questions, and they are worth asking
       in order, because a yes to one does not imply a yes to the next.
       <strong>Does it load?</strong> <strong>Does it generate at a speed
       you can work at?</strong> <strong>Does it still do that with enough
       context to be useful for your actual task?</strong> Most sizing
       advice answers only the first and lets the reader assume the rest.
-      The 397B on this machine loads at the placements we use, generates
+      The 397B on this machine loads at the placements we use (which blocks sit on the GPU
+      and which on the CPU), generates
       comfortably, and has never been fed a prompt longer than 4,367
       tokens: three different answers about one model.</p>
       <div class="note">
@@ -274,14 +300,14 @@
             <td class="t">Qwen3.5-122B, 4-bit, 38 expert blocks on CPU</td>
             <td class="t">Yes: 24.6 GiB of a 32 GB card, 20 to 24 seconds warm</td>
             <td class="t">Yes: 26 to 29 t/s prose, about 38 structured</td>
-            <td class="t">Yes: a full recorded battery, 2026-08-06</td>
+            <td class="t">Yes: a full recorded set of tests, 2026-08-06</td>
             <td class="t">Yes, with an output-token floor in the thousands: our recorded 700-token caps came back empty</td>
           </tr>
           <tr>
             <td class="t">Qwen3.5-397B, 3-bit tier, 57 expert blocks on CPU</td>
             <td class="t">Yes: 23.5 GiB of the same card, 160 to 215 seconds</td>
             <td class="t">Yes: 19.5 t/s structured, 14 to 17 on real thinking replies</td>
-            <td class="t">Yes: the same recorded battery</td>
+            <td class="t">Yes: the same recorded set of tests</td>
             <td class="t">Yes for depth, if you can wait; the hard puzzle we ran failed at a 4,096-token cap and completed in 7,608 tokens under an 8,192-token cap</td>
           </tr>
           <tr>
@@ -295,7 +321,7 @@
             <td class="t">Qwen3.6-27B, 4-bit, fully on GPU (Ollama, July 2026)</td>
             <td class="t">Yes</td>
             <td class="t">Yes: 72 t/s</td>
-            <td class="t">Not established: a battery of ours ran on it, then the thinking-budget trap invalidated most of the card it produced</td>
+            <td class="t">Not established: a set of tests of ours ran on it, then the thinking-budget trap (the empty-answer trap in section 03) invalidated most of the card it produced</td>
             <td class="t">Yes, as a first Qwen (section 03)</td>
           </tr>
           <tr>
@@ -323,13 +349,14 @@
       different model family, quoted for the memory regime only.</p>
     </section>
 
-    <section>
+    <section id="first-qwen">
       <div class="secnum">03</div>
       <h2>Your first Qwen, without being an infrastructure person</h2>
-      <p>The short path is Ollama. One hardware gate first: the model
+      <p>The short path is Ollama (a program that downloads and runs
+      models on your own machine). One hardware gate first: the model
       below is a 17 GB download that wants roughly 20 GB or more of VRAM
       to run fully on GPU. If your card is smaller, pick a smaller tag
-      from the chooser above, or read section 06. Then install Ollama
+      from the chooser above, or read <a href="#hosted">section 06</a>. Then install Ollama
       from the official installer for your platform, and:</p>
       <pre class="log">ollama pull qwen3.6:27b
 ollama run qwen3.6:27b</pre>
@@ -346,11 +373,12 @@ ollama run qwen3.6:27b</pre>
       of measurements, the same hosted model answered one prompt from a
       256-token budget and had produced nothing visible at 12,000 tokens
       on another the same day, a spread of more than 46 times
-      (<a href="../empty-answer/">Empty Answer</a> carries the method
+      (our <a href="../empty-answer/">Empty Answer</a> study carries the method
       for measuring your own floor). We measured this same
       behavior all the way up at the API frontier (the
       <a href="../qwen38-readiness/">release watch</a> has the table).</p>
-      <p><strong>Second, sampling.</strong> For thinking-family Qwens use
+      <p><strong>Second, sampling</strong> (the settings that control how
+      random the reply is). For thinking-family Qwens use
       temperature 0.6, top-k 20, top-p 0.95. The values are in the first
       profile below so you do not have to remember them.</p>
       <p>You graduate from Ollama to llama.cpp's <code>llama-server</code>
@@ -359,7 +387,7 @@ ollama run qwen3.6:27b</pre>
       profile below is its shape.</p>
     </section>
 
-    <section>
+    <section id="profiles">
       <div class="secnum">04</div>
       <h2>Known-good profiles, downloadable</h2>
       <p>Three small plain-text files, the settings we actually run,
@@ -370,7 +398,8 @@ ollama run qwen3.6:27b</pre>
         the output-budget floor that avoids the empty-answer trap.</li>
         <li><a href="profiles/llamacpp-qwen35-moe.txt">llamacpp-qwen35-moe.txt</a>:
         the llama-server shape for big Qwen3.5 mixture-of-experts models on
-        one GPU, including the expert-offload knob and the speculation
+        one GPU, including the expert-offload knob (how many expert blocks
+        stay on the CPU side) and the speculation
         confidence gate our field card measured (ungated speculation ran
         slower than none on creative text, measured on the 122B; we keep
         the same gate on the 397B on that evidence; the gate is one flag,
@@ -380,7 +409,7 @@ ollama run qwen3.6:27b</pre>
         <a href="../speculation-gate/">Slower by default</a>.</li>
         <li><a href="profiles/opencode-local-qwen.json">opencode-local-qwen.json</a>:
         a provider block that points the OpenCode coding agent at your
-        local Qwen, either serving route.</li>
+        local Qwen, either serving route (Ollama or llama-server).</li>
       </ul>
       <p class="fineprint">The profiles encode our recorded configurations
       generalized to standard ports and paths. They are starting points,
@@ -388,7 +417,7 @@ ollama run qwen3.6:27b</pre>
       the numbers.</p>
     </section>
 
-    <section>
+    <section id="big-ones">
       <div class="secnum">05</div>
       <h2>The big ones, on one desktop</h2>
       <p>The reason this page can speak about 122B and 397B models in the
@@ -406,7 +435,7 @@ ollama run qwen3.6:27b</pre>
       says where it stands.</p>
     </section>
 
-    <section>
+    <section id="hosted">
       <div class="secnum">06</div>
       <h2>Local or hosted, honestly</h2>
       <p>Hosted Qwen is startlingly cheap. As of 2026-08-09, aggregator
@@ -421,16 +450,16 @@ ollama run qwen3.6:27b</pre>
       how these systems actually behave than any API will teach you. Our
       rule of thumb: privacy-sensitive or high-volume-and-predictable
       work runs local; frontier-quality one-offs and anything needing a
-      million-token context run hosted. A same-task local-versus-hosted
-      study on identical weights is in progress and will get its own
-      page.</p>
+      million-token context run hosted. When this page was published (9 August
+      2026), a same-task local-versus-hosted study on identical weights
+      was in progress, planned for its own page.</p>
       <p class="fineprint">Prices observed 2026-08-09 and they change;
       check the provider's live page before planning around them.</p>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">07</div>
-      <h2>What this page does not know</h2>
+      <h2>Limits</h2>
       <ul class="plain">
         <li>We have not run the 4B-to-14B-class sizes on small GPUs; those
         rows are sizing arithmetic and vendor claims, labeled as such.</li>
@@ -438,15 +467,16 @@ ollama run qwen3.6:27b</pre>
         serving configuration each, at the dates given. They are honest
         samples, not benchmarks.</li>
         <li>The July 2026 daily-driver numbers predate our current
-        llama.cpp serving work; a fresh measured pass on the 27B and 35B
-        is planned and this page will update with dated entries.</li>
+        llama.cpp serving work; when this page was published (9 August
+        2026), a fresh measured pass on the 27B and 35B was planned, to be
+        added here as dated entries.</li>
         <li>Vision, audio, and long-context behavior are not covered here;
         the field card states exactly what long-context ground the big
         pair has actually been tested on.</li>
       </ul>
     </section>
 
-    <section>
+    <section id="updates">
       <div class="secnum">08</div>
       <h2>Updates and sources</h2>
       <table class="facts">
@@ -470,6 +500,9 @@ ollama run qwen3.6:27b</pre>
         observed 2026-08-09.</li>
       </ul>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent guidance. Not affiliated with,
+      endorsed by, or connected to the Qwen team or Alibaba Group.</div></div>
 
   </div>
 </main>

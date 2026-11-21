@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Local AI models on one RTX 5090 desktop, October 2026</title>
-<meta name="description" content="See what one desktop ran from 27 September to 25 October 2026, with what was timed behind each speed figure.">
+<meta name="description" content="Thirteen local AI models added to one RTX 5090 desktop in October 2026, with speeds, and processor settings that sped 13 of 15 models but slowed two.">
 <link rel="canonical" href="https://graphometer.ai/roster-2026-10/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Local AI models on one RTX 5090 desktop, October 2026">
-<meta property="og:description" content="See what one desktop ran from 27 September to 25 October 2026, with what was timed behind each speed figure.">
+<meta property="og:description" content="Thirteen local AI models added to one RTX 5090 desktop in October 2026, with speeds, and processor settings that sped 13 of 15 models but slowed two.">
 <meta property="og:url" content="https://graphometer.ai/roster-2026-10/">
 <meta property="og:image" content="https://graphometer.ai/og/roster-2026-10.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Local AI models on one RTX 5090 desktop, October 2026">
-<meta name="twitter:description" content="See what one desktop ran from 27 September to 25 October 2026, with what was timed behind each speed figure.">
+<meta name="twitter:description" content="Thirteen local AI models added to one RTX 5090 desktop in October 2026, with speeds, and processor settings that sped 13 of 15 models but slowed two.">
 <meta name="twitter:image" content="https://graphometer.ai/og/roster-2026-10.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -122,6 +122,14 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .hero p.subtitle{
+    margin-top:14px;max-width:56ch;color:var(--ink);
+    font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5
+  }
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -153,29 +161,37 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Reference &middot; 27 September to 25 October 2026 &middot; one RTX 5090 desktop, 188 GiB of RAM &middot; llama.cpp &middot; one model at a time</div>
-      <h1 itemprop="headline">The <em>roster</em>, as of October 2026</h1>
-      <p class="sub">For anyone who runs open-weight models at home on one big graphics card: what one RTX 5090 desktop ran from 27 September to 25 October 2026, and how fast. Thirteen models were added, six measured again and three retired. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.</p>
-      <p class="lead">Open-weight models are models whose files you can download. Every speed below comes with the prompt and the reply it timed. The change most worth copying is a bundle of processor settings. llama.cpp is the program that runs the models. A thread is one stream of work. The bundle pins llama.cpp's threads to the chip's eight performance cores and adds an OpenMP spin setting. Pinning means the operating system may run those threads only on those cores. Some models keep part of their weights in system RAM, so the processor does part of their work. We timed 16 of them both ways on the same long prompt. On 15, both runs wrote replies with the same token count and the same word count; we call those the clean test pairs. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The faster replies were 311 to 673 tokens long. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. The sixteenth, MiniMax M2.7, wrote a reply of a different length on its run with the bundle, so it is not counted.</p>
+      <div class="eyebrow">Reference &middot; one RTX 5090 desktop, 188 GiB of RAM &middot; one model at a time</div>
+      <h1 itemprop="headline">Local AI models on one <em>RTX 5090 desktop</em>, October 2026</h1>
+      <p class="subtitle">On one RTX 5090 desktop, pinning llama.cpp to the processor's eight performance cores with three settings made 13 of 15 models that keep part of their weights in system RAM write about 7 to 81 percent faster on a long prompt, and two slower (the 15 are the models whose two runs wrote replies of the same length).</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Try the settings if your model keeps its experts in system RAM on a chip with performance and efficiency cores.</strong> Keep llama.cpp's threads on the eight performance cores, use 8 threads for writing and for reading the prompt, and add the OpenMP spin setting (<code>taskset -c 0-7</code>, <code>--threads 8 --threads-batch 8</code>, <code>GOMP_SPINCOUNT=10000000</code>). Measure your own model both ways, because two of ours got slower. <a href="#settings">The test and what to do</a></li>
+          <li><strong>Look up a model.</strong> For each of the thirteen new models, "First word" is the time the server spent reading the prompt before the reply could start, and "Speaking" is how fast the model wrote, counting any hidden reasoning. On two rows the timed text was reasoning with no visible answer, and each row says what was timed. <a href="#installed">The models</a></li>
+          <li><strong>See what changed since September.</strong> Between 27 September and 25 October 2026, thirteen models were added, six measured again and three retired, and earlier mistakes are corrected. The <a href="../roster-2026-09/">September roster</a> (the previous list of what this desktop ran) is kept as a dated record. <a href="#remeasured">Re-measured</a> &middot; <a href="#retired">Retired</a> &middot; <a href="#corrections">Corrections</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to any maker named on this page.</div>
     </div>
 
-    <section>
+    <section id="how-to-read">
       <div class="secnum">01</div>
       <h2>How to read this page</h2>
+      <p>This page is for anyone who runs open-weight models at home on one big
+      graphics card. Open-weight models are models whose files you can download.
+      Every speed below comes with the prompt and the reply it timed.</p>
       <p><strong>One machine, one model at a time.</strong> The desktop has an
       NVIDIA GeForce RTX 5090 with 32,607 MiB of graphics memory, an Intel Core
       Ultra 9 285K and 188 GiB of system RAM. MiB and GiB are binary units of
       memory: mebibytes and gibibytes. One row also ran on an ASUS ROG
-      Flow Z13 laptop with 128 GB of memory, and says so. Every model is served
+      Flow Z13 laptop with 128 GB of memory, and says so. llama.cpp is the program
+      that runs the models. Every model is served
       by llama.cpp's <code>llama-server</code>, which loads a model and answers
       requests, one request at a time.</p>
       <p>A few terms, once:</p>
       <ul class="plain">
         <li><strong>Speaking</strong> is how fast the model writes: generated tokens per second (t/s). A token is roughly three quarters of a word.</li>
-        <li><strong>First word</strong> is how long a cold prompt takes to read before the reply can start. Cold means the server had not read that text before. It is the server's own prompt time.</li>
+        <li><strong>First word</strong> is how long a cold prompt takes to read before the reply can start (the time to read the prompt). Cold means the server had not read that text before. It is the server's own prompt time.</li>
         <li><strong>Deep</strong> means how many tokens of conversation were
         already read when the reply was written. Models write slower deep in a
         long conversation.</li>
@@ -194,18 +210,20 @@
       <p>Every speed below is a measurement from a dated run, and the files for that run are in the data package. The method page defines the label measured. Each cell says what reply it timed. A short answer and a 400-word letter are different measurements, so a row that has only a short answer says so. A draft model is a small second model that guesses the next few tokens. The main model checks the guesses and keeps the ones it agrees with.</p>
     </section>
 
-    <section>
+    <section id="settings">
       <div class="secnum">02</div>
       <h2>The change that helped most of the models we tested</h2>
       <p>On 29 September we ran 16 models that keep part of their weights in system RAM
       twice on the same prompt of about 96,000 tokens (48,000 on three rows,
-      24,000 on two). In the first run, llama.cpp used 24 threads spread over every core. In the second run, we pinned it to the eight performance cores (P-cores) with three settings: the operating system's
+      24,000 on two). A thread is one stream of work. In the first run, llama.cpp used 24 threads spread over every core. In the second run, we pinned it to the eight performance cores (P-cores) with three settings: the operating system's
       <code>taskset -c 0-7</code>, llama.cpp's <code>--threads 8 --threads-batch 8</code>
-      and the OpenMP setting <code>GOMP_SPINCOUNT=10000000</code>. OpenMP is the library llama.cpp uses to run its threads. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. The
+      and the OpenMP setting <code>GOMP_SPINCOUNT=10000000</code>. OpenMP is the library llama.cpp uses to run its threads. Pinning means the operating system may run those threads only on those cores. We call the three settings together the thread-pinning bundle. The spin setting was not run on its own. The
       285K has eight performance cores and sixteen efficiency cores. Fifteen of the 16 are mixture-of-experts models with their experts in RAM.
       The sixteenth, Mistral Medium 3.5, is a dense model. On 15 of
       the 16 rows both runs read the same prompt and wrote replies with the same token count and the
-      same word count. We call those 15 the clean test pairs.</p>
+      same word count. We call those 15 the clean test pairs. The bundle made
+      13 of 15 clean test pairs about 7 to 81 percent faster, and two got
+      slower. The faster replies were 311 to 673 tokens long.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Deep, tokens</th><th>Reply, tokens</th><th>24 threads, t/s</th><th>With the bundle, t/s</th><th>Change</th></tr></thead>
@@ -240,7 +258,7 @@
       cap on both runs.</p>
       <p><strong>What to do with it.</strong> If your model keeps experts in
       system RAM on a chip with performance and efficiency cores, try the
-      same bundle. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. Pin the prompt threads too (<code>--threads-batch</code>), because
+      same bundle. Pin the prompt threads too (<code>--threads-batch</code>), because
       reading a prompt runs on them. Measure your own model both ways, because two of
       ours got slower. Prompt-reading speed moved by 2 percent or less on 11 of the 15 clean pairs.
       It rose 5 to 11 percent on the two DeepSeek presets and on GLM-5.3-Flash, and fell 4.4 percent
@@ -250,7 +268,7 @@
       threads, the slowest is often on an efficiency core.</p>
     </section>
 
-    <section>
+    <section id="installed">
       <div class="secnum">03</div>
       <h2>Installed since 27 September</h2>
       <p>Thirteen models, newest first. Every row is on the desktop unless it
@@ -258,7 +276,7 @@
       words. The model wrote it after reading a long synthetic ledger (an invented document) for the first time. The length of that ledger in tokens is what "deep" counts.</p>
       <div class="data-wrap">
       <table class="data">
-        <thead><tr><th>Model and file</th><th>Window as served</th><th>Speaking, what was timed</th><th>First word</th><th>Card peak, MiB</th><th>Date</th><th>The caveat that matters</th></tr></thead>
+        <thead><tr><th>Model and file</th><th>Window as served</th><th>Speaking (writing speed, any reasoning included), what was timed</th><th>First word (time to read the prompt)</th><th>Card peak, MiB</th><th>Date</th><th>The caveat that matters</th></tr></thead>
         <tbody>
           <tr><td class="name">Ornith-1.5-122B<span>Ornith AI. Q4_K_M, one file, 75,843,911,648 bytes. Experts of 38 blocks in RAM, 8-bit cache</span></td>
             <td>262,144</td>
@@ -284,7 +302,7 @@
             <td>131,072</td>
             <td class="t">9.48 t/s on a 315-token answer, 110,231 deep, thinking off. 11.27 on 380 tokens at 8,161 deep.</td>
             <td class="t">716.9 s for 110,052 tokens (153.5 t/s). The next turn, 20 new tokens on that cached prompt, took 2.32 s.</td><td>31,456</td><td>2026-10-18</td>
-            <td class="t">Runs on a community port of llama.cpp that streams experts from the drive and locks 122 GiB of RAM. Not mainline.</td></tr>
+            <td class="t">Runs on a community port of llama.cpp that streams experts from the drive and locks 122 GiB of RAM. Not mainline (the main llama.cpp project).</td></tr>
           <tr><td class="name">Beam 1.0 501B-A23B<span>Reflection AI. unsloth UD-Q2_K_XL, 5 files, 186,877,720,196 bytes</span></td>
             <td class="t">131,072; 262,144 also measured</td>
             <td class="t">8.14 t/s on a 500-token answer, reasoning included, 56,320 deep. Served at 262,144: 7.80 on 379 tokens, 102,924 deep.</td>
@@ -369,7 +387,7 @@
       </ul>
     </section>
 
-    <section>
+    <section id="remeasured">
       <div class="secnum">04</div>
       <h2>Re-measured: the models that changed</h2>
       <div class="data-wrap">
@@ -437,7 +455,7 @@
       re-measured on this model.</p>
     </section>
 
-    <section>
+    <section id="retired">
       <div class="secnum">05</div>
       <h2>Retired or removed</h2>
       <div class="data-wrap">
@@ -456,7 +474,7 @@
       <p class="tablenote">Dates come from the notes we keep of changes to this desktop.</p>
     </section>
 
-    <section>
+    <section id="corrections">
       <div class="secnum">06</div>
       <h2>What we got wrong</h2>
       <ul class="plain">
@@ -476,9 +494,9 @@
       </ul>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">07</div>
-      <h2>What this does not show</h2>
+      <h2>Limits</h2>
       <p>This page does not measure answer quality. The only figures near quality are
       planted codes read back and one perplexity pair. Rows were measured on
       different days with different prompts, so compare within a row, not
@@ -486,7 +504,7 @@
       The thread-pinning bundle's gain was measured on one processor, and its cause is unproven.</p>
     </section>
 
-    <section>
+    <section id="related">
       <div class="secnum">08</div>
       <h2>Related pages on this site</h2>
       <ul class="plain">
@@ -505,7 +523,7 @@
       </ul>
     </section>
 
-    <section>
+    <section id="sources">
       <div class="secnum">09</div>
       <h2>Sources and artifacts</h2>
       <p>The data package holds the result files behind most figures: the
@@ -532,6 +550,9 @@
       <p class="fineprint">This page is dated on purpose. It is a snapshot as
       of 25 October 2026; a later roster will be a later page.</p>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to any maker named on this page.</div></div>
 
   </div>
 </main>

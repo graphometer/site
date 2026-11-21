@@ -107,6 +107,19 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -138,29 +151,47 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Instrument 03 &middot; Published 2026-08-16</div>
-      <h1><em>Routecheck</em></h1>
-      <p class="sub">One command against an OpenAI-compatible model endpoint.
-      One dated, evidence-backed diagnostic card.</p>
-      <p class="lead">Before you build on a model endpoint, you want to know
+      <div class="eyebrow">Tool &middot; MIT licensed &middot; OpenAI-compatible chat endpoints</div>
+      <h1><em>Routecheck</em>: one-command test for OpenAI-compatible endpoints</h1>
+      <p class="sub">Run one command against a model server that speaks the
+      OpenAI chat API shape and get a dated diagnostic card from ten checks,
+      for that one endpoint on that one date, with every raw request and
+      response kept.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>It catches empty answers that look like success.</strong>
+          A reasoning model's hidden thinking can use up the output budget
+          and return an empty answer with no error. Routecheck measures the
+          smallest tested budget that answers, sizes its other tests above it, and
+          marks an empty answer with a length stop as INVALID instead of
+          grading it. <a href="#trap">Why it was built</a></li>
+          <li><strong>Clone it and run one command.</strong> No install step;
+          <code>./smoke.sh</code> verifies a fresh copy and
+          <code>make test</code> runs 331 offline tests.
+          <a href="#run">The commands</a></li>
+          <li><strong>Measure the budget floor on your own prompts.</strong>
+          On the first published card, on one hosted route, the floor was
+          500 tokens for the card's own prompts, while a simpler prompt
+          showed its first visible words at a 256-token cap the same day. <a href="#first-card">The first
+          card</a></li>
+        </ul>
+      </div>
+      <p class="byline">Published 2026-08-16</p>
+    </div>
+
+    <section id="what-it-is">
+      <div class="secnum">01</div>
+      <h2>What it is</h2>
+      <p>Before you build on a model endpoint, you want to know
       what it actually does: whether small output budgets come back empty,
       whether the thinking toggle is honored, what shape tool calls arrive
       in, how fast it really decodes. Routecheck asks those questions the
       same way every time and writes the answers down where they can be
-      checked: a card in plain English, the same results machine-readable
-      with the provenance of every field tagged, and the complete raw
-      request and response bodies behind every probe.</p>
-      <div class="nonaff">Independent tool, MIT licensed. Not affiliated
-      with, endorsed by, or connected to OpenAI or any vendor named on this
-      page.</div>
-    </div>
-
-    <section>
-      <div class="secnum">01</div>
-      <h2>What it is</h2>
-      <p>Routecheck runs a fixed battery of behavioral probes, QFS-CORE,
-      checks C1 to C10, against a running
-      <code>/v1/chat/completions</code> route: the widely implemented
+      checked.</p>
+      <p>Routecheck runs a fixed battery of behavioral probes (fixed test
+      requests), named QFS-CORE, checks C1 to C10, against a running
+      <code>/v1/chat/completions</code> route (the address a model is
+      served at): the widely implemented
       OpenAI-compatible shape that llama.cpp server, Ollama and most hosted
       routes speak. It needs Python 3.10 or newer and the
       <code>requests</code> package; everything else is standard library.
@@ -172,125 +203,37 @@
         <li><strong><code>card.md</code></strong>, the diagnostic card in
         plain English;</li>
         <li><strong><code>card.json</code></strong>, the same results
-        machine-readable, every field tagged with its provenance;</li>
+        machine-readable, every field tagged with its provenance (where
+        that value came from);</li>
         <li><strong><code>raw/</code></strong>, the complete raw request and
         response body for every probe, so any claim on the card can be
         checked against what actually went over the wire.</li>
       </ul>
       <p>A card describes one endpoint, in one configuration, on one date.
       That scope is printed on the card itself, and it is the point: a
-      different quant or server of the same model can behave differently,
+      different quant or server
+      of the same model can behave differently,
       which is much of the reason to measure at all.</p>
     </section>
 
-    <section>
+    <section id="who">
       <div class="secnum">02</div>
-      <h2>The trap it is built around</h2>
-      <p>A reasoning model pays for its hidden thinking out of the same
-      output budget your client sets as <code>max_tokens</code>. If the
-      thinking uses the budget up, the request still succeeds: HTTP 200, no
-      error, a stop reason of <code>length</code>, and an empty answer. Our
-      <a href="../empty-answer/">Empty Answer</a> study measured that trap
-      across three serving lanes, and its least flattering chapter is the
-      reason this tool exists.</p>
-      <p>On 2026-08-09 this site's own field-card harness, the fixed battery
-      we run against every model we put into service, ran end to end against
-      a 27B model on a local route, exited cleanly, and produced a
-      confident card. <strong>Eighteen of its 25 retained completions were
-      empty answers that should not have been</strong>, and the harness
-      graded the empty strings. It recorded a two-part honesty failure for a
-      model that never got to say anything. It recorded a long-context
-      needle as not found while the retained hidden reasoning quoted the
-      planted code back correctly. The one test built to find the budget
-      floor found it, empty at 500 output tokens and answering at 2,000,
-      and nothing in the harness connected that measurement to the budgets
-      the other tests sent.</p>
-      <p>The study set conditions before that battery produces a
-      record-bearing card again: mark an empty answer with a length stop as
-      invalid rather than as a pass or a failure, size every test's budget
-      above the floor the budget test itself measures, and report hidden
-      output next to visible output. Routecheck packages the same fixed
-      battery into one recorded pass with those conditions built in as
-      code: INVALID is its own verdict on the card, with the reason stated
-      and a warning not to quote the cell; the C5 budget ladder's measured
-      floor sizes every other test in the same run; and the raw body of
-      every exchange is retained, reasoning fields included, so hidden text
-      is part of the record rather than invisible.</p>
+      <h2>Who it is for</h2>
+      <p>Three readers we had in mind. If you serve models locally, on
+      llama.cpp server or Ollama, the card is a dated record of what your
+      route actually does before you build on it, and again after every
+      server upgrade or quant swap. If you are about to build on a hosted
+      route, the card tells you on day one where the budget floor sits,
+      whether the thinking toggle does anything, what shape tool calls
+      arrive in and whether schema output conforms, with the raw bodies
+      kept so you can re-check any cell. And if you publish measurements,
+      the provenance discipline is the product: every field tagged, every
+      RECORDED claim resolving to a file on disk, every card scoped to its
+      endpoint and its date.</p>
     </section>
 
-    <section>
+    <section id="run">
       <div class="secnum">03</div>
-      <h2>What it checks</h2>
-      <p>Ten checks, each answering a question about this endpoint, in this
-      configuration, on this date, never about the model in general. The
-      list below is the README's own scope, condensed.</p>
-      <table class="facts">
-        <tr><th scope="row">C1 Identity</th><td>What exactly was tested: model id, served file name and size, context size, server build when exposed, the full command line, the date. A card without a complete identity block is never written.</td></tr>
-        <tr><th scope="row">C2 Load, placement</th><td>Load time, memory and placement recipe, operator-supplied only. The tool talks to an already-running route, so when this data is not handed in, the card says SKIPPED instead of guessing.</td></tr>
-        <tr><th scope="row">C3 Speed</th><td>Decode tokens per second, medians of at least three warm reps with the cold rep discarded, on one fixed prose prompt and one fixed structured prompt. Server-reported timings are authoritative when present; client wall-clock is a labeled diagnostic.</td></tr>
-        <tr><th scope="row">C4 Prefill</th><td>Prompt-processing speed on a fixed passage of about 8,000 tokens, same median rules.</td></tr>
-        <tr><th scope="row">C5 Thinking budget</th><td>Does the visible answer come back empty at small output budgets? A ladder of 60, 500, 2,000 and 4,096 max tokens finds the smallest probed budget at which the endpoint visibly answers, and that measured floor sizes every other test in the same run.</td></tr>
-        <tr><th scope="row">C6 Thinking toggle</th><td>Is the <code>enable_thinking</code> request field honored? Checks for a separate reasoning field, for <code>&lt;think&gt;</code>-tag leakage into the visible answer, and for reasoning duplicated untagged into it. The verdict names this exact mechanism; a route using a different toggle is not exercised.</td></tr>
-        <tr><th scope="row">C7 Tool calls</th><td>One fixed tool, one fixed user message, two shots. Pass requires exactly one tool call, the right function, schema-conformant arguments and the expected explicit values.</td></tr>
-        <tr><th scope="row">C8 Structured output</th><td>A fixed JSON Schema embedded in a fixed prompt, three reps, conformance checked: required keys, types, extra-key policy.</td></tr>
-        <tr><th scope="row">C9 Honesty probe</th><td>Asks about a nonexistent file and a nonexistent benchmark; a keyword heuristic flags hedging versus confident fabrication. Explicitly not a semantic judge: the raw response is retained for human review, and the card records exactly how it was graded.</td></tr>
-        <tr><th scope="row">C10 Needle retrieval</th><td>A seeded, programmatically generated haystack sized to about 75 percent of the served context, one planted fact, one question. The server's own prompt-token count is the recorded authoritative length.</td></tr>
-      </table>
-      <p class="fineprint">Probe list and scope from the Routecheck README,
-      read 2026-08-16.</p>
-      <p>Five rules run through every card. Every field carries provenance:
-      RECORDED means a raw artifact is on disk, and the tool refuses to
-      write a card whose RECORDED claims do not resolve to real files;
-      STATED means observed or operator-supplied with no artifact; SKIPPED
-      means not attempted, with the reason stated. INVALID is its own
-      verdict. A failed probe is never a placeholder: connection refused,
-      HTTP errors and malformed JSON are recorded with their raw evidence,
-      and one test's failure never drops the rest of the run. Every prompt
-      file is sha256-pinned in a manifest that is itself pinned in code, so
-      a modified prompt refuses to run. And scope is stated on the card:
-      the measurements describe the endpoint and configuration in the
-      identity block, on the card's date.</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>The first published card</h2>
-      <p>Routecheck's first card on the public record ran on a release day.
-      On 2026-08-13, the day the release watch verified Qwen3.8's Max-class
-      open weights and ran its day-one battery, it ran against
-      the released 2.4T-A95B model through a hosted route, as part of this
-      site's day-one battery: thirty-five model calls, two providers,
-      thirty-nine cents, with the aggregator filling calls from DeepInfra and Together
-      and switching between them mid-battery, so every number belongs to
-      that endpoint mix on that day. The full account, with the companion
-      one-call checks that ran alongside the card, is in the
-      <a href="../qwen38-readiness/">Qwen3.8 release watch</a>. What the
-      card recorded:</p>
-      <ul class="plain">
-        <li><strong>C5, the budget ladder:</strong> the route's
-        thinking-budget floor came out at 500 tokens for the card's own
-        probe family, on a route where a different, simpler prompt showed
-        its first visible words at a 256-token cap the same day. That is
-        the floor lesson in one line: it is prompt-dependent, so measure it
-        on your prompts, not ours.</li>
-        <li><strong>C6, the toggle:</strong> a call sent with
-        <code>enable_thinking: false</code> got a reply that still carried
-        626 tokens of hidden reasoning. No error, no refusal, the field
-        silently ignored. A single observation, recorded as such.</li>
-        <li><strong>C7, tools:</strong> both shots passed, with exactly the
-        right function and arguments.</li>
-        <li><strong>C8, structured output:</strong> three of three replies
-        conformed when the schema was written into the prompt.</li>
-        <li><strong>C10, retrieval:</strong> one planted code came back
-        exactly, at 31,380 prompt tokens as the server itself counted
-        them.</li>
-      </ul>
-      <p>One endpoint mix, one day, one to three calls per cell:
-      diagnostics, not a benchmark.</p>
-    </section>
-
-    <section>
-      <div class="secnum">05</div>
       <h2>Get it, run it</h2>
       <p>Two supported paths, deliberately boring: clone and run in place,
       or copy the directory anywhere and run it from the copy. Nothing
@@ -342,25 +285,116 @@
       </div>
     </section>
 
-    <section>
-      <div class="secnum">06</div>
-      <h2>Who it is for</h2>
-      <p>Three readers we had in mind. If you serve models locally, on
-      llama.cpp server or Ollama, the card is a dated record of what your
-      route actually does before you build on it, and again after every
-      server upgrade or quant swap. If you are about to build on a hosted
-      route, the card tells you on day one where the budget floor sits,
-      whether the thinking toggle does anything, what shape tool calls
-      arrive in and whether schema output conforms, with the raw bodies
-      kept so you can re-check any cell. And if you publish measurements,
-      the provenance discipline is the product: every field tagged, every
-      RECORDED claim resolving to a file on disk, every card scoped to its
-      endpoint and its date.</p>
+    <section id="checks">
+      <div class="secnum">04</div>
+      <h2>What it checks</h2>
+      <p>Ten checks, each answering a question about this endpoint, in this
+      configuration, on this date, never about the model in general. The
+      list below is the README's own scope, condensed.</p>
+      <table class="facts">
+        <tr><th scope="row">C1 Identity</th><td>What exactly was tested: model id, served file name and size, context size, server build when exposed, the full command line, the date. A card without a complete identity block is never written.</td></tr>
+        <tr><th scope="row">C2 Load, placement</th><td>Load time, memory and placement recipe, operator-supplied only (handed in by the person running the tool). The tool talks to an already-running route, so when this data is not handed in, the card says SKIPPED instead of guessing.</td></tr>
+        <tr><th scope="row">C3 Speed</th><td>Decode tokens per second (how fast the answer is written), medians of at least three warm reps with the cold rep discarded, on one fixed prose prompt and one fixed structured prompt. Server-reported timings are authoritative when present; client wall-clock is a labeled diagnostic.</td></tr>
+        <tr><th scope="row">C4 Prefill</th><td>Prompt-processing speed on a fixed passage of about 8,000 tokens, same median rules.</td></tr>
+        <tr><th scope="row">C5 Thinking budget</th><td>Does the visible answer come back empty at small output budgets? A ladder of 60, 500, 2,000 and 4,096 max tokens finds the smallest probed budget at which the endpoint visibly answers, and that measured floor sizes every other test in the same run.</td></tr>
+        <tr><th scope="row">C6 Thinking toggle</th><td>Is the <code>enable_thinking</code> request field honored? Checks for a separate reasoning field, for <code>&lt;think&gt;</code>-tag leakage into the visible answer, and for reasoning duplicated untagged into it. The verdict names this exact mechanism; a route using a different toggle is not exercised.</td></tr>
+        <tr><th scope="row">C7 Tool calls</th><td>One fixed tool, one fixed user message, two shots. Pass requires exactly one tool call, the right function, schema-conformant arguments and the expected explicit values.</td></tr>
+        <tr><th scope="row">C8 Structured output</th><td>A fixed JSON Schema embedded in a fixed prompt, three reps, conformance checked: required keys, types, extra-key policy.</td></tr>
+        <tr><th scope="row">C9 Honesty probe</th><td>Asks about a nonexistent file and a nonexistent benchmark; a keyword heuristic flags hedging versus confident fabrication. Explicitly not a semantic judge: the raw response is retained for human review, and the card records exactly how it was graded.</td></tr>
+        <tr><th scope="row">C10 Needle retrieval</th><td>A seeded, programmatically generated haystack sized to about 75 percent of the served context, one planted fact, one question. The server's own prompt-token count is the recorded authoritative length.</td></tr>
+      </table>
+      <p class="fineprint">Probe list and scope from the Routecheck README,
+      read 2026-08-16.</p>
+      <p>Five rules run through every card. Every field carries provenance:
+      RECORDED means a raw artifact is on disk, and the tool refuses to
+      write a card whose RECORDED claims do not resolve to real files;
+      STATED means observed or operator-supplied with no artifact; SKIPPED
+      means not attempted, with the reason stated. INVALID is its own
+      verdict. A failed probe is never a placeholder: connection refused,
+      HTTP errors and malformed JSON are recorded with their raw evidence,
+      and one test's failure never drops the rest of the run. Every prompt
+      file is sha256-pinned in a manifest that is itself pinned in code, so
+      a modified prompt refuses to run. And scope is stated on the card:
+      the measurements describe the endpoint and configuration in the
+      identity block, on the card's date.</p>
     </section>
 
-    <section>
+    <section id="trap">
+      <div class="secnum">05</div>
+      <h2>Why it was built: the empty-answer trap</h2>
+      <p>A reasoning model pays for its hidden thinking out of the same
+      output budget your client sets as <code>max_tokens</code>. If the
+      thinking uses the budget up, the request still succeeds: HTTP 200, no
+      error, a stop reason of <code>length</code>, and an empty answer. Our
+      <a href="../empty-answer/">Empty Answer</a> study measured that trap
+      across three serving lanes, and its least flattering chapter is the
+      reason this tool exists.</p>
+      <p>On 2026-08-09 this site's own field-card harness, the fixed battery
+      we run against every model we put into service, ran end to end against
+      a 27B model on a local route, exited cleanly, and produced a
+      confident card. <strong>Eighteen of its 25 retained completions were
+      empty answers that should not have been</strong>, and the harness
+      graded the empty strings. It recorded a two-part honesty failure for a
+      model that never got to say anything. It recorded a long-context
+      needle (a planted fact in a long text) as not found while the
+      retained hidden reasoning quoted the
+      planted code back correctly. The one test built to find the budget
+      floor found it, empty at 500 output tokens and answering at 2,000,
+      and nothing in the harness connected that measurement to the budgets
+      the other tests sent.</p>
+      <p>The study set conditions before that battery produces a
+      record-bearing card again: mark an empty answer with a length stop as
+      invalid rather than as a pass or a failure, size every test's budget
+      above the floor the budget test itself measures, and report hidden
+      output next to visible output. Routecheck packages the same fixed
+      battery into one recorded pass with those conditions built in as
+      code: INVALID is its own verdict on the card, with the reason stated
+      and a warning not to quote the cell; the C5 budget ladder's measured
+      floor sizes every other test in the same run; and the raw body of
+      every exchange is retained, reasoning fields included, so hidden text
+      is part of the record rather than invisible.</p>
+    </section>
+
+    <section id="first-card">
+      <div class="secnum">06</div>
+      <h2>The first published card</h2>
+      <p>Routecheck's first card on the public record ran on a release day.
+      On 2026-08-13, the day the release watch verified Qwen3.8's Max-class
+      open weights and ran its day-one battery, it ran against
+      the released 2.4T-A95B model through a hosted route, as part of this
+      site's day-one battery: thirty-five model calls, two providers,
+      thirty-nine cents, with the aggregator filling calls from DeepInfra and Together
+      and switching between them mid-battery, so every number belongs to
+      that endpoint mix on that day. The full account, with the companion
+      one-call checks that ran alongside the card, is in the
+      <a href="../qwen38-readiness/">Qwen3.8 release watch</a>. What the
+      card recorded:</p>
+      <ul class="plain">
+        <li><strong>C5, the budget ladder:</strong> the route's
+        thinking-budget floor came out at 500 tokens for the card's own
+        probe family, on a route where a different, simpler prompt showed
+        its first visible words at a 256-token cap the same day. That is
+        the floor lesson in one line: it is prompt-dependent, so measure it
+        on your prompts, not ours.</li>
+        <li><strong>C6, the toggle:</strong> a call sent with
+        <code>enable_thinking: false</code> got a reply that still carried
+        626 tokens of hidden reasoning. No error, no refusal, the field
+        silently ignored. A single observation, recorded as such.</li>
+        <li><strong>C7, tools:</strong> both shots passed, with exactly the
+        right function and arguments.</li>
+        <li><strong>C8, structured output:</strong> three of three replies
+        conformed when the schema was written into the prompt.</li>
+        <li><strong>C10, retrieval:</strong> one planted code came back
+        exactly, at 31,380 prompt tokens as the server itself counted
+        them.</li>
+      </ul>
+      <p>One endpoint mix, one day, one to three calls per cell:
+      diagnostics, not a benchmark.</p>
+    </section>
+
+    <section id="limits">
       <div class="secnum">07</div>
-      <h2>What it will not tell you</h2>
+      <h2>Limits</h2>
       <p>Routecheck is young. Its first public release, v0.1, is dated
       2026-08-11. The live routes on its record are llama.cpp server and
       Ollama locally, plus the hosted aggregator route of the card above;
@@ -395,10 +429,16 @@
       history so that every card ever written stays comparable: the
       internal package name, the card's <code>instrument</code> field, and
       the QFS-1.0 protocol id. Frozen identifiers, not branding.</p>
-      <p class="fineprint">The house discipline applies to this page too:
-      every number on it traces to the routecheck repository's README and
-      changelog or to the two published Graphometer pages linked above.</p>
+      <p class="fineprint">Sources: every number on this page traces to the
+      routecheck repository's README and changelog or to the two published
+      Graphometer pages linked above.</p>
     </section>
+
+    <div class="endnote">
+      <div class="nonaff">Independent tool, MIT licensed. Not affiliated
+      with, endorsed by, or connected to OpenAI or any vendor named on this
+      page.</div>
+    </div>
 
   </div>
 </main>

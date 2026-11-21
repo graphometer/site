@@ -1,5 +1,7 @@
 # NUMBERS.md: where every figure on the page comes from
 
+> Note, 21 November 2026: the page this file belongs to was lightly edited on this date. The top of the page changed: an "In short" summary was added, and the label line, the sentence under the headline and the opening paragraph were shortened, reworded or moved lower. Some section headings were renamed (for example "What this does not show" is now "Limits"). Section numbers and their order are unchanged. Where this file names the page's subtitle, lead or label line, it means the page as it stood before. The figures and the files are unchanged.
+
 If a number on the page disagrees with a file in the package, the file is right and the page is wrong.
 
 **The two places this page looks like it argues with itself.**

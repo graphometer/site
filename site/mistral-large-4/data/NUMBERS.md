@@ -1,5 +1,7 @@
 # Number map: Mistral Large 4 at home
 
+> Note, 21 November 2026: the page this file belongs to was lightly edited on this date. The top of the page changed: an "In short" summary was added, and the label line, the sentence under the headline and the opening paragraph were shortened, reworded or moved lower. Some section headings were renamed (for example "What this does not show" is now "Limits"). Section numbers and their order are unchanged. Where this file names the page's subtitle, lead or label line, it means the page as it stood before. The figures and the files are unchanged.
+
 If a number on the page disagrees with a file in its package, the file is right and the page is wrong.
 
 **Where a file can look like it contradicts the page:** `quality/blind-map.json` gives Large 4 (four experts) speeds of 0.88 to 1.72 tokens a second on three questions and a total wall time of 100.6 minutes. Those three answers were written on 31 October on an earlier, slower setup; the other three on the final setup. The page makes no time comparison from these wall times.

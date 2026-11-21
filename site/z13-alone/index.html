@@ -56,6 +56,11 @@
   footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}.sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}.sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .note p{color:var(--ink);margin:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -63,21 +68,73 @@
 
 <main itemscope itemtype="https://schema.org/Article"><div class="wrap">
   <div class="hero">
-    <div class="eyebrow">Measured study &middot; 2026-09-20 to 2026-09-21 &middot; six models &middot; one request at a time &middot; laptop alone versus desktop</div>
+    <div class="eyebrow">Measured study &middot; six models &middot; one laptop alone versus one RTX 5090 desktop</div>
     <h1 itemprop="headline">Six large models on the ASUS ROG Flow <em>Z13 alone</em></h1>
-    <p class="subtitle">At 48K, the laptop read prompts 2.8 to 23 times slower than the desktop. Ling-3.0-flash was the practical exception: desktop-level short-answer speaking at 48K, with a 3.6-minute read.</p>
-    <p class="lead"><strong>Measured, 2026-09-20 to 2026-09-21.</strong> A 128 GB unified-memory laptop can hold models that do not fit on a 32 GB graphics card. Holding them is not the same as serving them well. We ran six local models on the Z13 by itself, over loopback, then compared the 48K measurements with the same sealed-code probe family on a desktop with one RTX 5090 and 188 GiB of RAM. All six returned the code. The laptop's prompt reading slowed with depth. Only Ling remained a practical alternative at 48K, and even Ling took 216.2 seconds to read the prompt.</p>
+    <p class="subtitle">With prompts of about 48K tokens (tokens are pieces of text), the laptop read 2.8 to 23 times slower than one RTX 5090 desktop. Ling-3.0-flash was the practical exception: it wrote a short answer at about the desktop's speed, after a 3.6-minute read.</p>
+    <div class="note"><span class="label">In short</span>
+      <ul class="plain">
+        <li><strong>Fitting in memory is not the same as running well.</strong> On this laptop, in Balanced mode on mains, the cold read of a 48K prompt took 3.6 to 21.7 minutes, depending on the model. <a href="#wait">The wait, model by model</a></li>
+        <li><strong>For Ling on this laptop, the page's practical choice is the 256K window, <code>-ub 512</code>, and no multi-token prediction (MTP) draft.</strong> <a href="#answer">The practical choice</a></li>
+        <li><strong>If Ling is not the model you want, Flash-Next is the fallback.</strong> It finished the 48K read in 4.3 minutes but wrote a short answer more slowly than the desktop at that depth. For the other four models, the desktop is preferred. <a href="#fallback">Flash-Next and the others</a></li>
+      </ul>
+    </div>
     <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-    <div class="nonaff">Independent measurements. No affiliation with ASUS, AMD, NVIDIA, Intel, the llama.cpp or ggml-org projects, or the makers of the Qwen, DeepSeek, GLM, and Ling models.</div>
   </div>
 
-  <section><div class="secnum">01</div><h2>The answer</h2>
+  <section id="answer"><div class="secnum">01</div><h2>The answer</h2>
+    <p>A 128 GB unified-memory laptop can hold models that do not fit on a 32 GB graphics card. Holding them is not the same as serving them well. We ran six local models on the Z13 by itself, over loopback (reachable only from the laptop itself), then compared the 48K measurements with the same sealed-code probe family (a long synthetic ledger with a code hidden at its midpoint, which the model must return) on a desktop with one RTX 5090 and 188 GiB of RAM. All six returned the code. The laptop's prompt reading slowed with depth. Only Ling remained a practical alternative at 48K, and even Ling took 216.2 seconds to read the prompt.</p>
     <p><strong>Measured, 2026-09-20 to 2026-09-21.</strong> At about 48K prompt tokens, the laptop read at 36.9 to 222.0 tokens per second. The selected desktop comparisons read at 511.7 to 2,594.6 tokens per second. Dividing each desktop rate by its laptop counterpart gives a range of <strong>2.8 to 23 times slower on the laptop</strong>. Flash-Next supplies the low end at 2.76 times, rounded to 2.8. The laptop's own best Flash-Next setting, <code>-ub 2048</code> at 213.0 tokens per second, narrows that low end to 2.4 times. GLM-4.7-Flash supplies the high end at 22.70 times, rounded to 23.</p>
-    <p>The laptop did not win on deep speaking. These measurements used a sealed-code answer, so every decode figure below is labelled <strong>speaking on a short answer</strong>. Ling was effectively level at 48K, 23.79 tokens per second on the laptop and 23.25 on the desktop. Qwen3-235B was also close, but the two machines used different quantizations. The laptop's clearest speaking win was shallow Ling: 34.84 tokens per second after a 3K prompt versus 23.22 on the desktop.</p>
-    <div class="note"><span class="label">Practical choice</span>For Ling on this laptop, use the 256K window, <code>-ub 512</code>, and no multi-token prediction (MTP) draft. It read the 47,986-token prompt at 222.0 tokens per second, returned the exact code, spoke the short answer at 23.79 tokens per second, and peaked at 72,179 MiB GTT and 76,002 MiB RAM used.</div>
+    <p>The laptop did not win on deep speaking (writing a reply after reading a long prompt). These measurements used a sealed-code answer, so every decode (reply-writing) figure below is labelled <strong>speaking on a short answer</strong>. Ling was effectively level at 48K, 23.79 tokens per second on the laptop and 23.25 on the desktop. Qwen3-235B was also close, but the two machines used different quantizations (compressed versions of the model file). The laptop's clearest speaking win was shallow Ling: 34.84 tokens per second after a 3K prompt versus 23.22 on the desktop.</p>
+    <div class="note"><span class="label">Practical choice</span>For Ling on this laptop, use the 256K window, <code>-ub 512</code> (the micro-batch setting), and no multi-token prediction (MTP) draft. It read the 47,986-token prompt at 222.0 tokens per second, returned the exact code, spoke the short answer at 23.79 tokens per second, and peaked at 72,179 MiB GTT (the laptop's GPU-visible memory counter) and 76,002 MiB RAM used.</div>
   </section>
 
-  <section><div class="secnum">02</div><h2>What we ran, exactly</h2>
+  <section id="observed"><div class="secnum">02</div><h2>Observed at 48K</h2>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>Laptop read</th><th>Desktop read</th><th>Slower</th><th>Laptop speak</th><th>Desktop speak</th></tr></thead><tbody>
+      <tr><td class="t">Ling-3.0-flash</td><td>222.0 t/s</td><td>727.7 t/s</td><td>3.28x</td><td>23.79 t/s</td><td>23.25 t/s</td></tr>
+      <tr><td class="t">Qwen3.8-Flash-Next</td><td>185.4 t/s</td><td>511.7 t/s</td><td>2.76x</td><td>14.39 t/s</td><td>18.75 t/s</td></tr>
+      <tr><td class="t">Qwen3.5-122B-A10B</td><td>159.3 t/s</td><td>2,101.7 t/s</td><td>13.19x</td><td>19.07 t/s</td><td>32.72 t/s</td></tr>
+      <tr><td class="t">GLM-4.7-Flash</td><td>114.3 t/s</td><td>2,594.6 t/s</td><td>22.70x</td><td>10.70 t/s</td><td>129.60 t/s</td></tr>
+      <tr><td class="t">DeepSeek V4 Flash</td><td>56.7 t/s</td><td>690.9 t/s</td><td>12.19x</td><td>11.03 t/s</td><td>12.16 t/s</td></tr>
+      <tr><td class="t">Qwen3-235B</td><td>36.9 t/s</td><td>703.3 t/s</td><td>19.06x</td><td>8.42 t/s</td><td>8.18 t/s</td></tr>
+    </tbody></table></div>
+    <p class="tablenote"><strong>Measured</strong> rates from one cold sealed-code request per configuration. Laptop prompts ranged from 47,985 to 48,052 tokens; desktop prompts ranged from 47,986 to 48,069. Speaking columns are speaking on a short answer, including reasoning tokens where the runtime counted them. The &ldquo;slower&rdquo; column is arithmetic: desktop read rate divided by laptop read rate. The ratios divide the one-decimal result fields; server-log rates give 22.71 for GLM and 19.08 for Qwen3-235B. The two machines used different settings for each model; they are listed under <a href="#setup">What we ran, exactly</a>. Laptop Flash-Next used <code>-ub 512</code>; its fastest tested laptop setting, <code>-ub 2048</code>, reached 213.0 tokens per second.</p>
+    <h3 id="wait">The cold-read wait</h3>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>48K read time</th><th>Peak GTT</th><th>Practical result</th></tr></thead><tbody>
+      <tr><td class="t">Ling-3.0-flash</td><td>3.6 min</td><td>72,179 MiB</td><td class="t">practical</td></tr>
+      <tr><td class="t">Qwen3.8-Flash-Next</td><td>4.3 min</td><td>61,948 MiB</td><td class="t">works, slower</td></tr>
+      <tr><td class="t">Qwen3.5-122B-A10B</td><td>5.0 min</td><td>68,875 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">GLM-4.7-Flash</td><td>7.0 min</td><td>24,455 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">DeepSeek V4 Flash</td><td>14.1 min</td><td>97,477 MiB</td><td class="t">desktop preferred</td></tr>
+      <tr><td class="t">Qwen3-235B</td><td>21.7 min</td><td>103,358 MiB</td><td class="t">desktop preferred</td></tr>
+    </tbody></table></div>
+    <p class="tablenote"><strong>Measured</strong> read times for the first five rows, rounded from seconds in the result files. Qwen3-235B did not record a separate read duration, so its 21.7 minutes is <strong>arithmetic</strong>: 48,027 prompt tokens divided by 36.9 tokens per second. GTT is the laptop's sampled GPU-visible memory counter, not power use.</p>
+    <p id="fallback">Flash-Next is the credible fallback if Ling is not the desired model. It fit with a 256K configured window and finished the 48K read in 4.3 minutes, but its short-answer speaking rate at that depth remained below the desktop's. Qwen3.5-122B also finished its read in about five minutes, yet gave up much more speaking speed. GLM used the least GTT and still suffered the largest relative reading gap. DeepSeek and Qwen3-235B came closest to their desktop short-answer speaking rates, but waiting 14.1 or 21.7 minutes for a cold 48K read makes that parity less useful.</p>
+    <p><strong>Measured trend.</strong> Every laptop model read more slowly at 48K than at 3K. The declines ranged from 23% for Flash-Next and Qwen3.5-122B to 79% for GLM. The Qwen3-235B server log shows the cumulative rate continuing to fall after about 30K. That pattern is consistent with attention work becoming dominant, but the run did not instrument attention separately, so the cause is an inference rather than a direct measurement.</p>
+  </section>
+
+  <section id="ling"><div class="secnum">03</div><h2>Why Ling is the exception</h2>
+    <p><strong>Measured.</strong> Ling combines a usable read time with speaking that stayed level with the desktop at the tested depth. Its 47,986-token read took 216.2 seconds, or 3.6 minutes, before the short answer. At 103,887 tokens it read at 149.0 tokens per second in 697.4 seconds and spoke the short answer at 15.09 tokens per second. The desktop was not measured at 104K; its deeper recorded point was 149,711 tokens, with reading at 694.6 tokens per second and short-answer speaking at 22.60 tokens per second.</p>
+    <p><strong>Measured.</strong> The laptop also survived a targeted stability check. A fresh Ling server first answered the recorded 3,007-token crash replay and stayed alive. It then completed 40 of 40 public-source prompts with zero crashes and one server start. Those 40 prompts ranged from 339 to 10,930 tokens. <strong>This was not a 48K stability test.</strong> It reduces one specific crash concern; it does not establish long-window reliability.</p>
+    <p><strong>Measured.</strong> The MTP draft was the wrong trade at depth. At <code>-ub 2048</code>, it raised speaking on a short answer after 3K from 34.65 to 41.55 tokens per second, then lowered the 48K figure from 23.80 to 16.30. We left it off. Raising <code>-ub</code> from 512 to 2048 also did not improve Ling's 48K read: 222.0 versus 217.7 tokens per second.</p>
+  </section>
+
+  <section id="limits"><div class="secnum">04</div><h2>Limits</h2>
+    <ul class="plain">
+      <li>No Performance-mode run was made. Balanced mode stayed on throughout, so the study does not measure the laptop's fastest possible power profile.</li>
+      <li>No battery life, wall power, temperature, fan noise, sustained thermal throttling, or simultaneous-request capacity was measured.</li>
+      <li>The cross-machine speaking task was a short sealed-code answer, not prose. The study does not claim the same ratios for long generation.</li>
+      <li>Exact-code retrieval is a correctness check, not a model-quality evaluation. There was one main cold request per depth and configuration, not a statistical sample.</li>
+      <li>Only Ling was probed beyond 48K, at about 104K. A configured 128K, 198K, or 256K window is capacity, not proof of speed or stability at its limit.</li>
+      <li>The Qwen3-235B 48K prompts, 48,020 tokens on the desktop and 48,027 on the laptop, were longer than the 40,960-token trained context reported in the desktop log.</li>
+      <li>The machines used different backends, context windows, micro-batches, batch sizes, cache settings, thread counts, and some model-specific flags. Qwen3-235B also used different quantization and drafting on the desktop, and Flash-Next used a separate desktop server binary. These are practical deployment comparisons, not isolated hardware benchmarks.</li>
+    </ul>
+  </section>
+
+  <section id="corrections"><div class="secnum">05</div><h2>What we got wrong</h2>
+    <p><strong>Measured correction.</strong> An early note treated the warm follow-up as a normal next turn. It was not. The probe replaced the last question on the same ledger. With Ling, that edit caused 535 tokens to be read again at <code>-ub 512</code> and 2,067 at <code>-ub 2048</code>. At <code>-ub 2048</code> the regenerated answer included the sealed code; at <code>-ub 512</code> it did not. A normal appended turn parts at the end of the old prompt and can use a different restore point. This page therefore uses the result only as advice about editing or regenerating the last prompt, not ordinary conversation.</p>
+  </section>
+
+  <section id="setup"><div class="secnum">06</div><h2>What we ran, exactly</h2>
     <p><strong>Measured configuration, 2026-09-21.</strong> The machine and runtime facts below describe the recorded test configuration, not a general specification for either machine class.</p>
     <table class="facts">
       <tr><th scope="row">Laptop</th><td>ASUS ROG Flow Z13 GZ302EA, AMD Ryzen AI Max+ 395, Radeon 8060S, 128 GB unified memory with about 119 GiB usable.</td></tr>
@@ -90,59 +147,14 @@
     <p class="fineprint">Laptop files were Qwen3-235B-A22B-Instruct-2507 <code>UD-Q3_K_XL</code>, Qwen3.8-Flash-Next <code>UD-Q3_K_XL</code>, Ling-3.0-flash <code>Q4_K_M</code>, DeepSeek V4 Flash 0731 <code>UD-IQ3_XXS</code>, GLM-4.7-Flash <code>UD-Q4_K_XL</code>, and Qwen3.5-122B-A10B <code>UD-Q4_K_S</code>. The desktop used the same files except Qwen3-235B, which used <code>Q4_K_M</code> plus a Qwen3-0.6B <code>Q8_0</code> draft. All laptop comparison rows used <code>-ub 512</code>; windows were 128K for both Qwen models and the main DeepSeek run, 198K for GLM, and 256K for Ling and Flash-Next. In the desktop table, Ling used 256K and <code>-ub 2048</code>; Flash-Next used 128K and <code>-ub 2048</code> on the separate Flash-Next server binary, not build 10919; Qwen3.5 used 128K and <code>-ub 4096</code>; GLM used 198K at that model's own default micro-batch, whose number the log does not record; DeepSeek used 256K and <code>-ub 4096</code>; and Qwen3-235B used 128K and <code>-ub 2048</code> with the draft already disclosed. A separate load allocated a 256K DeepSeek slot and answered a 3K prompt, peaking at 98,482 MiB GTT.</p>
   </section>
 
-  <section><div class="secnum">03</div><h2>Observed at 48K</h2>
-    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>Laptop read</th><th>Desktop read</th><th>Slower</th><th>Laptop speak</th><th>Desktop speak</th></tr></thead><tbody>
-      <tr><td class="t">Ling-3.0-flash</td><td>222.0 t/s</td><td>727.7 t/s</td><td>3.28x</td><td>23.79 t/s</td><td>23.25 t/s</td></tr>
-      <tr><td class="t">Qwen3.8-Flash-Next</td><td>185.4 t/s</td><td>511.7 t/s</td><td>2.76x</td><td>14.39 t/s</td><td>18.75 t/s</td></tr>
-      <tr><td class="t">Qwen3.5-122B-A10B</td><td>159.3 t/s</td><td>2,101.7 t/s</td><td>13.19x</td><td>19.07 t/s</td><td>32.72 t/s</td></tr>
-      <tr><td class="t">GLM-4.7-Flash</td><td>114.3 t/s</td><td>2,594.6 t/s</td><td>22.70x</td><td>10.70 t/s</td><td>129.60 t/s</td></tr>
-      <tr><td class="t">DeepSeek V4 Flash</td><td>56.7 t/s</td><td>690.9 t/s</td><td>12.19x</td><td>11.03 t/s</td><td>12.16 t/s</td></tr>
-      <tr><td class="t">Qwen3-235B</td><td>36.9 t/s</td><td>703.3 t/s</td><td>19.06x</td><td>8.42 t/s</td><td>8.18 t/s</td></tr>
-    </tbody></table></div>
-    <p class="tablenote"><strong>Measured</strong> rates from one cold sealed-code request per configuration. Laptop prompts ranged from 47,985 to 48,052 tokens; desktop prompts ranged from 47,986 to 48,069. Speaking columns are speaking on a short answer, including reasoning tokens where the runtime counted them. The &ldquo;slower&rdquo; column is arithmetic: desktop read rate divided by laptop read rate. The ratios divide the one-decimal result fields; server-log rates give 22.71 for GLM and 19.08 for Qwen3-235B. Desktop configurations were Ling at 256K and <code>-ub 2048</code>; Flash-Next at 128K and <code>-ub 2048</code> on the separate Flash-Next server binary, not build 10919; Qwen3.5 at 128K and <code>-ub 4096</code>; GLM at 198K with its own default micro-batch, whose number the log does not record; DeepSeek at 256K and <code>-ub 4096</code>; and Qwen3-235B at 128K and <code>-ub 2048</code> with the disclosed draft. Laptop Flash-Next used <code>-ub 512</code>; its fastest tested laptop setting, <code>-ub 2048</code>, reached 213.0 tokens per second.</p>
-    <h3>The cold-read wait</h3>
-    <div class="data-wrap"><table class="data"><thead><tr><th>Model</th><th>48K read time</th><th>Peak GTT</th><th>Practical result</th></tr></thead><tbody>
-      <tr><td class="t">Ling-3.0-flash</td><td>3.6 min</td><td>72,179 MiB</td><td class="t">practical</td></tr>
-      <tr><td class="t">Qwen3.8-Flash-Next</td><td>4.3 min</td><td>61,948 MiB</td><td class="t">works, slower</td></tr>
-      <tr><td class="t">Qwen3.5-122B-A10B</td><td>5.0 min</td><td>68,875 MiB</td><td class="t">desktop preferred</td></tr>
-      <tr><td class="t">GLM-4.7-Flash</td><td>7.0 min</td><td>24,455 MiB</td><td class="t">desktop preferred</td></tr>
-      <tr><td class="t">DeepSeek V4 Flash</td><td>14.1 min</td><td>97,477 MiB</td><td class="t">desktop preferred</td></tr>
-      <tr><td class="t">Qwen3-235B</td><td>21.7 min</td><td>103,358 MiB</td><td class="t">desktop preferred</td></tr>
-    </tbody></table></div>
-    <p class="tablenote"><strong>Measured</strong> read times for the first five rows, rounded from seconds in the result files. Qwen3-235B did not record a separate read duration, so its 21.7 minutes is <strong>arithmetic</strong>: 48,027 prompt tokens divided by 36.9 tokens per second. GTT is the laptop's sampled GPU-visible memory counter, not power use.</p>
-    <p>Flash-Next is the credible fallback if Ling is not the desired model. It fit with a 256K configured window and finished the 48K read in 4.3 minutes, but its short-answer speaking rate at that depth remained below the desktop's. Qwen3.5-122B also finished its read in about five minutes, yet gave up much more speaking speed. GLM used the least GTT and still suffered the largest relative reading gap. DeepSeek and Qwen3-235B came closest to their desktop short-answer speaking rates, but waiting 14.1 or 21.7 minutes for a cold 48K read makes that parity less useful.</p>
-    <p><strong>Measured trend.</strong> Every laptop model read more slowly at 48K than at 3K. The declines ranged from 23% for Flash-Next and Qwen3.5-122B to 79% for GLM. The Qwen3-235B server log shows the cumulative rate continuing to fall after about 30K. That pattern is consistent with attention work becoming dominant, but the run did not instrument attention separately, so the cause is an inference rather than a direct measurement.</p>
-  </section>
-
-  <section><div class="secnum">04</div><h2>Why Ling is the exception</h2>
-    <p><strong>Measured.</strong> Ling combines a usable read time with speaking that stayed level with the desktop at the tested depth. Its 47,986-token read took 216.2 seconds, or 3.6 minutes, before the short answer. At 103,887 tokens it read at 149.0 tokens per second in 697.4 seconds and spoke the short answer at 15.09 tokens per second. The desktop was not measured at 104K; its deeper recorded point was 149,711 tokens, with reading at 694.6 tokens per second and short-answer speaking at 22.60 tokens per second.</p>
-    <p><strong>Measured.</strong> The laptop also survived a targeted stability check. A fresh Ling server first answered the recorded 3,007-token crash replay and stayed alive. It then completed 40 of 40 public-source prompts with zero crashes and one server start. Those 40 prompts ranged from 339 to 10,930 tokens. <strong>This was not a 48K stability test.</strong> It reduces one specific crash concern; it does not establish long-window reliability.</p>
-    <p><strong>Measured.</strong> The MTP draft was the wrong trade at depth. At <code>-ub 2048</code>, it raised speaking on a short answer after 3K from 34.65 to 41.55 tokens per second, then lowered the 48K figure from 23.80 to 16.30. We left it off. Raising <code>-ub</code> from 512 to 2048 also did not improve Ling's 48K read: 222.0 versus 217.7 tokens per second.</p>
-  </section>
-
-  <section><div class="secnum">05</div><h2>What we got wrong</h2>
-    <p><strong>Measured correction.</strong> An early note treated the warm follow-up as a normal next turn. It was not. The probe replaced the last question on the same ledger. With Ling, that edit caused 535 tokens to be read again at <code>-ub 512</code> and 2,067 at <code>-ub 2048</code>. At <code>-ub 2048</code> the regenerated answer included the sealed code; at <code>-ub 512</code> it did not. A normal appended turn parts at the end of the old prompt and can use a different restore point. This page therefore uses the result only as advice about editing or regenerating the last prompt, not ordinary conversation.</p>
-  </section>
-
-  <section><div class="secnum">06</div><h2>What this does not show</h2>
-    <ul class="plain">
-      <li>No Performance-mode run was made. Balanced mode stayed on throughout, so the study does not measure the laptop's fastest possible power profile.</li>
-      <li>No battery life, wall power, temperature, fan noise, sustained thermal throttling, or simultaneous-request capacity was measured.</li>
-      <li>The cross-machine speaking task was a short sealed-code answer, not prose. The study does not claim the same ratios for long generation.</li>
-      <li>Exact-code retrieval is a correctness check, not a model-quality evaluation. There was one main cold request per depth and configuration, not a statistical sample.</li>
-      <li>Only Ling was probed beyond 48K, at about 104K. A configured 128K, 198K, or 256K window is capacity, not proof of speed or stability at its limit.</li>
-      <li>The Qwen3-235B 48K prompts, 48,020 tokens on the desktop and 48,027 on the laptop, were longer than the 40,960-token trained context reported in the desktop log.</li>
-      <li>The machines used different backends, context windows, micro-batches, batch sizes, cache settings, thread counts, and some model-specific flags. Qwen3-235B also used different quantization and drafting on the desktop, and Flash-Next used a separate desktop server binary. These are practical deployment comparisons, not isolated hardware benchmarks.</li>
-    </ul>
-  </section>
-
-  <section><div class="secnum">07</div><h2>Related pages on this site</h2>
+  <section id="related"><div class="secnum">07</div><h2>Related pages on this site</h2>
     <p>The <a href="../two-boxes/">two-machine study</a> measures what changes when the laptop helps the desktop instead of serving alone. The provisional <a href="../batch-size/">batch-size study</a> shows why prompt-reading settings matter on the desktop comparison machine. <a href="../letta-code-local/">Running Letta Code locally</a> is a build report from this same laptop: Letta Code agents on a llama.cpp model served on the laptop, with no Letta account, and what they tried to reach.</p>
   </section>
 
-  <section><div class="secnum">08</div><h2>Sources and artifacts</h2>
+  <section id="sources"><div class="secnum">08</div><h2>Sources and artifacts</h2>
     <p>The <a href="data/README.md">data package</a> contains the redacted result files, memory samples, server logs, probes, launch chains, and the six desktop comparison records. The <a href="data/NUMBERS.md">figure-by-figure source list</a> maps every displayed figure to a file and field. The runtime was <a href="https://github.com/ggml-org/llama.cpp/tree/d3146f2b5">llama.cpp at revision d3146f2b5</a>. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
   </section>
+  <div class="endnote"><div class="nonaff">Independent measurements. No affiliation with ASUS, AMD, NVIDIA, Intel, the llama.cpp or ggml-org projects, or the makers of the Qwen, DeepSeek, GLM, and Ling models.</div></div>
 </div></main>
 
 <footer><div class="wrap"><div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div><div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div><p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p><p>Copyright 2026 Grant Williams. Independent work: ASUS and ROG are marks of ASUSTeK Computer Inc.; AMD, Ryzen and Radeon are marks of Advanced Micro Devices, Inc.; NVIDIA and GeForce RTX are marks of NVIDIA Corporation; Intel and Core Ultra are marks of Intel Corporation; llama.cpp is a project of ggml-org and its contributors; the Qwen, DeepSeek, GLM, and Ling model names and marks belong to their respective makers. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p><div class="foot-links"><a href="../">Graphometer</a></div>    <p class="related-sites" style="margin-top:14px">Related sites: <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="https://hearth.grantwilliams.ai">The Hearth</a> · <a href="https://friendsof4o.com">Friends of 4o</a> · <a href="https://aisteward.ai">AI Steward</a></p>

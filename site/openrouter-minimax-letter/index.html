@@ -136,6 +136,10 @@
   figure.letter-img img{max-width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px}
   figure.letter-img figcaption{font-size:13px;color:var(--faint);margin-top:8px;max-width:66ch}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -167,31 +171,74 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Incident report &middot; letter received 21 November 2026 &middot; as of 21 November 2026</div>
-      <h1 itemprop="headline">OpenRouter&rsquo;s <em>MiniMax</em> email</h1>
-      <p class="subtitle">OpenRouter says 7,619 of our requests to MiniMax
-      models may have been read by a third party. Here is the letter in
-      full. OpenRouter&rsquo;s log of our account shows all but one came
-      from the API key our published studies used.</p>
+      <div class="eyebrow">Incident report &middot; one OpenRouter customer&rsquo;s account &middot; as of 21 November 2026</div>
+      <h1 itemprop="headline">OpenRouter&rsquo;s <em>MiniMax</em> email: the full letter and what our logs show</h1>
+      <p class="subtitle">OpenRouter says a third party may have read the
+      prompts and outputs of 7,619 of our requests to MiniMax models, and its
+      log of our account
+      shows all but one came from the API key (the access key a program
+      sends with each request) that two studies published on this site
+      used.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>What the letter says.</strong> The letter says a security
+          researcher&rsquo;s test URLs in prompts to MiniMax models were opened
+          by a third party 40 to 130 hours later, and OpenRouter says it has
+          removed the &ldquo;Zero
+          Data Retention&rdquo; label (the router&rsquo;s statement about a
+          provider&rsquo;s setting) from these MiniMax-model endpoints while
+          it investigates. <a href="#letter">The full letter</a></li>
+          <li><strong>What our account shows.</strong> OpenRouter&rsquo;s log
+          of our account shows all but one of the 7,619 requests came from the
+          key our studies used, between 24 August
+          and 4 September 2026; the last, on 8 October, was a single short
+          request from a different key, used by a private project. Private
+          voice tests that sent personal writing are, as far as the log shows,
+          not in the letter&rsquo;s count. <a href="#our-requests">Our
+          requests</a></li>
+          <li><strong>If you got the same letter, check your own
+          account.</strong> Filter OpenRouter&rsquo;s Activity and Logs pages
+          by &ldquo;Provider is MiniMax&rdquo;, see which API key sent each
+          request, and rotate (cancel, and replace where you still need it) any key, password, token or
+          signed URL that appeared in those prompts or answers.
+          <a href="#check">The steps</a></li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <p class="lead">This page is for anyone who got OpenRouter&rsquo;s
       email about MiniMax models, or who sends prompts through a model
-      router (a service that passes your prompts on to AI models). You get
-      the letter as text and as received, what has been reported and by
-      whom, what our own records hold, and what OpenRouter&rsquo;s log of
-      our account shows. Graphometer is a paying OpenRouter customer. The
-      log puts all but one of the 7,619 requests on the API key that two
-      studies published on this site used, between 24 August and 4
-      September 2026. The last one, on 8 October, was a single short
-      request from a different key, used by a private project. Section 05
-      shows how to check your own account the same way.</p>
-      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent report; no affiliation with OpenRouter,
-      MiniMax, AtlasCloud, Novita, StreamLake, DeepInfra, Together, OpenAI
-      or Amazon Web Services.</div>
+      router (a service that passes your prompts on to AI models).
+      Graphometer is a paying OpenRouter customer.</p>
     </div>
 
-    <section>
+    <section id="check">
       <div class="secnum">01</div>
+      <h2>If you got the same letter</h2>
+      <ol class="plain">
+        <li>Sign in to OpenRouter and open the Activity and Logs pages. On
+        each, use the filter &ldquo;Provider is MiniMax&rdquo;. This is how
+        we checked our own account.</li>
+        <li>The Activity page limits a filtered view to 31 days, so step
+        through the letter&rsquo;s dates a month at a time. It shows how many
+        requests went to the provider, and from which API keys.</li>
+        <li>The Logs page shows each request&rsquo;s date, model, provider,
+        token counts and which API key sent it. On our account the times were
+        shown in US Eastern time; the letter gives UTC.</li>
+        <li>Work out what those prompts contained. If you did not keep the
+        prompts, the API key behind each request tells you which tool or
+        script to look at.</li>
+        <li>Rotate any key, password, token or signed URL (a web link that
+        carries its own access permission) that appeared in those prompts or
+        in the answers, starting with the one that can do the most. Rotating
+        means cancelling the exposed one so it no longer works, and issuing a
+        new one where you still need it.</li>
+        <li>Remember the outputs too. The letter says prompts and outputs
+        may have been read.</li>
+      </ol>
+    </section>
+
+    <section id="letter">
+      <div class="secnum">02</div>
       <h2>What the letter says</h2>
       <p>The email reached the site&rsquo;s owner on 21 November 2026. Its
       heading is &ldquo;Requests you sent to MiniMax models may have been
@@ -217,7 +264,7 @@
     </section>
 
     <section>
-      <div class="secnum">02</div>
+      <div class="secnum">03</div>
       <h2>What is known, and who said it</h2>
       <p>As of 21 November 2026, the facts below come from the letter. We
       have not checked any of them ourselves. Each line says who said it.</p>
@@ -266,7 +313,7 @@
     </section>
 
     <section id="our-requests">
-      <div class="secnum">03</div>
+      <div class="secnum">04</div>
       <h2>Our 7,619 requests: OpenRouter&rsquo;s log and our records</h2>
       <p>We checked two ways. On 21 November 2026 the site&rsquo;s owner
       signed in to our OpenRouter account, and we read its Activity and Logs
@@ -277,7 +324,7 @@
       <table class="facts">
         <tr><th>20 Aug to 19 Sep 2026</th><td>About <span class="n">7,620</span> requests with provider MiniMax. The page shows the figure rounded, as &ldquo;7.62K&rdquo;, not the exact count. All came from the API key our studies used, to MiniMax M3 and MiniMax M2-her.</td></tr>
         <tr><th>19 Sep to 19 Oct 2026</th><td>Exactly <span class="n">1</span> request with provider MiniMax, to MiniMax M2.7, from a different key, used by a private project.</td></tr>
-        <tr><th>That one request</th><td>8 October, 22:36 UTC: <span class="n">42</span> tokens in and a <span class="n">3</span>-token answer. The log holds no text, so we cannot say what it asked.</td></tr>
+        <tr><th>That one request</th><td>8 October, 22:36 UTC: <span class="n">42</span> tokens (a token is a word or part of a word) in and a <span class="n">3</span>-token answer. The log holds no text, so we cannot say what it asked.</td></tr>
         <tr><th>In between</th><td>No rows with provider MiniMax from 02:00 UTC on 4 September to 22:00 UTC on 8 October.</td></tr>
       </table>
       <p>About 7,620, rounded, plus that one request agrees with the
@@ -357,7 +404,7 @@
     </section>
 
     <section>
-      <div class="secnum">04</div>
+      <div class="secnum">05</div>
       <h2>What the prompts in those two studies held</h2>
       <p><strong>The agent-permission pilot</strong> used MiniMax M3 as a
       second model to grade results. Each grading request held grading
@@ -390,32 +437,6 @@
     </section>
 
     <section>
-      <div class="secnum">05</div>
-      <h2>If you got the same letter</h2>
-      <ol class="plain">
-        <li>Sign in to OpenRouter and open the Activity and Logs pages. On
-        each, use the filter &ldquo;Provider is MiniMax&rdquo;. This is how
-        we checked our own account.</li>
-        <li>The Activity page limits a filtered view to 31 days, so step
-        through the letter&rsquo;s dates a month at a time. It shows how many
-        requests went to the provider, and from which API keys.</li>
-        <li>The Logs page shows each request&rsquo;s date, model, provider,
-        token counts and which API key sent it. On our account the times were
-        shown in US Eastern time; the letter gives UTC.</li>
-        <li>Work out what those prompts contained. If you did not keep the
-        prompts, the API key behind each request tells you which tool or
-        script to look at.</li>
-        <li>Rotate any key, password, token or signed URL (a web link that
-        carries its own access permission) that appeared in those prompts or
-        in the answers, starting with the one that can do the most. Rotating
-        means cancelling the exposed one so it no longer works, and issuing a
-        new one where you still need it.</li>
-        <li>Remember the outputs too. The letter says prompts and outputs
-        may have been read.</li>
-      </ol>
-    </section>
-
-    <section>
       <div class="secnum">06</div>
       <h2>What a &ldquo;Zero Data Retention&rdquo; label can tell you</h2>
       <p>A &ldquo;Zero Data Retention&rdquo; label on a router is the
@@ -431,7 +452,7 @@
 
     <section>
       <div class="secnum">07</div>
-      <h2>What this page does not know</h2>
+      <h2>Limits of this check</h2>
       <p>As of 21 November 2026 we do not know who opened the test URLs or
       read any prompts, how many accounts got a letter, or MiniMax&rsquo;s
       own account of events, which the letter says OpenRouter has asked for
@@ -462,7 +483,7 @@
       <div class="secnum">09</div>
       <h2>Sources and data</h2>
       <p>The letter is the email received on 21 November 2026, shown in
-      section 01 as <a href="openrouter-letter-2026-11-21.png">an image</a>.
+      section 02 as <a href="openrouter-letter-2026-11-21.png">an image</a>.
       Its text is in <a href="data/LETTER.md">data/LETTER.md</a>. Public
       reports, all read on or before 21 November 2026:
       <a href="https://news.ycombinator.com/item?id=50585962">the Hacker News thread</a>,
@@ -484,6 +505,12 @@
       <p class="fineprint">Every claim on this page is dated. The
       situation may change after 21 November 2026.</p>
     </section>
+
+    <div class="endnote">
+      <div class="nonaff">Independent report; no affiliation with OpenRouter,
+      MiniMax, AtlasCloud, Novita, StreamLake, DeepInfra, Together, OpenAI
+      or Amazon Web Services.</div>
+    </div>
 
   </div>
 </main>

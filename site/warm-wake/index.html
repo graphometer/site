@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Save and restore a llama.cpp conversation across a restart</title>
-<meta name="description" content="After one llama.cpp restart, Qwen3-235B began replying in 1.65 seconds once the server was back. Reading that history from scratch had taken 461.97 seconds.">
+<meta name="description" content="On one RTX 5090 desktop, Qwen3-235B gave its first words 1.65 seconds after a llama.cpp restore; reading that history from scratch had taken 461.97 seconds.">
 <link rel="canonical" href="https://graphometer.ai/warm-wake/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Save and restore a llama.cpp conversation across a restart">
-<meta property="og:description" content="After one llama.cpp restart, Qwen3-235B began replying in 1.65 seconds once the server was back. Reading that history from scratch had taken 461.97 seconds.">
+<meta property="og:description" content="On one RTX 5090 desktop, Qwen3-235B gave its first words 1.65 seconds after a llama.cpp restore; reading that history from scratch had taken 461.97 seconds.">
 <meta property="og:url" content="https://graphometer.ai/warm-wake/">
 <meta property="og:image" content="https://graphometer.ai/og/warm-wake.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Save and restore a llama.cpp conversation across a restart">
-<meta name="twitter:description" content="After one llama.cpp restart, Qwen3-235B began replying in 1.65 seconds once the server was back. Reading that history from scratch had taken 461.97 seconds.">
+<meta name="twitter:description" content="On one RTX 5090 desktop, Qwen3-235B gave its first words 1.65 seconds after a llama.cpp restore; reading that history from scratch had taken 461.97 seconds.">
 <meta name="twitter:image" content="https://graphometer.ai/og/warm-wake.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -164,46 +164,34 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; 13 September results, updated 26 September 2026 &middot; one RTX 5090 desktop &middot; llama.cpp slot save and restore, driven by a program of our own &middot; about 100,000 tokens on the 13 September histories</div>
-      <h1 itemprop="headline">Seven minutes to 1.7 seconds</h1>
-      <p class="subtitle">Saving a local llama.cpp server's conversation state to disk. On 13 September, after a restart, Qwen3-235B reached first content in 1.65 seconds on a history that took 461.97 seconds to read cold. Cold reading has since got faster; these restart times were not re-run.</p>
-      <p class="lead"><strong>Measured, 13 September 2026.</strong> In one restart cycle, Qwen3-235B reached first content in <span class="n">1.65 seconds</span> on a <span class="n">102,912-token</span> history that had taken <span class="n">461.97 seconds</span> to read cold. That 1.65 seconds is the first request once the server was back; loading the model is a separate cost, and this page prints it. GLM-4.7-Flash went from <span class="n">74.73 seconds</span> to <span class="n">0.67 seconds</span> on <span class="n">105,181 tokens</span>, with first content <span class="n">15.3 seconds</span> after the stop command. After the DeepSeek V4 Flash restart no restore was performed, and the first request re-read the whole history. These original results are three configurations, one request at a time, on one machine, on one date.</p>
-      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="note"><span class="label">Update, 26 September 2026</span>
-        <strong>Measured, 21 September.</strong> One Qwen3-235B run read a 48,020-token prompt at 703.3 tokens a second with <code>-b 4096 -ub 2048</code>, against 285.8 at the earlier default. One run at each setting. The same probe at <code>-b 4096 -ub 4096</code> read at <span class="n">944.2 tokens a second</span> and was not adopted. The 703.3 result is the launch default, not the fastest rung. The cold wait is smaller at that measured depth; no new roughly 100K cold time was found, so the headline remains the dated 13 September result. A later MiniMax M2.7 test restored its slot and completed the next request in 2.17 seconds, after a separate 2.19-second restore. That is total request time, not time to first content.
+      <div class="eyebrow">Measured study &middot; one RTX 5090 desktop &middot; llama.cpp slot save and restore</div>
+      <h1 itemprop="headline">Save and restore a llama.cpp conversation across a restart</h1>
+      <p class="subtitle">On one RTX 5090 desktop, on 13 September, Qwen3-235B's first request after a restore got its first words in 1.65 seconds; reading the same history from scratch had taken 461.97 seconds.</p>
+      <p class="lead">In a later test (21 September) a 48,020-token prompt was read faster from scratch; no new time was measured for a history this long, and these restart times were not re-run. <a href="#cold-side">What changed</a></p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>On two models, restoring saved state skipped the long re-read.</strong> In one restart cycle each, Qwen3-235B got its first words in 1.65 seconds instead of 461.97, and GLM-4.7-Flash in 0.67 seconds instead of 74.73 (on GLM those first words are the model's reasoning). Loading the model is still a separate wait: the whole Qwen3-235B restart took 230.5 seconds from the stop command, 222.1 of it loading the model. <a href="#observed">The results</a></li>
+          <li><strong>Check the model file before testing reuse.</strong> After the DeepSeek V4 Flash restart no restore was performed and the whole history was read again. The records do not say why. Its file has a sliding-window key, which warns that restored state may need a full re-read; a small reader supplied here looks for that key. A missing key is a useful sign, not a guarantee. <a href="#check">The check</a></li>
+          <li><strong>Keep the start of the prompt identical.</strong> On these runs the client reshuffled its tool list between requests, which threw the reusable cache away. Sorting the tool list on every request fixed it (our diagnosis, from the fix working; no record ships for it). <a href="#client">Why it matters</a></li>
+        </ul>
       </div>
-      <div class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to the llama.cpp project, Z.ai, Alibaba Group, DeepSeek, Google, MiniMax, Unsloth, Intel, or NVIDIA.</div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
     </div>
 
-    <section>
+    <section id="what-it-is">
       <div class="secnum">01</div>
       <h2>What it is</h2>
       <p>A long conversation is expensive to read again after a local model server restarts. The server has lost the attention state it built while reading earlier turns, so the next request can begin with minutes of waiting.</p>
-      <p>llama-server can write a slot's state to a file and read it back, and a small program of our own decides when to save it and asks for the restore after a restart. The test recorded a cold turn, a warm turn, a server stop and start, then another turn with the same history. Time to first content is the measure in the original three rows. The later MiniMax row times the entire completion and says so. On the GLM runs the first content is a reasoning event, not the answer.</p>
+      <p>llama-server can write a slot's state (the attention state built while reading the conversation) to a file and read it back, and a small program of our own decides when to save it and asks for the restore after a restart. The test recorded a cold turn (reading the whole history from scratch), a warm turn (a request that reuses the history already read), a server stop and start, then another turn with the same history. Time to first content (how long until the first words of the reply arrive; on the GLM runs those words are the model's reasoning) is the measure in the original three rows. The later MiniMax row times the entire completion and says so. On the GLM runs the first content is a reasoning event, not the answer.</p>
       <div class="note">
         <span class="label">Measured scope</span>
         One restart cycle per displayed row. One request at a time. The original three configurations used histories between 102,480 and 105,181 tokens. The later MiniMax test used an 85,763-token synthetic prompt. This page measures waiting time, not answer quality.
       </div>
     </section>
 
-    <section>
-      <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <table class="facts">
-        <tr><th scope="row">Machine</th><td><strong>Measured.</strong> One NVIDIA GeForce RTX 5090, an Intel Core Ultra 9 285K, and 188 GiB of RAM.</td></tr>
-        <tr><th scope="row">GLM-4.7-Flash</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 105,181 prompt tokens in the cold leg. <span class="asstated">From our run records:</span> Z.ai GLM-4.7-Flash, UD-Q4_K_XL.</td></tr>
-        <tr><th scope="row">Qwen3-235B</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 102,912 prompt tokens in the cold leg. <span class="asstated">From our run records:</span> Alibaba Group Qwen3-235B Instruct 2507, Q4_K_M with a 0.6B draft model (a small model that proposes tokens for the large one to verify).</td></tr>
-        <tr><th scope="row">DeepSeek V4 Flash</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 102,480 prompt tokens in the cold leg. <span class="asstated">From our run records:</span> DeepSeek V4 Flash 0731, Q8 body.</td></tr>
-        <tr><th scope="row">What each 13 September run did</th><td><strong>Measured.</strong> One seeded history with a 96,000-token target, one tool call and a three-code recall check per run, through an agent framework. The framework is not named.</td></tr>
-        <tr><th scope="row">MiniMax M2.7, 19 September 2026 campaign</th><td><strong>Measured configuration.</strong> Unsloth UD-IQ4_XS, a 131,072-token window, one slot, <code>--n-cpu-moe 59 -b 4096 -ub 4096 --no-repack --flash-attn on</code>, q8_0 key and value caches, and 24 threads. The probe sent the same synthetic text before and after a real server stop and start, directly to llama-server. It used the server's own slot-save and slot-restore endpoints.</td></tr>
-        <tr><th scope="row">Runtime revision</th><td class="asstated">The records do not identify a llama.cpp build revision, so this page does not assign one.</td></tr>
-        <tr><th scope="row">Sampling</th><td class="asstated">The 13 September records do not state sampling settings. The MiniMax probe used temperature 0, non-streaming completion, and a 16-token output limit.</td></tr>
-      </table>
-      <p class="fineprint">The original three model-file descriptions come from our run records, not from the result files. MiniMax's file and flags are recorded in the shipped launch excerpt and server log. For the original rows, timings, prompt sizes, window, and slot count come from the redacted JSON records. MiniMax's measurements come from its console and server logs.</p>
-    </section>
 
-    <section>
-      <div class="secnum">03</div>
+    <section id="observed">
+      <div class="secnum">02</div>
       <h2>Observed</h2>
       <p>Each row is one restart cycle. These are not medians.</p>
       <div class="data-wrap">
@@ -213,23 +201,24 @@
             <tr><td class="t">GLM-4.7-Flash, UD-Q4_K_XL</td><td>105,181 tokens</td><td>74.73 s</td><td>0.67 s</td><td class="t">measured first content, 2026-09-13</td></tr>
             <tr><td class="t">Qwen3-235B, Q4_K_M</td><td>102,912 tokens</td><td>461.97 s</td><td>1.65 s</td><td class="t">measured first content, 2026-09-13</td></tr>
             <tr><td class="t">DeepSeek V4 Flash, Q8 body</td><td>102,480 tokens</td><td>1,396.6 s</td><td class="neg">797.57 s, history re-read</td><td class="t">measured first content; failure, 2026-09-13</td></tr>
-            <tr><td class="t">MiniMax M2.7, UD-IQ4_XS</td><td>85,763 tokens</td><td>147.49 s, full request</td><td>2.17 s, full request after restore</td><td class="t">measured 16-token completion; 19 September campaign, console has no clock time</td></tr>
+            <tr><td class="t">MiniMax M2.7, UD-IQ4_XS</td><td>85,763 tokens</td><td>147.49 s, full request</td><td>2.17 s, full request after restore</td><td class="t">measured 16-token completion; 19 September tests, console has no clock time</td></tr>
           </tbody>
         </table>
       </div>
       <p class="tablenote">For the 13 September rows, time is from the request to first content. MiniMax is a non-streaming request through completion of 16 generated tokens; it is not a first-content measurement or an end-to-end restart time. On the GLM runs the first content is a reasoning event, not the answer. The DeepSeek row is a failure, not a partial success: its post-restart request re-read the whole history, 102,846 tokens. The next request in the same record reached first content in <span class="n">2.86 seconds</span> with no tokens re-read.</p>
       <p><strong>Measured, 13 September 2026.</strong> The GLM-4.7-Flash cycle in that table timed the whole stop and start. First content arrived <span class="n">15.3 seconds</span> after the stop command, model load included. Reading the saved state back and replaying the last prompt took <span class="n">1.03 seconds</span>, and the request produced first content in <span class="n">0.67 seconds</span>. The saved state was <span class="n">5,722,437,888 bytes</span>, about 5.7 GB.</p>
       <p><strong>Measured, 13 September 2026.</strong> End to end, the Qwen3-235B restart took <span class="n">230.5 seconds</span> from the stop command, <span class="n">222.1</span> of them loading the model; the 1.65 seconds is the first request once the server was back.</p>
-      <p><strong>Measured timings, 19 September 2026 campaign; the console has no clock time.</strong> MiniMax M2.7 saved and restored <span class="n">85,778 tokens</span>. The saved state was <span class="n">11,573,855,516 bytes</span>; saving took <span class="n">3.05 seconds</span> client wall time. The repeated prompt then required <span class="n">1 token</span> of new prompt work. Its client-side restore call took <span class="n">2.19 seconds</span> (the server reported <span class="n">2,171.784 ms</span>); the following full request took <span class="n">2.17 seconds</span>. The saved count includes generated tokens, so it is not the prompt length. These records show a working restore through llama-server's own slot endpoints, tested directly; they do not time first content or the complete stop-to-answer interval.</p>
-      <div class="note"><span class="label">What changed on the cold side</span>
-        <strong>Measured, 21 September 2026.</strong> On the same desktop, Qwen3-235B Q4_K_M with its Qwen3-0.6B Q8_0 draft read <span class="n">48,020 prompt tokens</span> at <span class="n">285.8</span> tokens a second at the earlier default and <span class="n">703.3</span> with <code>-b 4096 -ub 2048</code>, in a <span class="n">131,072-token</span> window, one request at a time. This is prompt-reading throughput on one synthetic prose prompt that asks for a planted reference, not the 13 September conversation and not source code. One run at each setting. The same probe at <code>-b 4096 -ub 4096</code> read at <span class="n">944.2 tokens a second</span> and was not adopted. The 703.3 result is the launch default, not the fastest rung. No new roughly 100K cold duration is substituted for 461.97 seconds. On the GLM batch trial's <span class="n">202,752-token</span> window, larger micro-batches read a <span class="n">47,986-token</span> prompt at <span class="n">3,022.0 to 3,100.2 tokens a second</span> against <span class="n">2,594.6</span> at the default. The ubatch 2048 run returned an empty answer. The launch script still uses the default. None of this replaces the <span class="n">74.73-second</span> cold result.
+      <p><strong>Measured timings, 19 September 2026 tests; the console has no clock time.</strong> MiniMax M2.7 saved and restored <span class="n">85,778 tokens</span>. The saved state was <span class="n">11,573,855,516 bytes</span>; saving took <span class="n">3.05 seconds</span> client wall time. The repeated prompt then required <span class="n">1 token</span> of new prompt work. Its client-side restore call took <span class="n">2.19 seconds</span> (the server reported <span class="n">2,171.784 ms</span>); the following full request took <span class="n">2.17 seconds</span>. The saved count includes generated tokens, so it is not the prompt length. These records show a working restore through llama-server's own slot endpoints, tested directly; they do not time first content or the complete stop-to-answer interval.</p>
+      <div class="note" id="cold-side"><span class="label">What changed on the cold side</span>
+        <strong>Measured, 21 September 2026.</strong> On the same desktop, Qwen3-235B Q4_K_M with its Qwen3-0.6B Q8_0 draft read <span class="n">48,020 prompt tokens</span> at <span class="n">285.8</span> tokens a second at the earlier default and <span class="n">703.3</span> with <code>-b 4096 -ub 2048</code>, in a <span class="n">131,072-token</span> window, one request at a time. This is prompt-reading throughput on one synthetic prose prompt that asks for a planted reference, not the 13 September conversation and not source code. One run at each setting. The same probe at <code>-b 4096 -ub 4096</code> read at <span class="n">944.2 tokens a second</span> and was not adopted. The 703.3 result is the launch default, not the fastest setting. No new roughly 100K cold duration is substituted for 461.97 seconds. On the GLM batch trial's <span class="n">202,752-token</span> window, larger micro-batches read a <span class="n">47,986-token</span> prompt at <span class="n">3,022.0 to 3,100.2 tokens a second</span> against <span class="n">2,594.6</span> at the default. The ubatch 2048 run returned an empty answer. The launch script still uses the default. None of this replaces the <span class="n">74.73-second</span> cold result.
       </div>
       <p>An earlier GLM-4.7-Flash cycle that morning ran the same sequence and reached <span class="n">0.68 seconds</span> after the restart from a <span class="n">74.79-second</span> cold read, with no prompt tokens re-read and the same <span class="n">1.03-second</span> restore and replay. Its record reports a saved state of <span class="n">1,687,552 bytes</span>, about 1.7 MB, against 5.7 GB in the cycle above. The records do not explain the difference, so the page reports the later cycle and ships both files.</p>
     </section>
 
-    <section>
-      <div class="secnum">04</div>
-      <h2>How the warm wake works</h2>
+
+    <section id="how-it-works">
+      <div class="secnum">03</div>
+      <h2>How saving and restoring works</h2>
       <p>llama-server can write a slot's state to a file and read it back, using its slot-save flag and its slot endpoints. A small program of our own sits between the client and the server: when a turn goes quiet it asks the server to save the slot; after a restart it asks for the restore, replays the last prompt, and keeps the tool list in a stable order. The program is ours and is not yet published. The saving and restoring is llama.cpp's.</p>
       <ol class="plain">
         <li>The server reads a long prompt and builds the attention state used by later turns.</li>
@@ -242,34 +231,30 @@
       <p>This saves prompt state, not model weights. Loading the model still takes time. The <span class="n">15.3-second</span> GLM cycle includes a <span class="n">12-second</span> model load, and the Qwen3-235B server needed <span class="n">222.1 seconds</span> to come back.</p>
     </section>
 
-    <section>
-      <div class="secnum">05</div>
+
+    <section id="client">
+      <div class="secnum">04</div>
       <h2>The client can throw the cache away</h2>
-      <p>The prompt prefix has to stay byte-stable. On these runs the client reshuffled its tool list between requests. The tools sit near the start of the prompt, so changing their order changed the prefix and discarded the reusable cache.</p>
+      <p>The prompt prefix (the start of the prompt, which the server can reuse) has to stay byte-stable (exactly the same text, in the same order). On these runs the client reshuffled its tool list between requests. The tools sit near the start of the prompt, so changing their order changed the prefix and discarded the reusable cache.</p>
       <p>The fix was simple: sort the tool list on every request. <strong>Stated: our diagnosis, from the fix working.</strong> No separate record ships for it. The wider lesson is not specific to one client. If a local model server depends on prefix reuse, keep stable instructions and tool definitions in a stable order.</p>
     </section>
 
-    <section>
-      <div class="secnum">06</div>
+
+    <section id="where-it-fails">
+      <div class="secnum">05</div>
       <h2>Where it does not work</h2>
       <p>After the DeepSeek V4 Flash restart no restore was performed: the record's restore field is empty, and the records do not say why. The first request re-read the whole history, <span class="n">102,846 tokens</span>, and reached first content after <span class="n">797.57 seconds</span>. <strong>Measured failure, 13 September 2026.</strong> The next request in the same record reached first content in <span class="n">2.86 seconds</span> with no tokens re-read, so on that run the re-read was paid once, not on every turn.</p>
-      <p>Our operator record from the next morning says the restored state was not reused on the sliding-window and recurrent designs we checked: DeepSeek V4 Flash, Qwen3.5-122B, Qwen3.5-397B, Qwen3.8-Flash-Next, Gemma 4 26B and Gemma 4 31B. For those the program replays the history at server start instead. <strong>Stated: our operator record, 2026-09-13.</strong> No result file ships for them. On the model we measured, the replay happened on the request itself, which is the 797.57 seconds above.</p>
-      <h3>Check the model file before testing reuse</h3>
-      <p>Inspect the GGUF metadata for a key ending in <code>attention.sliding_window</code>. Our Qwen3-235B Q4_K_M and MiniMax M2.7 UD-IQ4_XS files have no such key; both reused saved state in the tests above. DeepSeek V4 Flash's Q8 header has <code>deepseek4.attention.sliding_window = 128</code>. <strong>Measured headers, read 26 September 2026.</strong> The absence of the key is a useful sign for these files, not a guarantee for every architecture or build. A sliding-window key warns that restored state may need a full re-read. This page's DeepSeek cycle has <code>restart.restore = null</code>, so it does not measure reuse after a successful restore.</p>
-      <p>Run <code>python3 read_attention.py /path/to/model.gguf</code> with the <a href="data/headers/read_attention.py">metadata-only reader</a> supplied here, using the first shard for a split file. It scans the metadata without loading tensors or starting a model. The <a href="data/headers/attention-metadata.json">captured header results</a> show the keys found. Then test the same prompt after save, restart and restore: the next request's prompt-eval count decides whether state was reused; a large restored-token count alone does not.</p>
+      <p>Our own record from the next morning says the restored state was not reused on the sliding-window and recurrent designs we checked: DeepSeek V4 Flash, Qwen3.5-122B, Qwen3.5-397B, Qwen3.8-Flash-Next, Gemma 4 26B and Gemma 4 31B. For those the program replays the history at server start instead. <strong>Stated: our own record, 2026-09-13.</strong> No result file ships for them. On the model we measured, the replay happened on the request itself, which is the 797.57 seconds above.</p>
+      <h3 id="check">Check the model file before testing reuse</h3>
+      <p>Inspect the GGUF metadata (the header information stored in the model file) for a key ending in <code>attention.sliding_window</code>. Our Qwen3-235B Q4_K_M and MiniMax M2.7 UD-IQ4_XS files have no such key; both reused saved state in the tests above. DeepSeek V4 Flash's Q8 header has <code>deepseek4.attention.sliding_window = 128</code>. <strong>Measured headers, read 26 September 2026.</strong> The absence of the key is a useful sign for these files, not a guarantee for every architecture or build. A sliding-window key warns that restored state may need a full re-read. This page's DeepSeek cycle has <code>restart.restore = null</code>, so it does not measure reuse after a successful restore.</p>
+      <p>Run <code>python3 read_attention.py /path/to/model.gguf</code> with the <a href="data/headers/read_attention.py">metadata-only reader</a> supplied here, using the first shard for a split file. It scans the metadata without loading tensors or starting a model. The <a href="data/headers/attention-metadata.json">captured header results</a> show the keys found. Then test the same prompt after save, restart and restore: the next request's prompt-eval count (how many prompt tokens the server had to read) decides whether state was reused; a large restored-token count alone does not.</p>
       <p>This is an interaction between the model's attention design and what a restored slot can be reused for. It is not a claim that any vendor caused the failure.</p>
     </section>
 
-    <section>
-      <div class="secnum">07</div>
-      <h2>What we got wrong</h2>
-      <p>Our first notes grouped DeepSeek V4 Flash with the models expected to reuse a restored slot. The next measured run showed otherwise. No restore was performed, the request re-read the history, and the result was marked <strong>FAIL</strong>.</p>
-      <p>That correction matters because a saved file on disk is not by itself a warm next turn. The user-visible request is the check that decides whether the method worked.</p>
-    </section>
 
-    <section>
-      <div class="secnum">08</div>
-      <h2>What this does not show</h2>
+    <section id="limits">
+      <div class="secnum">06</div>
+      <h2>Limits</h2>
       <ul class="plain">
         <li>One restart cycle per configuration, two for GLM-4.7-Flash. None of it is a distribution: there are no medians or confidence intervals, and the two GLM cycles are not merged.</li>
         <li>The study does not measure answer quality. The original rows measure first content; MiniMax measures the complete short request. Both check whether the history was re-read.</li>
@@ -280,13 +265,44 @@
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">09</div>
-      <h2>Related pages on this site</h2>
-      <p>The <a href="../method/">Method</a> page defines Graphometer's evidence labels and the rule that files outrank prose. <a href="../l3-threads/">The wrong flag</a> is another measured llama.cpp study on the same workstation. The <a href="../field-cards/">model field cards</a> place these runs beside the exact files and configurations used elsewhere on this bench.</p>
+
+    <section id="corrections">
+      <div class="secnum">07</div>
+      <h2>Corrections and updates</h2>
+      <p>Our first notes grouped DeepSeek V4 Flash with the models expected to reuse a restored slot. The next measured run showed otherwise. No restore was performed, the request re-read the history, and the result was marked <strong>FAIL</strong>.</p>
+      <p>That correction matters because a saved file on disk is not by itself a warm next turn. The user-visible request is the check that decides whether the method worked.</p>
+      <div class="note"><span class="label">Update, 26 September 2026</span>
+        <strong>Measured, 21 September.</strong> One Qwen3-235B run read a 48,020-token prompt at 703.3 tokens a second with <code>-b 4096 -ub 2048</code>, against 285.8 at the earlier default. One run at each setting. The same probe at <code>-b 4096 -ub 4096</code> read at <span class="n">944.2 tokens a second</span> and was not adopted. The 703.3 result is the launch default, not the fastest setting. The cold wait is smaller at that measured depth; no new roughly 100K cold time was found, so the headline remains the dated 13 September result. A later MiniMax M2.7 test restored its slot and completed the next request in 2.17 seconds, after a separate 2.19-second restore. That is total request time, not time to first content.
+      </div>
     </section>
 
-    <section>
+
+    <section id="how-measured">
+      <div class="secnum">08</div>
+      <h2>What we ran, exactly</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>13 September 2026 results, updated 26 September 2026. About 100,000 tokens on the 13 September histories.</td></tr>
+        <tr><th scope="row">Machine</th><td><strong>Measured.</strong> One NVIDIA GeForce RTX 5090, an Intel Core Ultra 9 285K, and 188 GiB of RAM.</td></tr>
+        <tr><th scope="row">GLM-4.7-Flash</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 105,181 prompt tokens in the cold turn. <span class="asstated">From our run records:</span> Z.ai GLM-4.7-Flash, UD-Q4_K_XL.</td></tr>
+        <tr><th scope="row">Qwen3-235B</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 102,912 prompt tokens in the cold turn. <span class="asstated">From our run records:</span> Alibaba Group Qwen3-235B Instruct 2507, Q4_K_M with a 0.6B draft model (a small model that proposes tokens for the large one to verify).</td></tr>
+        <tr><th scope="row">DeepSeek V4 Flash</th><td><strong>Measured.</strong> A 131,072-token served window, one slot, and 102,480 prompt tokens in the cold turn. <span class="asstated">From our run records:</span> DeepSeek V4 Flash 0731, Q8 body.</td></tr>
+        <tr><th scope="row">What each 13 September run did</th><td><strong>Measured.</strong> One seeded history (a long conversation built up before the test) with a 96,000-token target, one tool call and a three-code recall check per run, through an agent framework. The framework is not named.</td></tr>
+        <tr><th scope="row">MiniMax M2.7, 19 September 2026 tests</th><td><strong>Measured configuration.</strong> Unsloth UD-IQ4_XS, a 131,072-token window, one slot, <code>--n-cpu-moe 59 -b 4096 -ub 4096 --no-repack --flash-attn on</code>, q8_0 key and value caches, and 24 threads. The probe sent the same synthetic text before and after a real server stop and start, directly to llama-server. It used the server's own slot-save and slot-restore endpoints.</td></tr>
+        <tr><th scope="row">Runtime revision</th><td class="asstated">The records do not identify a llama.cpp build revision, so this page does not assign one.</td></tr>
+        <tr><th scope="row">Sampling</th><td class="asstated">The 13 September records do not state sampling settings. The MiniMax probe used temperature 0, non-streaming completion, and a 16-token output limit.</td></tr>
+      </table>
+      <p class="fineprint">The original three model-file descriptions come from our run records, not from the result files. MiniMax's file and flags are recorded in the shipped launch excerpt and server log. For the original rows, timings, prompt sizes, window, and slot count come from the redacted JSON records. MiniMax's measurements come from its console and server logs.</p>
+    </section>
+
+
+    <section id="related">
+      <div class="secnum">09</div>
+      <h2>Related pages on this site</h2>
+      <p>The <a href="../method/">Method</a> page defines Graphometer's evidence labels and the rule that files outrank prose. <a href="../l3-threads/">The wrong flag</a> is another measured llama.cpp study on the same workstation. The <a href="../field-cards/">model field cards</a> place these runs beside the exact files and configurations used elsewhere on this desktop.</p>
+    </section>
+
+
+    <section id="sources">
       <div class="secnum">10</div>
       <h2>Sources and artifacts</h2>
       <p>The evidence package keeps the four original result files: three configurations, two cycles for GLM-4.7-Flash. It adds MiniMax's console and server records and redacted probe and launch excerpts, plus the Qwen and GLM batch records and measurement instrument. Operational names, addresses, ports, private tool names, and internal paths were removed. Measurement fields were retained.</p>
@@ -303,6 +319,7 @@
       <p>If a number on the page disagrees with a file in its package, the file is right and the page is wrong.</p>
       <p class="fineprint">The saving and restoring are llama.cpp's own: llama-server's slot-save flag and its slot endpoints. The program that decides when to save, asks for the restore and replays the last prompt is ours, and is not yet published. No upstream source revision is cited because the records do not identify one.</p>
     </section>
+
 
   </div>
 </main>

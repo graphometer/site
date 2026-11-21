@@ -1,5 +1,7 @@
 # Every number on the page, and the file it came from
 
+> Note, 21 November 2026: the page this file belongs to was lightly edited on this date. The top of the page changed: an "In short" summary was added, and the label line, the sentence under the headline and the opening paragraph were shortened, reworded or moved lower. Some section headings were renamed (for example "What this does not show" is now "Limits"). Section numbers and their order are unchanged. Where this file names the page's subtitle, lead or label line, it means the page as it stood before. The figures and the files are unchanged.
+
 One row per figure printed at https://graphometer.ai/reasoning-effort/ . Paths
 are relative to this folder. Rows from `local/` and rows from `hosted/` belong
 to different models on different serving stacks and are never pooled. If a row

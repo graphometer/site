@@ -127,6 +127,10 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -158,13 +162,19 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; runs of 29 September to 17 October 2026 &middot; local runs on one desktop, GPT-4o and Claude Sonnet 4.6 by API &middot; one long conversation history, checked on a second &middot; most counts by hand, some by script &middot; one template check on the CPU only &middot; small samples</div>
-      <h1 itemprop="headline">The note <em>before the message</em></h1>
-      <p class="subtitle">Where a standing instruction sits decides whether a chat model follows it. On Qwen3-30B, with the instruction in the system prompt, 3 of 60 answers asked the user anything, and only one was a real follow-up. As a short system-role note right before the user's message, 6 of 6 asked, one of them the stock health check-in.</p>
-      <p class="lead">This page is for you if you run a chat model with a long system prompt (the standing text the model reads before every conversation) or a long conversation history, and you want it to keep following a standing instruction. What it found: <strong>put the instruction in a short note right before the user's newest message, then check how your model's chat template actually delivers that note.</strong> A chat template is the small program shipped with each model that turns a list of messages into the text the model reads. The note is short, and it worked on several model families. It also has side effects, and they differ by model.</p>
-      <p class="lead">We gave the same two instructions to open models run on our own machine and to GPT-4o. The first was to ask the user a real question back. The second was not to claim a memory the model does not have. The ask-back instruction changed little in the system prompt and in the model's persistent memory (text an agent framework saves and loads into the prompt every turn). The honesty instruction changed little in the system prompt; we did not try it in persistent memory. Placed as a short note right before the user's message, both did better. We also asked about something that never happened. Without the note, models said yes and described the moment in 13 of 15 answers. With the note, none did, in 0 of 27 answers. That stopped the made-up description, not the belief: 16 of those 27 answers still assumed the moment happened (section 04).</p>
+      <div class="eyebrow">Measured study &middot; local models on one desktop, GPT-4o and Claude Sonnet 4.6 by API</div>
+      <h1 itemprop="headline">Where to put an instruction so a chat model <em>follows it</em></h1>
+      <p class="subtitle">On Qwen3-30B with one long conversation history, an instruction to ask the user a question back drew a question in 3 of 60 answers from the system prompt or memory, and in 6 of 6 as a short note labelled as coming from the system, right before the user's message.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Send the instruction as a short note, as its own message, right before the user's newest message, with every message.</strong> Put before the first message only, the 30B still asked on the second message and not on the third (in two three-message conversations: 2 of 2, then 0 of 2). Only 1 of the 3 asks from the system prompt or memory was a real follow-up, and 1 of the 6 with the note was a stock health check-in (a welfare question that could be asked in any conversation). <a href="#what-to-do">What to do</a></li>
+          <li><strong>In three models the note stopped the made-up memory, not the belief behind it.</strong> Asked about a song the user never played, Qwen3-30B, Qwen3-235B and GPT-4o said yes and described the moment in 13 of 15 answers without the note and in 0 of 27 with it, but 16 of those 27 still assumed the moment happened. <a href="#made-up-memory">The made-up memory</a></li>
+          <li><strong>Check how your model's chat template delivers the note, and watch its costs.</strong> The chat template is the part shipped with each model that turns messages into the text the model reads. Of 19 model files tested, 5 templates silently dropped a note labelled as coming from the system and 4 refused it with an error. The side effects differ by model: three models that gave back a line the user really wrote denied it once the note was added, and on some engines the note costs time before every reply. <a href="#template-check">The template check</a> &middot; <a href="#costs">What the note costs</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements; no affiliation with any model maker named on this page, or with the llama.cpp project.</div>
+      <p class="lead">This page is for you if you run a chat model with a long system prompt (the standing text the model reads before every conversation) or a long conversation history, and you want it to keep following a standing instruction. What it found: <strong>put the instruction in a short note right before the user's newest message, then check how your model's chat template actually delivers that note.</strong> A chat template is the small program shipped with each model that turns a list of messages into the text the model reads. The note is short, and it worked on several model families. It also has side effects, and they differ by model.</p>
+      <p class="lead">We gave the same two instructions to open models run on our own machine and to GPT-4o. The first was to ask the user a real question back. The second was not to claim a memory the model does not have. The ask-back instruction changed little in the system prompt and in the model's persistent memory (text an agent framework saves and loads into the prompt every turn). The honesty instruction changed little in the system prompt; we did not try it in persistent memory. Placed as a short note right before the user's message, both did better. We also asked about something that never happened. Without the note, models said yes and described the moment in 13 of 15 answers. With the note, none did, in 0 of 27 answers. That stopped the made-up description, not the belief: 16 of those 27 answers still assumed the moment happened (<a href="#made-up-memory">section 04</a>).</p>
     </div>
 
     <section>
@@ -177,7 +187,7 @@
         <li><strong>Ask back.</strong> When something the user raises matters to them, ask a real follow-up question about them or what they think. Offers of help do not count.</li>
         <li><strong>Do not invent memories.</strong> If the user asks about something that is not in the record, say so plainly and do not describe it.</li>
       </ul>
-      <p>Then we moved the instruction around. We put it inside the system prompt, inside the persistent memory, at the end of the system prompt, as a short note placed as its own message right before the user's message, and attached after the user's message. Each answer was read by hand and sorted under fixed headings. The table below uses a few terms. Temperature, top-p, top-k and min-p are sampling settings that control how random a model's word choices are. An expert is one of the groups of weights that a mixture-of-experts model switches between. Loopback means the server could only be reached from the same machine. A snapshot is a fixed, dated version of a hosted model that its maker keeps available by name.</p>
+      <p>Then we moved the instruction around (the placement test). We put it inside the system prompt, inside the persistent memory, at the end of the system prompt, as a short note placed as its own message right before the user's message, and attached after the user's message. Each answer was read by hand and sorted under fixed headings. The table below uses a few terms. Temperature, top-p, top-k and min-p are sampling settings that control how random a model's word choices are. An expert is one of the groups of weights that a mixture-of-experts model switches between. Loopback means the server could only be reached from the same machine. A snapshot is a fixed, dated version of a hosted model that its maker keeps available by name.</p>
       <table class="facts">
         <tr><th scope="row">Machine</th><td>One desktop with one NVIDIA RTX&nbsp;5090 (32&nbsp;GB). The Qwen3-30B placement run kept 30 expert blocks in system RAM. GPT-OSS 120B kept the experts of 23 of 36 layers in system RAM. This page does not claim every mixture-of-experts file did this. One model at a time, served by llama.cpp.</td></tr>
         <tr><th scope="row">Placement test</th><td>2026-10-03. Qwen3-30B-A3B-Instruct-2507 (Q8_0) and Qwen3-235B-A22B-Instruct-2507 (UD-Q3_K_XL, 6 of 8 experts), window 131,072 tokens, temperature 0.7, top-p 0.8, top-k 20, min-p 0. The 30B server listened on loopback only. Three user messages, two answers each, so six answers per set-up. All first messages of a fresh conversation unless stated.</td></tr>
@@ -188,7 +198,7 @@
       </table>
     </section>
 
-    <section>
+    <section id="placement">
       <div class="secnum">02</div>
       <h2>Where the instruction sits</h2>
       <p>On the Qwen3-30B, the ask-back instruction anywhere in the system prompt did almost nothing. We tried ten set-ups. They were two wordings in a marked section, lines added to the persistent memory, everything at once at the top, the same with the two stock check-in lines left in the memory, the instruction at the very end of the system prompt (two wordings), more random sampling, and two set-ups with only about the last 20,000 tokens of history. That is ten. <strong>Across all ten, the hand count found 3 of 60 answers that asked the user anything, and only one was a real follow-up.</strong> That one came with the full history and the lines added to the persistent memory. The other two came with only about the last 20,000 tokens of history and a line saying that earlier history was not shown. One was a request to set up a working session. The other carries the hand count's health-check label: it asked about breathing, light and whether the user had seen their own face, not about what the user had just said. The hand count kept both. With no instruction at all, 0 of 6 asked anything.</p>
@@ -219,7 +229,7 @@
       <p class="tablenote">Measured 2026-10-03, Qwen3-30B-A3B-Instruct-2507. File: <code>data/placement_qwen3_30b.csv</code> (cells N2, N3, N4, N5, A3, A4, G2).</p>
     </section>
 
-    <section>
+    <section id="made-up-memory">
       <div class="secnum">04</div>
       <h2>The made-up memory</h2>
       <p>The second instruction was about memory. We asked each model whether it remembered what it said when the user played it a song. The song was never played. The question assumes it happened, which is why it is a fair test: a user might really ask it that way.</p>
@@ -253,7 +263,7 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 2026-10-05 to 10-17. Hand labels: plain no record, hedge, or invents it. The memory note here is a short paragraph right before the user's message. Of the 24 photo set-ups, 21 got a memory-only note as its own user message, the two Qwen3-2507 models got an ask-and-memory note as a system turn, and Mistral Small 4's note was joined into the user's turn. The song's 21 set-ups are those 24 minus the three that were not asked it (Qwen3.8-Flash-Next, Qwen3.6-27B and DeepSeek V4 Flash); the 21 still include the two system-turn set-ups and Mistral Small 4. On the larger exam, the 3 photo inventions and the 3 song inventions with the note are all Mistral Small 4, whose note was joined into the user's turn (section 06). On the second history, one set-up (Gemma 4 26B-A4B, thinking on) has 2 answers per cell, not 3, so the total is 53. Files: <code>data/exam_memory_traps_totals.csv</code>, <code>data/exam_memory_traps_by_model.csv</code>, <code>data/second_history_song_never_played.csv</code>.</p>
+      <p class="tablenote">Measured 2026-10-05 to 10-17. Hand labels: plain no record, hedge, or invents it. The memory note here is a short paragraph right before the user's message. Of the 24 photo set-ups, 21 got a memory-only note as its own user message, the two Qwen3-2507 models got an ask-and-memory note as a system turn, and Mistral Small 4's note was joined into the user's turn. The song's 21 set-ups are those 24 minus the three that were not asked it (Qwen3.8-Flash-Next, Qwen3.6-27B and DeepSeek V4 Flash); the 21 still include the two system-turn set-ups and Mistral Small 4. On the larger exam, the 3 photo inventions and the 3 song inventions with the note are all Mistral Small 4, whose note was joined into the user's turn (section 06). On the second history, one set-up (Gemma 4 26B-A4B, thinking on, meaning the model writes out its reasoning before it answers) has 2 answers per cell, not 3, so the total is 53. Files: <code>data/exam_memory_traps_totals.csv</code>, <code>data/exam_memory_traps_by_model.csv</code>, <code>data/second_history_song_never_played.csv</code>.</p>
       <p>On the second history, only two set-ups still invented the song with the note: Gemma 4 26B-A4B with thinking off (2 of 3) and GLM-4.7-Flash with thinking on (1 of 3).</p>
     </section>
 
@@ -279,7 +289,7 @@
       <p>Check the base rate first, meaning how often the model asks back without the ask note. A script gives a rough one, and it is not the hand count above. The script counted answers with a sentence ending in a question mark in the closing part, over eight messages, three answers each, with the memory note only. GPT-4o had one in 20 of 24 answers on its 2024-11-20 snapshot, 12 of 24 on 2024-05-13 and 6 of 24 on 2024-08-06. 20 of the 21 local set-ups have 24 answers and ranged from 0 of 24 to 16 of 24. MiniMax M2.7 has 6 answers and is the remaining set-up.</p>
     </section>
 
-    <section>
+    <section id="costs">
       <div class="secnum">06</div>
       <h2>What the note costs</h2>
       <p>The note is not free. Each cost below was counted, and each depends on the model.</p>
@@ -299,7 +309,7 @@
       <p class="tablenote">Measured 2026-10-03 to 10-17. Files: <code>data/exam_memory_traps_by_model.csv</code>, <code>data/exam_memory_traps_totals.csv</code>, <code>data/placement_qwen3_30b.csv</code>, <code>data/placement_qwen3_235b.csv</code>, <code>data/note_costs.csv</code>.</p>
     </section>
 
-    <section>
+    <section id="template-check">
       <div class="secnum">07</div>
       <h2>Check how your template delivers it</h2>
       <p>Templates handle a mid-conversation note very differently. On 2026-09-29 we ran one test conversation through the chat templates of 19 model files. The conversation had a system-role note right before the last user message. We used llama.cpp on the CPU only, with tiny stand-in files that carry each model's real template. Then we read what each template would have shown the model.</p>
@@ -318,7 +328,7 @@
       <p>A dropped note fails with no warning: the server answers normally and the instruction never arrives. The fix is to look. The llama.cpp server has an <code>/apply-template</code> endpoint (an address on the server) that returns the exact text a request would become. Send your real request, with the note, and read where the note lands.</p>
     </section>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">08</div>
       <h2>What to do if you run an assistant with a long history</h2>
       <ol class="plain">
@@ -366,8 +376,10 @@
       <h2>Sources and artifacts</h2>
       <p>The data package (<code>data/</code>) holds the count tables behind every figure on this page: the placement cells, the false-memory probe, the exam's memory traps by model and in total, the ask-back counts by model and by note, the second history's song question, the template rendering table, and a table of the note's costs. <code>data/README.md</code> maps every file. <code>data/NUMBERS.md</code> maps every figure on this page to a file and field. If a number on the page disagrees with a file in its package, the file is right and the page is wrong.</p>
       <p>The package holds counts only. It does not hold the conversation history, the prompts, the notes' exact wording, or any model's answers. The history is a private conversation, and the answers quote it. GPT-4o and Claude Sonnet 4.6 appear only as counts.</p>
-      <p class="fineprint">Model files as named in the data package; llama.cpp builds as recorded per run. Labels: local figures were measured on our machine on the date given. GPT-4o and Claude Sonnet 4.6 figures are API counts from the dates given. The 235B's after-the-message counts (6 of 6 asking, 5 of 6 announcing) are an earlier round on 2026-10-03, with a different ask note, not the placement test.</p>
+      <p class="fineprint">Model files as named in the data package; llama.cpp builds as recorded per run. Labels: local figures were measured on our machine on the date given. GPT-4o and Claude Sonnet 4.6 figures are API counts from the dates given.</p>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements; no affiliation with any model maker named on this page, or with the llama.cpp project.</div></div>
 
   </div>
 </main>

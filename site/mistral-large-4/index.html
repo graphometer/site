@@ -89,6 +89,8 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -102,24 +104,31 @@
 
 <main itemscope itemtype="https://schema.org/Article"><div class="wrap">
 <div class="hero">
-  <div class="eyebrow">Field card &middot; measured 31 October to 2 November 2026 &middot; one RTX 5090 desktop and an ASUS ROG Flow Z13 laptop &middot; one request at a time</div>
+  <div class="eyebrow">Field card &middot; one RTX 5090 desktop and an ASUS ROG Flow Z13 laptop &middot; one request at a time</div>
   <h1 itemprop="headline">Mistral Large 4 at home: <em>6.6 tokens/s</em> on an RTX 5090 and a laptop</h1>
   <p class="subtitle">We split a 217 GiB file of Mistral Large 4 across one desktop and one laptop. It generated about 6.6 tokens a second in short tests, counting its reasoning. Our runs on the desktop alone stayed under 3.</p>
-  <p class="lead">If you have a 32 GB graphics card and a lot of RAM and wonder whether a model this size is usable at home, this card shows the desktop-and-laptop setup that worked, the main setups that failed, what it takes to keep it running, and a small blind quality check. All Large 4 figures use one file: Unsloth's <code>UD-IQ1_S</code> quantization, run on llama.cpp (a program that runs language models on ordinary computers). A quantization stores a model's weights in fewer bits so the file is smaller, which can cost quality. Unsloth is a third party that publishes such files. A short section at the end covers Mistral Small 4 on the same desktop.</p>
+  <div class="note"><span class="label">In short</span>
+    <ul class="plain">
+      <li><strong>Reading the weights into memory once at start-up made the biggest difference.</strong> On the two-machine setup, in a before and after on 1 November (other settings also differed), the first request went from 2.85 to 6.78 tokens a second and its drive reads from 74.0 GB to 0.0. <a href="#mmap">The before and after</a></li>
+      <li><strong>The setup that worked splits the model.</strong> Attention (the part that looks back over the conversation) and the conversation memory sit on the RTX 5090; the experts (the model's sub-networks) of the first 42 layers sit in the desktop's RAM and those of the last 30 layers on the laptop, joined by a Thunderbolt cable. The commands shown are a schematic; the scripts as they ran are in the data package. <a href="#settings">The setup</a></li>
+      <li><strong>It takes almost all of both machines.</strong> Almost all of the 32 GB card, most of the desktop's RAM, about 4 minutes to start, and the laptop must stay awake with its worker running: if the worker dies, the desktop server goes down too. <a href="#cost">What it takes</a></li>
+    </ul>
+  </div>
   <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-  <div class="nonaff">Independent measurements; no affiliation with Mistral AI, Unsloth, DeepSeek, ISTA-DASLab, OpenAI, NVIDIA, Intel, AMD, ASUS, or the llama.cpp project.</div>
 </div>
 
 <section id="what"><div class="secnum">01</div><h2>What it is</h2>
+  <p>If you have a 32 GB graphics card and a lot of RAM and wonder whether a model this size is usable at home, this card shows the desktop-and-laptop setup that worked, the main setups that failed, what it takes to keep it running, and a small blind quality check. All Large 4 figures use one file: Unsloth's <code>UD-IQ1_S</code> quantization, run on llama.cpp (a program that runs language models on ordinary computers). A quantization stores a model's weights in fewer bits so the file is smaller, which can cost quality. Unsloth is a third party that publishes such files. A short section near the end covers Mistral Small 4 on the same desktop.</p>
   <p><strong>Mistral Large 4</strong> is, by Mistral AI's own model card, its largest model to date, and its weights are public. The card states about 1 trillion parameters in total and 49 billion active for each token (52 billion counting the embeddings and output layers), in a mixture-of-experts design: 128 routed experts, 4 active per token, plus 1 shared expert. A mixture-of-experts model runs only a few of its sub-networks, the experts, for each token. That is why a model this large can run on home hardware at all: most of it sits idle on any given token.</p>
   <p>The licence is the <strong>Mistral Ecosystem Open-Weight License</strong>, which its text calls a modified version of the MIT licence. Its section 2 requires a licensee, or an affiliate, that operates a Model as a Service business (as the licence defines it) to enter a separate commercial licence with Mistral before any commercial use. Section 3 lists exceptions. The <a href="data/vendor/mistral-large-4-LICENSE.txt">full licence text</a> is in the data package.</p>
-  <p>We ran Unsloth's <code>UD-IQ1_S</code> GGUF (the file format llama.cpp reads). It is six files totalling <span class="n">233,009,564,322</span> bytes, which is 217.0 GiB (a GiB is 2<sup>30</sup> bytes, about 7% more than a GB). Spread over about 1 trillion parameters, that is about 1.9 bits per weight on average. The file is bigger than the desktop's 188 GiB of RAM, and that one fact shapes everything below.</p>
+  <p>We ran Unsloth's <code>UD-IQ1_S</code> GGUF (the file format llama.cpp reads). It is six files totalling <span class="n">233,009,564,322</span> bytes, which is 217.0 GiB (a GiB is 2<sup>30</sup> bytes, that is, 2 to the power of 30, about 7% more than a GB). Spread over about 1 trillion parameters, that is about 1.9 bits per weight on average. The file is bigger than the desktop's 188 GiB of RAM, and that one fact shapes everything below.</p>
   <p>Two terms we use throughout. A <strong>token</strong> is a chunk of text, often part of a word. <strong>Writing speed</strong> is how many tokens a second the model generates. This model reasons before it answers, and writing speed counts that reasoning as well as the visible answer. <strong>Reading speed</strong> is how fast it processes your prompt before it starts generating. Labels in brackets say where a figure comes from: (vendor) is the maker's statement, (measured) is our run, (arithmetic) is our calculation from those. The figures in this section are vendor statements, except the file size and bits per weight, which are arithmetic.</p>
 </section>
 
 <section id="settings"><div class="secnum">02</div><h2>The setup that worked</h2>
   <p>The model is a stack of 72 layers. On the RTX 5090: every layer's attention (the part that looks back over the conversation), the shared expert, and the conversation memory (the KV cache). In the desktop's RAM: the routed experts of the first 42 layers. On the laptop: the routed experts of the last 30 layers, run by a llama.cpp worker on the laptop's CPU and connected to the desktop by a Thunderbolt cable. Only expert work crosses the cable; the conversation memory stays on the desktop's card.</p>
   <p>The setting that made the biggest difference is <code>--load-mode dio</code>: read the desktop's share of the weights into memory once at start-up, instead of mapping the file and fetching pieces from the drive as they are needed. Section 05 shows the before and after.</p>
+  <p>A schematic, not a script to paste: the layer lists are shortened, and paths and addresses are replaced. The scripts as they ran are in the data package.</p>
   <pre class="log"># on the laptop (CPU backend)
 GOMP_CPU_AFFINITY=0-15 taskset -c 0-15 ggml-rpc-server -H &lt;laptop address&gt; -p &lt;port&gt; -d CPU -t 16
 
@@ -132,7 +141,7 @@ GOMP_SPINCOUNT=10000000 taskset -c 0-15 llama-server --model Mistral-Large-4-1T-
   --threads 16 --threads-batch 16 --ctx-size 131072 --batch-size 2048 --ubatch-size 1024 \
   --temp 1.0 --top-p 0.95 --top-k 0 --min-p 0 --jinja \
   --chat-template-kwargs '{"reasoning_effort":"low"}'</pre>
-  <p class="tablenote">A schematic, not a script to paste: the layer lists are shortened, and paths and addresses are replaced. The scripts as they ran are in the data package. <code>GOMP_SPINCOUNT</code> keeps the desktop's worker threads spinning between steps instead of sleeping. On the desktop's Core Ultra 9 285K, cores 0 to 15 are its 8 performance cores and 8 of its efficiency cores. <code>--timeout 3600</code> matters: the longest read below took over 22 minutes.</p>
+  <p class="tablenote"><code>GOMP_SPINCOUNT</code> keeps the desktop's worker threads spinning between steps instead of sleeping. On the desktop's Core Ultra 9 285K, cores 0 to 15 are its 8 performance cores and 8 of its efficiency cores. <code>--timeout 3600</code> matters: the longest read below took over 22 minutes.</p>
   <p>In that setup, on 1 November, three short tests generated <strong>6.58, 6.62 and 6.67 tokens a second</strong> (measured), counting reasoning. Each stopped at its 300-token cap. One of them first read a 6,411-token prompt at 72.1 tokens a second. The first request after start-up was as fast as the later ones. In a 131,072-token window (the most text the model can keep in view at once), two long reads also worked: see section 04.</p>
 </section>
 
@@ -198,7 +207,7 @@ GOMP_SPINCOUNT=10000000 taskset -c 0-15 llama-server --model Mistral-Large-4-1T-
 </section>
 
 <section id="experts"><div class="secnum">06</div><h2>Three experts instead of four</h2>
-  <p>llama.cpp can tell the model to use three routed experts per token instead of the default four (<code>--override-kv mistral-large4.expert_used_count=int:3</code>). In the final setup, three probes then generated <strong>8.09 to 8.16 tokens a second</strong>, against 6.58 to 6.67 with four. All three probes were still reasoning when they reached their caps (800, 300 and 800 tokens), so they show speed, not answers. The probe's 1,940-token prompt was read at 82.6 tokens a second; the four-expert run used a 6,411-token prompt, so those two reading speeds are not comparable.</p>
+  <p>llama.cpp can tell the model to use three routed experts per token instead of the default four (<code>--override-kv mistral-large4.expert_used_count=int:3</code>). In the final setup, three probes (short test requests) then generated <strong>8.09 to 8.16 tokens a second</strong>, against 6.58 to 6.67 with four. All three probes were still reasoning when they reached their caps (800, 300 and 800 tokens), so they show speed, not answers. The probe's 1,940-token prompt was read at 82.6 tokens a second; the four-expert run used a 6,411-token prompt, so those two reading speeds are not comparable.</p>
   <p>In the blind comparison below, three experts scored 15 of 18 and the four-expert set 18. On the statistics question, the three-expert answer said one hospital treated more severe cases, while the table in that same answer showed the opposite. On the probability question it generated 15,405 tokens, reasoning included, against 7,640 for four experts. Over all six questions, three experts generated 28,051 tokens and four experts 22,115.</p>
 </section>
 
@@ -256,7 +265,7 @@ GOMP_SPINCOUNT=10000000 taskset -c 0-15 llama-server --model Mistral-Large-4-1T-
   <p>In an early 1 November comparison, b12015 generated prose at 19.37 and 13.29 tokens a second and the older build at 18.22 and 19.05. When we repeated it (section 08), b12015 gave 33.51 and 33.64 and the older build 34.73 and 27.81: the two pairs overlapped. The early pair should not have been read as a comparison. We have no record of what slowed it.</p>
 </section>
 
-<section id="limits"><div class="secnum">11</div><h2>What this does not show</h2>
+<section id="limits"><div class="secnum">11</div><h2>Limits</h2>
   <ul class="plain">
     <li><strong>One quantization.</strong> Everything is the <code>UD-IQ1_S</code> file. We did not compare it with a larger quantization or the full model, so we cannot say how much quality the small file loses.</li>
     <li><strong>A small quality sample.</strong> Six questions, one selected answer per setup, one judge model, and the four-expert answers came from two setups (section 07). DeepSeek had its thinking on, Large 3 has no thinking mode, and Large 4 used low effort. Not a benchmark and not a ranking.</li>
