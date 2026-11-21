@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Local AI models on one RTX 5090 desktop, October 2026">
+<meta property="article:published_time" content="2026-10-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Local AI models on one RTX 5090 desktop, October 2026">
 <meta name="twitter:description" content="See what one desktop ran from 27 September to 25 October 2026, with what was timed behind each speed figure.">
@@ -118,6 +121,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -145,14 +149,15 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Reference &middot; 27 September to 25 October 2026 &middot; one RTX 5090 desktop, 188 GiB of RAM &middot; llama.cpp &middot; one model at a time</div>
-      <h1>The <em>roster</em>, as of October 2026</h1>
+      <h1 itemprop="headline">The <em>roster</em>, as of October 2026</h1>
       <p class="sub">For anyone who runs open-weight models at home on one big graphics card: what one RTX 5090 desktop ran from 27 September to 25 October 2026, and how fast. Thirteen models were added, six measured again and three retired. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own.</p>
       <p class="lead">Open-weight models are models whose files you can download. Every speed below comes with the prompt and the reply it timed. The change most worth copying is a bundle of processor settings. llama.cpp is the program that runs the models. A thread is one stream of work. The bundle pins llama.cpp's threads to the chip's eight performance cores and adds an OpenMP spin setting. Pinning means the operating system may run those threads only on those cores. Some models keep part of their weights in system RAM, so the processor does part of their work. We timed 16 of them both ways on the same long prompt. On 15, both runs wrote replies with the same token count and the same word count; we call those the clean test pairs. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The faster replies were 311 to 673 tokens long. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. The sixteenth, MiniMax M2.7, wrote a reply of a different length on its run with the bundle, so it is not counted.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="nonaff">Independent measurements. Not affiliated with,
       endorsed by, or connected to any maker named on this page.</div>
     </div>

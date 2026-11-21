@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Six large AI models on the ASUS ROG Flow Z13 alone">
+<meta property="article:published_time" content="2026-09-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Six large AI models on the ASUS ROG Flow Z13 alone">
 <meta name="twitter:description" content="At 48K tokens, the laptop read prompts 2.8 to 23 times slower than the RTX 5090 desktop. Ling-3.0-flash matched desktop reply speed on short answers.">
@@ -52,17 +55,19 @@
   ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}ul.plain li{margin-bottom:8px}.fineprint{font-size:13px;color:var(--faint);margin-top:18px}
   footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}.sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}.sitenav a:hover{color:var(--gold);text-decoration:none}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
 <header><div class="wrap"><a href="../" style="text-decoration:none"><div class="brand"><svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg><span>Graphometer</span></div></a><nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav></div></header>
 
-<main><div class="wrap">
+<main itemscope itemtype="https://schema.org/Article"><div class="wrap">
   <div class="hero">
     <div class="eyebrow">Measured study &middot; 2026-09-20 to 2026-09-21 &middot; six models &middot; one request at a time &middot; laptop alone versus desktop</div>
-    <h1>Six large models on the ASUS ROG Flow <em>Z13 alone</em></h1>
+    <h1 itemprop="headline">Six large models on the ASUS ROG Flow <em>Z13 alone</em></h1>
     <p class="subtitle">At 48K, the laptop read prompts 2.8 to 23 times slower than the desktop. Ling-3.0-flash was the practical exception: desktop-level short-answer speaking at 48K, with a 3.6-minute read.</p>
     <p class="lead"><strong>Measured, 2026-09-20 to 2026-09-21.</strong> A 128 GB unified-memory laptop can hold models that do not fit on a 32 GB graphics card. Holding them is not the same as serving them well. We ran six local models on the Z13 by itself, over loopback, then compared the 48K measurements with the same sealed-code probe family on a desktop with one RTX 5090 and 188 GiB of RAM. All six returned the code. The laptop's prompt reading slowed with depth. Only Ling remained a practical alternative at 48K, and even Ling took 216.2 seconds to read the prompt.</p>
+    <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
     <div class="nonaff">Independent measurements. No affiliation with ASUS, AMD, NVIDIA, Intel, the llama.cpp or ggml-org projects, or the makers of the Qwen, DeepSeek, GLM, and Ling models.</div>
   </div>
 
@@ -132,11 +137,11 @@
   </section>
 
   <section><div class="secnum">07</div><h2>Related pages on this site</h2>
-    <p>The <a href="../two-boxes/">two-machine study</a> measures what changes when the laptop helps the desktop instead of serving alone. The provisional <a href="../batch-size/">batch-size study</a> shows why prompt-reading settings matter on the desktop comparison machine.</p>
+    <p>The <a href="../two-boxes/">two-machine study</a> measures what changes when the laptop helps the desktop instead of serving alone. The provisional <a href="../batch-size/">batch-size study</a> shows why prompt-reading settings matter on the desktop comparison machine. <a href="../letta-code-local/">Running Letta Code locally</a> is a build report from this same laptop: Letta Code agents on a llama.cpp model served on the laptop, with no Letta account, and what they tried to reach.</p>
   </section>
 
   <section><div class="secnum">08</div><h2>Sources and artifacts</h2>
-    <p>The <a href="data/README.md">data package</a> contains the redacted result files, memory samples, server logs, probes, launch chains, and the six desktop comparison records. <a href="data/NUMBERS.md">NUMBERS.md</a> maps every displayed figure to a file and field. The runtime was <a href="https://github.com/ggml-org/llama.cpp/tree/d3146f2b5">llama.cpp at revision d3146f2b5</a>. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
+    <p>The <a href="data/README.md">data package</a> contains the redacted result files, memory samples, server logs, probes, launch chains, and the six desktop comparison records. The <a href="data/NUMBERS.md">figure-by-figure source list</a> maps every displayed figure to a file and field. The runtime was <a href="https://github.com/ggml-org/llama.cpp/tree/d3146f2b5">llama.cpp at revision d3146f2b5</a>. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
   </section>
 </div></main>
 

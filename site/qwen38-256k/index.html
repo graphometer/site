@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Qwen3.8-27B at 256K context on one RTX 5090">
+<meta property="article:published_time" content="2026-09-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Qwen3.8-27B at 256K context on one RTX 5090">
 <meta name="twitter:description" content="Three files were tested at a 262,144-token window. Compare speed, memory use and how closely the files’ results matched a reference.">
@@ -131,6 +134,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -158,12 +162,13 @@
   </div>
 </header>
 
-<main><div class="wrap">
+<main itemscope itemtype="https://schema.org/Article"><div class="wrap">
 <div class="hero">
 <div class="eyebrow">Field card · measured 2026-09-26 · one NVIDIA RTX 5090 · one request at a time · thinking off</div>
-<h1>Qwen3.8-27B at <em>256K</em></h1>
+<h1 itemprop="headline">Qwen3.8-27B at <em>256K</em></h1>
 <p class="subtitle">Three files on one RTX 5090.</p>
 <p class="lead"><strong>Measured:</strong> a 262,144-token window fits on this 32,607 MiB card. The installed unsloth UD-Q5_K_XL file failed to load MTP beside a 256K q8_0 cache in the two recorded attempts. The smaller UD-Q4_K_XL with MTP was faster than installed Q5 without MTP, especially on tool-shaped replies; this comparison changes both the file and MTP. Q4 showed less agreement with the Q8_0 reference on one public text. Q5_K_S with MTP is the closer same-revision option, with 664 MiB spare at the observed peak. The installed Q5 is revision fe1e2a23; Q4, Q5_K_S and Q8_0 are 4ca72078. This is a choice between measured speed and measured fidelity, on one card and these exact files.</p>
+<p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
 <div class="nonaff">Independent measurements; no affiliation with the Qwen team / Alibaba Group, unsloth, NVIDIA, the llama.cpp project, or Hugging Face.</div>
 <div class="note"><span class="label">Update, September 26, 2026</span><p>This follows the <a href="../qwen38-27b/">day-zero field card</a> with a new recorded probe from 26 September 2026. It does not recover the lost 17 September log. A 262,144-token window was served again with a retained log, including a deepest measured read of 229,152 tokens. The <a href="../context-256k/">full-window comparison</a> covers other long-read measurements. It does not claim a prompt filled every token of that window.</p></div>
 <div class="note"><span class="label">Update, 19 October 2026: a separate draft model</span><p>The installed setup changed. It still runs the UD-Q5_K_XL file with an 8-bit cache and the built-in draft head off. It now adds a separate draft model, DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB), plus n-gram drafting, on mainline llama.cpp with <code>-ub 256</code>. The window is 229,376 tokens, not 262,144. At 229,376 the card peaked at 30,647 MiB. At 262,144 it peaked at 31,992 MiB, about 600 MiB from full. With thinking on, 3,500 tokens of reasoning with no visible answer came out at 186.61 tokens a second about 20,000 tokens deep, against 60.39 without the draft model; with the draft model at 262,144 the same reasoning ran at 189.26. On a plain letter with thinking off the gain was 30 to 44 percent. Reading was 10 to 15 percent slower. We did not re-score the public text with the draft model loaded. The <a href="../roster-2026-10/">October roster</a> has the runs.</p></div>

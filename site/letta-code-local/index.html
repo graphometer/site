@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Running Letta Code locally: what it reached for, what stopped it</title>
-<meta name="description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<title>Letta Code locally: what it reached for, what stopped it</title>
+<meta name="description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and limits.">
 <link rel="canonical" href="https://graphometer.ai/letta-code-local/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Running Letta Code locally: what it reached for, what stopped it">
-<meta property="og:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<meta property="og:title" content="Letta Code locally: what it reached for, what stopped it">
+<meta property="og:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and limits.">
 <meta property="og:url" content="https://graphometer.ai/letta-code-local/">
 <meta property="og:image" content="https://graphometer.ai/og/letta-code-local.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Running Letta Code locally: what it reached for, what stopped it">
+<meta property="article:published_time" content="2026-11-21">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Running Letta Code locally: what it reached for, what stopped it">
-<meta name="twitter:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<meta name="twitter:title" content="Letta Code locally: what it reached for, what stopped it">
+<meta name="twitter:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and limits.">
 <meta name="twitter:image" content="https://graphometer.ai/og/letta-code-local.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -53,17 +56,19 @@
   ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}ul.plain li{margin-bottom:8px}.fineprint{font-size:13px;color:var(--faint);margin-top:18px}
   footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
   .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}.sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}.sitenav a:hover{color:var(--gold);text-decoration:none}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
 <header><div class="wrap"><a href="../" style="text-decoration:none"><div class="brand"><svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg><span>Graphometer</span></div></a><nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav></div></header>
 
-<main><div class="wrap">
+<main itemscope itemtype="https://schema.org/Article"><div class="wrap">
   <div class="hero">
     <div class="eyebrow">Build report &middot; 12 to 17 October 2026 &middot; one ASUS ROG Flow Z13 laptop &middot; Letta Code 0.34.10</div>
-    <h1>Running Letta Code locally: <em>what it reached for</em>, what stopped it</h1>
+    <h1 itemprop="headline">Running Letta Code locally: <em>what it reached for</em>, what stopped it</h1>
     <p class="subtitle">Never signed in and left at its factory settings, Letta Code 0.34.10 looked up Letta's API and the npm registry and then made 17 connection attempts to port 443 during one agent turn. With six environment switches set, the same trace showed none of them. A sandbox with no network, a socket door to the local model and a list of blocked names do the rest, with limits: a saved provider key opens a path to that provider, and the connected setup blocks names, not addresses.</p>
     <p class="lead">This page is for anyone who wants to run Letta Code, a framework for AI agents that keep a long-term memory, on their own computer without it calling out. You get the exact switches, the sandbox command, the traces we used to check what the engine and its window tried to reach, what broke in the open-source window app on the way, and what the setup costs in features. It was built and checked on one laptop between 12 and 17 October 2026. It is a report on the build and its checks, not on months of living with it.</p>
+    <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
     <div class="nonaff">Independent work. Not affiliated with, endorsed by, or connected to Letta, ASUS, AMD, Google, OpenAI, OpenRouter, or the other makers and projects named here.</div>
   </div>
 
@@ -222,7 +227,7 @@ font-src 'self'; script-src 'self';</pre>
   </section>
 
   <section><div class="secnum">13</div><h2>Sources and data</h2>
-    <p>The <a href="data/README.md">data package</a> holds the redacted traces, the blocked-names list as installed, the name lookups from inside the connected sandbox, the window draw sample, the engine patch's test output and the audit's fake-key result, and says what was left out and why. <a href="data/NUMBERS.md">NUMBERS.md</a> maps each figure on this page to its file. The settings quoted above are collected in <a href="data/SETTINGS.md">SETTINGS.md</a>. The upstream app is <a href="https://github.com/letta-ai/letta-oss-ui">letta-oss-ui</a>; we used commit <code>c01d155</code>.</p>
+    <p>The <a href="data/README.md">data package</a> holds the redacted traces, the blocked-names list as installed, the name lookups from inside the connected sandbox, the window draw sample, the engine patch's test output and the audit's fake-key result, and says what was left out and why. The <a href="data/NUMBERS.md">figure-by-figure source list</a> maps each figure on this page to its file. The settings quoted above are collected in <a href="data/SETTINGS.md">SETTINGS.md</a>. The upstream app is <a href="https://github.com/letta-ai/letta-oss-ui">letta-oss-ui</a>; we used commit <code>c01d155</code>.</p>
   </section>
 </div></main>
 

@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</title>
-<meta name="description" content="A guide, built from dated records of 12 to 26 September 2026 on one RTX 5090 desktop: twelve settings the server accepted as tested, while the speed or the number was wrong anyway. A kept record shows the server loading under eight of them and a request returning text under six; two failed only where they had not been tried, a full-window micro-batch refused or dying at load and a --help name dying at load with a missing header key; the start script that promised a cache has no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and the settings-file override's two misreads are a dated note, its runs' logs not kept. A start with no window passed that serves a different window from the one a page quoted; a window past the file's training length that is capped and still paid for in card memory; a micro-batch that loads at 131,072 and is refused at 196,608 or 262,144; an inherited -ub 128 that read 17.5 times slower on a 3,658-token prompt (MiniMax M2.7, -b 4096 held and only -ub changed) and 19.9 times slower on a 24,071-token prompt (Laguna S 2.1 at a 32,768 window, --batch-size 512 --ubatch-size 128 against -b 8192 -ub 8192); a first request that read at 87.7 tokens a second while the model file paged in, against 517.6 for the next; every expert in system memory leaving 8,311 MiB of a 32,607 MiB card unused; MiniMax M3 numbers taken on a file with no sparse-attention index, a dense fallback until the correct file arrived on 20 September, and the one warning line llama.cpp's source prints when the launch flags force the same fallback; a start script whose 262,144 rung promised an 8-bit cache and expanded an array nothing assigned, for nine days; a settings file that wins over an exported variable in 19 of 26 scripts, with MiniMax M2.7 reading only the file's own location first, so the file wins in all twenty that have one; a script header that said the draft head did not work while the shared library implemented it; a flag in --help the build could not load; and Ollama's server running 4 of 24 threads on the CPU unless told otherwise (273.17 seconds of wall time for one 4K picture against 111.01 at 16 threads and 38.52 with a 1,536-pixel cap, on answers of unequal length). Each item gives the symptom, the one-line check, what it cost us and the record.">
+<title>llama.cpp and Ollama settings that fail silently: 12 checks</title>
+<meta name="description" content="Twelve settings that cost speed or correctness on one RTX 5090 desktop in September 2026, mostly with no error. Each has its symptom and a one-line check.">
 <link rel="canonical" href="https://graphometer.ai/silent-settings/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
-<meta property="og:description" content="Twelve settings a local model server accepted as tested while the speed or the number was wrong anyway: eight with a kept load and six of those with a request that returned text; two failing only at the full window or the draft's load where nobody had tried them; one with no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and one whose two misreads are a dated note, its runs' logs not kept. Windows, micro-batches, an inherited flag, expert placement, a model file without its sparse-attention index, two start-script bugs, a stale header, a help flag and an Ollama thread default. The symptom, the one-line check, the cost and the record for each, from one RTX 5090 desktop in September 2026.">
+<meta property="og:title" content="llama.cpp and Ollama settings that fail silently: 12 checks">
+<meta property="og:description" content="Twelve settings that cost speed or correctness on one RTX 5090 desktop in September 2026, mostly with no error. Each has its symptom and a one-line check.">
 <meta property="og:url" content="https://graphometer.ai/silent-settings/">
 <meta property="og:image" content="https://graphometer.ai/og/silent-settings.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
+<meta property="article:published_time" content="2026-09-27">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each">
-<meta name="twitter:description" content="Twelve settings a local model server accepted as tested while the speed or the number was wrong anyway: eight with a kept load and six of those with a request that returned text; two failing only at the full window or the draft's load where nobody had tried them; one with no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and one whose two misreads are a dated note, its runs' logs not kept. Windows, micro-batches, an inherited flag, expert placement, a model file without its sparse-attention index, two start-script bugs, a stale header, a help flag and an Ollama thread default. The symptom, the one-line check, the cost and the record for each, from one RTX 5090 desktop in September 2026.">
+<meta name="twitter:title" content="llama.cpp and Ollama settings that fail silently: 12 checks">
+<meta name="twitter:description" content="Twelve settings that cost speed or correctness on one RTX 5090 desktop in September 2026, mostly with no error. Each has its symptom and a one-line check.">
 <meta name="twitter:image" content="https://graphometer.ai/og/silent-settings.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -129,6 +132,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -156,12 +160,12 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Guide &middot; twelve items from dated records, 12 to 26 September 2026 &middot; llama.cpp start scripts and one Ollama default &middot; one RTX 5090 desktop</div>
-      <h1>Silent <em>settings</em></h1>
+      <h1 itemprop="headline">Silent <em>settings</em></h1>
       <p class="subtitle">Twelve settings that cost speed or correctness on one
       desktop without an error, and the one-line check for each.</p>
       <div class="note"><span class="label">Five more, 25 October 2026</span><p>This page stays as the September list of twelve. Five more silent settings turned up between 29 September and 25 October 2026, and the pages that measured them hold the records: threads spread over every core instead of a thread-pinning bundle: cores 0 to 7 with taskset, 8 threads and an OpenMP spin setting (<a href="../roster-2026-10/">the October roster</a>, section 02); a reasoning word the chat template does not know, so GLM-5.3-Flash ran at maximum effort when asked for <code>none</code> (<a href="../field-notes-2026-10/">the October field notes</a>, entry 06); no cap on reasoning, so a thinking model spent its whole reply budget thinking and wrote no answer (field notes, entry 06); an 8-bit or 4-bit cache that is slower deep in a conversation (field notes, entry 08); and knowledge-base vectors of the wrong length, which make meaning search fail with no error (field notes, entry 02).</p></div>
@@ -188,6 +192,7 @@
       them. Nothing here is a bug report against any project: every item is an
       interaction between a default, a file and a script, and most of the
       mistakes were ours.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-27">27 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="nonaff">Independent measurements; no affiliation with the
       llama.cpp project, ggml-org, Ollama, MiniMax, Z.ai, DeepSeek, Alibaba
       Group, Poolside, Unsloth, NVIDIA, Intel, or the makers of the other
@@ -482,7 +487,7 @@ journalctl -u ollama | grep n_threads                       # what Ollama's serv
       <a href="../describing-pictures/">Describing pictures locally</a>
       measures the Ollama rows in item 13 in full, and the
       <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> package holds the
-      card-capacity record this page's arithmetic uses.</p>
+      card-capacity record this page's arithmetic uses. <a href="../llamacpp-expert-cache/">Two llama.cpp settings for MoE models bigger than your GPU</a> measures two more llama.cpp settings on this desktop: loading the RAM-held weights once, and an expert cache on the card.</p>
     </section>
 
     <section>

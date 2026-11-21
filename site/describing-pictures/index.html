@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</title>
-<meta name="description" content="A measured study of local picture describers on one desktop (RTX 5090, 32 GB card; Intel Core Ultra 9 285K, 24 cores; 188 GiB of RAM), 20 September 2026: six Qwen vision models through Ollama 0.30.10, seven test pictures holding 39 known strings, one run per configuration. On the card, Qwen3-VL 30B-A3B found all 39 at 1.31 to 3.16 seconds a warm picture; Qwen3-VL 8B and Qwen3.6 35B-A3B also found all 39. On the CPU, reading the picture is most of the wait: with no thread count in the request, the server Ollama started reported 4 of 24 threads, and Qwen3-VL 30B-A3B took 273.17 seconds on a 3840 x 2160 picture, 242.93 of them reading it; 16 threads took 111.01, and 16 threads with pictures capped at 1,536 pixels took 38.52, with all 39 strings found. With 26,396 MiB of the card already in use by another program, Ollama's default request split the model 89/11 between CPU and card and took 206.87 seconds on that picture; a CPU-only request with 16 threads, a smaller window, a larger batch, memory mapping off and the cap took 39.39 and added nothing to the card. The cap has a cost: on a 4K screenshot of small text the 30B misread 4 of 24 codes at 1,536 pixels and none uncapped. Includes what a string count cannot see, the settings to use, and the records behind every figure.">
+<title>Six Qwen vision models in Ollama on GPU and CPU, one desktop</title>
+<meta name="description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <link rel="canonical" href="https://graphometer.ai/describing-pictures/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
-<meta property="og:description" content="Six Qwen vision models through Ollama on one RTX 5090 desktop. On the card, Qwen3-VL 30B-A3B found all 39 known strings at 1.3 to 3.2 seconds a warm picture. On the CPU, Ollama's server ran 4 of 24 threads unless told otherwise, and its first 4K picture took 273 seconds; 16 threads and a 1,536-pixel cap brought it to 38.5, at a cost on small text.">
+<meta property="og:title" content="Six Qwen vision models in Ollama on GPU and CPU, one desktop">
+<meta property="og:description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <meta property="og:url" content="https://graphometer.ai/describing-pictures/">
 <meta property="og:image" content="https://graphometer.ai/og/describing-pictures.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
+<meta property="article:published_time" content="2026-09-27">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU">
-<meta name="twitter:description" content="Six Qwen vision models through Ollama on one RTX 5090 desktop. On the card, Qwen3-VL 30B-A3B found all 39 known strings at 1.3 to 3.2 seconds a warm picture. On the CPU, Ollama's server ran 4 of 24 threads unless told otherwise, and its first 4K picture took 273 seconds; 16 threads and a 1,536-pixel cap brought it to 38.5, at a cost on small text.">
+<meta name="twitter:title" content="Six Qwen vision models in Ollama on GPU and CPU, one desktop">
+<meta name="twitter:description" content="On an RTX 5090, Qwen3-VL 30B-A3B found all 39 test strings, 1.3 to 3.2 s a warm picture. On CPU its first 4K picture took 273 s at 4 threads, 38.5 at 16 capped.">
 <meta name="twitter:image" content="https://graphometer.ai/og/describing-pictures.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -129,6 +132,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -157,12 +161,12 @@
 </header>
 
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Measured study &middot; 20 September 2026 &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 24-core CPU, 188&nbsp;GiB RAM) &middot; Ollama 0.30.10 &middot; six Qwen vision models, seven test pictures and one screenshot, one run per configuration</div>
-      <h1>Describing pictures <em>locally</em></h1>
+      <h1 itemprop="headline">Describing pictures <em>locally</em></h1>
       <p class="subtitle">On the card, Qwen3-VL 30B-A3B found all 39 known
       strings at 1.3 to 3.2 seconds a warm picture. On the CPU, its first 4K
       picture took 273 seconds at Ollama's default 4 threads, 111 at 16, and
@@ -195,6 +199,7 @@
       shows what else a string count cannot see. One desktop, one run per configuration, one
       Ollama version: this measures speed and string recall, not the quality
       of a description.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-27">27 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="nonaff">Independent measurements; no affiliation with
       Alibaba Group or the Qwen team, Ollama, the llama.cpp project, NVIDIA,
       Intel, Google, Mistral AI, NASA, ESA, or System76.</div>

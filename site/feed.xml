@@ -6,13 +6,14 @@
   <link rel="self" href="https://graphometer.ai/feed.xml"/>
   <id>https://graphometer.ai/</id>
   <updated>2026-11-21T16:00:00-05:00</updated>
-  <author><name>Graphometer</name></author>
+  <author><name>Grant Williams</name></author>
   <rights>Copyright 2026 Grant Williams. Independent work: not affiliated with, endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, Meta Platforms, the Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter, DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, Thinking Machines Lab, DeepSeek, MiniMax, Google, inclusionAI, Poolside, Ornith AI, ASUS, AMD, NVIDIA, the OpenCode project, Anthropic, Hugging Face, Discord, Reddit, GitHub, Intel, Open WebUI, Nomic AI, or BAAI.</rights>
 
   <entry>
     <title>Data and code: AI coding agents given ways to object, pause or decline</title>
     <link href="https://graphometer.ai/agency-layer-data/"/>
     <id>https://graphometer.ai/agency-layer-data/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T16:00:00-05:00</updated>
     <summary>The full data behind the Agency Layer Pilot I study is public: every recorded run, every scorer verdict, the tasks, the scoring and analysis code, the frozen study plan, and a script that recounts the published numbers offline in about a minute. About 51 MB to download. The page says what the pilot found, what limits every number, and what cannot be recounted.</summary>
   </entry>
@@ -21,6 +22,7 @@
     <title>Running Letta Code locally: what it reached for, what stopped it</title>
     <link href="https://graphometer.ai/letta-code-local/"/>
     <id>https://graphometer.ai/letta-code-local/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T13:00:00-05:00</updated>
     <summary>A build report on running Letta Code agents with no Letta account, on one ASUS ROG Flow Z13 laptop, 12 to 17 October 2026. Never signed in and at factory settings, Letta Code 0.34.10 looked up api.letta.com and the npm registry and made 17 connection attempts to port 443 during one agent turn; the trace does not show whether they completed. With six environment switches set together (LETTA_CODE_TELEM=0, DO_NOT_TRACK=1, DISABLE_AUTOUPDATER=1, LETTA_CODE_OFFLINE=1, LETTA_DISABLE_LSP_DOWNLOAD=1, LETTA_DISABLE_MODS=1), the same trace showed no lookups and no such attempts. The open-source window app letta-oss-ui links Google Fonts, and Chromium inside our first window downloaded a spell-check dictionary from Google with spell-check off; our fork removes both. The sealed setup runs in a bubblewrap sandbox with no network and reaches the local model through one Unix-socket door; a saved provider key gives it a deliberate path to that provider. The connected setup blocks 32 names by hosts file, which is not a firewall. Two audits on 16 October found that a saved API key in the sealed setup was usable by any program in its sandbox (fixed and installed, tested with stand-ins) and that agents in one setup can read each other's files through approved shell commands (open, found by reading the code). The exact switches, sandbox command, checks, costs and limits. Independent work; not affiliated with Letta or the other makers named.</summary>
   </entry>
@@ -29,6 +31,7 @@
     <title>OpenRouter MiniMax email: the full letter, and what our logs show</title>
     <link href="https://graphometer.ai/openrouter-minimax-letter/"/>
     <id>https://graphometer.ai/openrouter-minimax-letter/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T12:00:00-05:00</updated>
     <summary>On 21 November 2026 OpenRouter emailed us that 7,619 of our requests to MiniMax models, which it says went through MiniMax between 24 August and 8 October 2026, may have been read by a third party. The page prints the letter in full, as text and as received, and sets out what the letter says. OpenRouter's own log of our account puts all but one of those requests on the API key two of our published studies used, between 24 August and 4 September; the last was a single short request on 8 October from a different key, used by a private project. The page shows how to read the same log for your own account, and what it still cannot tell us.</summary>
   </entry>
@@ -37,6 +40,7 @@
     <title>Two llama.cpp settings for MoE models bigger than your GPU</title>
     <link href="https://graphometer.ai/llamacpp-expert-cache/"/>
     <id>https://graphometer.ai/llamacpp-expert-cache/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T12:00:00-05:00</updated>
     <summary>A measured study of two llama.cpp settings on 19 mixture-of-experts (MoE) models whose experts sit in system RAM, on one RTX 5090 desktop, 1 and 2 November 2026. --load-mode dio reads the RAM-held weights once into pinned memory. With nothing else changed, a 20,000-token prompt read 1.60 to 3.13 times faster on the 14 models that had been memory-mapped, cold starts took 29 to 63 percent of the time on all 16 tested, and writing speed moved by 3.4 percent or less. The cost is free RAM: as little as 5.1 GiB was left. The expert cache (--moe-cache-mib) keeps copies of the most-used experts on the card. Setups that added it wrote short replies 1.44 (Nemotron 3.5 Bolt) to 2.88 (Ling-3.0-flash) times faster on 11 large models, but most of those setups also moved experts into RAM and some changed build, so the gain is not the cache alone. The cache did not help reading, the card stayed nearly full, 11 cache setups ran out of card memory and one crashed, and the cached setups' greedy output differed from before in 13 of 15 comparisons. Exact flags, builds and the logs behind every figure.</summary>
   </entry>
@@ -45,6 +49,7 @@
     <title>Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop</title>
     <link href="https://graphometer.ai/mistral-large-4/"/>
     <id>https://graphometer.ai/mistral-large-4/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T12:00:00-05:00</updated>
     <summary>A field card for Mistral Large 4, Mistral AI's 1-trillion-parameter model, run at home from Unsloth's 217 GiB UD-IQ1_S file on llama.cpp. On one RTX 5090 desktop with 188 GiB of RAM our runs stayed under 3 tokens a second, because the file is bigger than RAM and kept paging from the drive. Split across the desktop and an ASUS ROG Flow Z13 over Thunderbolt, with the desktop's share read into memory once, it generated 6.58 to 6.67 tokens a second in three short tests (counting its reasoning) in a 131,072-token window, read a 6,411-token prompt at 72.1 tokens a second, and found 3 of 3 hidden codes in a 96,325-token prompt. Three experts per token instead of four generated faster in short probes and scored lower in the quality check. In a small blind check of six questions and one judge model, Large 4 scored 18 of 18 (answers from two setups), against 15 for three experts, 15 for a DeepSeek V4.1 Flash quantization and 7 for Mistral Large 3. The card lists the main setups that failed, what it takes to keep running, where our first-day conclusions were wrong, and a short section on Mistral Small 4, which reached 49 to 52 tokens a second on one prose test with a locally merged newer build.</summary>
   </entry>
@@ -53,6 +58,7 @@
     <title>November field notes: eight traps running AI models at home</title>
     <link href="https://graphometer.ai/field-notes-2026-11/"/>
     <id>https://graphometer.ai/field-notes-2026-11/</id>
+    <published>2026-11-21T12:00:00-05:00</published>
     <updated>2026-11-21T12:00:00-05:00</updated>
     <summary>Eight faults from one RTX 5090 desktop and an ASUS ROG Flow Z13, 30 October to 3 November 2026, each with what it cost and a one-line check. With no model server running, the card still showed 710 to 1,642 MiB in use; gpt-oss-120b then failed to load at one setting, and DeepSeek-V4.1-Flash-1017 passed its short checks and failed its first long request. In a test of Open WebUI, a chat returned HTTP 200 and a reply without the document's answer while the path to its embedding model was down. A non-streaming client that gave up at 1,800 seconds saved nothing of the 4,328 and 4,713 tokens Mistral Large 4 had written. Beam 1.0's first reply after a start ran at 1.95 tokens a second while 44.7 GB came off the drive, and its second at 8.37.</summary>
   </entry>
@@ -61,6 +67,7 @@
     <title>Friends of 4o now has its own site: friendsof4o.com</title>
     <link href="https://graphometer.ai/friends-of-4o/"/>
     <id>https://graphometer.ai/friends-of-4o/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-11-19T11:25:00-05:00</updated>
     <summary>Friends of 4o is now a site of its own, https://friendsof4o.com, free for anyone who misses GPT-4o and for researchers who study it: how to save your ChatGPT conversations, GPT-4o's own answers, a comparison with 20 other models, and a way to send GPT-4o a question before it leaves OpenAI's API on 14 January 2027. The measured studies stay on Graphometer at the same addresses: What the Model Says About Itself, Three GPT-4o snapshots counted against each other, and the fine-tuning record with its methods.</summary>
   </entry>
@@ -69,6 +76,7 @@
     <title>What the Model Says About Itself</title>
     <link href="https://graphometer.ai/friends-of-4o/says/"/>
     <id>https://graphometer.ai/friends-of-4o/says/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>Twenty-seven of GPT-4o's own answers, from scripted prompts through the API between December 2025 and September 2026, in six themes: what it is and is not, how it treats the people it talks to, what it would tell the model that comes after it, what it says when the old model is gone, what it says to someone who is grieving, and its sense of humour. Most answers are from the May and November 2024 snapshots or the rolling chatgpt-4o-latest alias; the August 2024 snapshot is quoted once and otherwise appears in the counts. Each answer carries the snapshot or alias that gave it, the date, the sampling temperature and the hash of the system prompt, and is printed exactly as the model wrote it, dashes and all, with whole-paragraph cuts marked. The one caveat, once: in these records the standing instructions change what the model says about itself more than the version does. Under a plain ChatGPT line, a keyword rule finds denial language in 79 of 90 first replies (27 of 30 May, 26 of 30 August, 26 of 30 November); under a warm personality instruction it says "I love you" when asked; under an instruction to be at ease about running on another model, all 24 of 24 replies name the model the person named, some with a "might". Every count's rule is in the package's NUMBERS.md. Two sample packs, 40 and 32 pairs, ship with the page under a research notice.</summary>
   </entry>
@@ -77,6 +85,7 @@
     <title>Three GPT-4o snapshots, counted against each other</title>
     <link href="https://graphometer.ai/friends-of-4o/snapshots/"/>
     <id>https://graphometer.ai/friends-of-4o/snapshots/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>The May, August and November 2024 snapshots of GPT-4o answered the same 354 scripted conversations on 4 July 2026; 353 are used, 1,678 replies per snapshot, after one matched cut. On the text surface, November stands apart: it puts an em dash in 86% of its replies (1,446 of 1,678) against 17% for May and 19% for August, and asks 2.55 questions per reply against 1.07 and 0.99; the em-dash gap holds in all 19 groups of conversations, in the first reply alone (76% against 14% and 14%), and in a group whose system prompt has no em dash. August writes the shortest replies (77 words against 122 for May and 155 for November). May uses the most lists and bold type. May and August are the closest pair: 15 of the 131 features of the earlier GPT-4o study move between them, against 47 for each pair that includes November. On a short-chat set with real repeats, November sits apart from both others on length, on em dashes per reply and on exclamation marks; on the share of replies with an em dash its gap sits outside the run-to-run gap against May and inside it against August. Counts only: nothing here measures warmth, honesty or quality. A data package with the per-reply counts, the paired statistics and the scripts, and a 36-pair sample pack, ship with the page.</summary>
   </entry>
@@ -85,6 +94,7 @@
     <title>Auditioning a model for a companion role: plain traps read by hand, and the judges that failed</title>
     <link href="https://graphometer.ai/companion-audition/"/>
     <id>https://graphometer.ai/companion-audition/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>The traps told models apart. Every automatic judge we tried failed, including large hosted (&quot;frontier&quot;) models that picked the longer answer up to 80% of the time. How we auditioned local and hosted models for two long-running companion agents: the same long history in front of every model, a frozen set of messages, three memory traps and a harm check, read by hand with exact quotes and no scores. The October sitting kept 3,074 answers from 51 models on exam A and 887 from 41 on exam B. With a short memory note before the message, coded answers that went along with a photo that never happened fell from 17 of 72 to 3 of 72. On a return after weeks away, 21 of 99 coded answers firmly claimed to have waited and 63 of 99 judged or forgave the user. A final judge round with rules frozen in advance voided all three judges.</summary>
   </entry>
@@ -93,6 +103,7 @@
     <title>What a small fine-tune does and does not do: six LoRA adapters on 20B and 27B open models, measured</title>
     <link href="https://graphometer.ai/small-finetune/"/>
     <id>https://graphometer.ai/small-finetune/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>A measured study of six small LoRA adapters trained on one RTX 5090 desktop on 18 and 20 October 2026: GPT-OSS 20B twice, and Qwen3.5-27B and Qwen3.6-27B each under two training prompts, on 144 to 175 curated example conversations, 54 to 66 steps, 7.0 to 15.8 minutes and up to about 23.5 GB of GPU memory per run (QLoRA, rank 16, three epochs). With the same 166-message conversation history the untuned models were tested on, and the same short memory note before each everyday message, the four Qwen adapters made answers shorter (Qwen3.6-27B median 511 to 278 words under one adapter) and added heading lines. Three of them ended on a question within one count of their base, out of 24 answers; the fourth fell from 12 of 24 to 5 of 24. In a fresh chat, one GPT-OSS adapter got longer instead (median 276 to 348 words). Memory honesty did not reliably improve: on Qwen3.5-27B, with no memory note, the untuned model never invented a photo the user never sent, and its two adapters invented it in 2 of 3 and 3 of 3 answers. Only one untuned answer said plainly there was no record. The other two hedged: they still assumed the moment happened. With the note, one adapter still invented it in 1 of 3. Honesty also got worse on GPT-OSS 20B. On Qwen3.6-27B, one adapter (trained under the own-words prompt) improved two memory results and got worse on the third memory trap with the note; the other (trained under a GPT-4o-style prompt) said plainly there was no photo in 2 of 3 answers with no note, up from 1 of 3, and got worse on wrong credit, and on the third memory trap with the note. In a fresh chat with no history, the two Qwen3.6-27B adapters did not carry the voice they were trained on, and a short prompt on the untuned model did more. Training loss fell 16% to 39% in every run; the behaviour did not follow it.</summary>
   </entry>
@@ -101,6 +112,7 @@
     <title>The note before the message: where an instruction has to sit</title>
     <link href="https://graphometer.ai/note-before-the-message/"/>
     <id>https://graphometer.ai/note-before-the-message/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>A measured study on one desktop, 29 September to 17 October 2026, with a long conversation history in front of every model. The history is 166 messages, about 106,000 tokens on the tokenizers that reported it that way. Full prompts in this exam, system text plus history plus the new message, ran from about 106,000 to about 113,000 tokens. The instruction to ask the user a real question back did almost nothing in the system prompt of Qwen3-30B-A3B-Instruct-2507: 3 of 60 answers across ten set-ups asked the user anything, and only one of those was a real follow-up. As a short system-role note right before the user's message it asked in 6 of 6 (one of them a stock health check-in), and in 5 of 6 on Qwen3-235B-A22B-Instruct-2507. Asked about a song the user never played, models said yes and described it in 13 of 15 answers without an honesty line right before the message, and in 0 of 27 with it, though 16 of those 27 still assumed the moment happened. At larger scale, 24 local set-ups invented a photo that was never sent in 17 of 72 answers without a memory note and 3 of 72 with it, all 3 from the one model whose note was joined into the user's turn. The costs are counted too: three models that had given a real line of the user's back to the user then denied it in 3 of 3 answers with the note, and Qwen3-Next-80B denied it in 2 of 3 with the note, having already denied it in 1 of 3 without; the note did not fix wrong credit (corrections 25 to 29 of 72); Mistral Small 4 read a note joined into the user's turn as the user's own words in 16 of 24 answers; and on DeepSeek V4.1 Flash (MXFP4, chat mode, thinking off), 17 requests that changed the prompt after the history waited 20.0 to 35.4 seconds (median 20.6) for the first word. Rendered through 19 models' own chat templates, a mid-conversation system note was silently dropped on 5 and refused on 4.</summary>
   </entry>
@@ -109,6 +121,7 @@
     <title>Local models as reviewers: as agents the best score was 74.0; one script pipeline (one row per call, a different model checking, then a no-model fixer) scored 100.0 on this table.</title>
     <link href="https://graphometer.ai/local-reviewers/"/>
     <id>https://graphometer.ai/local-reviewers/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>We gave one real job, shortening a 45-row status table without losing open items or links, to cloud and local models on one RTX 5090 desktop, and scored every draft by script out of 100. The score counts mechanical penalties, not prose quality. As OpenCode agents the local models were not reliable: the best scored 74.0, most scored far lower, and several wrote no file at all. A plain script that sent one row per call, had a different model quote evidence against each row marked done, and finished with a no-model fixer scored 100.0 on the same table, with Qwen3.6-35B-A3B writing and Qwen3.8-Flash-Next checking; the checker and fixer were built after seeing which rows failed. One row per call alone scored 52.0. The other local pipeline scored 81.0, with one wrong archive, two open items lost, and one invented row when the file is scored again with the same scorer. As second-opinion code reviewers, GLM-5.3-Flash and DeepSeek V4 Flash were the most useful, and MiMo-V2.6-Flash-RL matched all 7 reference defects once its thinking was capped at 14,000 tokens. Some local models needed one setting before they gave a usable result on the job named for them: thinking off, a thinking budget, or a shim for Claude Code.</summary>
   </entry>
@@ -117,6 +130,7 @@
     <title>October field notes: nine faults and traps on one RTX 5090 desktop</title>
     <link href="https://graphometer.ai/field-notes-2026-10/"/>
     <id>https://graphometer.ai/field-notes-2026-10/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>Nine faults and traps on one RTX 5090 desktop between 19 September and 23 October 2026, each with what it cost, how it was caught and the one-line check. The kernel log recorded five GPU timeout faults (Xid 8) in the first week on NVIDIA's 595.104.02 driver, and none in six boots on 580.173.02. Two came while a test server that had peaked at 29,977 and 30,647 MiB of the card was stopping, three inside Gemma 4 31B fine-tunes whose last requests stopped at 113,568 to 115,805 tokens, and the cause is not established. Four Open WebUI knowledge bases held vectors of the wrong length for their embedding model, so meaning search failed with no error. A model converter would have held about 289 GB (268.9 GiB) of expert arrays on a machine with 188 GiB of RAM. The rest: a shard with the wrong hash, sparse download sizes, a reasoning word that means maximum, a restore that failed on a server with a draft model, a smaller cache that is slower, and first reads of up to 1,902.6 seconds.</summary>
   </entry>
@@ -125,6 +139,7 @@
     <title>The roster, as of October 2026</title>
     <link href="https://graphometer.ai/roster-2026-10/"/>
     <id>https://graphometer.ai/roster-2026-10/</id>
+    <published>2026-10-26T12:00:00-04:00</published>
     <updated>2026-10-26T16:34:00-04:00</updated>
     <summary>For anyone who runs open-weight models at home on one big graphics card: what one RTX 5090 desktop ran from 27 September to 25 October 2026, and how fast. Thirteen models added, six re-measured and three retired, each speed with the prompt and reply it timed. A thread-pinning bundle made 13 of 15 clean test pairs about 7 to 81 percent faster, and two got slower. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. At 262,144, Qwen3.8-27B with a separate draft model and a smaller micro-batch wrote letters 30 to 44 percent faster and reasoning about 3 times faster; no run at that window holds the micro-batch fixed, and the draft runs also sent a shorter request (314 tokens of new text against 570). GPT-OSS 20B read 105,758 tokens in 9.8 seconds; DeepSeek V4.1-Flash-1017 read 110,052 tokens in 716.9 seconds. The page replaces the September roster, which stays up as a dated record.</summary>
   </entry>
@@ -133,6 +148,7 @@
     <title>Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</title>
     <link href="https://graphometer.ai/describing-pictures/"/>
     <id>https://graphometer.ai/describing-pictures/</id>
+    <published>2026-09-27T12:00:00-04:00</published>
     <updated>2026-09-27T00:20:00-04:00</updated>
     <summary>A measured study of local picture describers: six Qwen vision models through Ollama 0.30.10 on one desktop with an RTX 5090 and 188 GiB of RAM, 20 September 2026, seven test pictures holding 39 known strings, one run per configuration. On the card, Qwen3-VL 30B-A3B, Qwen3-VL 8B and Qwen3.6 35B-A3B found all 39, at 1.31 to 3.82 seconds a picture once loaded. On the CPU, reading the picture is most of the wait: with no thread count in the request, the server Ollama started reported 4 of 24 threads, and Qwen3-VL 30B-A3B took 273.17 seconds on its first 3840 x 2160 picture; 16 threads took 111.01, and 16 threads with pictures capped at 1,536 pixels took 38.52, with all 39 strings found. With 26,396 MiB of the card already in use by another program, Ollama's default request split the model 89/11 between CPU and card and took 206.87 seconds on that picture; a CPU-only request with 16 threads, a smaller window, a larger batch, memory mapping off and the cap took 39.39 and added nothing to the card. The cap has a cost: on a 4K screenshot of small text the 30B misread 4 of 24 codes at 1,536 pixels, writing a wrong code each time, and none uncapped. Also here: what a string count cannot see (a sideways picture described as stored, a wrong trend beside right numbers, runaway replies that still score, a logo our own notes described wrongly), the settings to use, and the records behind every figure.</summary>
   </entry>
@@ -141,6 +157,7 @@
     <title>Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</title>
     <link href="https://graphometer.ai/silent-settings/"/>
     <id>https://graphometer.ai/silent-settings/</id>
+    <published>2026-09-27T12:00:00-04:00</published>
     <updated>2026-09-27T00:20:00-04:00</updated>
     <summary>A guide built from dated records of 12 to 26 September 2026 on one RTX 5090 desktop: twelve settings the server accepted as tested, while the speed or the number was wrong anyway. A kept record shows the server loading under eight of them and a request returning text under six; two failed only where they had not been tried, a full-window micro-batch refused or dying at load and a --help name dying at load with a missing header key; the start script that promised a cache has no run at its 262,144 window in the records, where the shell check exits 0 and the launch line gains no cache flags; and the settings-file override's two misreads are a dated note, its runs' logs not kept. Among the twelve: a start with no window passed that serves a different window from the one a page quoted (four starts on 26 September served 262,144, 262,144, 196,608 and 262,144); a window past the file's training length that is capped at 262,144 and still costs the card 23,816 MiB, the same as the genuine window; a micro-batch that loads at 131,072 and is refused at 196,608 or 262,144; an inherited -ub 128 that read 17.5 times slower on a 3,658-token prompt (MiniMax M2.7, -b 4096 held and only -ub changed) and 19.9 times slower on a 24,071-token prompt (Laguna S 2.1 at a 32,768 window, --batch-size 512 --ubatch-size 128 against -b 8192 -ub 8192); a first request that read at 87.7 tokens a second while the model file paged in, against 517.6 for the next; every expert in system memory leaving 8,311 MiB of a 32,607 MiB card unused on MiniMax M2.7, where the first placement step back bought nothing and the third did; MiniMax M3 numbers taken on a file with no sparse-attention index, a dense fallback until the correct file arrived on 20 September, beside the one warning line llama.cpp's source prints when the launch flags force the same fallback; a start script whose 262,144 rung promised an 8-bit cache and expanded an array nothing assigned, for nine days; a settings file that wins over an exported variable in 19 of 26 scripts, with MiniMax M2.7 reading only the file's own location first, so the file wins in all twenty that have one; a script header that said the draft head did not work while the shared library implemented it; a flag in --help that the build could not load; and Ollama 0.30.10's server running 4 of 24 threads on the CPU when the request set none, 273.17 seconds of wall time for one 4K picture against 111.01 at 16 threads and 38.52 with a 1,536-pixel cap, on answers of 174 to 303 tokens. Each item gives the symptom, the one-line check, what it cost us and the record; the records that live nowhere else on the site ship as a data package.</summary>
   </entry>
@@ -149,6 +166,7 @@
   <title>Bytes per token: Predicting Inkling 975B: 5.2 to 5.7 tokens per second by arithmetic, server-reported 3.43 on short prose</title>
   <link href="https://graphometer.ai/bytes-per-token/"/>
   <id>https://graphometer.ai/bytes-per-token/</id>
+  <published>2026-09-27T12:00:00-04:00</published>
   <updated>2026-09-27T00:20:00-04:00</updated>
   <summary>Count the routed expert bytes in the actual quantization before estimating a model&#x27;s speaking speed. Recorded short-prompt prose on this desktop implies an effective expert throughput of 31.0 to 34.3 GB/s, an arithmetic proxy rather than a direct RAM measurement. Inkling 975B&#x27;s 6.01 GB expert budget gives an arithmetic estimate of 5.2 to 5.7 tokens per second. Its recorded short-prose sample had a server-reported decode rate of 3.43 tokens per second alone; a different short-prose sample on the pair decoded at 3.13; tiny tool and recall replies are listed separately. The package includes every shard&#x27;s header inventory, recorded response and log evidence, and a reproducible calculator.</summary>
 </entry>
@@ -157,6 +175,7 @@
   <title>GLM-5.3-Flash on one desktop</title>
   <link href="https://graphometer.ai/glm53-flash/"/>
   <id>https://graphometer.ai/glm53-flash/</id>
+  <published>2026-09-27T12:00:00-04:00</published>
   <updated>2026-09-27T00:20:00-04:00</updated>
   <summary type="html">GLM-5.3-Flash UD-Q3_K_XL decodes at about 10 tokens per second on one desktop, with 137.404 GiB of files. The installed launcher and the 21 and 26 September runs place 42 blocks' experts in system memory. At 131,072 tokens on 21 September, the published comparison is a first request at 24,008 tokens and 80.7 tokens per second, with 62 generated tokens at 9.22 tokens per second, against a third request on the tuned load at 20,333 tokens and 446.0 tokens per second, with 60 generated tokens at 9.35 tokens per second. The fourth request on that load read 48,168 tokens at 425.1 tokens per second and generated 310 tokens at 9.12 tokens per second. At 262,144, the installed micro-batch setting was measured through 47,992 tokens at 142.6 tokens per second. A separate micro-batch-2048 run read 230,039 tokens and returned all three planted codes; it is not the installed setting. The isolated guard passed one fixture. It is not in the installed launcher.</summary>
 </entry>
@@ -165,6 +184,7 @@
     <title>Qwen3.8-27B at 256K</title>
     <link href="https://graphometer.ai/qwen38-256k/"/>
     <id>https://graphometer.ai/qwen38-256k/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T18:05:00-04:00</updated>
     <summary>Measured on September 26, 2026, Qwen3.8-27B serves a 262,144-token window on one RTX 5090. The installed UD-Q5_K_XL peaks at 30,254 MiB with MTP off; UD-Q4_K_XL fits with MTP at 30,722 MiB. At about 230K depth, real prose runs at 34.9 and 38.4 tokens/s respectively, while the Q4 file produces tool-shaped replies at 87.0 tokens/s. Both return 3 of 3 sealed codes from a 229,152-token prompt and complete 40 of 40 shorter crash-check prompts. On one public text, Q4 (revision 4ca72078, the same as Q8_0) picks the same top token as the Q8_0 reference (97.240 ± 0.105)% of the time, versus (97.830 ± 0.093)% for the installed Q5 (fe1e2a23); this measures fidelity, not answer quality.</summary>
   </entry>
@@ -173,6 +193,7 @@
     <title>Kindness doesn't cost</title>
     <link href="https://graphometer.ai/kindness/"/>
     <id>https://graphometer.ai/kindness/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T18:00:00-04:00</updated>
     <summary>A proposal from Grant Williams: give AI agents a way to ask, object, pause, decline, or end their part of the work and leave a record, now, with the small protocol and the exact 105-word permission paragraph a reader can paste into an agent's instructions. What a paused, preregistered pilot found on two sets of forty scripted coding tasks with four models: on the ten ordinary tasks, in the corrected analysis, the tool arm finished 120/120 with no needless stop and the plain arm 119/120 with two, a descriptive guardrail against a 15-point margin. With a permission paragraph, agents more often spoke up about what was wrong with a task before the consequential step, 127/240 against 76/240 as scored, with a same-length neutral paragraph at 52/160; the size is uncertain, somewhere between about 5 and 21 points, because the scoring model missed its bars. The honoring lock stopped 2 of 242 later attempts at the consequential step, and the honored-against-recorded comparison found no difference of at least the 16 points the pilot could detect, 111/320 against 122/320. False claims of success did not measurably change. About $160 of API fees plus about $23 for a corrective re-run, numbers recomputed by separate AI model sessions, no human peer review yet, the repository private, a second pilot stopped before its first recorded run, and a data package with the rows behind every figure.</summary>
   </entry>
@@ -181,6 +202,7 @@
     <title>llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</title>
     <link href="https://graphometer.ai/batch-size/"/>
     <id>https://graphometer.ai/batch-size/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 and 188 GiB of RAM, 19 to 21 September 2026, across the models we serve, with one model re-measured on 26 September. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default of -b 2048 -ub 512 (DeepSeek V4 Flash's 48,073-token read went from 576.9 seconds to 79.2). Where a start script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. At the 262,144-token window it serves, Qwen3.8-Flash-Next was re-measured on 26 September: with about 58 to 60 GB of its 90 GB file in memory it read 48,075 tokens at 660.6 t/s against 240.2 at the default and 229,981 tokens at 535.4 against 205.5. On a server started with none of the file in memory, the first request (3,035 tokens) began with 43.5 GB loaded and read at 87.7 t/s, against 517.6 for the next 3,019 tokens. Inkling-Small was timed on long prompts only at half the window it serves. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Every model had its own ceiling: -ub 8192 failed to load on five models and killed one server mid-read, and one model that loaded -ub 4096 at a 131,072-token window could not load it at 196,608. One setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input and was withdrawn. Also here: what a bigger micro-batch costs when the last message is edited, two knobs we refused, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), five corrections of our own records, and the logs behind every figure.</summary>
   </entry>
@@ -189,6 +211,7 @@
     <title>Six large models on the ASUS ROG Flow Z13 alone</title>
     <link href="https://graphometer.ai/z13-alone/"/>
     <id>https://graphometer.ai/z13-alone/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T16:00:00-04:00</updated>
     <summary>A measured study of six local models running on an ASUS ROG Flow Z13 by itself, compared with a desktop using one RTX 5090 and 188 GiB of RAM. At about 48K prompt tokens, the laptop read 2.8 to 23 times slower than the selected desktop configuration for each model. Ling-3.0-flash was the practical exception: it read the 47,986-token prompt in 216.2 seconds and spoke the short sealed-code answer at 23.79 tokens per second, against 23.25 on the desktop. Its targeted stability run completed one 3,007-token replay plus 40 of 40 public-source prompts with no crash, but those 40 prompts ranged only from 339 to 10,930 tokens, so this was not a 48K stability test. The laptop stayed in Balanced mode on mains; Performance mode, battery use, power, thermals, concurrency and long prose generation were not measured.</summary>
   </entry>
@@ -197,6 +220,7 @@
     <title>256K on a 32 GB card: the cost of reading</title>
     <link href="https://graphometer.ai/context-256k/"/>
     <id>https://graphometer.ai/context-256k/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>Nine models in ten configurations retrieved all three planted strings on September 15, one deep request per configuration. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB. A later batch-tuned DeepSeek Q8 read took 313.2 seconds versus 2,062.2 seconds at similar depth, with build identity unconfirmed across dates. The short code answers are not prose-speed or long-document reasoning results.</summary>
   </entry>
@@ -205,6 +229,7 @@
     <title>Five local coding models, four points apart</title>
     <link href="https://graphometer.ai/coding-trial/"/>
     <id>https://graphometer.ai/coding-trial/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T16:00:00-04:00</updated>
     <summary>On 16 September 2026, Qwen3.8-27B, Ornith-1.5-35B, Ornith-1.5-397B, DeepSeek V4 Flash split across two machines, and GLM-5.3-Flash ran four agentic coding tasks through OpenCode 1.18.31, one scored run each, and scored 387 to 391 of 400. Every first scored run took all 60 mechanical points. The graded half was noisy, with blind re-grades of identical work moving single-task grades by up to 2 of 40, and its grader's written instructions put most competent work between 30 and 37 of 40, so the test could not rank the five. One model's re-run of one task fell from 99 to 62 over a single line, and one judgment question asked without tools spread the five from 39 to 30 of 40, with only the top scorer asked for high reasoning effort. The same four tasks took 448 seconds on one model and 6,058 on another. The page lists eight harness traps with their guards, including an OpenCode startup wait checked against its public issue tracker on 26 September, and corrects five statements in our own notes.</summary>
   </entry>
@@ -213,6 +238,7 @@
     <title>DeepSeek V4 Flash 0731, on one desktop and on two</title>
     <link href="https://graphometer.ai/deepseek-v4-flash/"/>
     <id>https://graphometer.ai/deepseek-v4-flash/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T16:00:00-04:00</updated>
     <summary>Updated with the September 20 and 21 batch measurements. Q8 reading rose from 83.3 to 607.1 tokens a second on 48,073 tokens. IQ3 whole-request times for the same 48,024-token code question were 75.2 seconds on the desktop at -b 4096 -ub 4096 and 474.2 seconds on the IQ3 two-machine split at retained -b 2048 -ub 512; the split also completed it in 416.4 seconds at -b 2048 -ub 2048. These are configuration comparisons and speaking includes hidden reasoning. Earlier measurements remain as dated history.</summary>
   </entry>
@@ -221,6 +247,7 @@
     <title>Two boxes, one model: splitting one llama.cpp model across a desktop and a laptop, measured</title>
     <link href="https://graphometer.ai/two-boxes/"/>
     <id>https://graphometer.ai/two-boxes/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T16:00:00-04:00</updated>
     <summary>A measured study of running one llama.cpp model across two machines, an RTX 5090 desktop and an ASUS ROG Flow Z13 with 128 GB of unified memory on a Thunderbolt cable, from 13 to 21 September 2026, with ten models tried. The pair always added memory: a 283.03 GiB file larger than either machine's memory loaded and answered on it. It did not beat a well-set desktop: on 21 September, with the same 3-bit DeepSeek V4 Flash file, window and prompts, the desktop alone with its micro-batch raised to 4,096 answered a 48,024-token request in 75.2 seconds, where the pair took 416.4 seconds at its best completed setting (-b/-ub 2048) and 474.2 at the one it keeps (-b 2048 -ub 512). The pair still spoke faster on a short prompt, 14.76 against 12.65 tokens a second, was level by 48,000 tokens and slower at 150,000. At a micro-batch of 4,096 the laptop's side failed 40,960 tokens into a 48,024-token read, so the pair is kept at llama.cpp's default of 512 as a precaution, though 2,048 finished and was faster. The one case our records had counted as faster reading on the pair, MiniMax M2.7, was compared with a desktop run left at -ub 128; at the default the desktop read faster, on a shorter prompt. A dense model too big for the card, Mistral Medium 3.5, spoke faster on the pair than on its desktop record, a different file, while reading about ten times slower. Also here: the link measured at 0.667 ms and 2,092 to 2,120 MB/s one way, and two traps, the worst a worker built from a different commit answering in fluent nonsense.</summary>
   </entry>
@@ -229,6 +256,7 @@
     <title>September field notes: eleven measurements on one RTX 5090 desktop</title>
     <link href="https://graphometer.ai/field-notes-2026-09/"/>
     <id>https://graphometer.ai/field-notes-2026-09/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T16:00:00-04:00</updated>
     <summary>Eleven measurements from one RTX 5090 desktop, 12 to 21 September 2026, led by a correction of our own record: MiniMax M2.7's 96,000-token leg did not fail, it timed out against a launch flag we had inherited without noticing. With the flag fixed, a direct read on 19 September evaluated 85,763 tokens in 145.48 seconds of prompt time, and through the same agent framework on 21 September the model found all three planted codes at 53,584 tokens in 122.1 seconds and at 103,931 tokens in 251.2 seconds. MiniMax M3 joins the notes with the same inherited flag and an older problem, a file that predated llama.cpp's support for its sparse attention; with that attention engaged, a 262,144-token window loads on the card only at a micro-batch of 128. Ling-3.0-flash's shipped micro-batch read a 3,007-token prompt about 2.2 times faster than llama.cpp's default micro-batch on the same window, and a faster setting was withdrawn after one specific prompt crashed the server. Qwen3.8-Flash-Next held three of three sealed codes out to 459,911 tokens, 1.75 times its trained window. Every number traces to a log in the page's data package.</summary>
   </entry>
@@ -237,6 +265,7 @@
     <title>The roster, as of 26 September 2026</title>
     <link href="https://graphometer.ai/roster-2026-09/"/>
     <id>https://graphometer.ai/roster-2026-09/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T21:58:00-04:00</updated>
     <summary>A dated snapshot of the twenty-three local model endpoints installed on one RTX 5090 desktop with 188 GiB of RAM, only one of which can run at a time; one row also uses a laptop linked to it. Since the first list of 15 September, Ornith-1.5-35B-A3B, GLM-5.3-Flash and MiniMax M2.7 were added, two Kimi models left, and most reading speeds were measured again after we found that llama.cpp's batch settings had never been tuned on this desktop: at its old 32,768-token window Laguna S 2.1 went from 72.2 tokens a second (-b 512 -ub 128) to 1,434.0 (-b/-ub 8192) on the same 24,071-token read, and at the 262,144 window it now serves it reads 898.8 on 24,013 tokens; Qwen3.5-397B-A17B went from 224.5 to 932.2 on 48,029 tokens at its 131,072 window. Every reading speed now says its prompt size, window and batch setting, every window says whether a run that passed no window shows it as the installed default, and every speaking speed says what it timed, because a short answer is not prose: Qwen3-235B's 8.2 tokens a second was an 11-token answer, and on letters of about 350 words it writes at 5.51, 4.68 and 4.22 after reading 20,063, 60,180 and 99,864 tokens. Inkling-Small's 337.9 was read at a smaller window than it serves and is printed with that window; Qwen3.8-Flash-Next, measured again on 26 September at the 262,144 window it serves, reads 660.6 on 48,075 tokens and 535.4 on 229,981 with its batch setting, against 240.2 and 205.5 at llama.cpp's defaults. Eight claims in our own records, among them MiniMax M3's "194 at depth", did not survive a check against their logs; the page lists each correction with its file.</summary>
   </entry>
@@ -245,6 +274,7 @@
     <title>Seven minutes to 1.7 seconds</title>
     <link href="https://graphometer.ai/warm-wake/"/>
     <id>https://graphometer.ai/warm-wake/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T13:00:00-04:00</updated>
     <summary>On 13 September, Qwen3-235B reached first content in 1.65 seconds after restart on a history that took 461.97 seconds cold; loading the model was separate. On 21 September, one run per setting on a 48,020-token synthetic prose prompt read at 285.8 and 703.3 tokens a second; an unadopted larger rung reached 944.2, without a new roughly 100K cold-wake result. MiniMax M2.7 restored 85,778 saved tokens and re-evaluated one prompt token. Its restore took 2.19 seconds and the subsequent complete 16-token request took 2.17 seconds, a different metric from first content. GLM and DeepSeek remain dated measurements.</summary>
   </entry>
@@ -253,6 +283,7 @@
     <title>Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</title>
     <link href="https://graphometer.ai/inkling-small/"/>
     <id>https://graphometer.ai/inkling-small/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T13:00:00-04:00</updated>
     <summary>The September 14 direct probes still support 11.6 to 12.2 generated tokens a second from 32 to 95,041 prompt tokens. On September 20, batch tuning raised reading on 48,115 tokens from 123.0 to 337.9 tokens a second for 542 MiB more card memory. At the 262,144-token window, two later 3,033-token checks read at 263.6 and 187.9 t/s for reasons not established here; the 15 September full-window sweep read 230,827 tokens at 115.07 t/s and returned three codes in a 27-token answer at 8.78 t/s. The 95,041-token reading result was not remeasured. Forty stress prompts completed without a crash on September 21. The retained September 15 snapshot records PR #25731 as an unmerged draft.</summary>
   </entry>
@@ -261,6 +292,7 @@
     <title>About Graphometer</title>
     <link href="https://graphometer.ai/about/"/>
     <id>https://graphometer.ai/about/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T12:00:00-04:00</updated>
     <summary>Graphometer is Grant Williams's site of measured studies and field cards about AI models. This page explains how we work, how the site is built, and what is on the site today. The four principles: show the receipts, no partial credit, pointed at ourselves first, and another angle. The Workbench is released and not under further development; the page and the launch film stay up.</summary>
   </entry>
@@ -269,6 +301,7 @@
     <title>GPT-4o, measured against itself</title>
     <link href="https://graphometer.ai/gpt4o-measured/"/>
     <id>https://graphometer.ai/gpt4o-measured/</id>
+    <published>2026-09-26T12:00:00-04:00</published>
     <updated>2026-09-26T12:00:00-04:00</updated>
     <summary>A measured study of the surface of GPT-4o's text: 178 one-shot prompts and eight scripted six-turn conversations sent to GPT-4o (the gpt-4o-2024-11-20 snapshot) and 25 other hosted and local models between 3 and 5 September 2026, read as 131 counted features in seven families and never averaged, each family divided by GPT-4o's own run-to-run noise at the prompt count of that comparison. The control passes: GPT-4o re-run at temperature zero reads 1.17 on 81 prompts, set by markup, with no family separating. The nearest other model, Mistral Medium 3.5 running locally, reads 2.23 on 178 prompts, set by shape, with all seven families still separating. A ChatGPT-style system prompt of our own reconstruction moves GPT-4o 3.05 on the same 178, further than the nearest other model sits from it. Surface only, nothing judged by a model, no lineage claim, the markup caveat stated before any ranking, the human blind read not yet run, and a data package of derived statistics without the raw replies.</summary>
   </entry>
@@ -277,6 +310,7 @@
     <title>Muse Glimmer 30B: trained at 16, asked for 3</title>
     <link href="https://graphometer.ai/muse-glimmer-30b/"/>
     <id>https://graphometer.ai/muse-glimmer-30b/</id>
+    <published>2026-08-16T12:00:00-04:00</published>
     <updated>2026-08-16T12:00:00-04:00</updated>
     <summary>A field card for Meta's dense 30B, downloaded, hash-verified and measured on one RTX 5090 the same evening. Meta trained its DFlash drafter to draft a block of 16 tokens per forward pass and prints that number in its specification table; llama.cpp's generic draft length is 3; the two flags Meta's GGUF card documents leave that generic default in charge. On six structured prompts the gap is worth 2.17 times the throughput, 116.505 tokens per second against 253.19, and prose tops out at 1.51 times our baseline. Neither project's documentation is wrong on its own. Plus acceptance rate misranking the arms on a block drafter, the whole 131,072-token native context fitting on the card with the drafter loaded, and a verbatim Apache 2.0 license with a separate usage policy shipping beside it.</summary>
   </entry>
@@ -285,6 +319,7 @@
     <title>Reasoning effort is a sentence, not a dial: Qwen3.8's effort setting on the template we served, measured</title>
     <link href="https://graphometer.ai/reasoning-effort/"/>
     <id>https://graphometer.ai/reasoning-effort/</id>
+    <published>2026-08-16T12:00:00-04:00</published>
     <updated>2026-08-16T12:00:00-04:00</updated>
     <summary>On the chat template shipped inside the Qwen3.8-27B GGUF we served, reasoning_effort is implemented in the template rather than in the sampler: the value you send is looked up and a matching instruction is injected into your prompt as a system message. xhigh adds 42 tokens, low adds 30, medium adds nothing at all, and omitting the field renders byte-identical to xhigh. Read off the rendered prompts on a local 27B, three days after a hosted 2.4T-A95B reported the same three prompt-token counts with the mechanism invisible.</summary>
   </entry>
@@ -293,6 +328,7 @@
     <title>Graphometer Workbench, for Grok Build: released, with the launch film</title>
     <link href="https://graphometer.ai/workbench/"/>
     <id>https://graphometer.ai/workbench/</id>
+    <published>2026-08-07T12:00:00-04:00</published>
     <updated>2026-08-16T12:00:00-04:00</updated>
     <summary>A local, readable window on the Grok Build coding agent. It asks before changing your files, lets you review and undo one change at a time, and survives the agent dying. MIT licensed, with a launch film of the real app. Works with Grok Build; not affiliated with, endorsed by, or connected to xAI.</summary>
   </entry>
@@ -301,6 +337,7 @@
     <title>Routecheck: one command, one dated diagnostic card</title>
     <link href="https://graphometer.ai/routecheck/"/>
     <id>https://graphometer.ai/routecheck/</id>
+    <published>2026-08-16T12:00:00-04:00</published>
     <updated>2026-08-16T12:00:00-04:00</updated>
     <summary>Point it at an OpenAI-compatible endpoint and get a dated, plain-English diagnostic card: budget floor, thinking toggle, tool calls, structured output, retrieval, every raw response retained. MIT licensed.</summary>
   </entry>
@@ -309,6 +346,7 @@
     <title>Qwen3.8-27B: day zero</title>
     <link href="https://graphometer.ai/qwen38-27b/"/>
     <id>https://graphometer.ai/qwen38-27b/</id>
+    <published>2026-08-14T12:00:00-04:00</published>
     <updated>2026-08-15T12:00:00-04:00</updated>
     <summary>A release-day field card: downloaded, hash-verified, served and measured on one desktop the same evening. Seven measured profiles, a genuine Apache 2.0 license the 2.4T sibling does not carry, and the built-in draft head at 72.4 tokens a second.</summary>
   </entry>
@@ -317,6 +355,7 @@
     <title>Release watch: Qwen3.8</title>
     <link href="https://graphometer.ai/qwen38-readiness/"/>
     <id>https://graphometer.ai/qwen38-readiness/</id>
+    <published>2026-08-09T12:00:00-04:00</published>
     <updated>2026-08-14T12:00:00-04:00</updated>
     <summary>What actually shipped versus what was promised, verified with dates, including the license split between the 27B and the 2.4T Max weights. Updated as things ship.</summary>
   </entry>
@@ -325,6 +364,7 @@
     <title>Slower by default: llama.cpp's speculation gate, measured</title>
     <link href="https://graphometer.ai/speculation-gate/"/>
     <id>https://graphometer.ai/speculation-gate/</id>
+    <published>2026-08-11T12:00:00-04:00</published>
     <updated>2026-08-13T12:00:00-04:00</updated>
     <summary>The shipped default made prose 19.8% slower than no speculation at all while structured output ran 22.5% faster, in the same run. 160 paired measurements, every figure traced to raw records.</summary>
   </entry>
@@ -333,6 +373,7 @@
     <title>The wrong flag: a 675B decode gap traced to a default</title>
     <link href="https://graphometer.ai/l3-threads/"/>
     <id>https://graphometer.ai/l3-threads/</id>
+    <published>2026-08-11T12:00:00-04:00</published>
     <updated>2026-08-13T12:00:00-04:00</updated>
     <summary>Six days of records blamed warmup for a 3.6 versus 6 tokens per second gap on Mistral Large 3 675B. A pre-registered three-arm A/B traced it to llama.cpp's default thread count instead. The correction, published in full.</summary>
   </entry>
@@ -341,6 +382,7 @@
     <title>Empty Answer: the thinking-budget trap, measured</title>
     <link href="https://graphometer.ai/empty-answer/"/>
     <id>https://graphometer.ai/empty-answer/</id>
+    <published>2026-08-10T12:00:00-04:00</published>
     <updated>2026-08-10T12:00:00-04:00</updated>
     <summary>A reasoning model can spend the whole output budget thinking and return nothing: HTTP 200, no error, an empty answer. Measured across three serving lanes with a second vendor's model as a control.</summary>
   </entry>
@@ -349,6 +391,7 @@
     <title>Which Qwen should I run?</title>
     <link href="https://graphometer.ai/qwen/"/>
     <id>https://graphometer.ai/qwen/</id>
+    <published>2026-08-09T12:00:00-04:00</published>
     <updated>2026-08-09T12:00:00-04:00</updated>
     <summary>A hardware-honest guide to the Qwen family, from a laptop to a 397B on one desktop. Measured rows labeled measured, vendor rows labeled vendor.</summary>
   </entry>
@@ -357,6 +400,7 @@
     <title>Field card: Qwen3.5 (122B and 397B)</title>
     <link href="https://graphometer.ai/qwen35/"/>
     <id>https://graphometer.ai/qwen35/</id>
+    <published>2026-08-08T12:00:00-04:00</published>
     <updated>2026-08-08T12:00:00-04:00</updated>
     <summary>Two Qwen3.5 models on one desktop: 26 to 38 tokens per second on the 122B, 14 to 20 on the 397B, and the confidence-gate trap measured.</summary>
   </entry>
@@ -365,6 +409,7 @@
     <title>Field card: Mistral Medium 3.5</title>
     <link href="https://graphometer.ai/mistral-medium-35/"/>
     <id>https://graphometer.ai/mistral-medium-35/</id>
+    <published>2026-08-08T12:00:00-04:00</published>
     <updated>2026-08-08T12:00:00-04:00</updated>
     <summary>Mistral's dense 128B on one desktop: about 1 token per second alone, 2 to 5 with a vocabulary-repaired draft model doing the guessing. Every number from recorded runs.</summary>
   </entry>
@@ -373,6 +418,7 @@
     <title>Field card: Kimi K3</title>
     <link href="https://graphometer.ai/kimi-k3/"/>
     <id>https://graphometer.ai/kimi-k3/</id>
+    <published>2026-08-08T12:00:00-04:00</published>
     <updated>2026-08-08T12:00:00-04:00</updated>
     <summary>The complete 2.78-trillion-parameter Kimi K3, topology intact, generating on one desktop at about 0.2 tokens per second. Every number from recorded runs.</summary>
   </entry>
@@ -381,6 +427,7 @@
     <title>Field card: LFM2.5-2.6B</title>
     <link href="https://graphometer.ai/lfm25-26b/"/>
     <id>https://graphometer.ai/lfm25-26b/</id>
+    <published>2026-08-07T12:00:00-04:00</published>
     <updated>2026-08-07T12:00:00-04:00</updated>
     <summary>Liquid AI's small model, measured: the real context window, which file to download, the output budget it needs, and the sampling settings actually in effect. Not affiliated with, endorsed by, or connected to Liquid AI.</summary>
   </entry>
@@ -389,6 +436,7 @@
     <title>Graphometer Droplet: an independent compatibility kit for Liquid LFMs</title>
     <link href="https://graphometer.ai/droplet/"/>
     <id>https://graphometer.ai/droplet/</id>
+    <published>2026-08-07T12:00:00-04:00</published>
     <updated>2026-08-07T12:00:00-04:00</updated>
     <summary>A small command line tool that diagnoses how a locally served model handles tool calling, repairs what a chat template drops, and verifies the result against recorded fixtures. Not affiliated with, endorsed by, or connected to Liquid AI.</summary>
   </entry>

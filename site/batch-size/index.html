@@ -3,20 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>llama.cpp batch size: 2.5 to 7.3 times faster reads on big models</title>
+<title>llama.cpp batch size: big models read 2.5 to 7.3x faster</title>
 <meta name="description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <link rel="canonical" href="https://graphometer.ai/batch-size/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
+<meta property="og:title" content="llama.cpp batch size: big models read 2.5 to 7.3x faster">
 <meta property="og:description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <meta property="og:url" content="https://graphometer.ai/batch-size/">
 <meta property="og:image" content="https://graphometer.ai/og/batch-size.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
+<meta property="article:published_time" content="2026-09-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
+<meta name="twitter:title" content="llama.cpp batch size: big models read 2.5 to 7.3x faster">
 <meta name="twitter:description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <meta name="twitter:image" content="https://graphometer.ai/og/batch-size.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
@@ -129,6 +132,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -156,12 +160,12 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Measured study &middot; 19 to 21 September 2026, one model re-measured 26 September &middot; one RTX&nbsp;5090 desktop (32&nbsp;GB card, 188&nbsp;GiB RAM) &middot; llama.cpp at seven commits, one of them built twice &middot; 12 models with experts in system RAM, 6 that fit on the card</div>
-      <h1>llama.cpp's <em>batch size</em></h1>
+      <h1 itemprop="headline">llama.cpp's <em>batch size</em></h1>
       <p class="subtitle">Prompt reading 2.5 to 7.3 times faster than the
       default, up to 20 against an inherited <code>-ub 128</code>.</p>
       <p class="lead">llama.cpp reads a prompt in micro-batches of 512 tokens
@@ -170,7 +174,7 @@
       batch settings at llama.cpp's defaults, and three of the five that did
       set them used a micro-batch smaller than the default. We swept
       <code>--ubatch-size</code>, with <code>--batch-size</code> kept at least
-      as large, across the models we serve. On the twelve whose expert weights
+      as large, across the models we serve. On ten of the twelve whose expert weights
       sit in system RAM, the first read of a long prompt, mostly 48,000 tokens,
       became <strong>2.5 to 7.3 times faster than at llama.cpp's
       default</strong>; where a script had inherited <code>-ub 128</code>,
@@ -193,6 +197,7 @@
       the server on a single 3,007-token input, so we withdrew it. This is one
       machine, the llama.cpp builds of that week, one request at a time, and
       reading speed, not the quality of the answers.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="nonaff">Independent measurements; no affiliation with the
       llama.cpp project, ggml-org, NVIDIA, ASUS, Intel, Alibaba (Qwen),
       DeepSeek, inclusionAI, Thinking Machines Lab, Poolside, Mistral AI, Z.ai,
@@ -882,13 +887,13 @@
       llama.cpp branch. The <a href="../field-notes-2026-09/">September field
       notes</a> collect the month's shorter results from this machine;
       <a href="../two-boxes/">Two boxes</a> studies the desktop and laptop as
-      one host; the cost of a full 262,144-token window at the default has
-      <a href="../context-256k/">its own page</a>.
+      one host; <a href="../context-256k/">256K on a 32 GB card</a> measures the cost of a full
+      262,144-token window at the default.
       <a href="../speculation-gate/">Slower by default</a> and
       <a href="../l3-threads/">The wrong flag</a> measure two other llama.cpp
       defaults on this desktop. <a href="../empty-answer/">Empty Answer</a> is
       the thinking-budget trap in detail; the <a href="../method/">method
-      page</a> explains the labels and the data packages.</p>
+      page</a> explains the labels and the data packages. <a href="../llamacpp-expert-cache/">Two llama.cpp settings for MoE models bigger than your GPU</a> measures loading the RAM-held weights once and an expert cache on this desktop, on models that ran with micro-batch values set here. <a href="../silent-settings/">Silent settings</a> collects llama.cpp settings that cost speed without an error, and draws three of its items from this study.</p>
     </section>
 
     <section>

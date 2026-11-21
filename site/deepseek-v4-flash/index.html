@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: DeepSeek V4 Flash 0731: one desktop or two machines?">
+<meta property="article:published_time" content="2026-09-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DeepSeek V4 Flash 0731: one desktop or two machines?">
 <meta name="twitter:description" content="The tuned desktop took 75.2 seconds for a 48,024-token request. The same file across two machines took 416.4 seconds at its best completed setting.">
@@ -86,6 +89,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -113,13 +117,14 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
     <div class="hero">
       <div class="eyebrow">Field card &middot; measured 12 to 21 September 2026; updated 26 September and 25 October &middot; one RTX 5090 desktop, alone and paired with a 128 GB laptop &middot; llama.cpp &middot; windows scoped below</div>
-      <h1>DeepSeek V4 Flash 0731, on one desktop and on two</h1>
+      <h1 itemprop="headline">DeepSeek V4 Flash 0731, on one desktop and on two</h1>
       <p class="subtitle">With its batch settings tuned, one desktop answered a 48,024-token request in 75.2 seconds. The same file split across two machines took 416.4 seconds at its best completed setting and 474.2 at the one it keeps. Measured 21 September 2026.</p>
       <p class="lead">The practical choice for long prompts is now the desktop alone, with experts split between system RAM and the card. The IQ3 desktop at <code>-b 4096 -ub 4096</code> read the 48,024-token prompt at <strong>690.9 tokens a second</strong>; whole-request time was <strong>75.2 seconds</strong>, against <strong>474.2 seconds</strong> on the IQ3 two-machine split at retained <code>-b 2048 -ub 512</code> <span class="badge">measured, 21 September</span>. Reading means prompt tokens processed per second. Speaking means generated tokens per second, including hidden reasoning on this model. These are tested configurations on one RTX 5090 desktop, alone or paired with an ASUS ROG Flow Z13, not an isolated test of machine count.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="note"><span class="label">Update, 26 September 2026: what changed</span><p>Our earlier recommendation led with the two-machine 4-bit body and its draft model. Tuning the amount of prompt text processed in each batch changed the whole-turn result. The desktop now finishes the measured long-prompt requests sooner. The September 12 to 15 measurements remain below as history; the 4-bit split with a draft was not re-tuned in the new sweep.</p></div>
       <div class="note"><span class="label">Update, 25 October 2026: three changes since</span><p>The desktop alone is still the setting we use. Two changes made it faster. On 29 September we ran it with a thread-pinning bundle. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. On a letter written about 96,000 tokens deep, speaking rose from 8.88 to 12.57 tokens a second on the 8-bit file and from 12.92 to 17.45 on the 3-bit file. On 11 October we moved to mainline llama.cpp. On an 18,000-token request at the 262,144 window, the 8-bit file read at 505.7 tokens a second against 457.4 on the older build, and spoke at the same rate (12.96 against 12.88). The third change is a removal: on 11 October we deleted the two-machine 4-bit files, so the two-machine preset below is history, not an installed setting. The <a href="../roster-2026-10/">October roster</a> has the runs.</p></div>
       <div class="nonaff">Independent measurements. DeepSeek, Unsloth, NVIDIA, ASUS, Intel, Hugging Face, and the llama.cpp project are referenced for identification only. Not affiliated with, endorsed by, or connected to any of them or their affiliates.</div>
@@ -297,7 +302,7 @@
     <section>
       <div class="secnum">12</div>
       <h2>Related pages on this site</h2>
-      <p>The <a href="../two-boxes/">two-box study</a> carries the wider comparison across the models tried on the desktop and laptop. The <a href="../warm-wake/">warm-wake study</a> records the successful restores and this model's unsuccessful attempt. The <a href="../method/">method page</a> defines the evidence labels used here.</p>
+      <p>The <a href="../two-boxes/">two-box study</a> carries the wider comparison across the models tried on the desktop and laptop. The <a href="../warm-wake/">warm-wake study</a> records the successful restores and this model's unsuccessful attempt. The <a href="../method/">method page</a> defines the evidence labels used here. <a href="../bytes-per-token/">Bytes per token</a> uses this model&rsquo;s <code>UD-Q8_K_XL</code> body, with all routed experts in system RAM, as one of three measured anchors for estimating Inkling 975B&rsquo;s speed.</p>
     </section>
 
     <section>

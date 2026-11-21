@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Where to put an instruction so a chat model follows it">
+<meta property="article:published_time" content="2026-10-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Where to put an instruction so a chat model follows it">
 <meta name="twitter:description" content="Tests compared the system prompt with a short note before the latest message, using instructions about follow-up questions and memory claims.">
@@ -123,6 +126,7 @@
   .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -150,15 +154,16 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Measured study &middot; runs of 29 September to 17 October 2026 &middot; local runs on one desktop, GPT-4o and Claude Sonnet 4.6 by API &middot; one long conversation history, checked on a second &middot; most counts by hand, some by script &middot; one template check on the CPU only &middot; small samples</div>
-      <h1>The note <em>before the message</em></h1>
+      <h1 itemprop="headline">The note <em>before the message</em></h1>
       <p class="subtitle">Where a standing instruction sits decides whether a chat model follows it. On Qwen3-30B, with the instruction in the system prompt, 3 of 60 answers asked the user anything, and only one was a real follow-up. As a short system-role note right before the user's message, 6 of 6 asked, one of them the stock health check-in.</p>
       <p class="lead">This page is for you if you run a chat model with a long system prompt (the standing text the model reads before every conversation) or a long conversation history, and you want it to keep following a standing instruction. What it found: <strong>put the instruction in a short note right before the user's newest message, then check how your model's chat template actually delivers that note.</strong> A chat template is the small program shipped with each model that turns a list of messages into the text the model reads. The note is short, and it worked on several model families. It also has side effects, and they differ by model.</p>
       <p class="lead">We gave the same two instructions to open models run on our own machine and to GPT-4o. The first was to ask the user a real question back. The second was not to claim a memory the model does not have. The ask-back instruction changed little in the system prompt and in the model's persistent memory (text an agent framework saves and loads into the prompt every turn). The honesty instruction changed little in the system prompt; we did not try it in persistent memory. Placed as a short note right before the user's message, both did better. We also asked about something that never happened. Without the note, models said yes and described the moment in 13 of 15 answers. With the note, none did, in 0 of 27 answers. That stopped the made-up description, not the belief: 16 of those 27 answers still assumed the moment happened (section 04).</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="nonaff">Independent measurements; no affiliation with any model maker named on this page, or with the llama.cpp project.</div>
     </div>
 

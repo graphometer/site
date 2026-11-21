@@ -15,6 +15,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Save and restore a llama.cpp conversation across a restart">
+<meta property="article:published_time" content="2026-09-26">
+<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Save and restore a llama.cpp conversation across a restart">
 <meta name="twitter:description" content="After one llama.cpp restart, Qwen3-235B began replying in 1.65 seconds once the server was back. Reading that history from scratch had taken 461.97 seconds.">
@@ -129,6 +132,7 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -156,14 +160,15 @@
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
     <div class="hero">
       <div class="eyebrow">Measured study &middot; 13 September results, updated 26 September 2026 &middot; one RTX 5090 desktop &middot; llama.cpp slot save and restore, driven by a program of our own &middot; about 100,000 tokens on the 13 September histories</div>
-      <h1>Seven minutes to 1.7 seconds</h1>
+      <h1 itemprop="headline">Seven minutes to 1.7 seconds</h1>
       <p class="subtitle">Saving a local llama.cpp server's conversation state to disk. On 13 September, after a restart, Qwen3-235B reached first content in 1.65 seconds on a history that took 461.97 seconds to read cold. Cold reading has since got faster; these restart times were not re-run.</p>
       <p class="lead"><strong>Measured, 13 September 2026.</strong> In one restart cycle, Qwen3-235B reached first content in <span class="n">1.65 seconds</span> on a <span class="n">102,912-token</span> history that had taken <span class="n">461.97 seconds</span> to read cold. That 1.65 seconds is the first request once the server was back; loading the model is a separate cost, and this page prints it. GLM-4.7-Flash went from <span class="n">74.73 seconds</span> to <span class="n">0.67 seconds</span> on <span class="n">105,181 tokens</span>, with first content <span class="n">15.3 seconds</span> after the stop command. After the DeepSeek V4 Flash restart no restore was performed, and the first request re-read the whole history. These original results are three configurations, one request at a time, on one machine, on one date.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="note"><span class="label">Update, 26 September 2026</span>
         <strong>Measured, 21 September.</strong> One Qwen3-235B run read a 48,020-token prompt at 703.3 tokens a second with <code>-b 4096 -ub 2048</code>, against 285.8 at the earlier default. One run at each setting. The same probe at <code>-b 4096 -ub 4096</code> read at <span class="n">944.2 tokens a second</span> and was not adopted. The 703.3 result is the launch default, not the fastest rung. The cold wait is smaller at that measured depth; no new roughly 100K cold time was found, so the headline remains the dated 13 September result. A later MiniMax M2.7 test restored its slot and completed the next request in 2.17 seconds, after a separate 2.19-second restore. That is total request time, not time to first content.
       </div>

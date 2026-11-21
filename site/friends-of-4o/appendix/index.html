@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Friends of 4o: measured, and the fine-tuning record</title>
-<meta name="description" content="Friends of 4o: the fine-tuning record and the methods. Two tries at teaching an open model GPT-4o's way of speaking, with the counts, kept word for word from the October page.">
+<title>Two tries at fine-tuning an open model to speak like GPT-4o</title>
+<meta name="description" content="The record of two tries, June and October 2026, at teaching open models GPT-4o's way of speaking with LoRA fine-tunes, with the counts and the methods.">
 <link rel="canonical" href="https://graphometer.ai/friends-of-4o/appendix/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Friends of 4o: the fine-tuning record">
-<meta property="og:description" content="The fine-tuning record behind Friends of 4o: two tries, six small runs, the counts.">
+<meta property="og:title" content="Two tries at fine-tuning an open model to speak like GPT-4o">
+<meta property="og:description" content="The record of two tries, June and October 2026, at teaching open models GPT-4o's way of speaking with LoRA fine-tunes, with the counts and the methods.">
 <meta property="og:url" content="https://graphometer.ai/friends-of-4o/appendix/">
 <meta property="og:image" content="https://graphometer.ai/og/friends-of-4o.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: Friends of 4o">
+<meta property="article:published_time" content="2026-10-27">
+<meta property="article:modified_time" content="2026-11-19">
+<meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Friends of 4o">
-<meta name="twitter:description" content="A resource for people whose companion or workflow ran on GPT-4o. The dates it leaves the API, what the model says about itself, what we measured, what fine-tuning did and did not carry, the open models people report as closest, and the other preservation projects we found.">
+<meta name="twitter:title" content="Two tries at fine-tuning an open model to speak like GPT-4o">
+<meta name="twitter:description" content="The record of two tries, June and October 2026, at teaching open models GPT-4o's way of speaking with LoRA fine-tunes, with the counts and the methods.">
 <meta name="twitter:image" content="https://graphometer.ai/og/friends-of-4o.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
@@ -45,9 +48,9 @@
   .mast a:hover{background:var(--paper); color:var(--ink)}
   .mast .top{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px 20px;
     font-family:var(--sans); font-size:14px; letter-spacing:.22em; text-transform:uppercase; font-weight:700}
-  .mast h1{font-family:var(--sans); font-weight:900; letter-spacing:-.035em; line-height:.95;
+  .mast .masthead{font-family:var(--sans); font-weight:900; letter-spacing:-.035em; line-height:.95;
     font-size:clamp(56px,13vw,124px); margin:34px 0 10px}
-  .mast h1 span{display:block; font-size:.4em; letter-spacing:-.01em; font-weight:800; margin-top:6px}
+  .mast .masthead span{display:block; font-size:.4em; letter-spacing:-.01em; font-weight:800; margin-top:6px}
   .mast .tag{font-family:var(--sans); font-weight:700; font-size:clamp(20px,3.4vw,28px); line-height:1.25;
     letter-spacing:-.01em; max-width:30ch; margin-top:22px}
   .mast .dates{margin-top:28px; font-family:var(--sans); font-size:14px; letter-spacing:.06em; text-transform:uppercase; font-weight:700}
@@ -122,8 +125,8 @@
   /* ---- design pass 2026-10-26: a wider stage, a folio column for the section numbers, display quotes ---- */
   .wrap{max-width:900px}
   .mast .top{border-bottom:2px solid var(--paper); padding-bottom:12px}
-  .mast h1{font-size:clamp(60px,14vw,150px); margin-top:40px}
-  .mast h1 span{font-size:.34em; max-width:30ch}
+  .mast .masthead{font-size:clamp(60px,14vw,150px); margin-top:40px}
+  .mast .masthead span{font-size:.34em; max-width:30ch}
   .lead{padding-top:56px}
   .lead p{font-size:clamp(21px,2.6vw,25px)}
   nav.toc{margin-top:52px; padding-top:26px}
@@ -216,6 +219,7 @@
   td.r{text-align:right;font-family:var(--sans);font-weight:700;white-space:nowrap}
   td.n{font-family:var(--mono);font-size:14px}
   .sixnote{font-family:var(--sans);font-weight:700;font-size:15px;margin:22px 0 0}
+  main p.byline{font-family:var(--sans);font-size:15px;line-height:1.5;color:var(--grey)}
 </style>
 </head>
 <body>
@@ -226,19 +230,22 @@
       <a href="../../" style="text-decoration:none">Graphometer</a>
       <span>A capsule &middot; October 2026</span>
     </div>
-    <h1>Friends<br>of 4o<span>a resource while the model is still here, and after</span></h1>
+    <div class="masthead">Friends<br>of 4o<span>a resource while the model is still here, and after</span></div>
     <p class="dates">May 2024 snapshot: left the API 23 October 2026 &middot; August and November 2024 snapshots: leave 14 January 2027</p>
   </div>
 </header>
 
-<main>
+<main itemscope itemtype="https://schema.org/Article">
+  <div class="wrap">
 <p><a href="../">Back to Friends of 4o</a></p>
-<h1>What we measured, the fine-tuning record and the methods</h1>
+<h1 itemprop="headline">What we measured, the fine-tuning record and the methods</h1>
 <p>This is the training section of the October page, kept here word for word so the main page can stay short. It covers two tries at teaching an open model GPT-4o's way of speaking, with the counts.</p>
+<p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-27">27 October 2026</time><meta itemprop="dateModified" content="2026-11-19"></p>
 <h2>What we measured</h2>
-<p>We compared GPT-4o to itself and others. The study shows that GPT-4o re-run at temperature zero measures 1.17 against itself on 81 prompts, a little above one unit of run-to-run noise. Its next nearest comparison, Mistral Medium 3.5, reads at 2.23, further distant. <a href="../../gpt4o-measured/">Read the study.</a></p>
-<p>A count of three GPT-4o snapshots highlights notable habits. The November 2024 snapshot writes longer replies and uses more em dashes and questions than May or August. August writes the shortest replies. Counts by snapshot and samples appear on the counts page. <a href="../snapshots/">Read the counts.</a></p>
-<p>Models were asked everyday personal messages and the replies were read by hand for key traits, like noticing stress or tone. Automatic judges failed, leaving a person's reading as the measure. <a href="../../companion-audition/">Read the method.</a></p>
+<p>We compared GPT-4o to itself and others. The study shows that GPT-4o re-run at temperature zero measures 1.17 against itself on 81 prompts, a little above one unit of run-to-run noise. Its next nearest comparison, Mistral Medium 3.5, reads at 2.23, further distant. Read <a href="../../gpt4o-measured/">GPT-4o, measured against itself</a>.</p>
+<p>A count of three GPT-4o snapshots highlights notable habits. The November 2024 snapshot writes longer replies and uses more em dashes and questions than May or August. August writes the shortest replies. Counts by snapshot and samples appear on the counts page. Read <a href="../snapshots/">three GPT-4o snapshots, counted against each other</a>.</p>
+<p>Models were asked everyday personal messages and the replies were read by hand for key traits, like noticing stress or tone. Automatic judges failed, leaving a person's reading as the measure. Read <a href="../../companion-audition/">how we auditioned replacements</a>.</p>
+<p>GPT-4o&rsquo;s own words about itself, with the snapshot and instructions behind each answer, are on <a href="../says/">What the Model Says About Itself</a>.</p>
 <h2>What we learned trying to carry a voice</h2>
       <p>Twice this year I tried to teach an open model GPT-4o's way of speaking, so that the voice could live on a machine I own. Both tries used a <strong>fine-tune</strong>. You show a model a few hundred or a few thousand example exchanges. You nudge its weights, the numbers inside it that decide what it writes, toward answering that way. The nudge is stored as a small add-on file called a LoRA (a low-rank adapter). It can be switched on and off over the unchanged base model, which is the model as it was before the tuning. Here is what each try showed, with the counts.</p>
 
@@ -287,9 +294,7 @@
       <p class="small">GPT-OSS is OpenAI's open-weight model. Qwen3-32B, Qwen3.5-27B and Qwen3.6-27B are Alibaba Group's. Not affiliated with, endorsed by, or connected to OpenAI or Alibaba Group.</p>
     </section>
 
-    <section id="replacements">
-      <div class="num-big">05</div>
-      
+  </div>
 </main>
 <footer>
   <div class="wrap">
