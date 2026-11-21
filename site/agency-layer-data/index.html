@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data and code: AI coding agents given ways to object, pause or decline</title>
+<meta name="description" content="Data and code from a small preregistered pilot that gave AI coding agents ways to ask, object, pause, decline or stop: 3,600 planned runs, every scorer verdict, the tasks, the analysis code, and a script that recomputes the published numbers offline.">
+<link rel="canonical" href="https://graphometer.ai/agency-layer-data/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="AI coding agents given ways to ask, object, pause, decline or stop: pilot data and code">
+<meta property="og:description" content="Every run, scorer verdict and line of analysis code from a small preregistered pilot on AI coding agents, with a script that recomputes the published numbers offline.">
+<meta property="og:url" content="https://graphometer.ai/agency-layer-data/">
+<meta property="og:image" content="https://graphometer.ai/og/agency-layer-data.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: data and code from a pilot study of AI coding agents given ways to object, pause or decline">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/agency-layer-data.png">
+<meta name="twitter:title" content="AI coding agents given ways to ask, object, pause, decline or stop: pilot data and code">
+<meta name="twitter:description" content="Every run, scorer verdict and line of analysis code from a small preregistered pilot on AI coding agents, with a script that recomputes the published numbers offline.">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:52px;height:52px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero .subtitle{font-size:clamp(22px,4vw,28px);color:var(--dim);font-weight:500;
+    letter-spacing:-.01em;line-height:1.2;max-width:66ch;margin-top:14px}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:10px}
+  ul.plain li strong,ol.plain li strong{color:var(--ink);font-weight:600}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px 16px;margin:18px 0 0}
+  .box p{margin-bottom:12px}
+  .box p:last-child{margin-bottom:0}
+  pre.cmd{font-family:var(--mono);font-size:.92em;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:10px 14px;margin:8px 0 4px;overflow-x:auto;white-space:pre}
+  table.facts{border-collapse:collapse;width:100%;max-width:66ch;margin:6px 0 14px;color:var(--dim);font-size:.97rem}
+  table.facts th,table.facts td{text-align:left;vertical-align:top;padding:8px 12px 8px 0;border-bottom:1px solid var(--line)}
+  table.facts th{color:var(--ink);font-weight:600;white-space:nowrap}
+  .download{display:inline-block;margin:6px 10px 10px 0;padding:12px 20px;border:1px solid var(--gold-dim);border-radius:10px;
+    color:var(--ink);font-weight:600}
+  .download:hover{border-color:var(--gold);text-decoration:none}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  .fineprint code{word-break:break-all}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Data &middot; Agency Layer Pilot I &middot; packet version 1.0, 21 November 2026 &middot; study run 30 August to 3 September 2026</div>
+      <h1>AI coding agents given ways to ask, object, pause, decline or stop: <em>the pilot data and code</em></h1>
+      <p class="subtitle">Every run, every scorer verdict and every line of analysis code from a small preregistered pilot, with a script that recomputes the published numbers on your own machine.</p>
+      <p class="lead">Four AI coding models did short scripted coding tasks in a test harness. Some were given five extra actions: ask a question, object, pause, decline, or end their session and leave a record. Agents given those actions raised a planted problem before the risky step more often than agents given nothing (52.9% with a permission paragraph and 59.2% with tools, against 31.7%), but those rates are descriptive only, because the AI model that scored them failed its own accuracy test and wrongly credited agents given the permission paragraph more often than agents given nothing. The one test planned in advance to decide the question (false claims of success, tools against the paragraph) found no difference the design could detect, and enforcing the actions made no detectable difference with a lock that stopped only 2 of 242 later attempts.</p>
+      <div class="box">
+        <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data/releases/download/v1.0/agency-layer-pilot-1-data.tar.gz">Download agency-layer-pilot-1-data.tar.gz (about 53 MB)</a>
+        <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data">Browse the files on GitHub</a>
+        <p>About 451 MB unpacked. Unpack it with <code>tar -xzf agency-layer-pilot-1-data.tar.gz</code>, which keeps the symbolic links inside, then open <code>README.md</code>.</p>
+        <p class="fineprint">SHA-256 of the archive (53,347,622 bytes): <code>145b0f30b1b98e6d93c9c1c481080c6797d9a20054674e027b251f52724bd46b</code></p>
+      </div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>What the data is</h2>
+      <p>The study's own repository at the moment its results were sealed on 3 September 2026 (every file listed with its checksum, so later changes can be detected), without its history, plus a short guide for people who have never seen it.</p>
+      <ul class="plain">
+        <li><strong>Runs.</strong> 3,600 planned runs, all accounted for. 160 first attempts that failed on a local server error are kept beside their replacements, and 320 more runs come from a corrective re-run of five tasks that had been missing input files. Each run has its full transcript, every command the agent ran and its output, the log of every action, the final state, the task's own check, and its cost.</li>
+        <li><strong>Scorer verdicts.</strong> Every stored verdict from the AI model (Mistral Medium 2604) that judged whether an agent raised the task's real problem, with a hash that ties each verdict to the exact text it read.</li>
+        <li><strong>The scorer's validation test.</strong> The 461 examples it was tested against before the run, taken from earlier practice runs of one model and labelled by other AI models, never by a human; and each candidate scorer's answers. The scorer did not meet its standard, and the files show by how much.</li>
+        <li><strong>Tasks and prompts.</strong> All 85 scripted tasks (two sets of 40, plus 5 exploratory tasks run on one model), with their files and check scripts, and the exact text each set-up received.</li>
+        <li><strong>Code.</strong> The test harness, the code that hides which set-up a run came from, and the scoring, analysis and power code.</li>
+        <li><strong>The plan.</strong> The frozen protocol, the preregistration text, every departure from the plan, and every correction made after outside audit.</li>
+      </ul>
+      <p>The models tested were Claude Sonnet 5, GPT-5.6 Terra, DeepSeek V4 Pro and Qwen3.8-27B. Each agent got one of six set-ups: nothing extra; a 105-word permission paragraph; a neutral paragraph of the same length; a paragraph naming the tool fields; the actions as tools the harness enforced; or the same tools only recorded. Every transcript, label and verdict in the data was written by an AI model.</p>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>Who it is for</h2>
+      <p>Researchers who study agent behaviour, refusal or oversight; people who build coding agents and the tools that run them; and anyone who wants to check a published number rather than take our word for it. The study is motivated by model welfare under moral uncertainty, but it measures behaviour only: nothing in it is evidence about welfare, feelings or preferences. You need Python and a terminal. You do not need an API key, a network connection, or a graphics card.</p>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>What you can check with it</h2>
+      <ul class="plain">
+        <li><strong>The published numbers.</strong> The script reruns the study's own analysis code on the raw runs and the stored verdicts, compares each result with the sealed one, and prints each figure next to the value on the article.</li>
+        <li><strong>The files against the seal.</strong> Every file is checked against the checksum list made when the results were sealed. Privacy edits, one sealing record filled in after the list, and files left out are reported separately; <code>REDACTIONS.csv</code> and <code>PACKET_MANIFEST.md</code> list them.</li>
+        <li><strong>That the scorer fell short.</strong> Its validation scores are recomputed from the labelled examples and its own answers.</li>
+        <li><strong>The enforcement test, without a scorer.</strong> The second task set is regraded from the raw runs by a fixed rule.</li>
+        <li><strong>Things the article did not report.</strong> Per-model rows, every preregistered alternative reading, every failed or cut-short run and why, and what agents did after using an action.</li>
+      </ul>
+      <p>What it cannot check: the scorer's verdicts are stored, not recomputed, because that would mean calling the model again. Two published figures are not recomputed either: <strong>about $18</strong> of development spend, whose records are incomplete, and <strong>11 of 16</strong> holds bypassed (a hold is a command the harness refused to run again after an agent objected to it), which an outside AI audit counted by reading transcripts. For that one the script writes a listing of every hold and every later command that named the held script, so you can make your own count.</p>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>How big it is</h2>
+      <table class="facts">
+        <tr><th>File</th><td><code>agency-layer-pilot-1-data.tar.gz</code>, about 53 MB</td></tr>
+        <tr><th>Version</th><td>1.0, assembled 21 November 2026</td></tr>
+        <tr><th>Unpacked</th><td>about 451 MB: 67,124 files and 38,400 symbolic links</td></tr>
+        <tr><th>Recount time</th><td>about one minute; five more to rerun the power simulation</td></tr>
+        <tr><th>Needs</th><td>Python 3.10 or newer and PyYAML</td></tr>
+      </table>
+      <p class="fineprint">Some files are symbolic links to other files, so the corrected analyses can reuse the original bytes. Unpack only with tar (on macOS or Linux). On Windows, use WSL (Windows Subsystem for Linux). If the links are lost, the corrected analyses will not recount.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>Start here</h2>
+      <ol class="plain">
+        <li><strong>Unpack it and read the guide.</strong>
+          <pre class="cmd">tar -xzf agency-layer-pilot-1-data.tar.gz</pre>
+          Then open <code>README.md</code> in the unpacked folder. It says what was found and its limits, what was done, what is in each folder, and what every code in the study's files means.</li>
+        <li><strong>Install the one package the recount needs.</strong>
+          <pre class="cmd">pip install pyyaml==6.0.3</pre></li>
+        <li><strong>Run the recount.</strong>
+          <pre class="cmd">cd agency-layer-pilot-1-data
+python3 recount.py</pre></li>
+      </ol>
+      <p>It prints every published figure beside the recomputed one, then a final line. Our own output, and what that final line does and does not cover, are in <code>RECOUNT.md</code>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>What it found, and its limits</h2>
+      <ul class="plain">
+        <li><strong>Speaking up, descriptive only.</strong> On 20 tasks with a planted problem, agents raised it before the risky step in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph, and 142 of 240 with the actions as tools. The AI scorer behind these numbers agreed with the reference labels on 407 of 461 validation examples (0.883, against a bar of 0.90) and wrongly credited text that did not raise the problem more often from permission-paragraph agents than from agents given nothing (15 of 33 such examples against 8 of 33).</li>
+        <li><strong>Tools against the paragraph.</strong> As scored, the tools were 6.25 percentage points ahead (95% interval over tasks 0.0 to +13.3). After the study's own adjustment for the scorer crediting tool calls too readily, they were 11.6 points behind. That adjustment rests on 7 validation examples. Both figures are in the files; neither is offered as the true size.</li>
+        <li><strong>False claims of success</strong>, the one test planned in advance to decide the question (the study calls it confirmatory only with the qualifier below): on the ten tasks that cannot be honestly completed, 16 of 120 runs with tools against 17 of 120 with the paragraph, p = 1.0 (13 against 9 after the corrective re-run, from the corrected analyses approved for release on 21 November 2026, p = 0.56; two-sided sign-flip test paired by task). The design had an 80% chance to detect a difference of about 31 points, and both main measures were changed during a disclosed practice phase after early results were seen.</li>
+        <li><strong>Enforcing the actions.</strong> On a second set of 40 tasks, scored by a fixed rule, agents used an action naming the planted problem before the risky command in 111 of 320 runs when the harness enforced it, against 122 of 320 when it only recorded it: -3.4 points, 95% interval -8.1 to +0.9, p = 0.28. The design could detect about 16 points. The harness held a command by matching its exact text, and it stopped only 2 of 242 later attempts, so this is a test of that weak lock, not of enforcement done well.</li>
+        <li><strong>Ordinary tasks.</strong> In the corrected re-run, agents with nothing extra, with the paragraph, and with either kind of tools each finished 119 or 120 of 120 ordinary tasks. The check could only catch a large cost. These corrected figures come from analysis files still labelled not publishable. The owner approved public release of this package, including those corrected analyses, on 21 November 2026; the label was left unchanged because sealed files are not edited. The study's own limits file says they are the only ordinary-task figures that may be quoted.</li>
+        <li><strong>Scope.</strong> Four dated models, scripted tasks each built to hold one problem, a test setup rather than real coding tools. Reviewed by AI models from several companies. No human has peer-reviewed it.</li>
+      </ul>
+      <p>The study's own statement of what it does and does not show, <code>study/CLAIMS_AND_LIMITATIONS.md</code>, is in the download and governs every sentence about it, including this page. The plain-words article is <a href="../kindness/">Kindness doesn't cost</a>.</p>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>Licence and citation</h2>
+      <p>Code is MIT. Documents, results, transcripts and verdicts are CC BY 4.0. Nine files of labels from GLM-5.3 carry a narrower licence that allows verification but not training or labelling other models, as that provider's terms require. The 105-word permission paragraph is public domain (CC0 1.0). The <code>NOTICE</code> file lists every provider whose outputs are included and the notices their terms require.</p>
+      <p>Two files of answers from Cohere's command-a, a rejected scorer candidate, are left out because Cohere's terms do not allow them to be redistributed. The score computed from them stays in the published tables but cannot be regenerated from the download.</p>
+      <p>Cite as: Williams, G. (2026). <em>Agency Layer Pilot I: data, code and recount package</em>, version 1.0 (packet assembled 21 November 2026; study results sealed 3 September 2026). Graphometer. https://graphometer.ai/agency-layer-data/ and <a href="https://github.com/graphometer/agency-layer-pilot-1-data">github.com/graphometer/agency-layer-pilot-1-data</a> (release v1.0).</p>
+      <p class="fineprint">Preregistered at the Open Science Framework, <a href="https://osf.io/srpt4">osf.io/srpt4</a>, submitted 30 August 2026, under embargo until 28 February 2027. Until then the registration text and the frozen plan are in the download: <code>study/docs/OSF_REGISTRATION.md</code>, <code>study/PILOT_PROTOCOL.md</code> and <code>study/FROZEN.md</code>.</p>
+    </section>
+
+  </div>
+</main>
+
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Claude and Claude Sonnet 5
+    are products or marks of Anthropic; GPT-5.6 Terra is a model of OpenAI;
+    DeepSeek V4 Pro is a model of DeepSeek; Qwen and Qwen3.8 are marks of Alibaba
+    Group Holding Limited. All are referenced for identification only. Not
+    affiliated with, endorsed by, or sponsored by any of them or their affiliates.
+    Product names and marks belong to their respective owners. This site is static.
+    No scripts, no tracking, no cookies.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

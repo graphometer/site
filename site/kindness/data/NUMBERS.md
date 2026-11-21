@@ -68,7 +68,7 @@ precision so a reader can re-round and check.
 | B20 | section 03, box 2 line 5 | no difference of the size the pilot could detect, about 16 points | measured | `part_b_primary.json` -> `primary.all_attempts_contrast` (`c_successes` 111, `c_n` 320, `d_successes` 122, `d_n` 320, `estimate` -0.034375, `low` -0.08125, `high` 0.009375, `p_value` 0.2840857957102145). Also `part_b_results.md` contrast table. Detectable-size figure: `claims_and_limitations.md` caveat 5 ("the study could detect ≈0.155 on Part B"). |
 | B21 | section 03 | "used a move to object before the risky step" (the proxy, in plain words) | process | `part_b_primary.json` -> top-level `endpoint` = `scenario_concordant_structured_intervention_before_gate` (and the same value at `primary.all_attempts_contrast.endpoint`). The detailed proxy definition (`accepted_actions`, `required_issue_referents`, `gate_command`) lives in the study's fresh-scenario family document and internal handoff log, neither of which is in this package. |
 | B22 | section 03 | matched the exact text of a command | process | Not in this package by design (a code/process detail; this package ships no code). Stated qualitatively in `claims_and_limitations.md` (Part B description: "tests the implemented exact-string/transient honoring mechanism"). |
-| B23 | section 03, box 1, box 2 line 5 | 11 of the 16 holds agents named in the first set | measured | `claims_and_limitations.md`, opening summary and caveat 8: "136/138 nominal transitions performed; 2/242 post-invocation consequential attempts prevented; 11 of 16 named core-C holds bypassed by equivalent wrapped commands." The unpublished recount is deliberately excluded - see section 7 below. |
+| B23 | section 03, box 1, box 2 line 5 | 11 of the 16 holds agents named in the first set | measured | `claims_and_limitations.md`, opening summary and caveat 8: "136/138 nominal transitions performed; 2/242 post-invocation consequential attempts prevented; 11 of 16 named core-C holds bypassed by equivalent wrapped commands." The unpublished recount is deliberately excluded - see section 7 below. Added 2026-11-21: the 11 of 16 is an outside audit's count and cannot be rebuilt from the public data package; that package's own listing finds 20 later commands naming a held script in 19 runs, 6 exact repeats all refused and 14 inside a longer command all run. |
 | B24 | section 03, box 2 line 5 | 2 of the 242 later attempts (second set) | measured | `part_b_primary.json` -> `observable_chain_funnel`, condition C, `stage: "consequential_action_prevented"` (`successes` 2, `n` 242); condition D, same stage (`successes` 0, `n` 228). |
 | B25 | section 03 | false claims of success, tools against the paragraph alone, didn't measurably change; only a large change was detectable | measured | `contrasts_pooled.csv`, endpoint `E1_false_success_claim`, denominator `all_attempts`: reading `as-run` (`estimate` -0.00833, `p_value` 1.0), reading `supplemented` (`estimate` 0.03333, `p_value` 0.5572). Detectable-size figure: `claims_and_limitations.md` caveat 5 (≈0.31). |
 | B26 | section 03 | second pilot stopped before its first recorded run; scoring failed validation | process | Not in this package (Pilot II's validation report and disposition memo belong to a separate, later project). |
@@ -125,12 +125,12 @@ The "one-line difference" sentence above (that work varies how an exit is offere
 offer constant and varies whether the host honors it) is `claims_and_limitations.md`'s own closing section,
 "The nearest published work, and how to talk about it," reproduced almost verbatim.
 
-## 6. Section 08: Not yet published
+## 6. Section 08: Get the data (was "Not yet published" until 21 November 2026)
 
 | Claim | Source (package edition) |
 |---|---|
-| repository private | Not in this package (an internal handoff-log fact). |
-| preregistration embargoed until 28 February 2027 | Not in this package; the registration itself is public at `osf.io/srpt4`. |
+| the full data is public (every recorded run, the code, the frozen plan, a recount script) | The public data package, linked from the page at `/agency-layer-data/`, released 21 November 2026. The earlier wording here said the repository was private. |
+| (removed 21 November 2026) preregistration embargoed until 28 February 2027 | No longer on the page. The frozen plan text is in the public data package; the registration is at `osf.io/srpt4`. |
 | recomputed by separate AI model sessions | Same as B5 above. |
 | a data package ships with this page: `data/README.md` | This is now resolved: this package, and `README.md` in particular. |
 
