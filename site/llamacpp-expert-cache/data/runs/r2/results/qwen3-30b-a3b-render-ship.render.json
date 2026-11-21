@@ -1,0 +1,19 @@
+{
+ "label": "qwen3-30b-a3b-render-ship",
+ "prompts": {
+  "plain": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n{\"name\": \"get_stock\", \"arguments\": {\"sku\": \"AX-11\"}}\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n",
+  "tools": "<|im_start|>system\nYou are a careful assistant.\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>\n{\"type\": \"function\", \"function\": {\"name\": \"get_stock\", \"description\": \"Stock count for a SKU\", \"parameters\": {\"type\": \"object\", \"properties\": {\"sku\": {\"type\": \"string\"}}, \"required\": [\"sku\"]}}}\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call><|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n{\"name\": \"get_stock\", \"arguments\": {\"sku\": \"AX-11\"}}\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n",
+  "off": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n{\"name\": \"get_stock\", \"arguments\": {\"sku\": \"AX-11\"}}\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n",
+  "on": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n{\"name\": \"get_stock\", \"arguments\": {\"sku\": \"AX-11\"}}\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n"
+ },
+ "switch": {
+  "False": {
+   "content": "Canberra",
+   "thinking_chars": 0
+  },
+  "True": {
+   "content": "Canberra",
+   "thinking_chars": 0
+  }
+ }
+}

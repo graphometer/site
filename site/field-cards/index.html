@@ -41,7 +41,7 @@
   .wrap{max-width:820px;margin:0 auto;padding:0 24px}
   header{padding:30px 0;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:16px}
-  .brand svg{width:40px;height:40px;flex:none}
+  .brand svg{width:52px;height:52px;flex:none}
   .brand span{
     font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
     text-transform:uppercase
@@ -184,6 +184,7 @@
             <tr><td><a href="../qwen35/">Qwen3.5-122B</a></td><td class="t">Mixture of experts, 122B total, about 9.8B active per token</td><td class="t">26 to 38, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
             <tr><td><a href="../mistral-medium-35/">Mistral Medium 3.5</a></td><td class="t">Dense, 128B class, 125.03B served</td><td class="t">about 1 alone, 2 to 5 with the vocabulary-repaired draft</td><td class="t">2026-08-06</td></tr>
             <tr><td><a href="../qwen35/">Qwen3.5-397B</a></td><td class="t">Mixture of experts, 397B total, about 17.4B active per token</td><td class="t">14 to 20, depending on prompt shape</td><td class="t">2026-08-05 to 08-06</td></tr>
+            <tr><td><a href="../mistral-large-4/">Mistral Large 4</a></td><td class="t">Mixture of experts, about 1T total, 49B active per token, per the maker</td><td class="t">6.58 to 6.67 in three short tests, counting reasoning, split across a desktop and a laptop</td><td class="t">2026-10-31 to 11-02</td></tr>
             <tr><td><a href="../kimi-k3/">Kimi K3</a></td><td class="t">Mixture of experts, 2.78T total, about 104B active per token</td><td class="t">0.18 to 0.28 (about 0.2)</td><td class="t">2026-08-01 to 08-05</td></tr>
           </tbody>
         </table>
@@ -203,11 +204,13 @@
       <div class="secnum">02</div>
       <h2>The cards</h2>
       <ul class="plain">
-        <li><strong><a href="../glm53-flash/">GLM-5.3-Flash on one desktop</a></strong>
+        <li><strong><a href="../mistral-large-4/">Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop</a></strong>
+        · measured 31 October to 2 November 2026. Unsloth's 217 GiB UD-IQ1_S file split across one RTX 5090 desktop and an ASUS ROG Flow Z13 over Thunderbolt: 6.58 to 6.67 tokens a second in three short tests, counting reasoning, in a 131,072-token window, against under 3 in our runs on the desktop alone. The setting that made the difference, the main setups that failed, what it takes to keep running, a small blind quality check (six questions, one judge), and Mistral Small 4 at 49 to 52 tokens a second on one prose test.</li>
+        <li><strong><a href="../glm53-flash/">GLM-5.3-Flash on one RTX 5090 desktop: measured speeds</a></strong>
         · measured 16 to 26 September 2026, updated 25 October 2026. UD-Q3_K_XL through a pinned llama.cpp fork: at 131,072 tokens on 21 September, the published pair is 80.7 t/s on a 24,008-token first request, with 62 generated tokens at 9.22 t/s, versus 446.0 t/s on a 20,333-token third request, with 60 generated tokens at 9.35 t/s. The fourth tuned request read 48,168 tokens at 425.1 t/s and generated 310 tokens at 9.12 t/s. Prompt lengths differ, and the guarded output fixture passed only in isolation.</li>
-        <li><strong><a href="../qwen38-256k/">Qwen3.8-27B at 256K</a></strong>
+        <li><strong><a href="../qwen38-256k/">Qwen3.8-27B at 256K context on one RTX 5090</a></strong>
         · measured 26 September 2026, updated 25 October 2026. A 262,144-token window on one RTX 5090, one request at a time: the installed Q5 file without its draft head, or a smaller Q4 file with it. Prose and tool-shaped speeds, 3 of 3 long-read recall, and a measured speed and fidelity trade across three files.</li>
-        <li><strong><a href="../deepseek-v4-flash/">DeepSeek V4 Flash 0731, on one desktop and on two</a></strong>
+        <li><strong><a href="../deepseek-v4-flash/">DeepSeek V4 Flash 0731: one desktop or two machines?</a></strong>
         · measured 12 to 21 September 2026, updated 25 October 2026. With its batch settings tuned, one desktop answered a 48,024-token request in 75.2 seconds. The same file split across two machines took 416.4 seconds at its best completed setting and 474.2 at the one it keeps.</li>
         <li><strong><a href="../inkling-small/">Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</a></strong>
         · measured 14 to 21 September 2026. Thinking Machines Lab's 276-billion-parameter,
@@ -216,33 +219,33 @@
         (measured); a later batch-size change raised reading on a 48,115-token prompt from 123.0 to
         337.9 tokens a second, and a full 262,144-token window read 230,827 tokens and returned all
         three planted codes.</li>
-        <li><strong><a href="../muse-glimmer-30b/">Muse Glimmer 30B: trained at 16, asked for 3</a></strong>
+        <li><strong><a href="../muse-glimmer-30b/">Muse Glimmer 30B: draft length 16, not 3, in llama.cpp</a></strong>
         · measured 2026-08-16. Meta trained its DFlash drafter to draft a block
         of 16 tokens per pass and prints that number; llama.cpp's generic draft
         length is 3; the two flags Meta's GGUF card documents leave that
         default in charge, and on six structured prompts the gap is worth 2.17
         times the throughput. Verbatim Apache 2.0, with a separate usage
         policy beside it.</li>
-        <li><strong><a href="../qwen38-27b/">Qwen3.8-27B: day zero</a></strong>
+        <li><strong><a href="../qwen38-27b/">Qwen3.8-27B measured on release day, one RTX 5090</a></strong>
         · released and measured 2026-08-14, updated 2026-10-25. One model family with two
         licenses, and a built-in draft head decoding prose at 72.4 tokens a
         second gated, 65.9 with no speculation at all, 44.5 with the gate
         removed.</li>
-        <li><strong><a href="../mistral-medium-35/">Field card: Mistral Medium 3.5</a></strong>
+        <li><strong><a href="../mistral-medium-35/">Mistral Medium 3.5 on one desktop: 1 to 5 tokens a second</a></strong>
         · runs 2026-08-06. A dense 128B-class model made genuinely usable
         on one desktop: about 1 token per second alone, 2 to 5 once a
         two-token vocabulary repair let the draft model load.</li>
-        <li><strong><a href="../qwen35/">Field card: Qwen3.5 (122B and 397B)</a></strong>
+        <li><strong><a href="../qwen35/">Qwen3.5 122B and 397B speeds on one desktop</a></strong>
         · runs 2026-08-05 to 08-06. Two models into service on one desktop
         by the same method, and the trap next to their built-in guessing
         head: run it without its confidence gate and creative text goes
         slower than no speculation at all.</li>
-        <li><strong><a href="../lfm25-26b/">Field card: LFM2.5-2.6B</a></strong>
+        <li><strong><a href="../lfm25-26b/">LFM2.5-2.6B: file, context window, output budget</a></strong>
         · measured 2026-08-04, updated 2026-08-07. The context window as
         measured, which file to download, how big an output budget it
         really needs, and which sampling settings are actually in
         effect.</li>
-        <li><strong><a href="../kimi-k3/">Field card: Kimi K3</a></strong>
+        <li><strong><a href="../kimi-k3/">Kimi K3 on one desktop: about 0.2 tokens a second</a></strong>
         · runs 2026-08-01 to 2026-08-05. The complete model, all 93 blocks
         and all 896 experts, generating at about 0.2 tokens per second: one
         careful question answered overnight from hardware you own.</li>

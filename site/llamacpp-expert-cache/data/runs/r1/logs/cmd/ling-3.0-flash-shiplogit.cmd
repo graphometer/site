@@ -1,0 +1,1 @@
+<REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Ling-3.0-flash-Q4_K_M-00001-of-00002.gguf --host 127.0.0.1 --port 8190 --alias <SERVED_NAME> --jinja --ctx-size 262144 --parallel 1 --batch-size 4096 --ubatch-size 2048 --n-gpu-layers 999 --fit off --flash-attn auto --cors-origins localhost --timeout 3600 --top-p 0.95 --top-k 20 -cmoe --threads 8 --threads-batch 8

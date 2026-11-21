@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128</title>
-<meta name="description" content="A measured study of llama.cpp's --batch-size and --ubatch-size on one desktop with an RTX 5090 (32 GB) and 188 GiB of RAM, 19 to 21 September 2026, with one model re-measured on 26 September. On twelve models whose expert weights sit in system RAM, a bigger micro-batch made the first read of a long prompt, mostly 48,000 tokens, 2.5 to 7.3 times faster than llama.cpp's default (-b 2048 -ub 512); where a script had inherited -ub 128, reading was 19.9 times faster on a 24,071-token prompt and 17.5 times on a 3,658-token prompt. At the 262,144-token window it serves, Qwen3.8-Flash-Next, re-measured on 26 September with about 58 to 60 GB of its 90 GB file in memory, kept the gain (48,075 tokens at 660.6 t/s against 240.2 at the default); on a server started with none of the file in memory, the first request (3,035 tokens) began with 43.5 GB loaded and read at 87.7 t/s, against 517.6 for the next 3,019 tokens. Five of six models that fit on the card gained 3 to 34.5 percent and kept the default; the sixth got slower. Each model had its own ceiling in card memory and window; one setting that read 150,153 tokens correctly and passed 110 other prompts crashed the server on a single 3,007-token input. Includes the cost after the first read, two refused knobs, a thinking-budget trap, a tuning method (a few minutes to set up, then one long read per rung; one untuned read on our largest file took about 10 minutes by itself), our own corrections, and the logs behind every figure.">
+<title>llama.cpp batch size: 2.5 to 7.3 times faster reads on big models</title>
+<meta name="description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <link rel="canonical" href="https://graphometer.ai/batch-size/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
-<meta property="og:description" content="On one RTX 5090 desktop, a bigger --ubatch-size made long prompts read 2.5 to 7.3 times faster than llama.cpp's default on models with experts in system RAM, and 19.9 and 17.5 times faster than an inherited -ub 128 on a 24,071-token and a 3,658-token read. Each model had its own ceiling, and one setting crashed on a single 3,007-token input.">
+<meta property="og:title" content="llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
+<meta property="og:description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <meta property="og:url" content="https://graphometer.ai/batch-size/">
 <meta property="og:image" content="https://graphometer.ai/og/batch-size.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Graphometer: llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
+<meta property="og:image:alt" content="Graphometer: llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="llama.cpp's batch size: prompt reading 2.5 to 7.3 times faster than the default, up to 20 against an inherited -ub 128">
-<meta name="twitter:description" content="On one RTX 5090 desktop, a bigger --ubatch-size made long prompts read 2.5 to 7.3 times faster than llama.cpp's default on models with experts in system RAM, and 19.9 and 17.5 times faster than an inherited -ub 128 on a 24,071-token and a 3,658-token read. Each model had its own ceiling, and one setting crashed on a single 3,007-token input.">
+<meta name="twitter:title" content="llama.cpp batch size: 2.5 to 7.3 times faster reads on big models">
+<meta name="twitter:description" content="On ten models with expert weights in system RAM, a larger micro-batch made the first read of a long prompt 2.5 to 7.3 times faster than the default.">
 <meta name="twitter:image" content="https://graphometer.ai/og/batch-size.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -41,7 +41,7 @@
   .wrap{max-width:820px;margin:0 auto;padding:0 24px}
   header{padding:30px 0;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:16px}
-  .brand svg{width:40px;height:40px;flex:none}
+  .brand svg{width:52px;height:52px;flex:none}
   .brand span{
     font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
     text-transform:uppercase

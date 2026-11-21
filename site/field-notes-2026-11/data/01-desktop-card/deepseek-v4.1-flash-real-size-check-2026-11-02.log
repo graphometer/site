@@ -1,0 +1,30 @@
+# DeepSeek-V4.1-Flash-1017 MXFP4 on a community port of llama.cpp, 2026-11-02. Reply text lines and ports removed; the later checks of other models removed.
+# today-3072 = the installed start at batch 3072 and a 131,072 window. b2560 = a test copy of the start script at batch 2560, 131,072 window.
+# b1536 = the same test copy at batch 1536 with the window doubled to 262,144, so it is not a same-window comparison (the page does not use it).
+# Each check sends about 32,000 or 120,000 characters with a 40-token reply cap and samples the card every 0.25 s.
+# "VERDICT DIED" means the request raised an error; it is not a server log line. "desktop before the model about 1300" is a note typed into the check.
+# Two bases for free memory: the first block counts against the card total (32,607 MiB); the later blocks against 32,088 (32,607 less 519 MiB the check script assumes the driver keeps).
+14:25:32 == today-3072, card before 31771 MiB, 32000 characters
+14:26:25 FAILED after 53.2 s <HTTPError 502: 'Bad Gateway'>
+14:26:26 card peak 31987 MiB at 14:26:22 of 32607; free at the peak 620 MiB; desktop before the model about 1300
+14:26:26 service active VERDICT DIED
+14:29:10 == b2560-first, card before 30512 MiB, 32017 characters
+14:30:24 answered in 73.3 s, prompt tokens 7175 read t/s 105.6 speak t/s 6.6
+14:30:24 card peak 30771 MiB at 14:30:06 of the 32088 the card can give (32607 less 519 the driver keeps); left at the peak 1317 MiB
+14:30:24 VERDICT SURVIVED
+14:30:24 == b2560-second, card before 30709 MiB, 32018 characters
+14:31:14 answered in 49.7 s, prompt tokens 7175 read t/s 149.3 speak t/s 12.0
+14:31:14 card peak 30721 MiB at 14:30:32 of the 32088 the card can give (32607 less 519 the driver keeps); left at the peak 1367 MiB
+14:31:14 VERDICT SURVIVED
+14:31:14 == b2560-long, card before 30693 MiB, 120016 characters
+14:34:13 answered in 179.1 s, prompt tokens 26781 read t/s 151.4 speak t/s 11.1
+14:34:14 card peak 30719 MiB at 14:33:39 of the 32088 the card can give (32607 less 519 the driver keeps); left at the peak 1369 MiB
+14:34:14 VERDICT SURVIVED
+14:35:29 == b1536-first, card before 31314 MiB, 32017 characters
+14:37:05 answered in 95.9 s, prompt tokens 7175 read t/s 79.0 speak t/s 7.0
+14:37:05 card peak 31530 MiB at 14:37:00 of the 32088 the card can give (32607 less 519 the driver keeps); left at the peak 558 MiB
+14:37:05 VERDICT SURVIVED
+14:37:05 == b1536-second, card before 31529 MiB, 32018 characters
+14:38:17 answered in 71.6 s, prompt tokens 7175 read t/s 103.3 speak t/s 10.7
+14:38:17 card peak 31626 MiB at 14:38:07 of the 32088 the card can give (32607 less 519 the driver keeps); left at the peak 462 MiB
+14:38:17 VERDICT SURVIVED

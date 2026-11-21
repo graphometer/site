@@ -1,0 +1,1 @@
+<REDACTED_PATH>/llama-server --model <REDACTED_PATH>/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00001-of-00003.gguf --host 127.0.0.1 --port 8190 --alias <SERVED_NAME> --jinja --ctx-size 262144 --parallel 1 --batch-size 4096 --ubatch-size 2048 --flash-attn on --temp 1.0 --top-p 0.95 --cors-origins localhost --timeout 7200 --fit on --threads 8 --threads-batch 8

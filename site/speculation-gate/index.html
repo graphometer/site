@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Slower by default: llama.cpp's speculative-decoding gate, measured on a 397B MoE</title>
-<meta name="description" content="A measured study of llama.cpp's speculative-decoding confidence gate, the --spec-draft-p-min CLI flag, which defaults to 0.00. On one CPU-offloaded 397B mixture-of-experts deployment, 160 paired measurements on 2026-08-10 show the shipped default making prose 19.8% slower than no speculation at all while making structured output 22.5% faster; every tested gate at or above 0.50 (0.50, 0.75, 0.90) reverses the prose loss, and a 96-measurement follow-up run the next night measured gates of 0.10 and 0.25 as prose regressions against their own baseline, bracketing the crossover between 0.25 and 0.50. Includes the provenance of the widely recommended 0.75 (llama.cpp's own shipped default for roughly fifteen months, replaced by 0.00 in May 2026), the maintainer's stated tradeoff, three contradictory public two-point comparisons, and a data package containing the raw records.">
+<title>llama.cpp default speculation: slower prose on a 397B model</title>
+<meta name="description" content="With some weights in system RAM, the tested Qwen3.5-397B-A17B wrote prose 19.8% slower and structured replies 22.5% faster than with no drafting.">
 <link rel="canonical" href="https://graphometer.ai/speculation-gate/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Slower by default: llama.cpp's speculation gate, measured">
-<meta property="og:description" content="The shipped default made prose 19.8% slower than no speculation at all while structured output ran 22.5% faster, in the same run. 160 paired measurements, every figure traced to raw records.">
+<meta property="og:title" content="llama.cpp default speculation: slower prose on a 397B model">
+<meta property="og:description" content="With some weights in system RAM, the tested Qwen3.5-397B-A17B wrote prose 19.8% slower and structured replies 22.5% faster than with no drafting.">
 <meta property="og:url" content="https://graphometer.ai/speculation-gate/">
 <meta property="og:image" content="https://graphometer.ai/og/speculation-gate.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Graphometer: Slower by default: llama.cpp's speculation gate, measured">
+<meta property="og:image:alt" content="Graphometer: llama.cpp default speculation: slower prose on a 397B model">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Slower by default: llama.cpp's speculation gate, measured">
-<meta name="twitter:description" content="The shipped default made prose 19.8% slower than no speculation at all while structured output ran 22.5% faster, in the same run. 160 paired measurements, every figure traced to raw records.">
+<meta name="twitter:title" content="llama.cpp default speculation: slower prose on a 397B model">
+<meta name="twitter:description" content="With some weights in system RAM, the tested Qwen3.5-397B-A17B wrote prose 19.8% slower and structured replies 22.5% faster than with no drafting.">
 <meta name="twitter:image" content="https://graphometer.ai/og/speculation-gate.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -41,7 +41,7 @@
   .wrap{max-width:820px;margin:0 auto;padding:0 24px}
   header{padding:30px 0;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:16px}
-  .brand svg{width:40px;height:40px;flex:none}
+  .brand svg{width:52px;height:52px;flex:none}
   .brand span{
     font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
     text-transform:uppercase

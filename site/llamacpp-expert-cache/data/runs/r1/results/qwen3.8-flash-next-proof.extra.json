@@ -1,0 +1,61 @@
+{
+ "label": "qwen3.8-flash-next-proof",
+ "speed": [
+  {
+   "name": "prose",
+   "runs": [
+    {
+     "gen_n": 420,
+     "gen_tps": 62.1,
+     "read_tps": 69.7,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "The tides are, at their heart, a story about gravity pulling unevenly. The Moon tugs on the Earth, but it doesn't tug equally everywhere. The side of our planet facing the Moon feels a stronger gravitational pull than the center, and the center feels a stronger pull than the far side. This difference in force stretches the Earth and, more visibly, stretches the oceans. Water on the near side gets pulled toward the Moon, forming a bulge. Water on the far side, meanwhile, is left behind as the solid Earth is tugged slightly more strongly than it is, creating a second bulge pointing away from the Moon. So at any given moment, two great swells of water sit on opposite sides of the globe.\n\nAs the Earth spins beneath these bulges roughly once a day, a coastline passes through one bulge, then the trough between them, then the other bulge, then the next trough. That rotation is what gives most places two high tides and two low tides each day, spaced about twelve hours and twenty-five minutes apart. The extra twenty-five minutes exist because the Moon is also moving in its orbit, so the Earth has to turn a little further to bring the same coastline back under the same bulge.\n\nThe Sun plays a supporting"
+    },
+    {
+     "gen_n": 420,
+     "gen_tps": 65.25,
+     "read_tps": 78.5,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "The tides are, at their heart, a story about gravity pulling unevenly. The Moon tugs on the Earth, but it doesn't tug equally everywhere. The side of our planet facing the Moon feels a stronger gravitational pull than the center, and the center feels a stronger pull than the far side. This difference in force stretches the Earth and, more visibly, stretches the oceans. Water on the near side gets pulled toward the Moon, forming a bulge. Water on the far side, meanwhile, is left behind as the solid Earth is tugged slightly more strongly than it is, creating a second bulge pointing away from the Moon. So at any given moment, two great swells of water sit on opposite sides of the globe.\n\nAs the Earth spins beneath these bulges roughly once a day, a coastline passes through one bulge, then the trough between them, then the other bulge, then the next trough. That rotation is what gives most places two high tides and two low tides each day, spaced about twelve hours and twenty-five minutes apart. The extra twenty-five minutes exist because the Moon is also moving in its orbit, so the Earth has to turn a little further to bring the same coastline back under the same bulge.\n\nThe Sun plays a supporting"
+    }
+   ]
+  },
+  {
+   "name": "code",
+   "runs": [
+    {
+     "gen_n": 1400,
+     "gen_tps": 54.75,
+     "read_tps": 723.9,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport logging\nimport argparse\nimport os\nimport sys\nimport json\nfrom math import prod\nfrom pathlib import Path\nfrom typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Sequence, SupportsIndex, cast\nfrom transformers import AutoConfig, AutoTokenizer\n\nimport torch\n\nif TYPE_CHECKING:\n    from torch import Tensor\n\nif 'NO_LOCAL_GGUF' not in os.environ:\n    sys.path.insert(1, str(Path(__file__).parent / 'gguf-py'))\nimport gguf\nfrom gguf.constants import GGUFValueType\n\n# reuse model definitions from the conversion/ package\nfrom conversion import LazyTorchTensor, ModelBase, get_model_class, ModelType, get_model_architecture\n\nlogger = logging.getLogger(\"lora-to-gguf\")\n\n\n@dataclass\nclass PartialLoraTensor:\n    A: Tensor | None = None\n    B: Tensor | None = None\n\n\n# magic to support tensor shape modifications and splitting\nclass LoraTorchTensor:\n    _lora_A: Tensor  # (n_rank, row_size)\n    _lora_B: Tensor  # (col_size, n_rank)\n    _rank: int\n\n    def __init__(self, A: Tensor, B: Tensor) -> None:\n        assert len(A.shape) == len(B.shape)\n        assert A.shape[-2] == B.shape[-1]\n        if A.dtype != B.dtype:\n            A = A.to(torch.float32)\n            B = B.to(torch.float32)\n        self._lora_A = A\n        self._lora_B = B\n        self._rank = B.shape[-1]\n\n    def get_lora_A_B(self) -> tuple[Tensor, Tensor]:\n        return (self._lora_A, self._lora_B)\n\n    def __getitem__(\n        self,\n        indices: (\n            SupportsIndex\n            | slice\n            | tuple[SupportsIndex | slice | Tensor, ...]  # TODO: add ellipsis in the type signature\n        ),\n    ) -> LoraTorchTensor:\n        shape = self.shape\n        if isinstance(indices, SupportsIndex):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                raise NotImplementedError  # can't return a vector\n        elif isinstance(indices, slice):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                return LoraTorchTensor(self._lora_A, self._lora_B[indices])\n        elif isinstance(indices, tuple):\n            assert len(indices) > 0\n            if indices[-1] is Ellipsis:\n                return self[indices[:-1]]\n            # expand ellipsis\n            indices = tuple(\n                u\n                for v in ("
+    },
+    {
+     "gen_n": 1400,
+     "gen_tps": 55.41,
+     "read_tps": 926.7,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport logging\nimport argparse\nimport os\nimport sys\nimport json\nfrom math import prod\nfrom pathlib import Path\nfrom typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Sequence, SupportsIndex, cast\nfrom transformers import AutoConfig, AutoTokenizer\n\nimport torch\n\nif TYPE_CHECKING:\n    from torch import Tensor\n\nif 'NO_LOCAL_GGUF' not in os.environ:\n    sys.path.insert(1, str(Path(__file__).parent / 'gguf-py'))\nimport gguf\nfrom gguf.constants import GGUFValueType\n\n# reuse model definitions from the conversion/ package\nfrom conversion import LazyTorchTensor, ModelBase, get_model_class, ModelType, get_model_architecture\n\nlogger = logging.getLogger(\"lora-to-gguf\")\n\n\n@dataclass\nclass PartialLoraTensor:\n    A: Tensor | None = None\n    B: Tensor | None = None\n\n\n# magic to support tensor shape modifications and splitting\nclass LoraTorchTensor:\n    _lora_A: Tensor  # (n_rank, row_size)\n    _lora_B: Tensor  # (col_size, n_rank)\n    _rank: int\n\n    def __init__(self, A: Tensor, B: Tensor) -> None:\n        assert len(A.shape) == len(B.shape)\n        assert A.shape[-2] == B.shape[-1]\n        if A.dtype != B.dtype:\n            A = A.to(torch.float32)\n            B = B.to(torch.float32)\n        self._lora_A = A\n        self._lora_B = B\n        self._rank = B.shape[-1]\n\n    def get_lora_A_B(self) -> tuple[Tensor, Tensor]:\n        return (self._lora_A, self._lora_B)\n\n    def __getitem__(\n        self,\n        indices: (\n            SupportsIndex\n            | slice\n            | tuple[SupportsIndex | slice | Tensor, ...]  # TODO: add ellipsis in the type signature\n        ),\n    ) -> LoraTorchTensor:\n        shape = self.shape\n        if isinstance(indices, SupportsIndex):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                raise NotImplementedError  # can't return a vector\n        elif isinstance(indices, slice):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                return LoraTorchTensor(self._lora_A, self._lora_B[indices])\n        elif isinstance(indices, tuple):\n            assert len(indices) > 0\n            if indices[-1] is Ellipsis:\n                return self[indices[:-1]]\n            # expand ellipsis\n            indices = tuple(\n                u\n                for v in ("
+    }
+   ]
+  }
+ ],
+ "reasoning": {
+  "status": 200,
+  "has_reasoning": true,
+  "content_clean": true,
+  "has_391": true,
+  "answer": "391",
+  "finish": "stop"
+ },
+ "two_users_status": 200,
+ "late_system_status": 500
+}

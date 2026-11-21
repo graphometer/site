@@ -5,9 +5,33 @@
   <link href="https://graphometer.ai/"/>
   <link rel="self" href="https://graphometer.ai/feed.xml"/>
   <id>https://graphometer.ai/</id>
-  <updated>2026-11-19T11:25:00-05:00</updated>
+  <updated>2026-11-21T12:00:00-05:00</updated>
   <author><name>Graphometer</name></author>
   <rights>Copyright 2026 Grant Williams. Independent work: not affiliated with, endorsed by, or connected to Liquid AI, xAI, Moonshot AI, Mistral AI, Meta Platforms, the Qwen team, Alibaba Group, Z.ai, OpenAI, Ollama, OpenRouter, DeepInfra, Together, the llama.cpp project, ggml-org, Unsloth, Thinking Machines Lab, DeepSeek, MiniMax, Google, inclusionAI, Poolside, Ornith AI, ASUS, AMD, NVIDIA, the OpenCode project, Anthropic, Hugging Face, Discord, Reddit, GitHub, Intel, Open WebUI, Nomic AI, or BAAI.</rights>
+
+  <entry>
+    <title>Two llama.cpp settings for MoE models bigger than your GPU</title>
+    <link href="https://graphometer.ai/llamacpp-expert-cache/"/>
+    <id>https://graphometer.ai/llamacpp-expert-cache/</id>
+    <updated>2026-11-21T12:00:00-05:00</updated>
+    <summary>A measured study of two llama.cpp settings on 19 mixture-of-experts (MoE) models whose experts sit in system RAM, on one RTX 5090 desktop, 1 and 2 November 2026. --load-mode dio reads the RAM-held weights once into pinned memory. With nothing else changed, a 20,000-token prompt read 1.60 to 3.13 times faster on the 14 models that had been memory-mapped, cold starts took 29 to 63 percent of the time on all 16 tested, and writing speed moved by 3.4 percent or less. The cost is free RAM: as little as 5.1 GiB was left. The expert cache (--moe-cache-mib) keeps copies of the most-used experts on the card. Setups that added it wrote short replies 1.44 (Nemotron 3.5 Bolt) to 2.88 (Ling-3.0-flash) times faster on 11 large models, but most of those setups also moved experts into RAM and some changed build, so the gain is not the cache alone. The cache did not help reading, the card stayed nearly full, 11 cache setups ran out of card memory and one crashed, and the cached setups' greedy output differed from before in 13 of 15 comparisons. Exact flags, builds and the logs behind every figure.</summary>
+  </entry>
+
+  <entry>
+    <title>Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop</title>
+    <link href="https://graphometer.ai/mistral-large-4/"/>
+    <id>https://graphometer.ai/mistral-large-4/</id>
+    <updated>2026-11-21T12:00:00-05:00</updated>
+    <summary>A field card for Mistral Large 4, Mistral AI's 1-trillion-parameter model, run at home from Unsloth's 217 GiB UD-IQ1_S file on llama.cpp. On one RTX 5090 desktop with 188 GiB of RAM our runs stayed under 3 tokens a second, because the file is bigger than RAM and kept paging from the drive. Split across the desktop and an ASUS ROG Flow Z13 over Thunderbolt, with the desktop's share read into memory once, it generated 6.58 to 6.67 tokens a second in three short tests (counting its reasoning) in a 131,072-token window, read a 6,411-token prompt at 72.1 tokens a second, and found 3 of 3 hidden codes in a 96,325-token prompt. Three experts per token instead of four generated faster in short probes and scored lower in the quality check. In a small blind check of six questions and one judge model, Large 4 scored 18 of 18 (answers from two setups), against 15 for three experts, 15 for a DeepSeek V4.1 Flash quantization and 7 for Mistral Large 3. The card lists the main setups that failed, what it takes to keep running, where our first-day conclusions were wrong, and a short section on Mistral Small 4, which reached 49 to 52 tokens a second on one prose test with a locally merged newer build.</summary>
+  </entry>
+
+  <entry>
+    <title>November field notes: eight traps running AI models at home</title>
+    <link href="https://graphometer.ai/field-notes-2026-11/"/>
+    <id>https://graphometer.ai/field-notes-2026-11/</id>
+    <updated>2026-11-21T12:00:00-05:00</updated>
+    <summary>Eight faults from one RTX 5090 desktop and an ASUS ROG Flow Z13, 30 October to 3 November 2026, each with what it cost and a one-line check. With no model server running, the card still showed 710 to 1,642 MiB in use; gpt-oss-120b then failed to load at one setting, and DeepSeek-V4.1-Flash-1017 passed its short checks and failed its first long request. In a test of Open WebUI, a chat returned HTTP 200 and a reply without the document's answer while the path to its embedding model was down. A non-streaming client that gave up at 1,800 seconds saved nothing of the 4,328 and 4,713 tokens Mistral Large 4 had written. Beam 1.0's first reply after a start ran at 1.95 tokens a second while 44.7 GB came off the drive, and its second at 8.37.</summary>
+  </entry>
 
   <entry>
     <title>Friends of 4o now has its own site: friendsof4o.com</title>

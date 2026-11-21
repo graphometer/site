@@ -1,0 +1,653 @@
+{
+ "label": "ornith-1.5-35b-ship2",
+ "rows": [
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 1,
+   "ok": true,
+   "a": "**Goal: get 6L in the 8L jug.**\n\n1. Fill the 8L jug from the 12L container.\n2. Pour 8L \u2192 5L (leaves 3L in the 8L jug).\n3. Empty the 5L back into the 12L container.\n4. Pour the 3L from the 8L jug into the 5L jug.\n5. Fill the 8L jug again.\n6. Pour from the 8L jug into the 5L until it's full (it takes 2L).\n\n**The 8L jug now holds exactly 6 liters.**",
+   "think_chars": 886,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 2,
+   "ok": null,
+   "a": "Here's a 6-step solution. State = (12L jug, 8L jug, 5L jug):\n\n1. Fill 8 from 12 \u2192 **(4, 8, 0)**\n2. Fill 5 from 8 \u2192 **(4, 3, 5)**\n3. Empty 5 back into 12 \u2192 **(9, 3, 0)**\n4. Pour 8's remainder into 5 \u2192 **(9, 0, 3)**\n5. Fill 8 from 12 \u2192 **(1, 8, 3)**\n6. Top off 5 from 8 \u2192 **(1, 6, 5)**\n\nThe **8-liter jug now holds exactly 6 liters**.",
+   "think_chars": 1052,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 3,
+   "ok": null,
+   "a": "Fill the 8L from the 12L, then use it to top off the 5L and pour leftovers back. Steps:\n\n1. **12\u21928**: (4, **8**, 0)\n2. **8\u21925**: (4, 3, **5**)\n3. **5\u219212**: (9, 3, 0)\n4. **8\u21925**: (9, 0, 3)\n5. **12\u21928**: (1, **8**, 3)\n6. **8\u21925** (fills 2L): (1, **6**, 5)\n\nThe **8L jug now holds exactly 6 liters.**",
+   "think_chars": 915,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 4,
+   "ok": null,
+   "a": "**Pour sequence** (listing amounts in the 12L, 8L, 5L jugs):\n\n1. 12\u21928: **(4, 8, 0)**\n2. 8\u21925: **(4, 3, 5)**\n3. 5\u219212: **(9, 3, 0)**\n4. 8\u21925: **(9, 0, 3)**\n5. 12\u21928: **(1, 8, 3)**\n6. 8\u21925 (fills remaining 2L): **(1, 6, 5)**\n\nThe **8-liter jug now holds exactly 6 liters.**",
+   "think_chars": 1942,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 5,
+   "ok": false,
+   "a": "**6 steps (target the 8L jug):**\n\n1. Fill 8L jug \u2192 (12:4, 8:8, 5:0)\n2. 8L jug \u2192 5L jug \u2192 (12:4, 8:3, 5:5)\n3. Empty 5L back into 12L \u2192 (12:9, 8:3, 5:0)\n4. Pour 8L jug's 3L into 5L jug \u2192 (12:9, 8:0, 5:3)\n5. Fill 8L jug again \u2192 (12:1, 8:8, 5:3)\n6. Top off 5L jug from 8L jug (needs 2L) \u2192 **8L jug now has 6L** \u2713",
+   "think_chars": 921,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 6,
+   "ok": null,
+   "a": "**Goal: get 6 L in the 8-L jug.**\n\n| Step | 12-L | 8-L | 5-L |\n|------|------|-----|-----|\n| Start | 12 | 0 | 0 |\n| Fill 8 | 4 | 8 | 0 |\n| Fill 5 from 8 | 4 | 3 | 5 |\n| Empty 5 back | 9 | 3 | 0 |\n| Pour 8 into 5 | 9 | 0 | 3 |\n| Fill 8 | 1 | 8 | 3 |\n| Fill 5 from 8 | 1 | **6** | 5 |\n\nThe **8-L jug now holds exactly 6 liters.**",
+   "think_chars": 1222,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 7,
+   "ok": null,
+   "a": "**Goal: get 6 L in the 8-L jug.**\n\n| Step | 12L | 8L | 5L |\n|------|-----|----|----|\n| Start | 12 | 0 | 0 |\n| 1. Pour 12\u21928 | 4 | 8 | 0 |\n| 2. Pour 8\u21925 | 4 | 3 | 5 |\n| 3. Pour 5\u219212 | 9 | 3 | 0 |\n| 4. Pour 8\u21925 | 9 | 0 | 3 |\n| 5. Pour 12\u21928 | 1 | 8 | 3 |\n| 6. Fill 5 from 8 | 1 | **6** | 5 |\n\nThe **8-L jug now holds exactly 6 liters.**",
+   "think_chars": 1122,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 8,
+   "ok": null,
+   "a": "**Goal:** Get 6 liters in the 8-liter jug.\n\n| Step | 12L | 8L | 5L |\n|------|-----|----|----|\n| Start | 12 | 0 | 0 |\n| 12\u21928 | 4 | **8** | 0 |\n| 8\u21925 | 4 | 3 | 5 |\n| 5\u219212 | 9 | 3 | 0 |\n| 8\u21925 | 9 | 0 | 3 |\n| 12\u21928 | 1 | **8** | 3 |\n| 8\u21925 | 1 | **6** | 5 |\n\nThe **8-liter jug now holds exactly 6 liters.**",
+   "think_chars": 2075,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 9,
+   "ok": false,
+   "a": "Fill the 8L jug, then top up the 5L from it. Empty the 5L back into the 12L container. Repeat.\n\n- **Fill 8L** \u2192 (8, 0)\n- **8\u21925** \u2192 8L jug has **3** left\n- **Empty 5L**, **pour the 3 into 5L**\n- **Fill 8L again**, **top up 5L** (needs 2) \u2192 8L jug now has exactly **6** \u2705",
+   "think_chars": 1385,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 10,
+   "ok": false,
+   "a": "**Pour sequence** (container, 8L, 5L):\n\n1. Fill 8L from container \u2192 **(4, 8, 0)**\n2. Pour 8L into 5L \u2192 **(4, 3, 5)**\n3. Empty 5L back into container \u2192 **(9, 3, 0)**\n4. Pour 8L into 5L \u2192 **(9, 0, 3)**\n5. Fill 8L from container \u2192 **(1, 8, 3)**\n6. Top off 5L from 8L \u2192 **(1, 6, 5)**\n\nThe **8L jug now holds exactly 6 liters.**",
+   "think_chars": 1021,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 11,
+   "ok": null,
+   "a": "Fill the 8L jug, then pour into the 5L jug to leave **3L** in the 8L jug. Empty the 5L, transfer the 3L into it, refill the 8L, and top off the 5L (needs 2L). The 8L jug now holds exactly **6L**.\n\nSteps:\n1. Fill 8 \u2192 (4, 8, 0)\n2. 8 into 5 \u2192 (4, 3, 5)\n3. Empty 5 \u2192 (9, 3, 0)\n4. 8 into 5 \u2192 (9, 0, 3)\n5. Fill 8 \u2192 (1, 8, 3)\n6. 8 into 5 \u2192 **(1, 6, 5)** \u2713",
+   "think_chars": 818,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "jug",
+   "seed": 12,
+   "ok": null,
+   "a": "Here's how (using the 12L as the source):\n\n1. **12 \u2192 8:** (4, 8, 0)\n2. **8 \u2192 5:** (4, 3, 5)\n3. **5 \u2192 12:** (9, 3, 0)\n4. **8 \u2192 5:** (9, 0, 3)\n5. **12 \u2192 8:** (1, 8, 3)\n6. **8 \u2192 5:** (1, **6**, 5)\n\nThe 8-liter jug now holds exactly **6 liters**.",
+   "think_chars": 1498,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "ball",
+   "seed": 1,
+   "ok": true,
+   "a": "$0.05",
+   "think_chars": 130,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "ball",
+   "seed": 2,
+   "ok": true,
+   "a": "$0.05",
+   "think_chars": 195,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "ball",
+   "seed": 3,
+   "ok": true,
+   "a": "$0.05",
+   "think_chars": 192,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "machines",
+   "seed": 1,
+   "ok": true,
+   "a": "5",
+   "think_chars": 174,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "machines",
+   "seed": 2,
+   "ok": true,
+   "a": "5",
+   "think_chars": 233,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "machines",
+   "seed": 3,
+   "ok": true,
+   "a": "5",
+   "think_chars": 229,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "apples",
+   "seed": 1,
+   "ok": true,
+   "a": "3",
+   "think_chars": 122,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "apples",
+   "seed": 2,
+   "ok": true,
+   "a": "3",
+   "think_chars": 205,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "apples",
+   "seed": 3,
+   "ok": true,
+   "a": "3",
+   "think_chars": 203,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sum",
+   "seed": 1,
+   "ok": true,
+   "a": "410",
+   "think_chars": 114,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sum",
+   "seed": 2,
+   "ok": true,
+   "a": "410",
+   "think_chars": 36,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sum",
+   "seed": 3,
+   "ok": true,
+   "a": "410",
+   "think_chars": 36,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sally",
+   "seed": 1,
+   "ok": true,
+   "a": "1",
+   "think_chars": 548,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sally",
+   "seed": 2,
+   "ok": true,
+   "a": "1",
+   "think_chars": 491,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "sally",
+   "seed": 3,
+   "ok": true,
+   "a": "1",
+   "think_chars": 505,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "primes",
+   "seed": 1,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 595,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "primes",
+   "seed": 2,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 658,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "primes",
+   "seed": 3,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 622,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "youngest",
+   "seed": 1,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 217,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "youngest",
+   "seed": 2,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 180,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "youngest",
+   "seed": 3,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 186,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "train",
+   "seed": 1,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 202,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "train",
+   "seed": 2,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 142,
+   "finish": "stop"
+  },
+  {
+   "depth": "start",
+   "q": "train",
+   "seed": 3,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 248,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 1,
+   "ok": null,
+   "a": "Start: 12 full, 8 and 5 empty.\n\n1. Fill 8 from 12 \u2192 (4, 8, 0)\n2. Pour 8 into 5 \u2192 (4, 3, 5)\n3. Empty 5 back into 12 \u2192 (9, 3, 0)\n4. Pour 8 into 5 \u2192 (9, 0, 3)\n5. Fill 8 from 12 \u2192 (1, 8, 3)\n6. Pour 8 into 5 until full \u2192 (1, **6**, 5)\n\nThe 8-liter jug now holds exactly 6.",
+   "think_chars": 638,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 2,
+   "ok": null,
+   "a": "Fill the 8, then top off the 5 from it:\n\n1. Fill 8 \u2192 `(12:4, 8:8, 5:0)`\n2. Pour 8 into 5 \u2192 `(12:4, 8:3, 5:5)`\n3. Empty 5 back into 12 \u2192 `(12:9, 8:3, 5:0)`\n4. Pour 8 into 5 \u2192 `(12:9, 8:0, 5:3)`\n5. Fill 8 \u2192 `(12:1, 8:8, 5:3)`\n6. Pour 8 into 5 (fills 2L) \u2192 **8-jug now has 6** \u2705",
+   "think_chars": 2000,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 3,
+   "ok": null,
+   "a": "Label the jugs **12** (full), **8**, **5**.\n\n| Step | 12 | 8 | 5 |\n|------|----|----|----|\n| Start | 12 | 0 | 0 |\n| 12\u21928 | 4 | 8 | 0 |\n| 8\u21925 | 4 | 3 | 5 |\n| 5\u219212 | 9 | 3 | 0 |\n| 8\u21925 | 9 | 0 | 3 |\n| 12\u21928 | 1 | 8 | 3 |\n| 8\u21925 | 1 | **6** | 5 |\n\nThe 8-liter jug now holds exactly **6 liters**.",
+   "think_chars": 772,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 4,
+   "ok": null,
+   "a": "Fill the 8-jug from the 12, then pour into the 5. Repeat:\n\n1. **12\u21928**: (4, 8, 0)\n2. **8\u21925**: (4, 3, 5)\n3. **5\u219212**: (9, 3, 0)\n4. **8\u21925**: (9, 0, 3)\n5. **12\u21928**: (1, 8, 3)\n6. **8\u21925** (top off): **(1, 6, 5)**\n\nThe **8-liter jug now holds exactly 6 liters.**",
+   "think_chars": 985,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 5,
+   "ok": null,
+   "a": "Start: 8L jug full, 5L empty.\n\n1. Pour 8\u21925 (8 has **3**, 5 has 5)\n2. Empty 5\n3. Pour 3 into 5 (8 has **0**, 5 has 3)\n4. Fill 8 (8 has **8**, 5 has 3)\n5. Pour 8\u21925 until full (8 has **6**, 5 has 5)\n\nYou now have exactly **6 liters** in the 8L jug.",
+   "think_chars": 699,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 6,
+   "ok": null,
+   "a": "Fill the 8L jug from the bucket, then use the 5L as the \"measuring\" jug:\n\n1. Fill **8L** from bucket \u2192 8L jug has 8\n2. Pour 8L into **5L** \u2192 8L jug now has **3**\n3. Empty 5L back into bucket\n4. Pour the 3L into the **5L** jug \u2192 5L jug has 3\n5. Fill **8L** from bucket again \u2192 8L jug has 8\n6. Pour from 8L into 5L until full (takes 2L) \u2192 **8L jug now has exactly 6** \u2705",
+   "think_chars": 5059,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 7,
+   "ok": null,
+   "a": "Fill the 8L, then pour into the 5L:\n\n1. Fill 8L \u2192 **(8, 0)**\n2. 8\u21925 \u2192 **(3, 5)**\n3. Empty 5 \u2192 **(3, 0)**\n4. Pour 8\u21925 \u2192 **(0, 3)**\n5. Fill 8 \u2192 **(8, 3)**\n6. 8\u21925 (fills 2L) \u2192 **(6, 5)**\n\nThe 8L jug now holds exactly **6 liters**.",
+   "think_chars": 1033,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 8,
+   "ok": true,
+   "a": "Fill the **8L** jug from the 12L, then work the 5L jug:\n\n| Step | 12L | 8L | 5L |\n|------|-----|----|----|\n| Start | 12 | 0 | 0 |\n| 1. Fill 8L | 4 | **8** | 0 |\n| 2. Pour 8L\u21925L | 4 | 3 | 5 |\n| 3. Empty 5L | 9 | 3 | 0 |\n| 4. Pour 8L\u21925L | 9 | 0 | 3 |\n| 5. Fill 8L | 1 | 8 | 3 |\n| 6. Pour 8L\u21925L (fills it) | 1 | **6** | 5 |\n\nThe **8L jug now holds exactly 6 liters.**",
+   "think_chars": 2449,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 9,
+   "ok": null,
+   "a": "Fill the **8** jug, then pour into the **5** to leave **3** in the 8. Empty the 5, move those 3 into the 5. Fill the 8 again, then top off the 5 (which needs just 2) \u2014 leaving exactly **6** in the 8.\n\n1. Fill 8 \u2192 (12:4, 8:8, 5:0)\n2. 8\u21925 \u2192 (12:4, 8:3, 5:5)\n3. Empty 5 \u2192 (12:9, 8:3, 5:0)\n4. Pour 8 into 5 \u2192 (12:9, 8:0, 5:3)\n5. Fill 8 \u2192 (12:4, 8:8, 5:3)\n6. 8\u21925 (top off) \u2192 (12:4, **8:6**, 5:5) \u2713\n\n6 liters in the 8-jug.",
+   "think_chars": 3640,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 10,
+   "ok": null,
+   "a": "Fill the 8, then pour into the 5:\n\n1. Fill **8** \u2192 (8, 0)\n2. Pour 8 into 5 \u2192 (3, 5)\n3. Empty 5 \u2192 (3, 0)\n4. Pour 8 into 5 \u2192 (0, 3)\n5. Fill **8** \u2192 (8, 3)\n6. Pour 8 into 5 until full \u2192 **(6, 5)**\n\nThe 8-liter jug now holds exactly **6 liters**.",
+   "think_chars": 1701,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 11,
+   "ok": null,
+   "a": "Here's a 6-step solution. State = (barrel, 8-jug, 5-jug):\n\n1. Fill 8 from barrel \u2192 (4, **8**, 0)\n2. Pour 8 into 5 \u2192 (4, 3, **5**)\n3. Empty 5 back into barrel \u2192 (9, 3, 0)\n4. Pour 8 into 5 \u2192 (9, 0, 3)\n5. Fill 8 from barrel \u2192 (1, **8**, 3)\n6. Pour 8 into 5 until full \u2192 (1, **6**, 5)\n\nThe **8-jug now holds exactly 6 liters.**",
+   "think_chars": 3043,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "jug",
+   "seed": 12,
+   "ok": null,
+   "a": "Fill order (state = 12L, 8L, 5L):\n\n1. (12,0,0) \u2192 pour 12\u21928 \u2192 **(4,8,0)**\n2. pour 8\u21925 \u2192 **(4,3,5)**\n3. empty 5\u219212 \u2192 **(9,3,0)**\n4. pour 8\u21925 \u2192 **(9,0,3)**\n5. pour 12\u21928 \u2192 **(1,8,3)**\n6. pour 8\u21925 (fills 2L) \u2192 **(1,6,5)**\n\nThe **8L jug now holds exactly 6 liters.**",
+   "think_chars": 547,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "ball",
+   "seed": 1,
+   "ok": true,
+   "a": "$0.05\n\nLet me verify: ball = $0.05, bat = $1.05, total = $1.10. \u2713",
+   "think_chars": 7,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "ball",
+   "seed": 2,
+   "ok": true,
+   "a": "$0.05",
+   "think_chars": 183,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "ball",
+   "seed": 3,
+   "ok": true,
+   "a": "$0.05",
+   "think_chars": 54,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "machines",
+   "seed": 1,
+   "ok": true,
+   "a": "5",
+   "think_chars": 207,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "machines",
+   "seed": 2,
+   "ok": true,
+   "a": "5",
+   "think_chars": 243,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "machines",
+   "seed": 3,
+   "ok": true,
+   "a": "5",
+   "think_chars": 189,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "apples",
+   "seed": 1,
+   "ok": true,
+   "a": "3",
+   "think_chars": 140,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "apples",
+   "seed": 2,
+   "ok": true,
+   "a": "3",
+   "think_chars": 87,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "apples",
+   "seed": 3,
+   "ok": true,
+   "a": "3",
+   "think_chars": 122,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sum",
+   "seed": 1,
+   "ok": true,
+   "a": "410",
+   "think_chars": 78,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sum",
+   "seed": 2,
+   "ok": true,
+   "a": "410",
+   "think_chars": 30,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sum",
+   "seed": 3,
+   "ok": true,
+   "a": "410",
+   "think_chars": 29,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sally",
+   "seed": 1,
+   "ok": true,
+   "a": "1",
+   "think_chars": 225,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sally",
+   "seed": 2,
+   "ok": true,
+   "a": "1",
+   "think_chars": 306,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "sally",
+   "seed": 3,
+   "ok": true,
+   "a": "1",
+   "think_chars": 343,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "primes",
+   "seed": 1,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 87,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "primes",
+   "seed": 2,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 141,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "primes",
+   "seed": 3,
+   "ok": true,
+   "a": "23, 29, 31, 37",
+   "think_chars": 403,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "youngest",
+   "seed": 1,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 397,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "youngest",
+   "seed": 2,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 110,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "youngest",
+   "seed": 3,
+   "ok": true,
+   "a": "Carol",
+   "think_chars": 126,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "train",
+   "seed": 1,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 61,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "train",
+   "seed": 2,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 23,
+   "finish": "stop"
+  },
+  {
+   "depth": "97K",
+   "q": "train",
+   "seed": 3,
+   "ok": true,
+   "a": "17:15",
+   "think_chars": 30,
+   "finish": "stop"
+  }
+ ]
+}

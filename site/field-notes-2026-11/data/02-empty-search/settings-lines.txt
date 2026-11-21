@@ -1,0 +1,13 @@
+# The retrieval settings of the throwaway Open WebUI test instance (API key line removed).
+    image: <a locally built Open WebUI image, tagged v0.12.5>
+      - RAG_EMBEDDING_ENGINE=openai
+      - RAG_OPENAI_API_BASE_URL=http://<LAPTOP>/v1
+      - RAG_EMBEDDING_MODEL=qwen3-embedding-8b
+      - "RAG_EMBEDDING_QUERY_PREFIX=Instruct: Given a question, retrieve passages that answer it\nQuery: "
+      - ENABLE_RAG_HYBRID_SEARCH=true
+      - RAG_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
+      - RAG_FULL_CONTEXT=false
+      - RAG_TOP_K=10
+      - RAG_TOP_K_RERANKER=5
+      - RAG_RELEVANCE_THRESHOLD=0.0
+      - RAG_HYBRID_BM25_WEIGHT=0.5

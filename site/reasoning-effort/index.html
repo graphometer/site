@@ -4,45 +4,21 @@
      is taken as decided here; canonical, og:url and every data/ href assume it, and changing it
      is a search-and-replace on "reasoning-effort/" plus the two cards and the feed entry.
      Working title in place (option A): Grant's final title pick lands later as a four-spot edit
-     to <title>, the <h1> plus its visible subtitle, og:title and twitter:title, and the home and
-     /studies/ card lines; the candidates live in TITLE_OPTIONS.md in the campaign drafts folder.
-     A BINDING SCOPING RULE governs all four spots (TITLE_OPTIONS.md, added in the 2026-08-16 fix
-     round): the template finding belongs to the chat template embedded in the Qwen3.8-27B GGUF
-     we served, rendered by a server that applies it, and no title, subtitle, og:title or card
-     line may imply it was established for Qwen3.8 in general, for other quantizations, or for
-     the hosted 2.4T. The h1 may stay short only because the visible subtitle sits under it and
-     carries the scope.
-     Data package assembled under data/ (see data/README.md); every figure printed here is mapped
-     to its file and field in data/NUMBERS.md. Both legs ship: data/local/ is the 2026-08-16
-     Qwen3.8-27B study, data/hosted/ is the effort-relevant subset of the 2026-08-13 hosted
-     battery. The two server logs are retained because both carry the template's own Minja
-     traceback, which is the direct proof that the injection lives in the chat template rather
-     than in the runtime. Leak sweep run over every byte of the package at staging: vault paths
-     replaced in place with <VAULT>, line counts preserved, no other edits.
-     CLAIMS TRACE: CLAIMS_TRACE.md in the campaign drafts folder. FIX ROUND 2026-08-16 applied
-     against four adversarial reviews; every item dispositioned in REVIEW_DISPOSITIONS_2026-08-16.md.
-     CSS: byte-identical to qwen38-27b/index.html except that this page drops the unused
-     `table.data tr.hi td` highlight rule and narrows `.note p` to color only, because its note
-     blocks want the shared measure. Nothing depends on either difference. -->
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reasoning effort is a sentence, not a dial: what Qwen3.8's reasoning_effort setting injects on the chat template we served, read off the rendered prompts on a local 27B and observed earlier on a hosted 2.4T-A95B</title>
-<meta name="description" content="On the chat template shipped inside the Qwen3.8-27B GGUF we served, reasoning_effort is implemented in the template, not in the sampler: the value you send is looked up and a matching instruction is injected into your prompt as a system message. xhigh adds a 42-token system block, low adds 30, and medium adds nothing at all, the same deltas on three prompts of different lengths; omitting the field renders byte-identical to xhigh. Read directly off the rendered prompts on a local Qwen3.8-27B on 2026-08-16, served by llama.cpp with --jinja and no template override, three days after a hosted Qwen3.8-2.4T-A95B through OpenRouter reported the same three prompt-token counts of 112, 70 and 100 with the mechanism invisible. Also: on llama.cpp b10290 the top-level reasoning_effort field never reached the template, while on b10453 it does and an unrecognized value returns HTTP 500 while thinking is on; the run log attributes that change to pull request #26941, reported first shipped in b10434. Includes a cross-build render comparison, a practitioner section, and a data package containing the raw records.">
+     to <title>What reasoning effort changes on Qwen3.8-27B</title>
+<meta name="description" content="In the tested Qwen3.8-27B template, xhigh adds a 42-token instruction, medium adds none and leaving the setting out gives the same prompt as xhigh.">
 <link rel="canonical" href="https://graphometer.ai/reasoning-effort/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
-<meta property="og:title" content="Reasoning effort is a sentence, not a dial: Qwen3.8's effort setting on the template we served, measured">
-<meta property="og:description" content="On the chat template inside the GGUF we served, xhigh adds 42 tokens of system message to your prompt, low adds 30, and medium adds nothing at all. Leaving the field out is byte-identical to xhigh. Read off the rendered prompts on a local 27B.">
+<meta property="og:title" content="What reasoning effort changes on Qwen3.8-27B">
+<meta property="og:description" content="In the tested Qwen3.8-27B template, xhigh adds a 42-token instruction, medium adds none and leaving the setting out gives the same prompt as xhigh.">
 <meta property="og:url" content="https://graphometer.ai/reasoning-effort/">
 <meta property="og:image" content="https://graphometer.ai/og/reasoning-effort.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Graphometer: Reasoning effort is a sentence, not a dial">
+<meta property="og:image:alt" content="Graphometer: What reasoning effort changes on Qwen3.8-27B">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Reasoning effort is a sentence, not a dial: Qwen3.8's effort setting on the template we served, measured">
-<meta name="twitter:description" content="On the chat template inside the GGUF we served, xhigh adds 42 tokens of system message to your prompt, low adds 30, and medium adds nothing at all. Leaving the field out is byte-identical to xhigh. Read off the rendered prompts on a local 27B.">
+<meta name="twitter:title" content="What reasoning effort changes on Qwen3.8-27B">
+<meta name="twitter:description" content="In the tested Qwen3.8-27B template, xhigh adds a 42-token instruction, medium adds none and leaving the setting out gives the same prompt as xhigh.">
 <meta name="twitter:image" content="https://graphometer.ai/og/reasoning-effort.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -66,7 +42,7 @@
   .wrap{max-width:820px;margin:0 auto;padding:0 24px}
   header{padding:30px 0;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:16px}
-  .brand svg{width:40px;height:40px;flex:none}
+  .brand svg{width:52px;height:52px;flex:none}
   .brand span{
     font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
     text-transform:uppercase

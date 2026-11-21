@@ -1,0 +1,61 @@
+{
+ "label": "gpt-oss-120b-proof",
+ "speed": [
+  {
+   "name": "prose",
+   "runs": [
+    {
+     "gen_n": 400,
+     "gen_tps": 82.56,
+     "read_tps": 122.6,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "stop",
+     "text": "The rise and fall of the sea, the rhythmic breathing of the oceans, is a story written in the language of gravity and motion. As the Earth spins on its axis, it carries the oceans along, but the Moon, ever\u2011present in the night sky, exerts its own pull on the water. This pull is not a sudden tug but a gentle, continuous force that stretches the ocean\u2019s surface toward the Moon, creating a bulge of water on the side of the planet that faces our satellite. At the same time, because the Earth itself is also being drawn toward the Moon, the solid body of the planet moves slightly away from the water on the far side, allowing another bulge to form opposite the Moon. These two high points, one facing the Moon and one on the opposite side, are the high tides.\n\nAs the Earth rotates, any given coastline sweeps through these bulges, experiencing first a rise in water level, then a fall, and then a rise again roughly twelve hours later. The Sun, though far more massive than the Moon, is also a player in this celestial dance. Its gravitational pull aligns with the Moon\u2019s twice a month, amplifying the bulges and producing especially high and low tides known as spring tides. When the Sun, Moon, and Earth form a right angle, the Sun\u2019s pull partially cancels the Moon\u2019s, leading to weaker, neap tides.\n\nThus tides are the visible echo of the invisible forces that bind the Earth\u2013Moon\u2013Sun system together. They remind us that the oceans are not static reservoirs but living, moving bodies, forever responding to the subtle, relentless tug of gravity as the planet turns beneath the night sky."
+    },
+    {
+     "gen_n": 400,
+     "gen_tps": 83.49,
+     "read_tps": 124.9,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "stop",
+     "text": "The rise and fall of the sea, the rhythmic breathing of the oceans, is a story written in the language of gravity and motion. As the Earth spins on its axis, it carries the oceans along, but the Moon, ever\u2011present in the night sky, exerts its own pull on the water. This pull is not a sudden tug but a gentle, continuous force that stretches the ocean\u2019s surface toward the Moon, creating a bulge of water on the side of the planet that faces our satellite. At the same time, because the Earth itself is also being drawn toward the Moon, the solid body of the planet moves slightly away from the water on the far side, allowing another bulge to form opposite the Moon. These two high points, one facing the Moon and one on the opposite side, are the high tides.\n\nAs the Earth rotates, any given coastline sweeps through these bulges, experiencing first a rise in water level, then a fall, and then a rise again roughly twelve hours later. The Sun, though far more massive than the Moon, is also a player in this celestial dance. Its gravitational pull aligns with the Moon\u2019s twice a month, amplifying the bulges and producing especially high and low tides known as spring tides. When the Sun, Moon, and Earth form a right angle, the Sun\u2019s pull partially cancels the Moon\u2019s, leading to weaker, neap tides.\n\nThus tides are the visible echo of the invisible forces that bind the Earth\u2013Moon\u2013Sun system together. They remind us that the oceans are not static reservoirs but living, moving bodies, forever responding to the subtle, relentless tug of gravity as the planet turns beneath the night sky."
+    }
+   ]
+  },
+  {
+   "name": "code",
+   "runs": [
+    {
+     "gen_n": 1400,
+     "gen_tps": 73.98,
+     "read_tps": 1243.8,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport logging\nimport argparse\nimport os\nimport sys\nimport json\nfrom math import prod\nfrom pathlib import Path\nfrom typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Sequence, SupportsIndex, cast, Tuple, Union, Optional\nfrom transformers import AutoConfig, AutoTokenizer\n\nimport torch\n\nif TYPE_CHECKING:\n    from torch import Tensor\n\nif 'NO_LOCAL_GGUF' not in os.environ:\n    sys.path.insert(1, str(Path(__file__).parent / 'gguf-py'))\nimport gguf\nfrom gguf.constants import GGUFValueType\n\n# reuse model definitions from the conversion/ package\nfrom conversion import LazyTorchTensor, ModelBase, get_model_class, ModelType, get_model_architecture\n\nlogger = logging.getLogger(\"lora-to-gguf\")\n\n\n@dataclass\nclass PartialLoraTensor:\n    A: Tensor | None = None\n    B: Tensor | None = None\n\n\n# magic to support tensor shape modifications and splitting\nclass LoraTorchTensor:\n    _lora_A: Tensor  # (n_rank, row_size)\n    _lora_B: Tensor  # (col_size, n_rank)\n    _rank: int\n\n    def __init__(self, A: Tensor, B: Tensor) -> None:\n        assert len(A.shape) == len(B.shape)\n        assert A.shape[-2] == B.shape[-1]\n        if A.dtype != B.dtype:\n            A = A.to(torch.float32)\n            B = B.to(torch.float32)\n        self._lora_A = A\n        self._lora_B = B\n        self._rank = B.shape[-1]\n\n    def get_lora_A_B(self) -> Tuple[Tensor, Tensor]:\n        return (self._lora_A, self._lora_B)\n\n    def __getitem__(\n        self,\n        indices: (\n            SupportsIndex\n            | slice\n            | Tuple[SupportsIndex | slice | Tensor, ...]  # TODO: add ellipsis in the type signature\n        ),\n    ) -> \"LoraTorchTensor\":\n        shape = self.shape\n        if isinstance(indices, SupportsIndex):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                raise NotImplementedError  # can't return a vector\n        elif isinstance(indices, slice):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                return LoraTorchTensor(self._lora_A, self._lora_B[indices])\n        elif isinstance(indices, tuple):\n            assert len(indices) > 0\n            if indices[-1] is Ellipsis:\n                return self[indices[:-1]]\n            # expand ellipsis\n            indices = tuple(\n                u\n                for v in (\n                    (\n                        (slice(None, None) for _ in range(len(indices) - 1))\n                        if i is Ellipsis\n                        else (i,)\n                    )\n                    for i in indices\n                )\n                for u in v\n            )\n\n            if len(indices) < len(shape):\n                indices = (*indices, *(slice(None, None) for _ in range(len(indices), len(shape))))\n\n            # TODO: make sure this is correct\n            indices_A = (\n                *(\n                    (\n                        j.__index__() % self._lora_A.shape[i]\n                        if isinstance(j, SupportsIndex)\n                        else slice(None, None)\n                    )\n                    for i, j in enumerate(indices[:-2])\n                ),\n                slice(None, None),\n                indices[-1],\n            )\n           "
+    },
+    {
+     "gen_n": 1400,
+     "gen_tps": 73.74,
+     "read_tps": 1392.8,
+     "draft_n": null,
+     "draft_ok": null,
+     "finish": "length",
+     "text": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport logging\nimport argparse\nimport os\nimport sys\nimport json\nfrom math import prod\nfrom pathlib import Path\nfrom typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Sequence, SupportsIndex, cast, Tuple, Union, Optional\nfrom transformers import AutoConfig, AutoTokenizer\n\nimport torch\n\nif TYPE_CHECKING:\n    from torch import Tensor\n\nif 'NO_LOCAL_GGUF' not in os.environ:\n    sys.path.insert(1, str(Path(__file__).parent / 'gguf-py'))\nimport gguf\nfrom gguf.constants import GGUFValueType\n\n# reuse model definitions from the conversion/ package\nfrom conversion import LazyTorchTensor, ModelBase, get_model_class, ModelType, get_model_architecture\n\nlogger = logging.getLogger(\"lora-to-gguf\")\n\n\n@dataclass\nclass PartialLoraTensor:\n    A: Tensor | None = None\n    B: Tensor | None = None\n\n\n# magic to support tensor shape modifications and splitting\nclass LoraTorchTensor:\n    _lora_A: Tensor  # (n_rank, row_size)\n    _lora_B: Tensor  # (col_size, n_rank)\n    _rank: int\n\n    def __init__(self, A: Tensor, B: Tensor) -> None:\n        assert len(A.shape) == len(B.shape)\n        assert A.shape[-2] == B.shape[-1]\n        if A.dtype != B.dtype:\n            A = A.to(torch.float32)\n            B = B.to(torch.float32)\n        self._lora_A = A\n        self._lora_B = B\n        self._rank = B.shape[-1]\n\n    def get_lora_A_B(self) -> Tuple[Tensor, Tensor]:\n        return (self._lora_A, self._lora_B)\n\n    def __getitem__(\n        self,\n        indices: (\n            SupportsIndex\n            | slice\n            | Tuple[SupportsIndex | slice | Tensor, ...]  # TODO: add ellipsis in the type signature\n        ),\n    ) -> \"LoraTorchTensor\":\n        shape = self.shape\n        if isinstance(indices, SupportsIndex):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                raise NotImplementedError  # can't return a vector\n        elif isinstance(indices, slice):\n            if len(shape) > 2:\n                return LoraTorchTensor(self._lora_A[indices], self._lora_B[indices])\n            else:\n                return LoraTorchTensor(self._lora_A, self._lora_B[indices])\n        elif isinstance(indices, tuple):\n            assert len(indices) > 0\n            if indices[-1] is Ellipsis:\n                return self[indices[:-1]]\n            # expand ellipsis\n            indices = tuple(\n                u\n                for v in (\n                    (\n                        (slice(None, None) for _ in range(len(indices) - 1))\n                        if i is Ellipsis\n                        else (i,)\n                    )\n                    for i in indices\n                )\n                for u in v\n            )\n\n            if len(indices) < len(shape):\n                indices = (*indices, *(slice(None, None) for _ in range(len(indices), len(shape))))\n\n            # TODO: make sure this is correct\n            indices_A = (\n                *(\n                    (\n                        j.__index__() % self._lora_A.shape[i]\n                        if isinstance(j, SupportsIndex)\n                        else slice(None, None)\n                    )\n                    for i, j in enumerate(indices[:-2])\n                ),\n                slice(None, None),\n                indices[-1],\n            )\n           "
+    }
+   ]
+  }
+ ],
+ "reasoning": {
+  "status": 200,
+  "has_reasoning": true,
+  "content_clean": true,
+  "has_391": true,
+  "answer": "391.",
+  "finish": "stop"
+ },
+ "two_users_status": 200,
+ "late_system_status": 200
+}

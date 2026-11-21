@@ -1,0 +1,1 @@
+<REDACTED_PATH>/llama-server --model <REDACTED_PATH>/Qwen3-Coder-Next-UD-Q4_K_XL.gguf --host 127.0.0.1 --port 8190 --alias <SERVED_NAME> --jinja --ctx-size 262144 --parallel 1 --batch-size 4096 --ubatch-size 2048 --n-gpu-layers 99 --fit off --flash-attn auto --timeout 3600 --cpu-moe --load-mode dio --moe-cache-mib 19000 -lv 4 --threads 8 --threads-batch 8

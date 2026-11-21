@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>November field notes: eight traps running AI models at home</title>
+<meta name="description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<link rel="canonical" href="https://graphometer.ai/field-notes-2026-11/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="November field notes: eight traps running AI models at home">
+<meta property="og:description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<meta property="og:url" content="https://graphometer.ai/field-notes-2026-11/">
+<meta property="og:image" content="https://graphometer.ai/og/field-notes-2026-11.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: November field notes: eight traps running AI models at home">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="November field notes: eight traps running AI models at home">
+<meta name="twitter:description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<meta name="twitter:image" content="https://graphometer.ai/og/field-notes-2026-11.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:52px;height:52px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.sub{margin-top:14px;max-width:60ch;color:var(--ink);font-size:1.0625rem;font-weight:600}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{
+    display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:5px 16px
+  }
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:1.0625rem;font-weight:650;margin:26px 0 10px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{
+    text-align:left;padding:11px 16px 11px 0;
+    border-bottom:1px solid var(--line);vertical-align:top
+  }
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:11rem}
+  .facts td{color:var(--ink)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    text-align:right;white-space:nowrap;vertical-align:top
+  }
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{
+    color:var(--dim);font-weight:500;font-size:12.5px;
+    letter-spacing:.05em;text-transform:uppercase
+  }
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{
+    font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55
+  }
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="../" style="text-decoration:none">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
+          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
+        </svg>
+        <span>Graphometer</span>
+      </div>
+    </a>
+    <nav class="sitenav" aria-label="Site">
+      <a href="../tools/">Tools</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../studies/">Studies</a>
+      <a href="../method/">Method</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Field notes &middot; 30 October to 3 November 2026 &middot; one RTX 5090 desktop and an ASUS ROG Flow Z13 &middot; llama.cpp and Open WebUI &middot; eight entries</div>
+      <h1>November field notes: eight traps running AI models at home</h1>
+      <p class="sub">What went wrong on our desktop and laptop, what it cost, how we caught it, and one check you can run yourself.</p>
+      <p class="lead">This page is for anyone who runs AI models on their own computer. If you read only one entry, read the first: a graphics card is never fully free, even with no model loaded, and two setups sized close to the card's limit failed here, one of them only after it had passed every short test. The second entry matters if you use document search in a chat app: in our test, a chat still gave a normal reply, without the document and without an error, while its search service was out of reach.</p>
+      <div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to any maker or project named on this page.</div>
+    </div>
+
+    <section>
+      <div class="secnum">01</div>
+      <h2>The graphics card is never empty, and setups sized to its last gigabyte failed</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>The card's memory (its VRAM) is shared by the driver, the desktop and every app that draws on screen. On the night of 1 to 2 November our test script stopped 102 model servers one after another and read the card's memory about five seconds after each had exited. With no model server running, the card still showed between 710 and 1,642 MiB in use (1,024 MiB is one GiB), and the figure rose and fell through the night. The card holds 32,607 MiB, so that is about 2 to 5 percent of it. Two setups then failed near the top of the card.</td></tr>
+      </table>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Setup</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td class="t">gpt-oss-120b, experts of 23 blocks in system RAM (<code>--n-cpu-moe 23</code>), 1 Nov</td><td class="t">Did not load: <code>allocating 1315.93 MiB on device 0: cudaMalloc failed: out of memory</code></td></tr>
+          <tr><td class="t">gpt-oss-120b, experts of 24 blocks in system RAM, 1 Nov</td><td class="t">Loaded, 30,627 MiB in use when ready</td></tr>
+          <tr><td class="t">DeepSeek-V4.1-Flash-1017, batch 3072, 2 Nov</td><td class="t">Passed short checks (a chat, a tool call, a two-token reply). A request of about 32,000 characters then failed after 53.2 s with <code>HTTPError 502: 'Bad Gateway'</code>; highest card reading 31,987 MiB</td></tr>
+          <tr><td class="t">DeepSeek-V4.1-Flash-1017, batch 2560, 2 Nov</td><td class="t">Three long requests (7,175, 7,175 and 26,781 prompt tokens) answered; highest card reading 30,771 MiB</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">gpt-oss-120b is a mixture-of-experts model: its "experts" are parts used by only some tokens, so they can live in system RAM. Both gpt-oss-120b starts used a 131,072-token window (how much text the model can hold in view at once). DeepSeek-V4.1-Flash-1017 ran as an MXFP4 file (a compressed format) on a community port of llama.cpp, also with a 131,072-token window. The batch is how many prompt tokens the server works on at once; the 2560 runs used a test copy of the same start script.</p>
+      <table class="facts">
+        <tr><th scope="row">What it cost</th><td>One setting that did not load, and one that passed every short test and then failed on its first long request. We did not measure how much of either failure came from the memory the desktop and driver held.</td></tr>
+        <tr><th scope="row">How it was caught</th><td>The out-of-memory line in the server log, and a check script that read the card every quarter of a second during a long request.</td></tr>
+        <tr><th scope="row">The check</th><td>With no model loaded, run <code>nvidia-smi --query-gpu=memory.used --format=csv</code> and note what the card already holds. Then test any new setup with a prompt as long as your real ones before you rely on it. Short prompts passed here and proved nothing.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">02</div>
+      <h2>Document search out of reach: the chat still answered, without the document and without an error</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>Open WebUI (a self-hosted chat app) can search your documents before the model answers. To do that it first sends the question to an embedding model, which turns text into a list of numbers. On 2 November we tested a throwaway copy of Open WebUI (a locally built image tagged v0.12.5) with 20 made-up documents and 10 questions. The embedding model, qwen3-embedding-8b, ran on the laptop, behind a small forwarding service on the desktop.</td></tr>
+      </table>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Test</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Embedding model reachable</td><td class="t">All 10 questions found the right document first</td></tr>
+          <tr><td class="t">App pointed at an address where nothing was listening</td><td class="t">Each of 10 direct searches failed at once with HTTP 400 <code>[ERROR: Error querying knowledge base]</code>; all 20 files failed to index</td></tr>
+          <tr><td class="t">A chat asking for a door code that is in only one document</td><td class="t">HTTP 200 after 8.7 s and a normal-looking reply without the code, saying it needed more context</td></tr>
+          <tr><td class="t">The same chat, app pointed straight at the laptop</td><td class="t">HTTP 200 after 5.8 s: <code>The door code for the winter room at Kestrel Hut is **4471** [1].</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">The direct searches fail loudly. The chat does not. Our note written at the time of the test says the forwarding service had been stopped for that chat; the test log itself records the reply, not the service's state.</p>
+      <table class="facts">
+        <tr><th scope="row">What it cost</th><td>Nothing here, because it was a test. In daily use, answers that should have come from your documents would come from the model alone, with no sign that anything was wrong.</td></tr>
+        <tr><th scope="row">How it was caught</th><td>A test script that asked a question only one document could answer and checked the reply for the code.</td></tr>
+        <tr><th scope="row">The check</th><td>After you set up document search, take the embedding service down once and ask a question only your documents can answer, so you know what failure looks like on your setup. In daily use, a missing citation where you expect one is the warning sign. A fallback can work: in the same test, the same embedding model run on the desktop's processor also found the right document first for all 10 questions.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">03</div>
+      <h2>A request that times out without streaming keeps nothing</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On the evening of 31 October we asked Mistral-Large-4-1T-A52B six questions. That is a model of about a trillion parameters with about 52 billion used for each token, here as Unsloth's UD-IQ1_S file, a heavily compressed copy, split across the desktop and the laptop with a 32,768-token window. Our client sent each question without streaming (<code>stream=False</code>), so a reply arrives only when it is complete, and gave up after 1,800 seconds. Questions 1, 2 and 6 hit that limit at 1,800.1 seconds, and the client saved no text for any of them. Questions 3, 4 and 5 finished.</td></tr>
+        <tr><th scope="row">What was lost</th><td>The server log shows how far each one had got. Question 1 had generated 4,328 tokens (words or parts of words) when it was cancelled, and question 2 had reached 4,713. Question 6 was at 906 tokens on its last progress line when the server shut down.</td></tr>
+        <tr><th scope="row">What it cost</th><td>About 90 minutes of waiting across the three requests, with nothing saved.</td></tr>
+        <tr><th scope="row">How it was caught</th><td>Three empty answers in the client's results, and the token counts in the server log.</td></tr>
+        <tr><th scope="row">The check</th><td>For long or slow answers, stream the reply (<code>"stream": true</code> in an OpenAI-style request) and write each piece to disk as it arrives. If you must wait for the whole reply, set the timeout from one measured long answer at your real speed, with room to spare.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">04</div>
+      <h2>The first answer after a start can crawl while the model is still coming off the drive</h2>
+      <p>By default llama.cpp does not read the whole model file at start. It reads each part from the drive the first time a request needs it. On 1 November we started Beam-1.0-501B-A23B (about 501 billion parameters, 23 billion used for each token; Unsloth's UD-Q2_K_XL file; llama.cpp b11712; 131,072-token window) that way, and then with <code>--load-mode dio</code>, a setting in this build that reads the whole file into memory at start. Each run sent the same 66-token prompt twice and asked for 420 tokens.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Start</th><th>Ready after</th><th>RAM free when ready</th><th>First reply</th><th>Read from drive</th><th>Second reply</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Default</td><td>289 s</td><td>164 GiB</td><td>1.95 t/s, 289.7 s</td><td>44.7 GB</td><td>8.37 t/s, 57.2 s</td></tr>
+          <tr><td class="t"><code>--load-mode dio</code></td><td>135 s</td><td>11 GiB</td><td>8.38 t/s, 54.5 s</td><td>0.1 GB</td><td>8.29 t/s, 54.3 s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">t/s is tokens written per second. "Read from drive" is what the server process read from disk during that reply, rounded to 0.1 GB. A later start the same evening with the same <code>dio</code> setting gave its first reply at 3.62 tokens a second, so reading the file at start did not always remove the slow first answer.</p>
+      <p><strong>The check.</strong> Before you judge a model's speed, send the same request twice and watch the drive during the first one. A much slower first reply while the drive is busy points to loading, not to your graphics card. Our <a href="../llamacpp-expert-cache/">llama.cpp expert-cache page</a> has more of Beam's measurements on this machine, and our <a href="../mistral-large-4/">Mistral Large 4 page</a> shows loading settings on a second model.</p>
+    </section>
+
+    <section>
+      <div class="secnum">05</div>
+      <h2>A model split across two machines wrote strings of symbols, with no error in the server log</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On 31 October we split Mistral Large 4 between the desktop and the ASUS ROG Flow Z13 laptop, joined over Thunderbolt by llama.cpp's RPC worker (a small server on the laptop that runs part of the model for the desktop). The desktop held 46 of the model's 72 layers and the laptop the other 26. The laptop's worker was built with both Vulkan (a graphics interface) and RPC support. In the first run, all six answers were strings of symbols and word fragments, for example <code>schedul\"],\" });\':\huile</code>, and the desktop server's log for that run has no error line. A second run with the same split, labelled as the run with the worker on the laptop's processor, gave readable text: two of six included a final answer, and the other four were still reasoning when they hit their length limit.</td></tr>
+        <tr><th scope="row">Speed</th><td>The first run wrote 1.67 to 4.82 tokens a second and the second 2.10 to 3.98, so the speed column alone could not tell the broken run from the working one.</td></tr>
+        <tr><th scope="row">The device</th><td>Our notes from the time say the first run's worker used the laptop's graphics chip through Vulkan and the second was told to use the processor (<code>-d CPU</code>). The worker's own log was not kept, so that cause is not shown here.</td></tr>
+        <tr><th scope="row">What it cost</th><td>One test run, about 20 minutes, and a speed figure that meant nothing.</td></tr>
+        <tr><th scope="row">How it was caught</th><td>Reading the answers.</td></tr>
+        <tr><th scope="row">The check</th><td>Read the first answers of every new setup before you record its speed. When a worker was built with GPU support, name the device it should use on its command line, and keep its log.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">06</div>
+      <h2>A GPU crash deep into a long prompt, with 1,372 MiB of the card unused</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>This follows on from the first entry of our <a href="../field-notes-2026-10/">October field notes</a>, which counted five GPU timeout faults in one week. On 3 November we tested Huihui-Qwen3.8-27B-abliterated, a community variant of Qwen3.8-27B with refusals removed, published by huihui-ai (UD-Q5_K_XL file, llama.cpp b11712). It ran with a 229,376-token window and two ways of guessing ahead to write faster: a small draft model and n-gram drafting. The card showed 31,094 MiB in use at idle and 31,235 MiB at its highest reading, 1,372 MiB below its 32,607 total. The server read the first long prompt, 205,741 tokens, at 1,185.6 tokens a second. On the second long prompt its last progress line was at 198,656 tokens, 97 percent of the way, and then the log ends with <code>CUDA error: the launch timed out and was terminated</code>.</td></tr>
+        <tr><th scope="row">Kernel log</th><td>Our test script counts the lines containing <code>NVRM: Xid</code> (error reports from NVIDIA's driver) in the kernel log since each start. It does not keep the lines, so the code and the program each line names are not recorded.</td></tr>
+      </table>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Window</th><th>Guessing ahead</th><th>Highest card reading</th><th>Xid lines counted</th></tr></thead>
+        <tbody>
+          <tr><td>229,376</td><td class="t">draft model and n-gram</td><td>31,235 MiB</td><td>1</td></tr>
+          <tr><td>196,608</td><td class="t">draft model and n-gram</td><td>29,963 MiB</td><td>0</td></tr>
+          <tr><td>196,608</td><td class="t">none</td><td>27,716 MiB</td><td>1</td></tr>
+          <tr><td>196,608</td><td class="t">draft model and n-gram, second run</td><td>30,111 MiB</td><td>0</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Runs in the order they ran. The run with no guessing ahead started at 20:14:16, the same second the run before it stopped, so its count may include a line from that stop.</p>
+      <table class="facts">
+        <tr><th scope="row">What it cost</th><td>One crashed server and the run it was in.</td></tr>
+        <tr><th scope="row">The check</th><td>After any crash on a long prompt, run <code>journalctl -k --since "1 hour ago" | grep -E 'NVRM|Xid'</code> and save the lines themselves, with their code and the program they name. We kept only a count, which is why the second line above cannot be placed.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">07</div>
+      <h2>A large model download that kept failing, and the downloader that finished it</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On 30 October we downloaded a 2-bit community build of DeepSeek-V4.1-Flash-1017 (ISTA-DASLab's GSQ-RCO IQ2_XXS files) from Hugging Face. The <code>hf</code> tool (huggingface_hub 1.3.4) stopped twice with <code>RuntimeError: Data processing error: CAS service error : ReqwestMiddleware Error: Request failed after 5 retries</code>. On the second try its progress bar had reached 1 of 8 files after 29 minutes 48 seconds.</td></tr>
+        <tr><th scope="row">The fix</th><td>A short downloader of our own. It cuts each file into 128 MiB pieces, fetches them with 16 workers by byte range, retries a piece that fails, and records each finished piece so a restart can skip it. From 15:39:12 to 17:00:22 it fetched the five files on its list (four of the six 2-bit parts and one IQ4_NL Engram file) in 1,856 pieces. It logged 23 piece errors: 16 timeouts, 4 connection resets and 3 short reads. Each of the five files then matched the expected SHA-256 hash in the script's list, which is in the data package.</td></tr>
+        <tr><th scope="row">What it cost</th><td>About an hour from the first start of the <code>hf</code> tool at 14:37 to the start of our own downloader at 15:39, gaps included.</td></tr>
+        <tr><th scope="row">The check</th><td>If a large download fails more than once, switch to a tool that resumes by byte range and remembers finished parts. Then hash every file and compare it with the SHA-256 the repository lists for it (on Hugging Face, the LFS hash on the file's page) before you load it.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">08</div>
+      <h2>More packet loss while the home line was idle than while it was busy</h2>
+      <table class="facts">
+        <tr><th scope="row">What happened</th><td>On the evening of 30 October we pinged public DNS servers (the lookup services that turn site names into addresses) four times a second for about 110 seconds, with an upload and then a download in the middle. We ran this twice before changing anything, to two DNS servers the first time and three the second. Over whole runs, 6.1 to 8.9 percent of pings were lost. Splitting each log at the upload and download marks gives an estimate per stretch: the quiet stretches lost 3.8 to 19.3 percent and the busy stretches 0 to 2.6 percent. Our note from that evening records slow web pages while speed tests looked fast. A speed test keeps the line busy, so it can miss loss like this.</td></tr>
+        <tr><th scope="row">After a restart</th><td>Our notes record that our provider's gateway (the box that connects the home network to the provider) was then restarted. The same test at 22:36 lost nothing: 0 of 446 pings to each of three DNS servers and 0 of 438 to the gateway. A five-minute quiet run on the normal route lost 0 of 597 to each of two DNS servers. A separate five-minute run forced over Wi-Fi, to the provider's DNS server, lost 21 of 597, with a slowest reply of 2,060.6 ms.</td></tr>
+        <tr><th scope="row">What it cost</th><td>An evening of slow pages. The download in entry 07 kept failing earlier the same day; we have not shown that the two are linked.</td></tr>
+        <tr><th scope="row">The check</th><td>Choose one public DNS server and ping it four times a second for five minutes with nothing else using the line (<code>ping -i 0.25</code> followed by its address), then again during a large download. Compare the loss figure each run prints at the end.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="secnum">09</div>
+      <h2>What we ran, exactly</h2>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Entry</th><th>Date</th><th>Machine</th><th>Software and settings</th></tr></thead>
+        <tbody>
+          <tr><td class="t">01 gpt-oss-120b</td><td>2026-11-01</td><td class="t">desktop</td><td class="t">llama.cpp build with CUDA and RPC, F16 file, 131,072 window, batch and micro-batch 2048, one request at a time</td></tr>
+          <tr><td class="t">01 DeepSeek-V4.1-Flash-1017</td><td>2026-11-02</td><td class="t">desktop</td><td class="t">community port of llama.cpp, MXFP4, 131,072 window, batch 3072 (installed start) and 2560 (test copy); requests capped at 40 reply tokens</td></tr>
+          <tr><td class="t">02 document search</td><td>2026-11-02</td><td class="t">desktop and laptop</td><td class="t">Open WebUI image tagged v0.12.5, hybrid search (word and meaning search combined) on, bge-reranker-v2-m3 reranker, qwen3-embedding-8b, Ornith-1.5-122B answering the chats</td></tr>
+          <tr><td class="t">03 and 05 Mistral Large 4</td><td>2026-10-31 to 11-01</td><td class="t">desktop and laptop over Thunderbolt</td><td class="t">llama.cpp b12015 on both sides, UD-IQ1_S, 32,768 window; entry 03 with batch 2048, micro-batch 512, low reasoning effort, worker on the laptop's processor, prompt caching off, replies capped at 6,000 tokens</td></tr>
+          <tr><td class="t">04 Beam 1.0</td><td>2026-11-01</td><td class="t">desktop</td><td class="t">llama.cpp b11712, UD-Q2_K_XL, 131,072 window, batch 4096, micro-batch 2048, low reasoning effort</td></tr>
+          <tr><td class="t">06 Huihui-Qwen3.8-27B-abliterated</td><td>2026-11-03</td><td class="t">desktop</td><td class="t">llama.cpp b11712, UD-Q5_K_XL, 229,376 and 196,608 windows</td></tr>
+          <tr><td class="t">07 download</td><td>2026-10-30</td><td class="t">desktop</td><td class="t">huggingface_hub 1.3.4, then our own downloader</td></tr>
+          <tr><td class="t">08 network</td><td>2026-10-30</td><td class="t">desktop</td><td class="t">ping every 0.25 s, three runs of about 110 s, then five-minute quiet runs</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">The desktop: one NVIDIA GeForce RTX 5090 (32,607 MiB as nvidia-smi reports it) and 188 GiB of RAM. The laptop: an ASUS ROG Flow Z13. Each result applies to the setup and run shown.</p>
+    </section>
+
+    <section>
+      <div class="secnum">10</div>
+      <h2>What this page does not show</h2>
+      <p>These are single events on our machines, not tests of any product, and several of the mistakes were ours. Entry 01 does not show how much of either failure came from the memory the desktop and driver held. The GPU fault in entry 06 has no proven cause. The device behind the symbols in entry 05 rests on our notes, not a log. The network entry is one evening: the loss stopped after a restart, which is not proof that the restart fixed it or that it is gone.</p>
+    </section>
+
+    <section>
+      <div class="secnum">11</div>
+      <h2>Related pages on this site</h2>
+      <ul class="plain">
+        <li><a href="../field-notes-2026-10/">October field notes</a>: the previous month, including the first five GPU timeout faults.</li>
+        <li><a href="../llamacpp-expert-cache/">llama.cpp expert cache</a>: more of Beam's measurements on this desktop (entry 04).</li>
+        <li><a href="../mistral-large-4/">Mistral Large 4</a>: the model in entries 03 and 05, and loading settings on a second model.</li>
+        <li><a href="../two-boxes/">Two boxes</a>: splitting one model across the desktop and the laptop.</li>
+        <li><a href="../method/">Method</a>: how figures are labelled.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="secnum">12</div>
+      <h2>Sources and data</h2>
+      <p>The data package holds, for each entry, the log lines and result files the page quotes: the out-of-memory lines and card readings, the long-request check log, the document-search test log, the client and server lines of the timed-out round, the two Beam runs, the twelve split-model answers, the shape log and crash excerpt, the download logs with the downloader and its hash list, and the ping logs with the phase script. Machine names, network addresses, our provider's name, paths, ports other than loopback, process numbers and our internal run names are removed.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every file, where it came from and what was removed.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this page mapped to its file and field.</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with its file in the package, tell us at
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the correction goes on the page with its date.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is a project by
+    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance; every public claim is
+    checked against recorded evidence.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: NVIDIA, GeForce and RTX
+    are marks of NVIDIA Corporation; ASUS, ROG and Flow are marks of ASUSTeK
+    Computer Inc.; Thunderbolt is a mark of Intel Corporation; Vulkan is a mark
+    of The Khronos Group Inc.; Open WebUI is a project of its contributors;
+    gpt-oss is a mark of OpenAI; DeepSeek is a mark of DeepSeek; ISTA-DASLab
+    publishes the GSQ-RCO community files; Mistral is a mark of Mistral AI; Beam
+    is a project or mark of Reflection AI; Qwen and Qwen3.8 are marks of Alibaba
+    Group Holding Limited; huihui-ai publishes the abliterated community variant;
+    Ornith is a project or mark of Ornith AI; bge-reranker-v2-m3 is a model of
+    BAAI; Hugging Face and its hf tool are marks and projects of Hugging Face,
+    Inc.; Unsloth publishes the community files named UD-; llama.cpp is a project
+    of ggml-org and its contributors. All are referenced for identification only.
+    Not affiliated with, endorsed by, or sponsored by any of them or their
+    affiliates. Product names and marks belong to their respective owners. This
+    site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+ "label": "final-qwen3.6-35b-a3b",
+ "prompts": {
+  "plain": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n<function=get_stock>\n<parameter=sku>\nAX-11\n</parameter>\n</function>\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n<think>\n",
+  "tools": "<|im_start|>system\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{\"type\": \"function\", \"function\": {\"name\": \"get_stock\", \"description\": \"Stock count for a SKU\", \"parameters\": {\"type\": \"object\", \"properties\": {\"sku\": {\"type\": \"string\"}}, \"required\": [\"sku\"]}}}\n</tools>\n\nIf you choose to call a function ONLY reply in the following format with NO suffix:\n\n<tool_call>\n<function=example_function_name>\n<parameter=example_parameter_1>\nvalue_1\n</parameter>\n<parameter=example_parameter_2>\nThis is the value for the second parameter\nthat can span\nmultiple lines\n</parameter>\n</function>\n</tool_call>\n\n<IMPORTANT>\nReminder:\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\n- Required parameters MUST be specified\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\n</IMPORTANT>\n\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n<function=get_stock>\n<parameter=sku>\nAX-11\n</parameter>\n</function>\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n<think>\n",
+  "off": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n<function=get_stock>\n<parameter=sku>\nAX-11\n</parameter>\n</function>\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+  "on": "<|im_start|>system\nYou are a careful assistant.<|im_end|>\n<|im_start|>user\nWhat is 17 times 23?<|im_end|>\n<|im_start|>assistant\n391.<|im_end|>\n<|im_start|>user\nHow many units of AX-11 are in stock?<|im_end|>\n<|im_start|>assistant\n<tool_call>\n<function=get_stock>\n<parameter=sku>\nAX-11\n</parameter>\n</function>\n</tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{\"sku\":\"AX-11\",\"stock\":41}\n</tool_response><|im_end|>\n<|im_start|>user\nThanks. And what is the capital of Australia?<|im_end|>\n<|im_start|>assistant\n<think>\n"
+ },
+ "switch": {
+  "False": {
+   "content": "Canberra",
+   "thinking_chars": 0
+  },
+  "True": {
+   "content": "Canberra",
+   "thinking_chars": 492
+  }
+ }
+}

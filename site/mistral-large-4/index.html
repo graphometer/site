@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop</title>
+<meta name="description" content="Can a 1-trillion-parameter model run at home? Mistral Large 4 on an RTX 5090 desktop and a laptop: about 6.6 tokens a second, the setup and what failed.">
+<link rel="canonical" href="https://graphometer.ai/mistral-large-4/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop">
+<meta property="og:description" content="Can a 1-trillion-parameter model run at home? Mistral Large 4 on an RTX 5090 desktop and a laptop: about 6.6 tokens a second, the setup and what failed.">
+<meta property="og:url" content="https://graphometer.ai/mistral-large-4/">
+<meta property="og:image" content="https://graphometer.ai/og/mistral-large-4.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop">
+<meta name="twitter:description" content="Can a 1-trillion-parameter model run at home? Mistral Large 4 on an RTX 5090 desktop and a laptop: about 6.6 tokens a second, the setup and what failed.">
+<meta name="twitter:image" content="https://graphometer.ai/og/mistral-large-4.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:52px;height:52px;flex:none}
+  .brand span{font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);text-transform:uppercase}
+  .hero{padding:72px 0 48px}
+  .eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:56ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  .n{font-family:var(--mono);overflow-wrap:anywhere}
+  @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}
+  table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}
+  table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.t{font-family:inherit;white-space:normal;min-width:16ch}
+  table.data td.neg{color:var(--warn)}
+  .tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  pre.log{font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:16px 0;overflow-x:auto;line-height:1.55}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}
+  .note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .note p{color:var(--ink);max-width:none}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="../" style="text-decoration:none"><div class="brand">
+    <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg>
+    <span>Graphometer</span>
+  </div></a>
+  <nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav>
+</div></header>
+
+<main><div class="wrap">
+<div class="hero">
+  <div class="eyebrow">Field card &middot; measured 31 October to 2 November 2026 &middot; one RTX 5090 desktop and an ASUS ROG Flow Z13 laptop &middot; one request at a time</div>
+  <h1>Mistral Large 4 at home: <em>6.6 tokens/s</em> on an RTX 5090 and a laptop</h1>
+  <p class="subtitle">We split a 217 GiB file of Mistral Large 4 across one desktop and one laptop. It generated about 6.6 tokens a second in short tests, counting its reasoning. Our runs on the desktop alone stayed under 3.</p>
+  <p class="lead">If you have a 32 GB graphics card and a lot of RAM and wonder whether a model this size is usable at home, this card shows the desktop-and-laptop setup that worked, the main setups that failed, what it takes to keep it running, and a small blind quality check. All Large 4 figures use one file: Unsloth's <code>UD-IQ1_S</code> quantization, run on llama.cpp (a program that runs language models on ordinary computers). A quantization stores a model's weights in fewer bits so the file is smaller, which can cost quality. Unsloth is a third party that publishes such files. A short section at the end covers Mistral Small 4 on the same desktop.</p>
+  <div class="nonaff">Independent measurements; no affiliation with Mistral AI, Unsloth, DeepSeek, ISTA-DASLab, OpenAI, NVIDIA, Intel, AMD, ASUS, or the llama.cpp project.</div>
+</div>
+
+<section id="what"><div class="secnum">01</div><h2>What it is</h2>
+  <p><strong>Mistral Large 4</strong> is, by Mistral AI's own model card, its largest model to date, and its weights are public. The card states about 1 trillion parameters in total and 49 billion active for each token (52 billion counting the embeddings and output layers), in a mixture-of-experts design: 128 routed experts, 4 active per token, plus 1 shared expert. A mixture-of-experts model runs only a few of its sub-networks, the experts, for each token. That is why a model this large can run on home hardware at all: most of it sits idle on any given token.</p>
+  <p>The licence is the <strong>Mistral Ecosystem Open-Weight License</strong>, which its text calls a modified version of the MIT licence. Its section 2 requires a licensee, or an affiliate, that operates a Model as a Service business (as the licence defines it) to enter a separate commercial licence with Mistral before any commercial use. Section 3 lists exceptions. The <a href="data/vendor/mistral-large-4-LICENSE.txt">full licence text</a> is in the data package.</p>
+  <p>We ran Unsloth's <code>UD-IQ1_S</code> GGUF (the file format llama.cpp reads). It is six files totalling <span class="n">233,009,564,322</span> bytes, which is 217.0 GiB (a GiB is 2<sup>30</sup> bytes, about 7% more than a GB). Spread over about 1 trillion parameters, that is about 1.9 bits per weight on average. The file is bigger than the desktop's 188 GiB of RAM, and that one fact shapes everything below.</p>
+  <p>Two terms we use throughout. A <strong>token</strong> is a chunk of text, often part of a word. <strong>Writing speed</strong> is how many tokens a second the model generates. This model reasons before it answers, and writing speed counts that reasoning as well as the visible answer. <strong>Reading speed</strong> is how fast it processes your prompt before it starts generating. Labels in brackets say where a figure comes from: (vendor) is the maker's statement, (measured) is our run, (arithmetic) is our calculation from those. The figures in this section are vendor statements, except the file size and bits per weight, which are arithmetic.</p>
+</section>
+
+<section id="settings"><div class="secnum">02</div><h2>The setup that worked</h2>
+  <p>The model is a stack of 72 layers. On the RTX 5090: every layer's attention (the part that looks back over the conversation), the shared expert, and the conversation memory (the KV cache). In the desktop's RAM: the routed experts of the first 42 layers. On the laptop: the routed experts of the last 30 layers, run by a llama.cpp worker on the laptop's CPU and connected to the desktop by a Thunderbolt cable. Only expert work crosses the cable; the conversation memory stays on the desktop's card.</p>
+  <p>The setting that made the biggest difference is <code>--load-mode dio</code>: read the desktop's share of the weights into memory once at start-up, instead of mapping the file and fetching pieces from the drive as they are needed. Section 05 shows the before and after.</p>
+  <pre class="log"># on the laptop (CPU backend)
+GOMP_CPU_AFFINITY=0-15 taskset -c 0-15 ggml-rpc-server -H &lt;laptop address&gt; -p &lt;port&gt; -d CPU -t 16
+
+# on the desktop (CUDA)
+GOMP_SPINCOUNT=10000000 taskset -c 0-15 llama-server --model Mistral-Large-4-1T-A52B-UD-IQ1_S-00001-of-00006.gguf \
+  --host 127.0.0.1 --port &lt;port&gt; --timeout 3600 \
+  --rpc &lt;laptop&gt;:&lt;port&gt; --device CUDA0,RPC0 --tensor-split 72,0 --n-gpu-layers 999 \
+  --override-tensor "blk\.(0|1|...|41)\.ffn_(up|down|gate)_exps=CPU,output\.weight=CUDA0,blk\.(42|...|71)\.ffn_(up|down|gate)_exps=RPC0[&lt;laptop&gt;:&lt;port&gt;]" \
+  --load-mode dio --lazy-mode on --no-warmup --fit off --parallel 1 \
+  --threads 16 --threads-batch 16 --ctx-size 131072 --batch-size 2048 --ubatch-size 1024 \
+  --temp 1.0 --top-p 0.95 --top-k 0 --min-p 0 --jinja \
+  --chat-template-kwargs '{"reasoning_effort":"low"}'</pre>
+  <p class="tablenote">A schematic, not a script to paste: the layer lists are shortened, and paths and addresses are replaced. The scripts as they ran are in the data package. <code>GOMP_SPINCOUNT</code> keeps the desktop's worker threads spinning between steps instead of sleeping. On the desktop's Core Ultra 9 285K, cores 0 to 15 are its 8 performance cores and 8 of its efficiency cores. <code>--timeout 3600</code> matters: the longest read below took over 22 minutes.</p>
+  <p>In that setup, on 1 November, three short tests generated <strong>6.58, 6.62 and 6.67 tokens a second</strong> (measured), counting reasoning. Each stopped at its 300-token cap. One of them first read a 6,411-token prompt at 72.1 tokens a second. The first request after start-up was as fast as the later ones. In a 131,072-token window (the most text the model can keep in view at once), two long reads also worked: see section 04.</p>
+</section>
+
+<section id="setup"><div class="secnum">03</div><h2>What we ran, exactly</h2>
+  <table class="facts">
+    <tr><th scope="row">Model file</th><td>Mistral Large 4, <code>unsloth/Mistral-Large-4-1T-A52B-GGUF</code>, <code>UD-IQ1_S</code>, six shards, 233,009,564,322 bytes. Each shard was checked by SHA-256 (a file fingerprint) against the repository's recorded hash after download.</td></tr>
+    <tr><th scope="row">Desktop</th><td>Intel Core Ultra 9 285K, 188 GiB of RAM (as <code>free -g</code> reported it during the trial), one NVIDIA GeForce RTX 5090 (32 GB). The first two one-desktop runs read the model from a slower internal data drive; every later run read it from the desktop's internal NVMe drive.</td></tr>
+    <tr><th scope="row">Laptop</th><td>ASUS ROG Flow Z13 with AMD Ryzen AI Max+ 395 and 128 GB of unified memory (one pool of RAM shared by the processor and the graphics). In the setup that worked it ran only its CPU (16 threads on cores 0 to 15). For one failed run on 31 October, our run notes record the worker on the laptop's graphics instead.</td></tr>
+    <tr><th scope="row">Link</th><td>A direct Thunderbolt cable between the two machines, using llama.cpp's RPC worker (a small program on the laptop that does part of the model's work for the desktop).</td></tr>
+    <tr><th scope="row">Runtime</th><td>llama.cpp, the build our scripts call b12015, on both machines. The desktop server reports its build string as <code>b330-6279535</code>. One comparison on 1 November used a newer build: llama.cpp master with pull request 31286 merged in locally (a pull request is a proposed code change). That server reports <code>b12057-629237e51</code>.</td></tr>
+    <tr><th scope="row">Sampling</th><td>Temperature 1.0 and top-p 0.95 (settings for how random the word choice is), reasoning effort <code>low</code> in the chat template.</td></tr>
+    <tr><th scope="row">Prompts</th><td>Short questions with caps of 150 to 800 generated tokens; a request to summarise a licence text of 1,940 tokens (6,411 tokens from the final setup on); and two long reads of 48,367 and 96,325 tokens, each with three short codes hidden in the text for the model to find and repeat. One request at a time.</td></tr>
+    <tr><th scope="row">Dates</th><td>One desktop: 31 October 2026. Two machines: night of 31 October and 1 November 2026. Quality comparison: 31 October to 1 November. Worker fault test: 2 November.</td></tr>
+  </table>
+</section>
+
+<section id="path"><div class="secnum">04</div><h2>The path, dated</h2>
+  <p>The main runs, in the order we ran them. Speeds are the server's own timings. Where the first request after start-up was much slower than the rest, we show it separately, because that slow start was itself the symptom. A hot-expert cache keeps the most used experts in the graphics card's memory. Vulkan is a graphics interface that lets llama.cpp use a graphics chip.</p>
+  <div class="data-wrap"><table class="data"><caption>Mistral Large 4 UD-IQ1_S, the main runs (measured)</caption><thead><tr><th>Date and setup</th><th>Window</th><th>First request, t/s</th><th>Later requests, t/s</th><th>Reading, t/s</th><th class="t">Kept or dropped, and why</th></tr></thead><tbody>
+    <tr><td class="t">31 Oct. One desktop, first launch, experts held off the card, model on the slower data drive</td><td>32K</td><td>0.15</td><td>0.17 to 0.48</td><td>0.10 to 0.22 on 8 to 32 tokens</td><td class="t">Dropped. Barely moves: the model does not fit in RAM, so it waits on the drive.</td></tr>
+    <tr><td class="t">31 Oct. One desktop, the best placement found that day (three launches pooled: one on the data drive, two on the NVMe drive)</td><td>32K</td><td>1.52 to 1.53</td><td>1.18 to 2.87</td><td>3.54 on 1,940 tokens (548 s)</td><td class="t">Dropped. On the NVMe drive a 1,940-token read took 9 minutes. On the data drive a read request was cancelled after about 25 minutes.</td></tr>
+    <tr><td class="t">31 Oct. Same, with a small library that asks Linux to read the mapped file ahead</td><td>32K</td><td>2.01</td><td>1.74 to 2.08</td><td>7.24 on 1,940 tokens</td><td class="t">Dropped. Reading doubled. Writing was mixed: 2.08 against 2.84 on a short request, 1.74 against 1.18 on the long read. That one read pulled 570.8 GB from the drive.</td></tr>
+    <tr><td class="t">31 Oct. One desktop, 8,000 MiB hot-expert cache on the card</td><td>32K</td><td>0.97</td><td>1.11 to 1.43</td><td>4.85 on 1,940 tokens</td><td class="t">Dropped that night as worse. Each request also read 17.7 to 362.2 GB from the drive, so it mostly measured paging (section 10).</td></tr>
+    <tr><td class="t">31 Oct. Two machines, six whole layers on the card</td><td>32K</td><td></td><td></td><td></td><td class="neg t">Did not load: the card could not allocate 33,208 MiB.</td></tr>
+    <tr><td class="t">31 Oct. Two machines, laptop worker on its <strong>Vulkan graphics</strong>, per our run notes (the worker's own log was not kept)</td><td>32K</td><td>1.67</td><td>3.75 to 4.82</td><td>33.1 on 1,940 tokens</td><td class="neg t">Dropped. The fastest that night, but the answers were random symbols, and the server returned them as normal responses, not errors.</td></tr>
+    <tr><td class="t">31 Oct. Two machines, laptop worker on its CPU, 26 layers on the laptop</td><td>32K</td><td>2.10</td><td>3.20 to 3.98</td><td>26.7 on 1,940 tokens</td><td class="t">Best correct result that night.</td></tr>
+    <tr><td class="t">31 Oct. Same idea, 30 layers on the laptop</td><td>64K</td><td>0.63</td><td>2.56 to 3.77</td><td>24.1 on 1,940 tokens</td><td class="t">Dropped. Slower, with a bigger window.</td></tr>
+    <tr><td class="t">1 Nov. Last night's best setup, 8 desktop threads</td><td>32K</td><td>1.76</td><td>3.22 to 3.96</td><td>26.8 on 1,940 tokens</td><td class="t">The day's starting point. The first request read 87.1 GB from the drive.</td></tr>
+    <tr><td class="t">1 Nov. Laptop holding the first layers instead of the last</td><td>32K</td><td>1.40</td><td>2.45 to 3.77</td><td>24.4 on 1,940 tokens</td><td class="t">Dropped. No gain.</td></tr>
+    <tr><td class="t">1 Nov. 24 desktop threads</td><td>32K</td><td>1.09</td><td>1.45 to 3.20</td><td>22.6 on 1,940 tokens</td><td class="t">Dropped. Slower in this test, which was still paging.</td></tr>
+    <tr><td class="t">1 Nov. 16 desktop threads</td><td>32K</td><td>1.82</td><td>2.60 to 4.76</td><td>25.8 on 1,940 tokens</td><td class="t">16 kept for later runs.</td></tr>
+    <tr><td class="t">1 Nov. Only the routed experts on the laptop, all attention on the card; 26 layers' experts on the laptop</td><td>32K</td><td>2.20</td><td>3.35 to 6.67</td><td>32.3 on 1,940 tokens</td><td class="t">Kept the idea. Writing rose from 3.35 to 6.67 across the run's later requests.</td></tr>
+    <tr><td class="t">1 Nov. Whole layers on the laptop again, 20 desktop threads</td><td>32K</td><td>1.76</td><td>2.30 to 4.65</td><td>26.6 on 1,940 tokens</td><td class="t">Not clearly better than 16.</td></tr>
+    <tr><td class="t">1 Nov. Experts only, 30 layers' experts on the laptop, 3 whole layers on the card</td><td>32K</td><td>2.85</td><td>3.85 to 6.69</td><td>33.9 on 1,940 tokens</td><td class="t">Better. Still a slow start: 74.0 GB of drive reads on the first request.</td></tr>
+    <tr><td class="t">1 Nov. Experts only, weights <strong>read once into memory</strong> (<code>--load-mode dio</code>), huge pages for the laptop worker; layer split not logged (section 05)</td><td>32K</td><td><strong>6.78</strong></td><td><strong>6.76 to 6.87</strong></td><td><strong>51.8</strong> on 1,940 tokens</td><td class="t"><strong>The biggest change.</strong> First request as fast as the later ones; drive reads near zero (section 05).</td></tr>
+    <tr><td class="t">1 Nov. Same, plus ordinary memory instead of CUDA host memory, so huge pages took on the desktop</td><td>32K</td><td>6.52</td><td>6.83 to 6.89</td><td>35.5 on 1,940 tokens</td><td class="t">Dropped. Writing about the same; reading fell.</td></tr>
+    <tr><td class="t">1 Nov. 36 layers' experts on the laptop, 1 whole layer on the card, huge pages requested on the desktop</td><td>128K</td><td>6.53</td><td>6.26 to 6.62</td><td>45.5 on 1,940 tokens</td><td class="t">No gain. Laptop memory in use rose from 88 to 104 GiB.</td></tr>
+    <tr><td class="t">1 Nov. 30 layers' experts on the laptop, none whole on the card, prompt micro-batch 2048, laptop worker with huge pages and spinning threads</td><td>128K</td><td></td><td></td><td></td><td class="neg t">Did not load: a 3,092.56 MiB card allocation failed while setting up the window.</td></tr>
+    <tr><td class="t">1 Nov. <strong>Same with micro-batch 1024 and a plain laptop worker: the final setup</strong></td><td>128K</td><td>6.62</td><td><strong>6.58, 6.67</strong></td><td><strong>72.1</strong> on 6,411 tokens</td><td class="t"><strong>Kept.</strong></td></tr>
+    <tr><td class="t">1 Nov. Final setup, two long reads with three hidden codes each</td><td>128K</td><td></td><td>6.5 at 48,367; 6.3 at 96,325</td><td>72.3; 71.5</td><td class="t">Found 3 of 3 codes at both lengths. Processing the 96,325-token prompt took 1,347 s (22.5 minutes). On the next turn, the new prompt took 5.0 and 4.2 s and writing ran at 6.5.</td></tr>
+    <tr><td class="t">1 Nov. Final setup, three experts per token instead of four (probes capped at 800, 300 and 800 tokens)</td><td>128K</td><td></td><td>8.09 to 8.16</td><td>82.6 on 1,940 tokens</td><td class="t">Faster, but all three probes were still reasoning at their caps. The separate quality answers scored lower (section 06).</td></tr>
+    <tr><td class="t">1 Nov. Newer build, 5,500 MiB hot-expert cache, 64K window (the second of two runs)</td><td>64K</td><td></td><td>7.20 to 7.42</td><td>81.1 on 1,940 tokens</td><td class="t">About 9% faster than the newer build's plain 128K setup on the same three prompts (6.72 to 6.76), at half the window and almost no card memory spare. Not adopted.</td></tr>
+    <tr><td class="t">1 Nov. Newer build, 8,000 MiB cache, 32K window</td><td>32K</td><td>7.44</td><td>2.59, then 7.58</td><td>77.6 on 6,411 tokens</td><td class="t">One slow reply in the middle (see below). A 12,000 MiB cache at 32K and a 4,000 MiB cache at 128K did not load.</td></tr>
+  </tbody></table></div>
+  <p class="tablenote">"First request" is the first request after start-up; "later requests" are the run's other requests. Caps on generated tokens ranged from 150 to 800, and generation counts reasoning. The micro-batch (<code>--ubatch-size</code>) is the size of the chunks a prompt is split into on the card; the overall batch (<code>--batch-size</code>) stayed 2048. Read prompts were 1,940 tokens until the final setup and 6,411 from then on, except in the three-expert and 64K cache rows, which used 1,940. The one-desktop rows used a different test script with its own prompts, so compare them with care. Drive reads come from one desktop drive's kernel read counter during each request, in decimal GB rounded to 0.1. The server logs of the 31 October one-desktop runs do not print their launch flags, so those rows describe the placement in words. Blank cells: not measured. Other runs (a 128K mapped run, a run with the tuned laptop worker, the newer build without a cache, and a first cache run) are in the data package.</p>
+  <p>The slow reply. In the 8,000 MiB cache run, the middle request (capped at 300 tokens) generated at 2.59 tokens a second, between 7.44 and 7.58 for the requests before and after it (each capped at 500). The desktop's load average, logged every 5 seconds, rose to about 25 during that reply, above the 16 threads the server uses; it reached about 13 during the first request. Our log does not show what the extra load was.</p>
+</section>
+
+<section id="mmap"><div class="secnum">05</div><h2>The finding: reading the weights in once cut the drive traffic</h2>
+  <p>llama.cpp normally <strong>memory-maps</strong> a model file: the operating system treats the file as if it were in memory and reads each piece from the drive the first time it is touched. When the program needs a piece that is not in RAM and has to wait for the drive, that is a <strong>major page fault</strong>. When the file does not fit in RAM, Linux keeps dropping pieces and reading them again, which is called paging. On 31 October we took the slow writing for a limit of the hardware. On 1 November, removing the drive reads more than doubled the first request's speed.</p>
+  <p>Splitting the model is what made that possible. With 30 layers' experts on the laptop, the desktop's share fits in its RAM: in the read-once run below, the server held 114.1 GiB at start-up. Here are two runs from 1 November, one mapped and one with the weights read in once at start-up. They are an observed before and after, not a change of one setting: the note under the table lists what else differed.</p>
+  <div class="data-wrap"><table class="data"><caption>Mapped against read once, 32K window, 1 November (measured)</caption><thead><tr><th>Request</th><th>Mapped: t/s</th><th>Mapped: drive GB</th><th>Mapped: major faults</th><th>Read once: t/s</th><th>Read once: drive GB</th><th>Read once: major faults</th></tr></thead><tbody>
+    <tr><td class="t">First request: 27-token prompt, 150 generated</td><td>2.85</td><td>74.0</td><td>692,116</td><td>6.78</td><td>0.0</td><td>72</td></tr>
+    <tr><td class="t">Second request: 8-token prompt</td><td>3.85</td><td>8.2</td><td>83,937</td><td>6.76</td><td>0.0</td><td>6</td></tr>
+    <tr><td class="t">Two 300-token tests</td><td>5.66, 6.08</td><td>5.5, 1.0</td><td>191,683, 51,053</td><td>6.81, 6.82</td><td>0.0, 0.0</td><td>2, 5</td></tr>
+    <tr><td class="t">Read 1,940 tokens, then generate 300</td><td>33.9 read, 6.69 write</td><td>1.6</td><td>14,629</td><td>51.8 read, 6.82 write</td><td>0.0</td><td>6</td></tr>
+    <tr><td class="t">Last 300-token test</td><td>6.69</td><td>0.0</td><td>625</td><td>6.87</td><td>0.0</td><td>0</td></tr>
+  </tbody></table></div>
+  <p class="tablenote">What else differed. The mapped run had 30 layers' experts on the laptop and 3 whole layers on the card, as its script records. The read-once run's script defaults to 26 and 2, and the values it actually ran with were not logged. Its card memory at start-up (29,915 MiB) is close to the mapped run's (29,686 MiB) and far from a 26-and-2 run's (26,116 MiB), and its desktop memory (114.1 GiB) equals a later recorded 30-and-3 run's, so we believe it used 30 and 3; that is an inference. The read-once run also turned on huge pages (larger memory blocks that are cheaper to track) for the laptop's worker and requested them on the desktop, where only 0.4 GiB took. The mapped run pre-read the desktop's expert layers into the drive cache before the first request (112.4 GiB in 18 s); the read-once run skipped that step. Load took 275 s mapped and 251 s read once. Drive GB is one drive's read counter, rounded to 0.1.</p>
+  <p>Read once, the first request ran as fast as the later ones (6.78 against 6.76 to 6.87). We did not test a working read-once setup on the desktop alone: the 217 GiB file is larger than its 188 GiB of RAM.</p>
+  <p>Later, in the final setup, a laptop worker with huge pages and spinning threads generated 3.2%, 2.4% and 0.1% faster on three requests than a plain worker, and read the 6,411-token prompt slower (70.4 against 72.1 tokens a second). Both settings changed together. We kept the plain worker.</p>
+  <p>We also tried a second llama.cpp setting, a cache of frequently used experts on the card. On 31 October it looked worse, but that run was paging. With the weights read once, on a newer build, a 5,500 MiB cache with a 64K window generated about 9% faster than the plain 128K setup on three prompts, with little card memory to spare. The <a href="../llamacpp-expert-cache/">study of the two settings</a> covers them across many models.</p>
+</section>
+
+<section id="experts"><div class="secnum">06</div><h2>Three experts instead of four</h2>
+  <p>llama.cpp can tell the model to use three routed experts per token instead of the default four (<code>--override-kv mistral-large4.expert_used_count=int:3</code>). In the final setup, three probes then generated <strong>8.09 to 8.16 tokens a second</strong>, against 6.58 to 6.67 with four. All three probes were still reasoning when they reached their caps (800, 300 and 800 tokens), so they show speed, not answers. The probe's 1,940-token prompt was read at 82.6 tokens a second; the four-expert run used a 6,411-token prompt, so those two reading speeds are not comparable.</p>
+  <p>In the blind comparison below, three experts scored 15 of 18 and the four-expert set 18. On the statistics question, the three-expert answer said one hospital treated more severe cases, while the table in that same answer showed the opposite. On the probability question it generated 15,405 tokens, reasoning included, against 7,640 for four experts. Over all six questions, three experts generated 28,051 tokens and four experts 22,115.</p>
+</section>
+
+<section id="quality"><div class="secnum">07</div><h2>A small blind quality check</h2>
+  <p>Is the 1.9-bit file any good? We asked four local setups the same six questions, each with a known answer: a logic puzzle, an exact probability, a buggy function to fix, a statistics trap (Simpson's paradox, where a trend inside each group reverses when the groups are combined), a question about a treaty that does not exist, and a decision about backups that needs arithmetic. One hosted judge model, OpenAI's <strong>GPT-6 Astra</strong> at high reasoning effort, scored each answer 0 to 3 against a written answer key. For each question it saw the four answers labelled A to D in shuffled order, with no model names.</p>
+  <div class="data-wrap"><table class="data"><caption>Blind scores, 0 to 3 per question, one selected answer per setup, one judge (measured)</caption><thead><tr><th>Setup</th><th>Logic</th><th>Probability</th><th>Code</th><th>Statistics</th><th>False premise</th><th>Decision</th><th>Total of 18</th></tr></thead><tbody>
+    <tr><td class="t"><strong>Mistral Large 4, UD-IQ1_S, 4 experts</strong> (answers from two setups, see below)</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td><strong>18</strong></td></tr>
+    <tr><td class="t">Mistral Large 4, UD-IQ1_S, 3 experts</td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td><td>2</td><td>15</td></tr>
+    <tr><td class="t">DeepSeek V4.1 Flash, ISTA-DASLab GSQ-RCO IQ2_XXS quantization, thinking on</td><td>3</td><td>3</td><td>3</td><td>3</td><td>0</td><td>3</td><td>15</td></tr>
+    <tr><td class="t">Mistral Large 3 675B, Unsloth UD-IQ1_S</td><td>2</td><td>0</td><td>2</td><td>2</td><td>0</td><td>1</td><td>7</td></tr>
+  </tbody></table></div>
+  <p class="tablenote">Writing speeds on these six answers, counting reasoning: DeepSeek 16.66 to 16.77 tokens a second and Mistral Large 3 7.14 to 7.26, each on the desktop alone; Large 4 with three experts 8.08 to 8.32. These are the quality answers, not the probes in section 06.</p>
+  <ul class="plain">
+    <li><strong>The made-up treaty.</strong> Both Large 4 setups said they could not verify it. DeepSeek and Large 3 described its contents as fact.</li>
+    <li><strong>How the four-expert set was put together.</strong> On the night of 31 October, on the earlier two-machine setup with a 6,000-token cap, Large 4 answered the code, statistics and false-premise questions, writing at 0.88 to 1.72 tokens a second. Its logic, probability and decision answers ran out of time (30 minutes each) and were asked again on 1 November on the final setup, with a 10,000-token cap. Same model file and sampling.</li>
+    <li><strong>Reruns with more room.</strong> Before the answers were blinded, three answers that hit their cap while still working were run again with a larger cap: Large 3 on logic and probability (4,000 tokens, rerun at 12,000) and three experts on probability (10,000, rerun at 20,000). A cap counts reasoning and the visible answer together. The cut answers are in the data package.</li>
+    <li><strong>The answer key had a slip.</strong> It said all eight logic clues are needed. The judge flagged that clues 5 and 6 are not, and a brute-force check agrees. No score was changed.</li>
+  </ul>
+  <p>Six questions and one judge: 18 against 15 is a hint, not a ranking.</p>
+</section>
+
+<section id="small4"><div class="secnum">08</div><h2>Mistral Small 4 on the same desktop</h2>
+  <p>Mistral Small 4 is the smaller model in the same family. We run Unsloth's <code>UD-Q4_K_M</code> file (three shards, 73,763,180,544 bytes or 68.7 GiB as on disk on 21 November) on the desktop alone, with a 131,072-token window and 8 threads on the performance cores. On 1 November we compared llama.cpp builds and settings.</p>
+  <div class="data-wrap"><table class="data"><caption>Mistral Small 4 UD-Q4_K_M, 131,072 window, 1 November 2026 (measured)</caption><thead><tr><th>Build and settings</th><th>Prose, two runs, t/s</th><th>Code, two runs, t/s</th><th>Next turn after about 2K / 48K / 97K tokens, t/s</th><th>Peak card, MiB</th></tr></thead><tbody>
+    <tr><td class="t">Older build (commit 5f55650), experts of 26 layers in RAM</td><td>34.73, 27.81</td><td>26.12, 34.08</td><td>34.5 / 32.9 / 32.0</td><td>29,986</td></tr>
+    <tr><td class="t">b12015, same placement</td><td>33.51, 33.64</td><td>33.19, 33.29</td><td>33.4 / 31.7 / 31.0</td><td>30,106</td></tr>
+    <tr><td class="t">b12015, all experts read once into RAM, 19,000 MiB expert cache, n-gram guessing</td><td>41.13, 44.18</td><td>68.43, 76.98</td><td>40.8 / 38.0 / 35.3</td><td>30,504</td></tr>
+    <tr><td class="t"><strong>master with pull request 31286 merged locally, the same plus <code>--moe-cache-cpu-share auto</code></strong></td><td><strong>49.28, 52.41</strong></td><td><strong>71.45, 78.38</strong></td><td><strong>47.6 / 47.7 / 47.1</strong></td><td>30,244</td></tr>
+  </tbody></table></div>
+  <p class="tablenote">Prose: one request (about 300 words on tides) run twice, capped at 420 tokens. Code: one request to rewrite a supplied Python file adding type hints, run twice, capped at 1,400 tokens. Both at temperature 0.15; every run reached its cap. Next turn: writing speed on the turn after a long prompt; the long prompts were near the named sizes (2,620, 48,624 and 97,096 tokens on the fastest row). "n-gram guessing" is <code>--spec-type ngram-mod</code>: the server guesses the next few tokens from text already in the conversation and checks them in one pass. In this code test, which copies most of its input back, the last two rows were about twice as fast as the first two; those rows changed several settings at once. Every row found 3 of 3 hidden codes at all three lengths and passed 5 of 5 tool-call checks. Of five quick checks (four short questions and one small coding task tested by four assertions), four passed our checker on every row. The fifth asked about a Python function that does not exist; every row said so, and our checker's pattern did not match the wording. Reading ran at 1,480 to 2,295 tokens a second on the long prompts.</p>
+  <p>The flags of the fastest row: <code>--load-mode dio --fit off --cpu-moe --moe-cache-mib 19000 --moe-cache-cpu-share auto --spec-type ngram-mod</code>. The server held 70.8 GiB of RAM at its peak.</p>
+</section>
+
+<section id="cost"><div class="secnum">09</div><h2>What it takes to run Large 4 this way</h2>
+  <ul class="plain">
+    <li><strong>The laptop is part of the model.</strong> It must be awake, on the cable, with its worker running. With the worker loaded, the laptop's total RAM in use was 88 GiB, and the worker takes 16 CPU threads. If the worker dies, the desktop server goes down too: when we killed the worker in the middle of an answer on 2 November, the desktop server aborted (its log records a core dump), no server process was left at the 10-second check, and the client got a closed connection.</li>
+    <li><strong>Almost all of the card.</strong> 31,168 MiB at start-up and 31,246 MiB at the highest sampled point during the long reads, on a 32 GB card.</li>
+    <li><strong>Most of the desktop's RAM.</strong> The server peaked at 126.0 GiB, and the desktop's available memory fell as low as 35.5 GiB.</li>
+    <li><strong>Pinned cores.</strong> It is tied to cores 0 to 15 on both machines. In one run a reply slowed to 2.59 tokens a second while the desktop's load rose (section 04).</li>
+    <li><strong>Start-up time.</strong> About 4 minutes: 216 s in our test script (timed from 4 s after launch) and 252 s on one start through our start scripts.</li>
+    <li><strong>Long reads are slow.</strong> Processing a 96,325-token prompt took 1,347 s (22.5 minutes), before any writing began. On the next turn about the same document, the new prompt took 4.2 and 5.0 seconds, because the server had kept what it had already read.</li>
+    <li><strong>It reasons first.</strong> In every request we logged on 1 November, at low effort, it produced reasoning before its answer, so short answers take longer than their length suggests.</li>
+  </ul>
+</section>
+
+<section id="wrong"><div class="secnum">10</div><h2>What we got wrong</h2>
+  <p>Our notes from the first trial on 31 October drew four conclusions that later runs did not support. Each heading paraphrases one of them.</p>
+  <h3>Writing tops out at 2 to 3 tokens a second on this hardware</h3>
+  <p>Our 31 October notes put warm writing at 2.2 to 2.8 tokens a second and estimated it would stop at about 4 even without paging. With the model split across two machines and the weights read in once, it generated about 6.6. On the desktop alone, the best runs ranged from 1.18 to 2.87 after their first requests, wider than the band we wrote down.</p>
+  <h3>The hot-expert cache makes it slower</h3>
+  <p>On 31 October an 8,000 MiB cache generated at 1.11 to 1.43 tokens a second and we wrote it off. That run read 17.7 to 362.2 GB from the drive per request, so it mostly measured paging. With the weights read once, on a newer build on 1 November, a 5,500 MiB cache with a 64K window generated 7.20 to 7.42 against 6.72 to 6.76 for the plain 128K setup on the same three prompts. Small, but a gain, and we did not judge its answers (section 11).</p>
+  <h3>More threads make it worse</h3>
+  <p>24 desktop threads were slower than 8 (later requests 1.45 to 3.20 against 3.22 to 3.96), but that test ran while the model was still paging. The final setup uses 16. We never ran a matched thread comparison without paging, so we cannot say what the extra threads add now.</p>
+  <h3>The newer llama.cpp build is slower for Mistral Small 4</h3>
+  <p>In an early 1 November comparison, b12015 generated prose at 19.37 and 13.29 tokens a second and the older build at 18.22 and 19.05. When we repeated it (section 08), b12015 gave 33.51 and 33.64 and the older build 34.73 and 27.81: the two pairs overlapped. The early pair should not have been read as a comparison. We have no record of what slowed it.</p>
+</section>
+
+<section id="limits"><div class="secnum">11</div><h2>What this does not show</h2>
+  <ul class="plain">
+    <li><strong>One quantization.</strong> Everything is the <code>UD-IQ1_S</code> file. We did not compare it with a larger quantization or the full model, so we cannot say how much quality the small file loses.</li>
+    <li><strong>A small quality sample.</strong> Six questions, one selected answer per setup, one judge model, and the four-expert answers came from two setups (section 07). DeepSeek had its thinking on, Large 3 has no thinking mode, and Large 4 used low effort. Not a benchmark and not a ranking.</li>
+    <li><strong>No full window.</strong> The deepest read was 96,325 tokens in a 131,072-token window. The model card states a 1M-token window (vendor); we did not test it.</li>
+    <li><strong>One request at a time.</strong> No concurrency (several requests at once), and no guess at it.</li>
+    <li><strong>The cached setup was never judged.</strong> On four fixed prompts, the single most likely token at each step (greedy decoding) with the 5,500 MiB cache matched the plain setup at all 48 positions on three prompts and at 25 of 48 on the fourth. Once one token differs, the rest of that output can differ too. We did not judge the cached setup's answers.</li>
+    <li><strong>One pair of machines and one cable.</strong> A different laptop, a slower link, or a desktop with more RAM would change the best split.</li>
+    <li><strong>Single runs.</strong> Most rows are one run each, and we did not measure run-to-run variation.</li>
+  </ul>
+</section>
+
+<section id="related"><div class="secnum">12</div><h2>Related pages on this site</h2>
+  <ul class="plain">
+    <li><a href="../two-boxes/">Two boxes, one model</a>: the desktop-and-laptop split, the cable, and the other models tried on it.</li>
+    <li><a href="../deepseek-v4-flash/">DeepSeek V4 Flash 0731</a>: one desktop or two machines for another large model.</li>
+    <li><a href="../mistral-medium-35/">Mistral Medium 3.5</a>: the field card for the mid-size Mistral.</li>
+    <li><a href="../l3-threads/">The wrong flag</a>: how thread count, not warm-up, set Mistral Large 3's speed.</li>
+    <li><a href="../z13-alone/">Six large models on the Z13 alone</a>: what the laptop does without the desktop.</li>
+    <li><a href="../field-notes-2026-11/">Field notes, November 2026</a>: the month's other lab notes.</li>
+    <li><a href="../method/">Method</a>: the site's evidence labels and rules.</li>
+  </ul>
+</section>
+
+<section id="sources"><div class="secnum">13</div><h2>Sources and data</h2>
+  <p>The <a href="data/README.md">data package</a> holds the records behind the measured numbers here: the per-request result files from both nights, the server logs that show the failed loads, the long-read files, the token comparison files (the chosen token and the five most likely next tokens with their log-probabilities at each step), the six questions, the answer key, all 24 local model answers plus the cut ones, the letter map and the judge's scores, the Mistral Small 4 result files, and the launch and probe scripts. The <a href="data/NUMBERS.md">number map</a> ties each figure on this page to its file and field, or says where it comes from when that is outside the package.</p>
+  <p>Machine paths, network addresses, host names, process ids and request ids are replaced or removed, and so are port numbers outside the logs. The judge's identity and effort come from its run log, which is not shipped. Its written reasons are left out because they are a hosted model's text; its 24 scores are included. The Mistral Large 4 model card and licence are in <code>data/vendor/</code>, as read on 30 October 2026 at repository revision <code>f12dabdc</code>.</p>
+  <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong. Tell us at <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the correction goes on the page with its date.</p>
+</section>
+</div></main>
+
+<footer><div class="wrap">
+  <div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+  <div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div>
+  <p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p>
+  <p>Copyright 2026 Grant Williams. Independent work: Mistral AI, Unsloth, DeepSeek, ISTA-DASLab, OpenAI, NVIDIA, Intel, AMD, ASUS, and the llama.cpp project are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p>
+  <div class="foot-links"><a href="../">Graphometer</a></div>
+</div></footer>
+</body>
+</html>
