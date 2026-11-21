@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>September field notes: eleven local AI tests on one RTX 5090</title>
-<meta name="description" content="Eleven measurements from one RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
+<meta name="description" content="Eleven measurements on an RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
 <link rel="canonical" href="https://graphometer.ai/field-notes-2026-09/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="September field notes: eleven local AI tests on one RTX 5090">
-<meta property="og:description" content="Eleven measurements from one RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
+<meta property="og:description" content="Eleven measurements on an RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
 <meta property="og:url" content="https://graphometer.ai/field-notes-2026-09/">
 <meta property="og:image" content="https://graphometer.ai/og/field-notes-2026-09.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="September field notes: eleven local AI tests on one RTX 5090">
-<meta name="twitter:description" content="Eleven measurements from one RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
+<meta name="twitter:description" content="Eleven measurements on an RTX 5090 desktop. A corrected launch setting let MiniMax M2.7 retrieve all three test codes from a 103,931-token prompt.">
 <meta name="twitter:image" content="https://graphometer.ai/og/field-notes-2026-09.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -142,6 +142,13 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:10px}
+  ol.plain li strong{color:var(--ink);font-weight:600}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -173,438 +180,115 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field notes &middot; 12 to 21 September 2026 &middot; one RTX 5090 desktop &middot; llama.cpp &middot; eleven entries</div>
-      <h1 itemprop="headline">September <em>field notes</em></h1>
-      <p class="subtitle">Eleven measurements from one RTX 5090 desktop, 12 to
-      21 September 2026, led by a correction of our own record: MiniMax
-      M2.7's 96,000-token leg did not fail, it timed out against a launch
-      flag we had inherited without noticing. With the flag fixed, a direct
-      read on 19 September evaluated 85,763 tokens in 145.48 seconds of
-      prompt time, and through the same agent framework on 21 September the
-      model found all three planted codes at 53,584 tokens in 122.1 seconds
-      and at 103,931 tokens in 251.2 seconds.</p>
-      <p class="lead">A roundup of short measured entries from one desktop.
-      It opens with the correction: our
-      first records called MiniMax M2.7 too slow to use, and the slowness
-      was our own launch line. The same entry keeps what still stands from
-      the first week, including a chat template that starts the model
-      inside a thought block with no way out. The others include a
-      maker-stated 124-billion-parameter model that held a 131,072-token
-      window in 6,941 MiB of graphics memory, a flash model that recalled
-      three sealed codes at 459,911 tokens, and a single trailing zero in a
-      file header that decided whether a model could run at all. Every
-      figure carries a label
-      (<span class="lbl m">measured</span> <span class="lbl a">arithmetic</span>
-      <span class="lbl v">vendor</span> <span class="lbl s">stated</span>)
-      with the meanings defined on our <a href="../method/">method page</a>,
-      and every measured figure traces to a log or result file in the
-      <a href="data/README.md">data package</a>.</p>
+      <div class="eyebrow">Field notes &middot; 12 to 21 September 2026 &middot; RTX 5090 desktop, two entries also used a laptop &middot; eleven entries</div>
+      <h1 itemprop="headline">September field notes: <em>eleven local AI tests</em> on one RTX 5090</h1>
+      <p class="subtitle">On one RTX 5090 desktop, a launch setting copied from another model's start script made MiniMax M2.7 look too slow to use; with it fixed, the model found all three hidden test codes in a 103,931-token prompt in 251.2 seconds, in one run through the same agent software that had timed out before.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>If a model reads long prompts far slower than it should, check its micro-batch size</strong> (<code>-ub</code>, how many prompt tokens llama.cpp reads at a time; the default is 512). MiniMax M2.7 read the same 3,658-token prompt at 32.3 tokens a second at <code>-ub 128</code> and at 564.0 at <code>-ub 4096</code>. <a href="#what-to-do">What to do</a></li>
+          <li><strong>If llama.cpp refuses the Ollama-library copy of Qwen3.6-27B with <code>expected 4, got 3</code>, use the upstream file.</strong> The Ollama-library copy is missing one trailing zero in its header; the upstream file loads. <a href="#qwen36-27b">The file check</a></li>
+          <li><strong>MiniMax M2.7 starts every turn by thinking, and none of the switches we tried closed that.</strong> With a 900-token output limit one answer came back empty; with 4,096 it answered. <a href="#minimax-m27">MiniMax M2.7</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to MiniMax, Z.ai, Google, inclusionAI,
-      Alibaba Group, DeepSeek, Thinking Machines Lab, Meta, Ollama,
-      Unsloth, bartowski, NVIDIA, Intel, ASUS, or the llama.cpp
-      project.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What this page is</h2>
-      <p>Each entry is a measurement or a small set of measurements made
-      between 2026-09-12 and 2026-09-21 on one machine: one NVIDIA GeForce
-      RTX 5090 with 32,607 MiB of VRAM, an Intel Core Ultra 9 285K and
-      188 GiB of RAM, every model served by llama.cpp, one model at a time,
-      one request at a time. Each entry names the model file and
-      quantization, the context window and the day it ran.
-      <span class="lbl m">measured</span></p>
-      <p>None of this is a benchmark and none of it ranks models. Several
-      entries exist because something surprised us: a refusal, an empty
-      string, a number that matched its prediction to within two
-      mebibytes. The lead entry is a correction of our own record, a genre
-      this site keeps on purpose.</p>
+      <h2>What to do</h2>
+      <ol class="plain">
+        <li><strong>Check the micro-batch size on a model that reads slowly</strong> (<code>-ub</code> or <code>--ubatch-size</code> in the launch line); it was the cause for MiniMax M2.7, while GLM-4.7-Flash and Gemma-4-31B gained at most 19.5 and 3.6 percent. Ours carried <code>-ub 128</code>, copied from MiniMax M3's start script with no recorded reason. A larger micro-batch needs more card memory, so at a very long window it may not load. The <a href="../batch-size/">batch-size study</a> has the full ladders.</li>
+        <li><strong>Give MiniMax M2.7 room to think.</strong> A 900-token output budget returned no answer text; 4,096 gave a coherent answer. <code>--reasoning-budget 0</code> does not stop the thinking. Measure your own floor; the <a href="../empty-answer/">Empty Answer study</a> shows how.</li>
+        <li><strong>To run Qwen3.8-Flash-Next past 262,144 tokens, set the rope-scaling flags</strong> (settings that stretch the model past its trained length), or the card pays for a window the server will not use (<a href="#qwen38-flash-next">details</a>).</li>
+        <li><strong>For Ling-3.0-flash, read in bigger chunks, but not the biggest</strong> (<code>-b 4096 -ub 2048</code>, the setting that now ships here). <code>-ub 4096</code> was faster but one prompt crashed the server (<a href="#ling-30-flash">details</a>).</li>
+      </ol>
     </section>
 
-    <section>
+    <section id="minimax-m27">
       <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <table class="facts">
-        <tr><th scope="row">Context sweep, 2026-09-12</th><td>llama-server started directly, only the window varied; speaking is the best of two warm ~200-token prose replies, reading one ~21,000-token ledger with a planted code; a 97 GB download ran throughout, so load times are upper bounds.</td></tr>
-        <tr><th scope="row">256K sweep, 2026-09-15</th><td>One long rung per model, a ~230,000-token prompt with three sealed codes at 5, 50 and 95 percent depth, card memory at load and at peak; about 340 GB of downloads ran during it.</td></tr>
-        <tr><th scope="row">Wave-two check, 2026-09-13</th><td>Recall of three codes and a tool call at about 48,000 and 96,000 tokens through an agent framework, one run per model per arm. A derived summary ships in <code>data/wave2/</code>; one of its entries records a timeout as a recall miss, and <code>CORRECTION.md</code> beside it annotates that (section 15).</td></tr>
-        <tr><th scope="row">MiniMax M2.7 audition, 2026-09-13, and budget test, 2026-09-15</th><td>Header and template reads, two served rungs and the probes, then the server's <code>--reasoning-budget</code> at 0 and 256. Both ran before the launch fix of 19 September, so their wall times are not reprinted.</td></tr>
-        <tr><th scope="row">MiniMax M2.7, 2026-09-19 and 21</th><td>Ladders and a restart test directly against the server, then the wave-two check re-run through the same agent framework.</td></tr>
-        <tr><th scope="row">MiniMax M3, 2026-09-19 to 20</th><td>The old file's micro-batch sweep, then the correct file, its 262,144 load ladder and a two-machine attempt.</td></tr>
-        <tr><th scope="row">Flash-Next context study, 2026-09-20</th><td>Three sealed codes at windows of 262,144, 393,216 and 524,288, cache at f16 and q8_0, plus the rope-flag trap; one pass each, temperature 0.</td></tr>
-        <tr><th scope="row">Batch-size sweep, 2026-09-20 to 21</th><td><code>--batch-size</code> and <code>--ubatch-size</code> swept on ~48,000-token prompts, one run per setting: hand-copied flags at a 131,072 window on 20 September, each model's own start script at its served window on 21 September, so Ling-3.0-flash's two baselines sit on different windows (section 08). The sweep is <a href="../batch-size/">its own study</a>.</td></tr>
-        <tr><th scope="row">Qwen3.6-27B files and the two-box run, 2026-09-13</th><td>A header comparison and a processor-only load; Llama 4 Maverick split across the desktop and an ASUS ROG Flow Z13 laptop over Thunderbolt.</td></tr>
-      </table>
-      <p class="fineprint">Card memory is the raw nvidia-smi figure in MiB,
-      never divided by 1000.</p>
+      <h2>MiniMax M2.7: a copied setting, not the model, was slow</h2>
+      <p><strong>What went wrong.</strong> On 13 September, through an agent framework at a 131,072-token window (how much text the model holds at once), the 48,000-token test (53,581 prompt tokens) took 1,682.9 seconds, about 28 minutes, and the 96,000-token test returned no answer before the turn ended at 1,800.4 seconds. We closed the model as too slow. The cause was <code>-ub 128</code> in our launch line; llama.cpp's default is 512.</p>
+      <p><strong>The fix, 19 September</strong>, at a 131,072 window with an 8-bit cache and <code>-b 4096</code>: one 3,658-token prompt read at 32.3 tokens a second at <code>-ub 128</code> and at 564.0 at <code>-ub 4096</code>, with every expert (the parts of the model that run only for some tokens) in system memory. At 43,909 tokens and <code>-ub 4096</code>, prompt reading ran at 640.2 tokens a second with every expert layer in system memory, 656.5 with the experts of 59 of the 62 layers there, and 666.1 at 58 of 62 with 30,695 MiB on the card; those are prompt-reading rates, and the whole requests, each ending in a short answer, took 72.1, 70.1 and 69.1 seconds. The launch script now installed for this model uses the 59-of-62 placement (where each layer's experts are kept). At that placement, a prompt seeded to the 96,000-token target, 85,763 tokens as the server counted them, was read in 145.48 seconds, 589.5 tokens a second; the whole request, including a 16-token answer, took 147.49 seconds.</p>
+      <p><strong>The same agent framework, 21 September:</strong> the 48,000-token test took 122.1 seconds at 53,584 prompt tokens and the 96,000-token test 251.2 seconds at 103,931, with all three codes found on both and the tool call passed.</p>
+      <p>Writing speed was not what changed: 32-token answers came out at 9.9 to 10.2 tokens a second after the 3,658-token prompt at micro-batches from 128 to 2,048, and at 9.0 to 10.0 after 43,909 tokens at 4,096; through the framework, 8.0 on 13 September and 8.6 and 7.2 on 21 September, on completions of 160, 180 and 182 tokens. These are short answers, not prose writing speeds.</p>
+      <p>The native 196,608-token window fits on the card only at a smaller micro-batch: with every expert in system memory, <code>-ub 4096</code> failed to load, <code>-ub 2048</code> aborted and <code>-ub 1024</code> loaded with 31,560 MiB on the card. Only the 3,658-token prompt was run there (188.8 tokens a second).</p>
+      <p>A warm session survives a real server restart (19 September): 85,778 tokens saved and restored, 1 token counted as new work, a 2.19-second restore, then a 2.17-second request (<a href="../warm-wake/">warm-wake study</a>). On 21 September the installed launch script repeated it: 1 prompt token evaluated (136.8 ms), 16 answer tokens, 1.97 seconds total, stop count 42,898 tokens.</p>
+      <h3>Thinking, measured 13 and 15 September, before the launch fix</h3>
+      <p>The chat template starts the model inside a thought block on every turn and offers no switch to close it. The default, <code>enable_thinking: false</code>, <code>thinking: false</code> and <code>reasoning_effort: "low"</code>, each at 65,536 (f16 cache) and 131,072 (8-bit cache): eight calls, and every one produced a reasoning block. Every turn of the 21 September re-run also streamed its reasoning first.</p>
+      <p>With <code>--reasoning-budget 0</code> the model still wrote 1,734 and 3,003 characters of thought on two prompts, and the second hit its 600-token cap with zero visible characters, stop reason <code>length</code>; a budget of 256 gave answers and well-formed tool calls.</p>
+      <p>Given a 900-token output budget, the first coherence test returned <code>finish=length</code>, 900 completion tokens, <strong>0 characters of content</strong> and 4,034 characters of reasoning: the whole budget went on thinking. That is the finding of our <a href="../empty-answer/">Empty Answer</a> study; it concerns the output budget, not the launch setting. Given 4,096 tokens the model answered coherently, with well-formed tool calls.</p>
+      <h3>Memory</h3>
+      <p>The file header (read 13 September) gives <strong>248 KiB of cache per token</strong> (2 times 8 key-value heads times 128 dimensions times 2 bytes times 62 blocks), so 131,072 tokens at f16 is 31.0 GiB, too much for a 31.8 GiB card beside the weights; that window needs an 8-bit cache. <span class="lbl a">arithmetic</span> Measured, 65,536 at f16 took 21,232 MiB and 131,072 at 8-bit 22,240 MiB, because both hold about 15.5 GiB of cache. This arithmetic describes the memory bill, not the speed.</p>
     </section>
 
-    <section>
+    <section id="minimax-m3">
       <div class="secnum">03</div>
-      <h2>MiniMax M2.7, re-opened</h2>
-      <p>The file: Unsloth's <code>UD-IQ4_XS</code> build, four shards,
-      108,413,781,312 bytes, verified by count and byte size against the
-      repository tree. The header, read before any load: architecture
-      <code>minimax-m2</code>, 62 blocks, 48 attention heads with 8
-      key-value heads, 256 experts with 8 used, native context 196,608
-      tokens. <span class="lbl m">measured</span> 2026-09-13</p>
-      <h3>What we recorded, and what was wrong</h3>
-      <p>On 13 September, through an agent framework at a 131,072 window,
-      the 48,000-token leg (53,581 prompt tokens) took 1,682.9 seconds,
-      about 28 minutes, and the 96,000-token leg returned no answer before
-      the turn ended at 1,800.4 seconds. We closed the model as too slow. The cause was our
-      launch line: it carried <code>-ub 128</code>, llama.cpp's micro-batch
-      size, copied from MiniMax M3's start script, where no reason for it is
-      recorded. llama.cpp's default is 512.
-      <span class="lbl m">measured</span> 2026-09-13</p>
-      <p>On 19 September, at a 131,072 window with an 8-bit cache and
-      <code>-b 4096</code> throughout, one 3,658-token prompt read at 32.3
-      tokens a second at <code>-ub 128</code> and at 564.0 at
-      <code>-ub 4096</code>, with every expert in system memory. At 43,909
-      tokens and <code>-ub 4096</code>, prompt evaluation ran at 640.2 tokens
-      a second with every expert layer there, 656.5 with the experts of 59 of
-      the 62 layers there (the placement the installed launch script uses),
-      and 666.1 at 58 of 62 with 30,695 MiB on the card. Those are
-      prompt-evaluation rates; the whole requests, each ending in a short
-      answer, took 72.1, 70.1 and 69.1 seconds. One cold run each; the
-      <a href="../batch-size/">batch-size study</a> has the whole ladder.
-      <span class="lbl m">measured</span> 2026-09-19</p>
-      <p>At the installed placement, a direct read of a prompt seeded to the
-      same 96,000-token target, 85,763 tokens as the server counted them,
-      was evaluated in 145.48 seconds, 589.5 tokens a second; the whole request, including
-      a 16-token answer, took 147.49 seconds of client wall time.
-      <span class="lbl m">measured</span> 2026-09-19</p>
-      <p>Then the same agent framework, on 21 September, against the
-      installed server with the fixed setting: the 48,000-token leg took 122.1 seconds at 53,584 prompt
-      tokens and the 96,000-token leg 251.2 seconds at 103,931, with all
-      three codes found on both legs and the tool call passed.
-      <span class="lbl m">measured</span> 2026-09-21</p>
-      <p>Decode was not what changed: 32-token answers decoded at 9.9 to
-      10.2 tokens a second after the 3,658-token prompt at micro-batches
-      from 128 to 2,048, and at 9.0 to 10.0 after 43,909 tokens at 4,096;
-      through the framework, 8.0 on 13 September and 8.6 and 7.2 on 21
-      September, on completions of 160, 180 and 182 tokens. These are short
-      answers, not prose speaking speeds.
-      <span class="lbl m">measured</span> 2026-09-13 to 21</p>
-      <p>The native 196,608-token window fits on the one card only at a
-      smaller micro-batch. With every expert in system memory,
-      <code>-ub 4096</code> failed to load at that window,
-      <code>-ub 2048</code> aborted, and <code>-ub 1024</code> loaded with
-      31,560 MiB on the card. Only the 3,658-token prompt was run there
-      (188.8 tokens a second), so deep reading at 196,608 is unmeasured.
-      <span class="lbl m">measured</span> 2026-09-19</p>
-      <p>A warm session survives a real server restart: 85,778 tokens saved
-      and 85,778 restored, 1 token counted as new work, a 2.19-second
-      restore, then a 2.17-second request; the
-      <a href="../warm-wake/">warm-wake study</a> has those clocks and the
-      mechanism. On 21 September the installed launch script repeated the
-      test: the server evaluated 1 prompt token (136.8 ms) and 16 answer
-      tokens, total time 1.97 seconds, stop count 42,898 tokens.
-      <span class="lbl m">measured</span> 2026-09-19 and 2026-09-21</p>
-      <h3>What stands from the first week, dated</h3>
-      <p>The chat template starts the model inside a thought block on every
-      turn and offers no switch to close it: the default,
-      <code>enable_thinking: false</code>, <code>thinking: false</code> and
-      <code>reasoning_effort: "low"</code>, each at 65,536 (f16 cache) and
-      131,072 (8-bit cache), eight calls, and every one produced a reasoning
-      block. <span class="lbl m">measured</span> 2026-09-13, not
-      re-run since; every turn of the 21 September re-run also streamed its
-      reasoning before any answer text.</p>
-      <p>The server-side budget does not close it either. With
-      <code>--reasoning-budget 0</code> the model still wrote 1,734 and
-      3,003 characters of thought on two prompts, and the second hit its
-      600-token cap with zero visible characters, stop reason
-      <code>length</code>; a budget of 256 gave answers and well-formed
-      tool calls. <span class="lbl m">measured</span> 2026-09-15, before the
-      launch fix and not re-run; its log ships unchanged.</p>
-      <p>The first coherence probe of the audition, given a 900-token
-      output budget, returned <code>finish=length</code>, 900 completion
-      tokens, <strong>0 characters of content</strong> and 4,034 characters
-      of reasoning: the whole budget went on thinking.
-      <span class="lbl m">measured</span> 2026-09-13, 65,536 context, f16
-      cache. That is the finding of our <a href="../empty-answer/">Empty
-      Answer</a> study, on another vendor's model served locally; it
-      concerns the output budget, not the launch flag, and was not re-run.
-      Given 4,096 tokens the model answered coherently (three sentences of
-      the answer are quoted in the package), and its tool calls were well
-      formed, parsed correctly from its own XML dialect.</p>
-      <p>The header arithmetic was always about memory: <strong>248 KiB of
-      cache per token</strong>, 2 times 8 key-value heads times 128
-      dimensions times 2 bytes times 62 blocks, so 131,072 tokens at f16 is
-      31.0 GiB, too much for a 31.8 GiB card beside the weights; that window
-      needs an 8-bit cache. <span class="lbl a">arithmetic</span> Measured,
-      the 65,536 rung at f16 took 21,232 MiB and the 131,072 rung at 8-bit
-      22,240 MiB, because both hold about 15.5 GiB of cache.
-      <span class="lbl m">measured</span> 2026-09-13. Our first notes
-      offered this arithmetic as the reason the model was slow (section
-      15).</p>
+      <h2>MiniMax M3: the old file had no sparse attention</h2>
+      <p>The file we had, Unsloth's <code>UD-IQ3_XXS</code>, predates llama.cpp's support for this model's sparse attention: it has <strong>zero indexer tensors (the parts sparse attention needs) among its 948</strong>, so every M3 number we had came from a dense fallback. On it, at <code>-b 4096</code>, reading a 3,658-token prompt scaled with the micro-batch: 22.6 tokens a second at 128, then 67.7, 123.1, 221.3 and 393.8 at 512, 1,024, 2,048 and 4,096.</p>
+      <p>On the correct file, bartowski's <code>Q2_K_L</code>, at a 131,072 window, <code>-ub 2048</code> and an 8-bit cache: prompt reading at 147.5 tokens a second on 3,658 tokens; a 58,307-token recall prompt took 300.2 seconds for the whole request, including 165 generated tokens, all three codes found; writing at 8.9 on an 82-token answer and 9.0 on a forced 128-token generation. At the 196,608 window (<code>-ub 512</code>): 72.6 on 3,658 tokens, and the same recall took 856.3 seconds, including 207 generated tokens, 3 of 3 again.</p>
+      <p>A 262,144-token window with the sparse attention engaged fits only at <code>-ub 128</code>: the compute buffer alone asks for 19,619 MiB at <code>-ub 2048</code>, and the allocation fails at every micro-batch from 2,048 down to 256, and at 128 it loads with 31,525 MiB on the card and reads a 3,658-token prompt at 24.2 tokens a second. We treat 256K as not viable for this model here. Split across the desktop and a laptop, bartowski's larger <code>IQ3_XXS</code> build (167.6 GiB) loaded at <code>-ub 1024</code>, read the 3,658-token prompt at 17.58 tokens a second; writing was not measured (<a href="../two-boxes/">two-box study</a>).</p>
     </section>
 
-    <section>
+    <section id="glm-47-flash">
       <div class="secnum">04</div>
-      <h2>MiniMax M3</h2>
-      <p>Two inherited problems. M3's own start
-      script is where MiniMax M2.7's <code>-ub 128</code> came from, and no
-      reason for it is recorded there either. And the file we had,
-      Unsloth's <code>UD-IQ3_XXS</code> conversion, predates llama.cpp's
-      support for this model's sparse attention: a tensor inventory finds
-      <strong>zero indexer tensors among its 948</strong>, so every M3 number
-      we had was a dense fallback. <span class="lbl m">measured</span>
-      2026-09-19</p>
-      <p>On that old file, at a fixed <code>-b 4096</code>, reading a
-      3,658-token prompt scaled with the micro-batch: 22.6 tokens a second
-      at 128, then 67.7, 123.1, 221.3 and 393.8 at 512, 1,024, 2,048 and
-      4,096. One cold run per rung. <span class="lbl m">measured</span>
-      2026-09-19</p>
-      <p>On the correct file, bartowski's <code>Q2_K_L</code> (four shards,
-      153,086,988,768 bytes, verified), at a 131,072 window,
-      <code>-ub 2048</code> and an 8-bit cache: prompt evaluation at 147.5
-      tokens a second on 3,658 tokens; a 58,307-token recall prompt took
-      300.2 seconds for the whole request, including 165 generated tokens,
-      about 194 prompt tokens per second of wall time, which understates
-      pure reading; decode at 8.9 on an 82-token answer and 9.0 on a forced
-      128-token generation; all three codes found. At the 196,608 window
-      (<code>-ub 512</code>): 72.6 on 3,658 tokens, and the same recall took
-      856.3 seconds including 207 generated tokens (about 68.1 per second of
-      wall time), 3 of 3 again, so no rise with depth shows at that window.
-      <span class="lbl m">measured</span> 2026-09-20</p>
-      <p>A 262,144-token window with the sparse attention engaged fits this
-      card only at <code>-ub 128</code>: the compute buffer alone asks for
-      19,619 MiB at <code>-ub 2048</code>, the allocation fails at every
-      micro-batch from 2,048 down to 256, and at 128 the window loads with
-      31,525 MiB on the card and reads a 3,658-token prompt at 24.2 tokens a
-      second. We treat 256K as not viable for this model here.
-      <span class="lbl m">measured</span> 2026-09-20. A
-      split across the desktop and the laptop, with bartowski's larger
-      <code>IQ3_XXS</code> build of the same attention (167.6 GiB), loaded
-      at <code>-ub 1024</code> and read the 3,658-token prompt at 17.58
-      tokens a second; speaking was not measured, because the run was
-      stopped during the first speaking probe. The
-      <a href="../two-boxes/">two-box study</a> has that row.
-      <span class="lbl m">measured</span> 2026-09-20</p>
+      <h2>GLM-4.7-Flash: fast writing, slower reading on long prompts</h2>
+      <p>The fastest writer in the 12 September sweep. At 131,072 context, all on the card with an f16 cache: <strong>223.65 tokens a second writing and 4,447.44 reading</strong> a 20,221-token prompt, the hidden code found, 24,814 MiB, loaded in 21.2 seconds. At its ceiling of 202,752 tokens it read a 189,931-token prompt at 819.70 (28,702 MiB, 28,765 at peak; loaded in 22.2 seconds; 227.43 writing on a short turn; the 29-token three-code answer at 70.48). <strong>Reading falls from 4,447 to 820</strong>, which is why this page gives a prompt size with every reading rate.</p>
+      <p>A larger micro-batch read a ~48,000-token prompt at most 19.5 percent faster (2,594.6 to 3,100.2 tokens a second), at a setting whose visible answer came back empty, the code only in its reasoning, and was not adopted.</p>
     </section>
 
-    <section>
+    <section id="gemma-4-26b">
       <div class="secnum">05</div>
-      <h2>GLM-4.7-Flash</h2>
-      <p>The fastest speaker in the 12 September sweep. At 131,072 context,
-      all weights on the card with an f16 cache, Unsloth's
-      <code>UD-Q4_K_XL</code> build: <strong>223.65 tokens a second speaking
-      and 4,447.44 reading</strong> on a 20,221-token prompt, the planted
-      code found, 24,814 MiB on the card, loaded in 21.2 seconds.
-      <span class="lbl m">measured</span> 2026-09-12</p>
-      <p>At its native ceiling of 202,752 tokens it held 28,702 MiB (28,765
-      at peak), loaded in 22.2 seconds, spoke at 227.43 on a short turn, and
-      read a 189,931-token prompt at 819.70 tokens a second, finding all
-      three codes; that 29-token three-code answer decoded at 70.48.
-      <span class="lbl m">measured</span> 2026-09-15</p>
-      <p><strong>Reading falls from 4,447 to 820 between the two
-      rungs</strong>, which is why this page gives a prompt size with every
-      reading rate.</p>
-      <p>On 21 September a larger micro-batch read a ~48,000-token prompt
-      at most 19.5 percent faster (2,594.6 to 3,100.2 tokens a second, at a
-      rung whose visible answer came back empty, the code only in its
-      reasoning) and was not adopted; the
-      <a href="../batch-size/">batch-size study</a> has the rungs.
-      <span class="lbl m">measured</span> 2026-09-21</p>
+      <h2>Gemma-4-26B: fast reading at a full 262,144 window</h2>
+      <p>At 131,072 context: <strong>211.07 writing and 10,593.27 reading</strong> on a 21,690-token prompt, the hidden code found, 20,646 MiB. At 262,144 it read a 230,855-token prompt at <strong>3,799.69</strong> tokens a second and found all three codes; it wrote at 202.64 on a short turn and the 33-token three-code answer at 121.36; loaded in 23.2 seconds (<a href="#table-256k">table</a>).</p>
+      <p>A larger micro-batch read a ~48,000-token prompt faster, from 8,972.3 tokens a second at the default to a best of 12,063.4 at <code>-ub 2048</code>, with the 17-character code answer written slower (153.8 against 163.7). At <code>-ub 4096</code> it read slower, 11,811, and wrote that answer at 148.4. It was not adopted.</p>
     </section>
 
-    <section>
+    <section id="gemma-4-31b">
       <div class="secnum">06</div>
-      <h2>Gemma-4-26B</h2>
-      <p>At 131,072 context, all on the card with an f16 cache,
-      <strong>211.07 speaking and 10,593.27 reading</strong> on a
-      21,690-token prompt, the planted code found, 20,646 MiB.
-      <span class="lbl m">measured</span> 2026-09-12</p>
-      <p>At a full 262,144-token window it read a 230,855-token prompt at
-      <strong>3,799.69</strong> tokens a second and found all three codes; it
-      spoke at 202.64 on a short turn and decoded the 33-token three-code
-      answer at depth at 121.36; 23,446 MiB loaded, 23,513 at peak, loaded
-      in 23.2 seconds. <span class="lbl m">measured</span> 2026-09-15</p>
-      <p>On 21 September a larger micro-batch read a ~48,000-token prompt
-      faster, from 8,972.3 tokens a second at the default to a best of
-      12,063.4 at <code>-ub 2048</code>. At that best reading rung the
-      17-character code answer decoded at 153.8 tokens a second, against
-      163.7 at the default; the following rung, <code>-ub 4096</code>,
-      decoded that same short answer at 148.4 and read slower, 11,811. It
-      was not adopted; the <a href="../batch-size/">batch-size study</a> has
-      the rungs. <span class="lbl m">measured</span> 2026-09-21</p>
+      <h2>Gemma-4-31B: fills the card; speed is flat from 64K to 128K</h2>
+      <p>At 131,072 context: 73.68 writing, 3,166.30 reading on a 21,690-token prompt, <strong>29,844 MiB on the card with 2,763 MiB free</strong>. At 65,536: 73.73 writing, 3,175.57 reading, 24,660 MiB with 7,947 free. Both found the hidden code. A larger micro-batch read a ~48,000-token prompt at most 3.6 percent faster (2,687.5 to 2,784.5 tokens a second) and was not adopted.</p>
     </section>
 
-    <section>
+    <section id="ling-30-flash">
       <div class="secnum">07</div>
-      <h2>Gemma-4-31B</h2>
-      <p>This one fills the card. At 131,072 context: 73.68 speaking,
-      3,166.30 reading on a 21,690-token prompt, <strong>29,844 MiB on the
-      card with 2,763 MiB free</strong>. At 65,536: 73.73 speaking, 3,175.57
-      reading on the same prompt, 24,660 MiB with 7,947 free. Both rungs
-      found the planted code. <span class="lbl m">measured</span>
-      2026-09-12</p>
-      <p><strong>Speed is flat between 64K and 128K; only the room
-      changes.</strong> A larger micro-batch measured on 21 September read a
-      ~48,000-token prompt at most 3.6 percent faster (2,687.5 to 2,784.5)
-      and was not adopted. <span class="lbl m">measured</span>
-      2026-09-21</p>
+      <h2>Ling-3.0-flash: a long window for very little memory</h2>
+      <p>A 124-billion-parameter mixture-of-experts by its maker's count <span class="lbl s">stated</span>. Only 8 of its 43 blocks hold an attention cache, in a compressed form, so context is cheap: 9 KiB of cache per token, 0.56 GiB at 65,536, 1.13 GiB at 131,072 and 2.25 GiB at its native 262,144, <strong>27 times less per token</strong> than MiniMax M2.7's 248 KiB. <span class="lbl a">arithmetic</span> In the 13 September agent-framework check, at a 131,072 window at the default micro-batch, it held <strong>6,941 MiB</strong>, found all three codes on both tests and made its tool calls; the first read reached first content after 506.68 seconds on a 103,807-token prompt (history seeded to about 95,913 tokens), and a warm turn on that history after 0.96 seconds (2.0 seconds for the turn). At 262,144, loaded in 103.8 seconds, the whole model held <strong>8,314 MiB</strong> (<a href="#table-256k">table</a>).</p>
+      <p><strong>The batch-size sweep changed its reading.</strong> With <code>-b 4096 -ub 2048</code>, the setting that now ships, it read <strong>727.7 tokens a second</strong> on 47,986 tokens and 694.6 on 149,711 at the 262,144 window (21 September, 8,824 MiB at peak), against 238.2 on 47,992 tokens at the default micro-batch at a 131,072 window (20 September). The windows differ. On one window, 262,144, a 3,007-token read went from 201.5 at <code>-ub 512</code> to 444.0 at <code>-ub 2048</code>, about 2.2 times.</p>
+      <p><strong>A faster setting was withdrawn.</strong> At <code>-ub 4096</code> it read 1,173.9 on 48,084 tokens and 1,067.6 on 150,153, but one 3,007-token prompt crashes the server with a CUDA illegal memory access, at the 262,144 window. The same prompt passed at 2,048, 1,024 and 512, and 60 code and prose prompts and 50 ledger prompts (a ledger is a long test document holding hidden codes) ran with zero crashes at either setting. The crash log and a reproducer ship in the package.</p>
+      <p><strong>It has a real thinking off-switch</strong>, three in the template: <code>enable_thinking: false</code>, <code>thinking_option: "off"</code>, or the phrase "detailed thinking off" in a system message. The opposite of MiniMax M2.7.</p>
     </section>
 
-    <section>
+    <section id="qwen38-flash-next">
       <div class="secnum">08</div>
-      <h2>Ling-3.0-flash</h2>
-      <p>A 124-billion-parameter mixture-of-experts by its maker's count
-      <span class="lbl s">stated</span> (the maker's figure, not our
-      measurement). From the file header: 43 blocks, 512 experts with 8
-      used and 1 shared, and <strong>only 8 of the 43 blocks hold an
-      attention cache</strong>, in a compressed form (rank 512 plus 64
-      rotary dimensions); the other 35 run a linear path with a fixed-size
-      state. <span class="lbl m">measured</span> header read, 2026-09-13</p>
-      <p>That makes context cheap: 9 KiB of cache per token, 0.56 GiB at
-      65,536, 1.13 GiB at 131,072 and 2.25 GiB at its native 262,144,
-      <strong>27 times less per token</strong> than MiniMax M2.7's 248 KiB,
-      both computed the same way from the files' headers.
-      <span class="lbl a">arithmetic</span></p>
-      <p>In the 13 September agent-framework check, at a 131,072 window and
-      the default micro-batch, it held <strong>6,941 MiB</strong>, found all
-      three codes on both legs and made its tool calls; the first read
-      reached first content after 506.68 seconds on a 103,807-token prompt
-      (the history was seeded to about 95,913 tokens). A warm turn on that
-      history reached first content after 0.96 seconds; the turn itself took
-      2.0 seconds.
-      <span class="lbl m">measured</span> 2026-09-13</p>
-      <p>At its native 262,144, still at the default micro-batch, it loaded
-      in 103.8 seconds holding
-      <strong>8,314 MiB</strong> (8,473 at peak), read 230,759 tokens at
-      206.25 a second, and found all three codes.
-      <span class="lbl m">measured</span> 2026-09-15. The 2.25 GiB is the
-      cache alone, by arithmetic; the 8,314 MiB is the whole model as
-      served.</p>
-      <p>The batch-size sweep changed its reading. With
-      <code>-b 4096 -ub 2048</code>, the setting that now ships, it read
-      <strong>727.7 tokens a second</strong> on 47,986 tokens and 694.6 on
-      149,711 at the 262,144 window (21 September, 8,824 MiB at peak),
-      against 238.2 on 47,992 tokens at the default micro-batch at a 131,072
-      window (20 September). The windows differ. On one window, 262,144, a
-      3,007-token read went from 201.5 at <code>-ub 512</code> to 444.0 at
-      <code>-ub 2048</code>, about 2.2 times.
-      <span class="lbl m">measured</span> 2026-09-20 to 21</p>
-      <p>A faster setting was withdrawn. At <code>-ub 4096</code> the served
-      window read 1,173.9 on 48,084 tokens and 1,067.6 on 150,153, but one
-      3,007-token prompt crashes the server with a CUDA illegal memory
-      access. The shipped crash log is that one case, at the 262,144 window;
-      the same prompt passed at 2,048, 1,024 and 512 on that window, and 60
-      code and prose prompts and 50 ledger prompts ran with zero crashes at
-      either setting. The crash log and a standalone reproducer ship in the
-      package; the diagnostic runs are in the
-      <a href="../batch-size/">batch-size study</a>.
-      <span class="lbl m">measured</span> 2026-09-20 to 21</p>
-      <p>And it has a real thinking off-switch, three in the template:
-      <code>enable_thinking: false</code>, <code>thinking_option: "off"</code>,
-      or the phrase "detailed thinking off" in a system message; off emits a
-      closed, empty thought block. <span class="lbl m">measured</span>
-      template read, 2026-09-13. The opposite of MiniMax M2.7.</p>
+      <h2>Qwen3.8-Flash-Next: found the codes past its trained window with rope-scaling flags</h2>
+      <p>At 131,072 context, with the experts in system memory: <strong>11,366 MiB</strong>, 22.50 writing, 195.84 reading on a 21,740-token prompt, the hidden code found, about 2 seconds to load warm; its 65,536 preset holds 9,670 MiB and reads 246.9 on a 2,624-token prompt. At 262,144 it loaded in 52.4 seconds, read a 230,803-token prompt in about 23 minutes and found all three codes; it wrote at 25.33 on a short turn and the 32-token three-code answer at 13.58 (<a href="#table-256k">table</a>).</p>
+      <p>With the rope-scaling flags set, <strong>recall held at three of three hidden codes out to 459,911 tokens, 1.75 times the trained 262,144</strong>, with time the limit: 19.8 minutes at f16 and 262,144 (the q8_0 twin 19.4), then 31.2 and 44.6 minutes at q8_0 at 393,216 and 524,288. At 262,144 the q8_0 cache gave the same recall with 22,019 MiB at peak against 25,226 at f16. This is retrieval, not reasoning across the window: the integration question, a follow-up (526 tokens) asked with the ledger cached, fails against a 5,974-token ledger and against every longer one.</p>
+      <p><strong>The trap:</strong> ask for 524,288 without the rope flags and the server caps the slot (its memory for one conversation) at 262,144, while the card still pays for the big window: 23,816 MiB, the same as a genuine 524,288 window (23,814), against 15,394 on a plain 262,144 load (that server loaded; its probe timed out at 600 seconds).</p>
     </section>
 
-    <section>
+    <section id="qwen36-27b">
       <div class="secnum">09</div>
-      <h2>Qwen3.8-Flash-Next</h2>
-      <p>At 131,072 context, Unsloth's
-      <code>UD-Q3_K_XL</code> build with the experts in system memory:
-      <strong>11,366 MiB</strong>, 22.50 speaking, 195.84 reading on a
-      21,740-token prompt, the planted code found, about 2 seconds to load
-      warm. Its 65,536 preset holds 9,670 MiB and reads 246.9 on a
-      2,624-token prompt. <span class="lbl m">measured</span> 2026-09-12</p>
-      <p>At 262,144 it loaded in 52.4 seconds, held <strong>15,124
-      MiB</strong> (15,626 at peak), read the 230,803-token prompt at 165.70
-      a second, about 23 minutes, and found all three codes; it spoke at
-      25.33 on a short turn and decoded the 32-token three-code answer at
-      depth at 13.58. <span class="lbl m">measured</span> 2026-09-15</p>
-      <p>Five days later we pushed it past its trained window. With the
-      rope-scaling flags set, recall held at <strong>three of three sealed
-      codes out to 459,911 tokens, 1.75 times the trained 262,144</strong>,
-      with time the limit: 19.8 minutes at f16 and 262,144 (the q8_0 twin
-      took 19.4), then 31.2 and 44.6 minutes at q8_0 at 393,216 and 524,288.
-      At 262,144 the q8_0 cache gave the same recall with 22,019 MiB at peak
-      against 25,226 at f16. <span class="lbl m">measured</span>
-      2026-09-20</p>
-      <p>These runs show retrieval, not reasoning across the window: the
-      integration question fails against a 5,974-token ledger and against
-      every longer one; the question itself is a 526-token follow-up with
-      the ledger cached.</p>
-      <p>One trap, measured the same day: ask for 524,288 without the rope
-      flags and the server logs that it caps the slot at 262,144, while the
-      card still pays for the big window: 23,816 MiB, the same as a genuine
-      524,288 window (23,814), against 15,394 on a plain 262,144 load (that
-      server came up, but its probe then logged a 600-second timeout). <span class="lbl m">measured</span> 2026-09-20.
-      Its batch-size results, which differ between the 131,072 window they
-      were swept at and the 262,144 window it serves, are on the
-      <a href="../batch-size/">batch-size study</a>.</p>
+      <h2>Qwen3.6-27B: one trailing zero decided whether it runs</h2>
+      <p>Two model files labelled Qwen3.6-27B exist on this machine. The one distributed through Ollama's model library declares its rope sections as <code>[11, 11, 10]</code>, and every llama.cpp build here refuses it, <code>expected 4, got 3</code>, in under a second. The upstream file, Unsloth's <code>UD-Q4_K_XL</code>, declares <code>[11, 11, 10, 0]</code> and loaded processor-only in 6.39 seconds. This is an interaction between a file variant and a loader's array-length requirement, not an accusation against either project.</p>
     </section>
 
-    <section>
+    <section id="qwen3-32b">
       <div class="secnum">10</div>
-      <h2>Qwen3.6-27B</h2>
-      <p>The measurement here is which file could run at all. Two GGUF
-      distributions bearing the Qwen3.6-27B label exist on this machine. The
-      one distributed through Ollama's model library declares its rope
-      sections as <code>[11, 11, 10]</code>, three elements, and every
-      llama.cpp build here refuses it, <code>expected 4, got 3</code>, in
-      under a second, before any memory is touched. The upstream file
-      declares <code>[11, 11, 10, 0]</code> and loads. <strong>One trailing
-      zero in a header decided whether this model could run at
-      all.</strong> <span class="lbl m">measured</span> 2026-09-13</p>
-      <p>The fix was proved without touching the contended card: the
-      upstream file, Unsloth's <code>UD-Q4_K_XL</code>, was loaded
-      processor-only with graphics initialisation disabled, and the server
-      reported <code>model loaded</code> in 6.39 seconds.
-      <span class="lbl m">measured</span> 2026-09-13. This is an interaction
-      between a file variant and a loader's array-length requirement, not an
-      accusation against either project.</p>
+      <h2>Qwen3-32B: memory predicted to within two MiB</h2>
+      <p>Its header gives 256 KiB of cache per token at f16, so at 32,768 context (its served rung; the file's own ceiling is 40,960) the prediction was 18.81 GiB of weights plus 8.0 GiB of cache plus 1.04 GiB of compute buffers, <strong>28,518 MiB. The measurement was 28,520 MiB.</strong> <span class="lbl a">arithmetic</span> confirmed. The same arithmetic says a 131,072 window fits only with a 4-bit cache, 27.8 GiB in total; f16 and 8-bit do not fit; that window was not run.</p>
+      <p>In the agent-framework check, with thinking off it passed, tool call included; with thinking on it failed, the tool call not emitted. One run each; we do not generalise it.</p>
     </section>
 
-    <section>
+    <section id="llama-4-maverick">
       <div class="secnum">11</div>
-      <h2>Qwen3-32B</h2>
-      <p>The arithmetic success. Its header gives 256 KiB of cache per token
-      at f16, so at 32,768 context (its served rung; the file's own ceiling
-      is 40,960) the prediction was 18.81 GiB of weights plus 8.0 GiB of
-      cache plus 1.04 GiB of compute buffers, <strong>28,518 MiB. The
-      measurement was 28,520 MiB, two MiB out.</strong>
-      <span class="lbl a">arithmetic</span> confirmed
-      <span class="lbl m">measured</span> 2026-09-13, <code>Q4_K_M</code></p>
-      <p>The same arithmetic says a 131,072 window fits this card only with
-      a 4-bit cache, 27.8 GiB in total; f16 and 8-bit do not fit. That rung
-      was not run. <span class="lbl a">arithmetic</span></p>
-      <p>One caution from the wave-two check: with
-      thinking off this model passed, tool call included; with thinking on
-      the same check failed, the tool call not emitted. One run each, one
-      evening; we do not generalise it.
-      <span class="lbl m">measured</span> 2026-09-13</p>
+      <h2>Llama 4 Maverick: split across two machines</h2>
+      <p>At 167.21 GiB by its header and never served from one machine here, it loaded split across the desktop and the laptop at 131,072 context and wrote at 13.09 tokens a second on a short 51-token reply: a capacity demonstration on a model deleted the next day (<a href="../two-boxes/">two-box study</a>).</p>
     </section>
 
-    <section>
+    <section id="table-256k">
       <div class="secnum">12</div>
-      <h2>Llama 4 Maverick</h2>
-      <p>Llama 4 Maverick, Unsloth's <code>UD-Q3_K_XL</code> at 167.21 GiB
-      by its header and never served from one machine here, loaded split
-      across the desktop and the laptop at 131,072 context on 13 September
-      and answered at 13.09 tokens a second on a short 51-token reply: a
-      capacity demonstration on a model deleted the next day, with its row
-      and header read on the <a href="../two-boxes/">two-box study</a>.
-      <span class="lbl m">measured</span> 2026-09-13</p>
-    </section>
-
-    <section>
-      <div class="secnum">13</div>
-      <h2>256,000 tokens, from the headers</h2>
-      <p>What would a quarter-million-token window cost each model? The
-      arithmetic column is the attention cache alone, computed from each
-      file's header by a standalone reader that never touches tensor data
-      (reader and outputs in the package). The measured column is the whole
-      card at the long window on 15 September, one run per model; the
-      <a href="../context-256k/">context-256k study</a> carries the full
-      table.</p>
+      <h2>What a 256,000-token window costs each model</h2>
+      <p>The arithmetic column is the attention cache alone, from each file's header. The measured column is the whole card at the long window, one run per model; the <a href="../context-256k/">context-256k study</a> carries the full table.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Cache at ~256K, from the header</th><th>Label</th><th>Measured at the long window, 2026-09-15</th><th>Label</th></tr></thead>
@@ -619,145 +303,74 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">The arithmetic rows are estimates.
-      Qwen3.8-Flash-Next
-      and Ling-3.0-flash have later figures in sections 08 and 09. MiniMax
-      M3's answer for this window is in section 04: with its sparse
-      attention engaged it loads only at <code>-ub 128</code>.</p>
+      <p class="tablenote">t/s is tokens a second; "decoded" is writing speed on a short answer. The arithmetic rows are estimates. Ling-3.0-flash and Qwen3.8-Flash-Next have later figures in their entries above; MiniMax M3, with its sparse attention engaged, loads at this window only at <code>-ub 128</code>.</p>
     </section>
 
-    <section>
-      <div class="secnum">14</div>
-      <h2>What this does not show</h2>
+    <section id="limits">
+      <div class="secnum">13</div>
+      <h2>Limits</h2>
       <ul class="plain">
-        <li><strong>Nothing here measures model quality</strong>,
-        intelligence or benchmark standing.</li>
-        <li><strong>Most entries rest on one run each.</strong> The wave-two
-        check is one run per model per arm, the sweeps one run per rung,
-        the budget probes one call per cell, and the batch-sweep and
-        MiniMax M3 figures one cold run per setting.</li>
-        <li><strong>Header arithmetic is not a run.</strong> The 256K
-        arithmetic column is an estimate; the measured column is the
-        evidence.</li>
-        <li><strong>Load times are upper bounds.</strong> Large downloads
-        competed for disk and page cache during the 12 and 15 September
-        sweeps.</li>
-        <li><strong>Reading rates belong to their prompt sizes and
-        windows.</strong> Section 05 shows one model at 4,447 and at 820.
-        The batch-sweep figures are ~48,000-token prompts and are not
-        comparable to the 12 September sweep's ~21,000-token prompts.</li>
-        <li><strong>Short answers are not speaking speeds.</strong> Where a
-        decode rate comes from a planted code or an answer of a few dozen
-        tokens, the page says so.</li>
-        <li><strong>The agent-framework speeds are not directly comparable
-        to direct-probe speeds.</strong> The 21 September MiniMax M2.7
-        re-run went through the same framework as the original failure for
-        exactly that reason.</li>
-        <li><strong>MiniMax M2.7's thinking and budget findings are dated 13
-        to 15 September</strong> and were not re-run after the launch fix.
-        At its native 196,608 window only a 3,658-token prompt has been
-        run.</li>
-        <li><strong>The 459,911-token result is retrieval, not reasoning
-        across the window.</strong></li>
+        <li><strong>Speed, memory and recall only.</strong> Nothing here measures model quality or ranks models.</li>
+        <li><strong>Most entries rest on one run each</strong>, one run per setting or one call per test.</li>
+        <li><strong>Reading rates belong to their prompt sizes and windows.</strong> The batch-sweep figures are ~48,000-token prompts, not comparable to the 12 September sweep's ~21,000-token prompts, and speeds through the agent framework are not directly comparable to direct tests.</li>
+        <li><strong>Short answers are not prose writing speeds.</strong> Several writing rates come from a hidden code or an answer of a few dozen tokens.</li>
+        <li><strong>MiniMax M2.7's thinking and budget findings date from 13 to 15 September</strong> and were not re-run after the launch fix. At its native 196,608 window only a 3,658-token prompt has been run.</li>
       </ul>
     </section>
 
-    <section>
+    <section id="corrections">
+      <div class="secnum">14</div>
+      <h2>Corrections and updates</h2>
+      <p><strong>"MiniMax M2.7 is slow."</strong> Our first records called this model slow, explained it with the model's cache arithmetic, and closed it on that basis. The speed was our own launch line, <code>-ub 128</code>, inherited from MiniMax M3's start script with no recorded reason; the cache arithmetic only ever described the memory bill. The "why it is slow" reasoning is gone, the wall times that depended on the flag are withdrawn or dated, and the <a href="#minimax-m27">MiniMax M2.7 entry</a> carries the re-measurements.</p>
+      <p><strong>The timeout that looked like a recall miss.</strong> Our test script left <code>error: null</code> when a turn ran out of time without an answer and counted the recall as 0 of 3, so a timeout and a genuine miss looked identical. MiniMax M2.7's 96,000-token test was one, written down as "l128 recall 0/3" (1,800.4 seconds, no answer events), and that record reached this page before we caught it. The same week, a separate run on another model that produced only reasoning and no visible text was also scored 0 of 3, and on a third the script wrote 987.9 tokens a second next to a pass by dividing by a missing first-content time; that run had 326 completion tokens, so it was not an empty answer. The script was fixed before the 21 September re-run: a turn with no answer is now recorded as UNANSWERED. The summary in the package keeps its original values; <a href="data/wave2/CORRECTION.md">CORRECTION.md</a> annotates them.</p>
+      <p><strong>The 700-to-900 note.</strong> A working note of ours advised giving MiniMax M2.7 "700 to 900 output tokens or the answer comes back empty". 900 is exactly the budget that returned zero characters; the note was corrected in place the same night (2026-09-13).</p>
+      <p><strong>The "~40 t/s" verdict.</strong> The 15 September budget test's verdict paragraph reports reading at about 40 tokens a second, which does not follow from the log lines in the same record; we do not print it, and the probe log ships unchanged.</p>
+      <p><strong>The unfinished run.</strong> An earlier record of ours, written while the 256K sweep was still running, shows the Qwen3.8-Flash-Next run as unfinished at 192,512 of about 230,000 tokens. The run completed that evening and its entry prints the completed measurement. When two of our records disagree, the log is the number we print.</p>
+    </section>
+
+    <section id="method">
       <div class="secnum">15</div>
-      <h2>What we got wrong</h2>
-      <p><strong>"MiniMax M2.7 is slow."</strong> Our first records called
-      this model slow, explained it with the model's cache arithmetic, and
-      closed it on that basis. The speed was our own launch line,
-      <code>-ub 128</code>, inherited from MiniMax M3's start script with no
-      recorded reason; the cache arithmetic only ever described the memory
-      bill. The "why it is slow" reasoning is gone, the wall times that
-      depended on the flag are withdrawn or dated, and section 03 carries
-      the re-measurements.</p>
-      <p><strong>The timeout that looked like a recall miss.</strong> Our
-      gate harness left <code>error: null</code> when a turn ran out of time
-      without an answer and counted the recall as 0 of 3, so a timeout and a
-      genuine miss looked identical. MiniMax M2.7's 96,000-token leg was one:
-      1,800.4 seconds, no answer events, written down as "l128 recall 0/3",
-      and that record reached this page before we caught it. The same week,
-      a separate run on another model that produced only reasoning and no
-      visible text was also scored as recall 0 of 3. On yet another model's
-      run the harness divided by a missing first-content time and wrote
-      987.9 tokens a second next to a pass; that run had 326 completion
-      tokens, so it was not an empty answer. The harness was fixed before
-      the 21 September re-run: a turn with no answer is now recorded as
-      UNANSWERED. The wave-two summary in the package keeps its original
-      values; <a href="data/wave2/CORRECTION.md">CORRECTION.md</a> annotates
-      them.</p>
-      <p><strong>The 700-to-900 note.</strong> In the early hours of
-      2026-09-13, after the audition had measured an empty answer at a
-      900-token output budget, a working note of ours advised giving the
-      model "700 to 900 output tokens or the answer comes back empty",
-      quoted here word for word. The advice pointed straight at the measured
-      failure: 900 is exactly the budget that returned zero characters. It
-      was corrected in place the same night with a dated marker. Measure
-      your own floor; the <a href="../empty-answer/">Empty Answer study</a>
-      shows how.</p>
-      <p><strong>The "~40 t/s" verdict.</strong> The budget test's verdict
-      paragraph reports reading at about 40 tokens a second, a rate that does
-      not follow from the log lines in the same record; we do not print it,
-      and the probe log ships unchanged.</p>
-      <p><strong>The unfinished run.</strong> An earlier record of ours,
-      written while the 256K sweep was still running, has the
-      Qwen3.8-Flash-Next run at that window as unfinished: the read had
-      reached 192,512 of about 230,000 tokens when the snapshot was taken.
-      The run completed the same evening, and section 09 prints the
-      completed measurement. When two of our records disagree, the log is
-      the number we print.</p>
-    </section>
-
-    <section>
-      <div class="secnum">16</div>
-      <h2>Related pages on this site</h2>
-      <p>The <a href="../empty-answer/">Empty Answer study</a> is the parent
-      finding for section 03's budget trap. The
-      <a href="../batch-size/">batch-size study</a> covers the flag behind
-      this page's biggest correction. The <a href="../warm-wake/">warm-wake
-      study</a> covers restoring a server's state from disk. The
-      <a href="../two-boxes/">two-box study</a> covers the desktop-and-laptop
-      pair behind sections 04 and 12. The
-      <a href="../context-256k/">context-256k study</a> carries the full
-      256K table. Labels are defined on the
-      <a href="../method/">method page</a>.</p>
-    </section>
-
-    <section>
-      <div class="secnum">17</div>
-      <h2>Sources and artifacts</h2>
-      <p>The <a href="data/README.md">data package</a> is a leak-swept
-      selection of the run records this page cites, with derived summaries
-      where no public primary record exists.
-      <a href="data/README.md">data/README.md</a> maps every file and
-      redaction and opens with where the package seems to argue with itself;
-      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure to its
-      file and field. If a number here disagrees with a file in the package,
-      the file is right; tell us and we will fix the page.</p>
-      <p class="fineprint">Every path on our machines was replaced in full
-      with <code>&lt;REDACTED_PATH&gt;</code>, keeping only a model file's
-      own name; addresses, ports, process ids and serving aliases became
-      placeholders; request and fingerprint identifiers were removed from the
-      response bodies, which otherwise ship whole. Our session write-ups,
-      working notes and the per-leg records of both agent-framework checks do
-      not ship. Model repositories were read at the revisions downloaded on
-      2026-09-13 (Unsloth's MiniMax-M2.7-GGUF and Qwen3.6-27B-GGUF,
-      inclusionAI's Ling-3.0-flash) and 2026-09-20 (bartowski's MiniMax-M3
-      builds).</p>
+      <h2>How this was measured</h2>
+      <p>One NVIDIA GeForce RTX 5090 with 32,607 MiB of graphics memory, an Intel Core Ultra 9 285K and 188 GiB of RAM, 12 to 21 September 2026; an ASUS ROG Flow Z13 laptop joined over Thunderbolt for the two-machine runs. llama.cpp served one model at a time, one request at a time. Card memory is the raw nvidia-smi figure in MiB. Figures are measured unless labelled <span class="lbl a">arithmetic</span> (from a file header) or <span class="lbl s">stated</span> (the maker's figure), as defined on the <a href="../method/">method page</a>. A hidden code is a test word planted in a long prompt.</p>
       <table class="facts">
-        <tr><th scope="row">2026-09-12</th><td>Context sweep (GLM-4.7-Flash, both Gemma models, Qwen3.8-Flash-Next) and the Flash-Next install measurements.</td></tr>
-        <tr><th scope="row">2026-09-13</th><td>MiniMax M2.7 audition. Qwen3-32B. The Qwen3.6-27B header finding and processor-only load. The wave-two check. Llama 4 Maverick on the pair.</td></tr>
-        <tr><th scope="row">2026-09-15</th><td>MiniMax M2.7 budget test. The 256K sweep: Gemma-4-26B, GLM-4.7-Flash, Qwen3.8-Flash-Next, Ling-3.0-flash, Inkling-Small and Qwen3.5-397B at their long windows.</td></tr>
-        <tr><th scope="row">2026-09-19</th><td>The MiniMax M2.7 re-launch: the <code>-ub 128</code> control, the micro-batch and placement ladders, the 196,608-token load ladder, the warm restore. MiniMax M3's micro-batch sweep on the old file.</td></tr>
-        <tr><th scope="row">2026-09-20</th><td>MiniMax M3 on the correct file, its 262,144 load ladder and the two-machine attempt. The Qwen3.8-Flash-Next context study and the rope-flag trap. The batch-size sweep begins.</td></tr>
-        <tr><th scope="row">2026-09-21</th><td>The MiniMax M2.7 gate re-run and the installed script's restore test. The batch sweep concludes: Ling-3.0-flash's faster setting withdrawn; larger micro-batches measured and not adopted for GLM-4.7-Flash and the two Gemma models.</td></tr>
+        <tr><th scope="row">Context sweep, 2026-09-12</th><td>Only the window varied; writing is the best of two warm ~200-token prose replies, reading one ~21,000-token ledger with a hidden code; a 97 GB download ran throughout, so load times are upper bounds. GLM-4.7-Flash, Gemma-4-26B, Gemma-4-31B and Qwen3.8-Flash-Next at 131,072 (and Qwen3.8-Flash-Next's 65,536 preset).</td></tr>
+        <tr><th scope="row">Agent-framework check, 2026-09-13</th><td>Recall of three codes and a tool call at about 48,000 and 96,000 tokens, one run per model per setup; summary in <code>data/wave2/</code>.</td></tr>
+        <tr><th scope="row">256K sweep, 2026-09-15</th><td>A ~230,000-token prompt with three codes at 5, 50 and 95 percent depth; about 340 GB of downloads ran during it. Gemma-4-26B, GLM-4.7-Flash, Qwen3.8-Flash-Next, Ling-3.0-flash, Inkling-Small and Qwen3.5-397B at their long windows.</td></tr>
+        <tr><th scope="row">Single-day entries, 2026-09-13</th><td>Qwen3-32B (<code>Q4_K_M</code>), the Qwen3.6-27B file comparison and processor-only load, and Llama 4 Maverick on the pair.</td></tr>
+        <tr><th scope="row">MiniMax M2.7, 2026-09-13 to 21</th><td>Unsloth's <code>UD-IQ4_XS</code>, four shards, 108,413,781,312 bytes; header: architecture <code>minimax-m2</code>, 62 blocks, 48 attention heads with 8 key-value heads, 256 experts with 8 used, native context 196,608 tokens. The budget test of 15 September ran before the launch fix, so its wall times are not reprinted.</td></tr>
+        <tr><th scope="row">MiniMax M3, 2026-09-19 to 20</th><td>Old file's micro-batch sweep, then bartowski's <code>Q2_K_L</code> (153,086,988,768 bytes), its 262,144 load ladder and a two-machine attempt.</td></tr>
+        <tr><th scope="row">Flash-Next context study, 2026-09-20</th><td>Unsloth's <code>UD-Q3_K_XL</code>; windows of 262,144, 393,216 and 524,288, cache at f16 and q8_0; one pass each, temperature 0.</td></tr>
+        <tr><th scope="row">Batch-size sweep, 2026-09-20 to 21</th><td>~48,000-token prompts, one run per setting; hand-copied flags at a 131,072 window on 20 September, each model's own start script at its served window on 21 September. See <a href="../batch-size/">its own study</a>.</td></tr>
+        <tr><th scope="row">Other files</th><td>GLM-4.7-Flash and Qwen3.6-27B: Unsloth's <code>UD-Q4_K_XL</code>. Qwen3-32B: <code>Q4_K_M</code>. Llama 4 Maverick: Unsloth's <code>UD-Q3_K_XL</code>.</td></tr>
+        <tr><th scope="row">Ling-3.0-flash header, 2026-09-13</th><td>43 blocks, 512 experts with 8 used and 1 shared; only 8 of the 43 blocks hold an attention cache, compressed (rank 512 plus 64 rotary dimensions); the other 35 run a linear path with a fixed-size state.</td></tr>
       </table>
-      <p class="fineprint">Every claim here is dated; if today is much
-      later than the rows above, treat version-specific findings as
-      unverified since then.</p>
+      <p class="fineprint">Every claim here is dated; if today is much later, treat version-specific findings as unverified since then.</p>
     </section>
+
+    <section id="sources">
+      <div class="secnum">16</div>
+      <h2>Data and sources</h2>
+      <p>Every measured figure traces to a log or result file in the <a href="data/README.md">data package</a>. <a href="data/README.md">data/README.md</a> maps every file and redaction and opens with where the package seems to argue with itself; <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure to its file and field. If a number here disagrees with a file in the package, the file is right; tell us and we will fix the page.</p>
+      <p class="fineprint">Model repositories were read at the revisions downloaded on 2026-09-13 (Unsloth's MiniMax-M2.7-GGUF and Qwen3.6-27B-GGUF, inclusionAI's Ling-3.0-flash) and 2026-09-20 (bartowski's MiniMax-M3 builds).</p>
+    </section>
+
+    <section id="related">
+      <div class="secnum">17</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../batch-size/">Batch-size study</a>: the setting behind this page's biggest correction.</li>
+        <li><a href="../empty-answer/">Empty Answer study</a>: the output-budget trap.</li>
+        <li><a href="../warm-wake/">Warm-wake study</a>: restoring a server's state from disk.</li>
+        <li><a href="../two-boxes/">Two-box study</a>: the desktop-and-laptop pair.</li>
+        <li><a href="../context-256k/">Context-256k study</a>: the full 256K table.</li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to MiniMax, Z.ai, Google, inclusionAI,
+      Alibaba Group, DeepSeek, Thinking Machines Lab, Meta, Ollama,
+      Unsloth, bartowski, NVIDIA, Intel, ASUS, or the llama.cpp
+      project.</div></div>
 
   </div>
 </main>

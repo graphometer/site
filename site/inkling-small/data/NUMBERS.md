@@ -1,5 +1,7 @@
 # Number map, updated 26 September 2026
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 The old 185.5 t/s belongs to 95,041 tokens at default batch. The new 337.9 belongs to 48,115 at tuned batch. The 262,144-token window had a 230,827-token read on 15 September; the later tuned checks used only 3,033 prompt tokens. These are not interchangeable depths.
 
 If a number on the page disagrees with a file in its package, the file is right and the page is wrong.

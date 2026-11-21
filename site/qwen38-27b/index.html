@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Qwen3.8-27B measured on release day, one RTX 5090</title>
-<meta name="description" content="At 65,536 tokens of context with its built-in draft head gated, Qwen3.8-27B wrote prose at 72.4 tokens per second and structured JSON at 118.7.">
+<meta name="description" content="Qwen3.8-27B, one RTX 5090, 14 August, 65,536 window: prose 72.4 tokens a second with drafter cutoff 0.75, 44.5 at 0. The 27B is Apache 2.0.">
 <link rel="canonical" href="https://graphometer.ai/qwen38-27b/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Qwen3.8-27B measured on release day, one RTX 5090">
-<meta property="og:description" content="At 65,536 tokens of context with its built-in draft head gated, Qwen3.8-27B wrote prose at 72.4 tokens per second and structured JSON at 118.7.">
+<meta property="og:description" content="Qwen3.8-27B, one RTX 5090, 14 August, 65,536 window: prose 72.4 tokens a second with drafter cutoff 0.75, 44.5 at 0. The 27B is Apache 2.0.">
 <meta property="og:url" content="https://graphometer.ai/qwen38-27b/">
 <meta property="og:image" content="https://graphometer.ai/og/qwen38-27b.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Qwen3.8-27B measured on release day, one RTX 5090">
-<meta name="twitter:description" content="At 65,536 tokens of context with its built-in draft head gated, Qwen3.8-27B wrote prose at 72.4 tokens per second and structured JSON at 118.7.">
+<meta name="twitter:description" content="Qwen3.8-27B, one RTX 5090, 14 August, 65,536 window: prose 72.4 tokens a second with drafter cutoff 0.75, 44.5 at 0. The 27B is Apache 2.0.">
 <meta name="twitter:image" content="https://graphometer.ai/og/qwen38-27b.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -135,6 +135,11 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  ol.plain pre.log{margin:10px 0 4px}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -166,648 +171,206 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card &middot; released 2026-08-14 about 11:00 EDT, measured the same evening &middot; one dense 27B, one community Q5-class quant, one RTX 5090, thinking off for the speed runs &middot; context ceiling corrected 2026-09-26 &middot; draft model added 2026-10-19</div>
-      <h1 itemprop="headline">Qwen3.8-27B: <em>day zero</em></h1>
-      <p class="subtitle">An early look on release day, measured on one
-      desktop: one model family with two licenses (this 27B is genuine
-      Apache 2.0; the 2.4T-A95B sibling is not), and a built-in draft head
-      decoding prose at 72.4 tokens a second gated, 65.9 with no
-      speculation at all, 44.5 with the gate removed.</p>
-      <p class="lead">At about 11:00 EDT on 2026-08-14 the Qwen team
-      published Qwen3.8-27B. By 21:07 the same evening the file was on this
-      desktop, hashed against the repository's own checksum, loaded and
-      measured: a dense 27-billion-parameter model with a hybrid attention
-      layout and a speculative-decoding head inside the weights file,
-      <strong>which we served text-only</strong>. It ran on a llama.cpp
-      build this machine already had, dated 2026-08-05, because the file
-      declares the same <code>qwen35</code> dense architecture that build
-      already implements. At its default profile here, 65,536 tokens of
-      context on one RTX&nbsp;5090, it decodes prose at
-      <strong>72.4 tokens per second</strong> and structured JSON at
-      <strong>118.7 tokens per second</strong>, and it prefills a
-      5,792-token prompt at 2,902 tokens per second. Two things about it
-      deserve a practitioner's attention beyond the speed. First, the
-      license: <strong>this 27B is Apache 2.0</strong>, read in full at the
-      pinned revision and retained in our record, while
-      <code>Qwen3.8-2.4T-A95B</code>, released by the same team the same
-      week, carries a custom license with revenue thresholds. Those are two
-      different licenses in one release family and they must never be
-      quoted as one. Second, the model's own draft head repeats the
-      direction of the effect this site measured on a 397B
-      mixture-of-experts four days ago: run that head without its
-      confidence gate and prose decode falls to
-      <strong>44.5 tokens per second, below the 65.9 of no speculation at
-      all</strong>, on the same model, the same card, the same evening.
-      Everything below is one quantization of one model on one machine with
-      thinking off for the speed runs. Decode figures are medians of three
-      warm repetitions of a single prompt per workload, prefill is one
-      uncached send, and the checks in sections 06 through 08 are one to
-      three calls each.</p>
+      <div class="eyebrow">Field card &middot; one RTX&nbsp;5090 desktop &middot; one compressed file &middot; built-in drafter</div>
+      <h1 itemprop="headline">Qwen3.8-27B measured on release day, one RTX&nbsp;5090: <em>its built-in drafter needs a cutoff</em></h1>
+      <p class="subtitle">With thinking off, Qwen3.8-27B wrote prose at 72.4 tokens a second with its built-in drafter (a part that guesses a few words ahead) set to stop guessing when unsure, against 65.9 with no drafter (65,536-token window; median of three repeats of one prompt).</p>
+      <p class="lead"><strong>Two setups.</strong> This page is the 14 August test with the built-in drafter. Since 19 October this model runs here with a separate draft model instead: <a href="#update-2026-10-19">see that update</a>.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>If you use the built-in drafter, turn it on and set its cutoff yourself</strong> (<code>--spec-draft-p-min 0.75</code>); llama.cpp does not use it unless asked. At a 65,536-token window, a cutoff of 0.75 made structured output 79.3% faster than no drafter, and a cutoff of 0 made prose 32.4% slower, at 44.5 tokens a second. <a href="#what-to-do">What to do</a></li>
+          <li><strong>Turn thinking off in the right place</strong> (inside <code>chat_template_kwargs</code>). On this llama.cpp build, <code>enable_thinking</code> sent at the top level was silently ignored: no error, and thinking stayed on. <a href="#client-traps">The client traps</a></li>
+          <li><strong>Check the license of the exact repository you download.</strong> The 27B is Apache 2.0; Qwen3.8-2.4T-A95B, released the same week, is not. <a href="#license">The two licenses</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-14">14 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to the Qwen team, Alibaba Group, the
-      llama.cpp project or ggml-org, or Unsloth.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What it is</h2>
-      <p>Rows below were read from the model's own configuration and from
-      the GGUF file on this disk at the pinned revisions on 2026-08-14, not
-      quoted from a marketing page. Where a row is the maker's claim rather
-      than our reading or our measurement, it says so, and amber text marks
-      it.</p>
-      <table class="facts">
-        <tr><th scope="row">Maker</th><td>The Qwen team (Alibaba).</td></tr>
-        <tr><th scope="row">Weights</th><td><code>Qwen/Qwen3.8-27B</code> at revision <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>: 18 safetensors plus an index, 32 files. Verified at that revision on 2026-08-14.</td></tr>
-        <tr><th scope="row">License</th><td><strong>Apache 2.0.</strong> 11,544 bytes of verbatim Apache 2.0 text, appendix reading <code>Copyright 2026 Alibaba Cloud</code>, byte-identical in the official FP8 repository; the file itself is retained in our run record. The community GGUF we served also carries <code>general.license: apache-2.0</code> in its own header metadata. Section 03 explains why that sentence needs saying.</td></tr>
-        <tr><th scope="row">Shape</th><td><strong>Dense</strong>, 27B, not a mixture of experts. There are no expert blocks anywhere in the configuration.</td></tr>
-        <tr><th scope="row">Architecture</th><td>Hybrid: 64 layers laid out as 16 groups of three Gated DeltaNet blocks followed by one Gated Attention block, <code>full_attention_interval</code> 4, so <strong>only 16 of the 64 layers hold a key-value cache</strong>. The Gated DeltaNet layers carry recurrent state instead, which is a different memory story from a key-value cache and is not something we measured. Hidden 5,120, feed-forward 17,408. Gated Attention 24 query heads, 4 key-value heads, head dimension 256, partial rotary 0.25. Gated DeltaNet 48 value heads, 16 query-key heads, head dimension 128, convolution kernel 4.</td></tr>
-        <tr><th scope="row">Draft head</th><td>A multi-token-prediction head ships inside the weights file, one extra block (block count 65). Section 05 is about what it is worth, what it costs when it is misconfigured, and the flag you must pass to get it at all.</td></tr>
-        <tr><th scope="row">Context</th><td>262,144 tokens native, declared in the file. <span class="asstated">The maker additionally claims extension to 1,000,000; that claim is not in the file and we did not test it.</span> Section 04 gives the ceiling on this card.</td></tr>
-        <tr><th scope="row">Vocabulary</th><td>248,320 tokens. The configuration records end-of-sequence 248044. The served GGUF header records BOS 248044 and EOS <strong>248046</strong>. We did not reconcile that difference, so we make no tokenizer-migration claim: the vocabulary size matches Qwen3.5-397B and the 2.4T, and we did not hash the tokenizer or merges against either of those files.</td></tr>
-        <tr><th scope="row">Modality</th><td><strong>Natively multimodal</strong> by its configuration: image-text-to-text, a vision tower of depth 27, hidden 1,152, patch 16, images and video per the card. <strong>We served it text-only.</strong> The vision projector sits on this disk, 927,607,488 bytes, and was never loaded. <strong>Vision is untested here</strong> and no claim on this page rests on it.</td></tr>
-        <tr><th scope="row">Variants</th><td>As of this revision on 2026-08-14, one post-trained model: no base model published, no separate instruct and thinking split. An official FP8 repository exists at revision <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span> for runtimes that want it; we did not use it.</td></tr>
-      </table>
-      <p><strong>There is no official GGUF.</strong> Everything in GGUF
-      form is a community conversion. On release day <code>ggml-org</code>,
-      the llama.cpp project's own organization, published a conversion of
-      this exact revision, which is a useful provenance cross-check. Its
-      main file is built with <code>--no-mtp</code>: our retained header
-      probe reads 851 tensors and no <code>nextn</code> tensors in it,
-      against 866 tensors including 4 <code>nextn</code> tensors in the
-      Unsloth file we served. The <code>ggml-org</code> repository ships the
-      draft head as separate <code>mtp-*.gguf</code> files rather than
-      embedding it, which is a packaging choice and not a defect, but it
-      does mean self-speculation from that main file alone is not
-      available. Bartowski's conversion was probed the same way on the day
-      and read 866 tensors including the head; that particular reading was
-      not retained. We learned all of this by reading the file headers over
-      HTTP range requests, about 11&nbsp;MB and two fetches per candidate,
-      before downloading 20&nbsp;GB of anything.</p>
-    </section>
-
-    <section>
-      <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <table class="facts">
-        <tr><th scope="row">Machine</th><td>One desktop: Core Ultra 9 285K, 188&nbsp;GiB RAM, one RTX&nbsp;5090 with <strong>32,607&nbsp;MiB</strong> of VRAM, driver 580.173.02, Pop!_OS.</td></tr>
-        <tr><th scope="row">Runtime</th><td>Mainline llama.cpp <code>llama-server</code>, a build already on this machine from 2026-08-05, master <code>c8e03ce</code>, CUDA 12.8. The server reports itself as <code>b1-c8e03ce</code>. <strong>No rebuild was needed</strong>, because Qwen3.8-27B ships as the existing dense <code>qwen35</code> architecture: the enum, the tensor names the file actually carries, and the hybrid and recurrent registration were already in that build. That is architecture reuse, not new upstream support, and a build older than the <code>qwen35</code> work would not inherit it.</td></tr>
-        <tr><th scope="row">Correctness</th><td><strong>Not checked.</strong> The file loads and answers, and the battery in section 08 passes, but we did not compare logits or outputs against the reference implementation, and we have no numerical-correctness artifact for the Gated DeltaNet layers or the draft head on this commit.</td></tr>
-        <tr><th scope="row">Weights served</th><td><code>unsloth/Qwen3.8-27B-GGUF</code> at revision <span class="n">fe1e2a23d973adb629709749dc4f6756df66ef10</span>, quantization <strong>UD-Q5_K_XL</strong>, which is Unsloth's dynamic mix with an importance matrix, not a stock Q5_K. One file of <strong>20,218,178,624 bytes (18.83&nbsp;GiB)</strong>, SHA-256 <span class="n">176a6a3f034e9cdc447c10cd00329fc9b31002e6589b9295f2ad4f1eefe0f6ab</span>.</td></tr>
-        <tr><th scope="row">Integrity, and its limit</th><td>That SHA-256 equals the repository's own LFS object id at that revision, and the projector file (927,607,488 bytes, <span class="n">cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e</span>) matches too. Two files expected, two present, both hashed before first load. <strong>That is file integrity against the conversion, not conversion integrity</strong>: we did not audit either file against the official safetensors.</td></tr>
-        <tr><th scope="row">Download</th><td>19:14 to 19:19 EDT on 2026-08-14.</td></tr>
-        <tr><th scope="row">Placement</th><td><code>-ngl 999</code>: every one of the 64 layers on the GPU. <strong>This model is dense, so the <code>--n-cpu-moe</code> lever that tunes the mixture-of-experts models on this machine does not exist here.</strong> The quantization fits the card whole or it does not fit. Other levers do exist and we did not sweep any of them: cache type, a partial <code>-ngl</code>, batch and micro-batch sizes, <code>--parallel</code>, <code>--spec-draft-n-max</code>, and the choice of quantization. Only context length and the draft head were varied in the ladder below.</td></tr>
-        <tr><th scope="row">Sampling</th><td>Temperature 1.0, top-p 0.95, top-k 20, min-p 0. That is the model card's thinking-mode recommendation and it matches the sampling metadata baked into the GGUF header (<code>general.sampling.temp</code> 1.0, <code>top_p</code> 0.95, <code>top_k</code> 20), which is why we used it, and <strong>we used it with thinking off</strong>. The card suggests 0.7 / 0.80 / 20 with a presence penalty of 1.5 for non-thinking use; we did not sweep that and cannot say what it would change.</td></tr>
-        <tr><th scope="row">Speed method</th><td>Thinking <strong>disabled</strong> on every speed measurement, so the tokens counted are answer tokens. One discarded cold repetition then three warm repetitions of <strong>one prose prompt and one structured prompt</strong> per cell, median reported, server-reported rates authoritative. Prefill is the <strong>first, uncached</strong> repetition only.</td></tr>
-        <tr><th scope="row">Serving</th><td>A loopback scratch port for the study; the production route binds the host's Docker bridge so containers on this machine can reach it. Not exposed to the local network at any point.</td></tr>
-      </table>
-      <p><strong>The exact ladder invocation</strong>, with the profile
-      row's own context and the gate written out. Every row in section 04 is
-      this command with <code>--ctx-size</code> changed, the three
-      <code>--spec-*</code> flags present or absent, and
-      <code>--spec-draft-p-min</code> set to the value in the table:</p>
+      <h2>What to do</h2>
+      <p>These are the settings from the 14 August test with the built-in drafter, using one compressed file of the model (Unsloth's <code>UD-Q5_K_XL</code>) in llama.cpp, the program that runs it. For the separate draft model used since 19 October, see <a href="#update-2026-10-19">that update</a>.</p>
+      <ol class="plain">
+        <li><strong>Turn the built-in drafter on, and set its cutoff yourself</strong> (<code>--spec-type draft-mtp</code>, <code>--spec-draft-p-min 0.75</code>). The drafter (also called the draft head, or MTP) is a small block inside the model file that guesses the next few tokens (word pieces) for the model to check. With no drafter flags you get about 66 tokens a second on both kinds of output. The cutoff stops a draft early once the drafter is no longer confident. Its default has changed twice: 0.9, then 0.75 for about fifteen months, then 0.0 from 2026-05-19, which our 2026-08-05 build follows. Pass it explicitly. <a href="#drafter">The measurements</a></li>
+        <li><strong>If you use the <code>ggml-org</code> conversion, the drafter is not in its main file.</strong> That file was built with <code>--no-mtp</code>; the drafter ships as separate <code>mtp-*.gguf</code> files, so the main file alone cannot draft for itself.</li>
+        <li><strong>Turn thinking off in the request body, inside <code>chat_template_kwargs</code>.</strong> There it worked; as a top-level field it was ignored (<a href="#client-traps">below</a>). A request body with the thinking switch in the right place (prose speed runs used <code>max_tokens</code> 400):
+<pre class="log">{"model": "qwen3.8-27b",
+ "max_tokens": 400,
+ "chat_template_kwargs": {"enable_thinking": false},
+ "messages": [{"role": "user", "content": "..."}]}</pre></li>
+        <li><strong>With thinking on, give the reply room, and measure your own floor.</strong> Thinking counts against the same <code>max_tokens</code> as the visible answer, so a small budget can come back empty. On one prompt the first budget tested that worked was 500; on another, 60 was enough. Do not copy 500 into your client. As a starting point, not a rule: we give thinking replies 2,000 to 4,096 tokens here, and structured or JSON work with thinking on starved even at 1,200. <a href="#thinking">Details</a></li>
+        <li><strong>Spell <code>reasoning_effort</code> exactly: <code>xhigh</code>, <code>medium</code> or <code>low</code>.</strong> Any other value fails that request with HTTP 500. It also does not cap thinking: it adds a sentence to the prompt, and <code>medium</code> adds nothing.</li>
+        <li><strong>Choose the context window (how much text the model holds at once) by what else needs the card.</strong> 32,768 tokens was faster on both kinds of output and left more room than 65,536; if nothing else needs the card, start there. The 65,536 used here left about 7&nbsp;GiB free for voice software on this desktop. With a 16-bit (<code>f16</code>) key-value cache (the memory that holds the text so far), 131,072 is the most this card holds; the full 262,144 needed an 8-bit cache and the drafter off (<a href="#updates">Updates</a>).</li>
+      </ol>
+      <p><strong>The exact command</strong> for the release-day default. Every row of the speed table below is this command with <code>--ctx-size</code> changed, the three <code>--spec-*</code> flags present or absent, and <code>--spec-draft-p-min</code> set to the value shown:</p>
 <pre class="log">llama-server --model Qwen3.8-27B-UD-Q5_K_XL.gguf \
   --host 127.0.0.1 --port 8198 --alias qwen3.8-27b \
   --jinja --ctx-size 65536 --parallel 1 --n-gpu-layers 999 \
   --threads 24 --threads-batch 24 --flash-attn on --timeout 3600 \
   --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 \
   --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75</pre>
-      <p><strong>And the request body</strong>, which is where the thinking
-      toggle has to live (section 07 is about what happens when it does
-      not):</p>
-<pre class="log">{"model": "qwen3.8-27b",
- "max_tokens": 400,
- "chat_template_kwargs": {"enable_thinking": false},
- "messages": [{"role": "user", "content": "..."}]}</pre>
-      <div class="note">
-        <span class="label">How to read the VRAM figures</span>
-        <p>Every VRAM number on this page is the raw MiB reading from
-        <code>nvidia-smi</code> against a 32,607&nbsp;MiB card. We print
-        MiB first because that is what the instrument reports, and we never
-        divide a MiB reading by 1000 and call the result GiB.</p>
-      </div>
     </section>
 
-    <section>
-      <div class="secnum">03</div>
-      <h2>Two licenses, one family, and the difference matters</h2>
-      <p>This is the practitioner headline: the 27B is Apache 2.0 and the
-      2.4T sibling is not. It is easy to get wrong, because the same team
-      shipped two models with the same version number in the same week under
-      two different licenses.</p>
-      <table class="facts">
-        <tr><th scope="row">Qwen3.8-27B</th><td><strong>Apache 2.0.</strong> We read the LICENSE file in full at the pinned revision on 2026-08-14 and retained a copy: 11,544 bytes, the verbatim Apache License 2.0 text, appendix reading <code>Copyright 2026 Alibaba Cloud</code>. No monthly-active-user threshold, no revenue-share clause, no requirement to obtain a separate license at any revenue level. The file is byte-identical in the official FP8 repository: we retained that copy too and compared them, and both are 11,544 bytes with the same SHA-256.</td></tr>
-        <tr><th scope="row">Qwen3.8-2.4T-A95B</th><td><strong>Not Apache 2.0.</strong> Read at its own pinned revision <span class="n">207bd685</span> on 2026-08-13 and also retained: a custom "Qwen3.8-Max License" of 3,390 bytes, an MIT-style grant with two added conditions. A product above 100 million monthly active users or US$20&nbsp;million in <em>monthly</em> revenue must display the model's name prominently. A "Model as a Service" or "AI Work Assistant" business whose aggregate revenue exceeds US$50,000,000 in any consecutive twelve months must obtain a separate license from Qwen before using the software for any commercial purpose, with internal use exempt.</td></tr>
-      </table>
-      <p>That contrast is a fact about those two named artifacts at those
-      two revisions. It is not a statement about every 3.8 or Max-class
-      repository, and we did not read the license of every file the family
-      ships.</p>
-      <p><strong>What about the community conversion?</strong> We served a
-      GGUF, not the safetensors. Apache 2.0 is a grant that travels with
-      copies and derivative works on its own terms, and the served file's
-      header metadata carries <code>general.license: apache-2.0</code>,
-      which is the converter's own declaration. Check the conversion
-      repository you actually download, because that declaration is the
-      converter's and not the maker's.</p>
-      <p>Neither reading is a legal opinion and neither replaces reading
-      the file yourself at the revision you actually download. The point is
-      narrower and it is a fact about the artifacts: <strong>"Qwen3.8 is
-      Apache 2.0" is inaccurate as a family statement and true of the
-      27B.</strong> A week before the release our own notes assumed Apache
-      2.0 was likely on the strength of family precedent, and we wrote down
-      that assuming it was not allowed. The 27B's file came back clean. The
-      2.4T's did not. The <a href="../qwen38-readiness/">release watch</a>
-      carries that half of the story with its own dated readings.</p>
-    </section>
+    <section id="found">
+      <div class="secnum">02</div>
+      <h2>What we found</h2>
 
-    <section>
-      <div class="secnum">04</div>
-      <h2>The profiles, as measured</h2>
-      <p>Seven server loads on 2026-08-14: one ladder, same weights, same
-      build, same card. VRAM is the raw MiB reading after load. Decode rates
-      are the median of three warm repetitions of one prompt per workload
-      with thinking off; prefill is the single uncached repetition of a
-      5,792-token prompt.</p>
+      <h3 id="speed">Speed by window and drafter</h3>
+      <p>Seven server loads, same file, build and card. Writing speed is tokens a second (t/s), the median of three warm repeats of one prompt per kind of output, thinking off. Prompt reading (prefill) is one uncached send of a 5,792-token prompt. Memory is MiB after load, on a 32,607&nbsp;MiB card.</p>
       <div class="data-wrap">
       <table class="data">
-        <thead><tr><th>Profile</th><th>Context</th><th>Draft head</th><th>VRAM used, MiB</th><th>Free, MiB</th><th>Prose t/s</th><th>Structured t/s</th><th>Prefill t/s</th></tr></thead>
+        <thead><tr><th>Profile</th><th>Window</th><th>Drafter</th><th>Memory used, MiB</th><th>Free, MiB</th><th>Prose t/s</th><th>Structured t/s</th><th>Prompt reading t/s</th></tr></thead>
         <tbody>
-          <tr><td class="t">Fast</td><td>32,768</td><td class="t">gated 0.75</td><td>23,250</td><td>9,357</td><td>78.25</td><td>131.21</td><td>2,920.6</td></tr>
-          <tr class="hi"><td class="t">Default here</td><td>65,536</td><td class="t">gated 0.75</td><td>25,470</td><td>7,137</td><td>72.43</td><td>118.69</td><td>2,902.0</td></tr>
-          <tr><td class="t">Long</td><td>131,072</td><td class="t">gated 0.75</td><td>29,950</td><td>2,657</td><td>77.46</td><td>111.60</td><td>2,881.87</td></tr>
-          <tr><td class="t">No speculation</td><td>32,768</td><td class="t">off</td><td>21,748</td><td>10,859</td><td>65.64</td><td>65.68</td><td>3,256.03</td></tr>
-          <tr><td class="t">No speculation</td><td>65,536</td><td class="t">off</td><td>23,850</td><td>8,757</td><td>65.87</td><td>66.21</td><td>3,234.64</td></tr>
-          <tr><td class="t">No speculation</td><td>131,072</td><td class="t">off</td><td>28,014</td><td>4,593</td><td>66.50</td><td>66.24</td><td>3,252.84</td></tr>
-          <tr class="hi"><td class="t">Ungated, the trap</td><td>65,536</td><td class="t">p-min 0</td><td>25,460</td><td>7,147</td><td class="neg">44.52</td><td>99.86</td><td>2,894.24</td></tr>
+          <tr><td class="t">Fast</td><td>32,768</td><td class="t">cutoff 0.75</td><td>23,250</td><td>9,357</td><td>78.25</td><td>131.21</td><td>2,920.6</td></tr>
+          <tr class="hi"><td class="t">Release-day default</td><td>65,536</td><td class="t">cutoff 0.75</td><td>25,470</td><td>7,137</td><td>72.43</td><td>118.69</td><td>2,902.0</td></tr>
+          <tr><td class="t">Long</td><td>131,072</td><td class="t">cutoff 0.75</td><td>29,950</td><td>2,657</td><td>77.46</td><td>111.60</td><td>2,881.87</td></tr>
+          <tr><td class="t">No drafter</td><td>32,768</td><td class="t">off</td><td>21,748</td><td>10,859</td><td>65.64</td><td>65.68</td><td>3,256.03</td></tr>
+          <tr><td class="t">No drafter</td><td>65,536</td><td class="t">off</td><td>23,850</td><td>8,757</td><td>65.87</td><td>66.21</td><td>3,234.64</td></tr>
+          <tr><td class="t">No drafter</td><td>131,072</td><td class="t">off</td><td>28,014</td><td>4,593</td><td>66.50</td><td>66.24</td><td>3,252.84</td></tr>
+          <tr class="hi"><td class="t">No cutoff, the trap</td><td>65,536</td><td class="t">cutoff 0</td><td>25,460</td><td>7,147</td><td class="neg">44.52</td><td>99.86</td><td>2,894.24</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Each row is one measurement session on one server
-      process: three warm repetitions of one prompt per workload for the
-      decode medians after a discarded cold one, and a single uncached
-      repetition for prefill. No interval is computed and none is implied.
-      This is a diagnostic ladder, not a benchmark.</p>
+      <p class="tablenote">One session per row. No interval is computed. A diagnostic set of runs, not a benchmark.</p>
+      <p><strong>Prose speed did not fall steadily as the window grew</strong>: 78.25 at 32,768, 72.43 at 65,536, 77.46 at 131,072. With one session per row and no repeat, this could be run-to-run variation. Structured output did fall steadily, 131.21 to 118.69 to 111.60, about 15% from end to end.</p>
+      <p><strong>A bigger window costs little memory.</strong> The model is dense (all of it runs for every token, unlike a mixture-of-experts model), and only 16 of its 64 layers keep a key-value cache, about 64&nbsp;KiB per token. Quadrupling the window from 32,768 to 131,072 cost about 6,700&nbsp;MiB. That is the cost of allocating the window, not filling it. What stops it at 131,072 is free space: 2,657&nbsp;MiB. The full 262,144 tokens at an <code>f16</code> cache would want roughly 16&nbsp;GiB of cache on top of roughly 19&nbsp;GiB of weights: a limit of this card, not the model.</p>
+      <p><strong>Prompt reading is fast.</strong> About 3,240 t/s with the drafter off and about 2,900 with it on: the drafter costs a little prompt reading and buys a lot of writing. The prompt cache works: sent again, 5,788 of the 5,792 tokens came from cache, so the rate printed for repeat sends means nothing and only the first send is in the table.</p>
+      <p><strong>On a smaller card.</strong> A 24&nbsp;GB card holds about 24,576&nbsp;MiB. On these readings the no-drafter 32,768 row (21,748&nbsp;MiB) is the only one with real headroom, the drafter 32,768 row (23,250&nbsp;MiB) leaves under 1.5&nbsp;GiB before a desktop compositor and fragmentation are counted, and everything at 65,536 and above is out of reach at this compression. A 24&nbsp;GB card, a smaller compressed file and a window below 32,768 were not tested.</p>
+      <p><strong>Against the other Qwen models measured here.</strong> 72.43 prose t/s, against 26 to 38 on the Qwen3.5 122B and 14 to 20 on the 397B (<a href="../qwen35/">pair field card</a>). Not a benchmark; a smaller model on this card could plausibly be faster.</p>
 
-      <h3>The full native context does not fit this card at an f16 cache</h3>
-      <p>262,144 tokens would want roughly 16&nbsp;GiB of key-value cache
-      on top of roughly 19&nbsp;GiB of weights, and the card holds
-      32,607&nbsp;MiB. <strong>131,072 is the ceiling on this machine for an
-      f16 cache, draft head on or off, not a limit of the model; corrected
-      below.</strong> The 262,144 figure in the configuration
-      is a property of the model, and it is not a statement about what a
-      32&nbsp;GB desktop card will allocate.</p>
+      <h3 id="drafter">The drafter and its cutoff</h3>
+      <p>Both cutoffs were set explicitly on the command line, not left to the build's default. At a 65,536-token window:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Setting</th><th>Prose t/s</th><th>vs no drafter</th><th>Structured t/s</th><th>vs no drafter</th></tr></thead>
+        <tbody>
+          <tr><td class="t">No drafter</td><td>65.87</td><td class="t">baseline</td><td>66.21</td><td class="t">baseline</td></tr>
+          <tr><td class="t">Cutoff 0.75</td><td>72.43</td><td>+9.9%</td><td>118.69</td><td>+79.3%</td></tr>
+          <tr><td class="t">Cutoff 0</td><td class="neg">44.52</td><td class="neg">-32.4%</td><td>99.86</td><td>+50.8%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Asking for the drafter with the cutoff set gave <strong>1.79 times</strong> the structured speed of not asking. Asking with no cutoff made prose slower than not asking at all.</p>
+      <p><strong>The server's own counters explain it.</strong> At 0.75, four repeats of one prose prompt kept 61% to 74% of their drafted tokens, drafting 110 to 130 tokens each, with a mean draft length of 2.15 to 2.45. With the cutoff at 0 the same prompt kept <strong>17% to 22%</strong> and drafted <strong>486 to 570 tokens per repeat</strong>, so <strong>about 78% to 83% of the drafting was thrown away</strong>, with mean draft length 2.04 to 2.34. The card spent real time drafting tokens the model then rejected.</p>
+      <p><strong>How many drafts were kept moved with the kind of output.</strong> Four repeats of one structured prompt kept 84% to 96% of their drafts at mean draft lengths of 4.66 to 5.94; with the cutoff at 0 it still kept 59% to 78%. That fits the idea that structured output is more predictable, though two prompts on one evening cannot show it is the only cause. It is also why a setup with no cutoff can look excellent on a benchmark-shaped prompt while costing a third of the speed on prose.</p>
+      <p><strong>The same direction as an earlier study.</strong> Our <a href="../speculation-gate/">speculation-gate study</a>, four days earlier on the same workstation, found the shipped default of 0.00 making prose slower than no drafting and structured output faster, on a 397B mixture-of-experts model mostly in system RAM, across 160 paired measurements. This is a dense 27B held entirely on the card, one session per setting. The sizes of the effects are not comparable; what this adds is a second setup pointing the same way.</p>
+
+      <h3 id="thinking">Thinking: a real off-switch, and a budget floor that depends on the prompt</h3>
+      <p><strong>The off-switch works.</strong> Thinking is on by default and came back in its own field, with zero leakage into the visible answer on every probe we ran. With <code>enable_thinking: false</code> inside <code>chat_template_kwargs</code>, a question was answered in <strong>4 completion tokens with zero reasoning characters</strong>. With thinking on, the same question took <strong>29 completion tokens</strong> and 73 reasoning characters. Both replies ended on a <code>stop</code> reason, not a length cutoff (budgets 512 off, 4,096 on), so the counts are what the model spent. On a hosted route for the 2.4T model the day before, thinking could not be turned off at all (a different serving stack, so not a comparison of the models).</p>
+      <p><strong>The budget floor belongs to the prompt, not the server.</strong> Asked for a two or three sentence explanation, a 60-token budget returned no visible answer (60 completion tokens spent, 295 reasoning characters, <code>finish_reason: length</code>). The first budget tested that returned a complete answer was <strong>500</strong>. Nothing between 61 and 499 was tested, so 500 is the first tested success, not a measured threshold. In the same session, the product of 17 and 24 came back at a <strong>60</strong>-token budget, using 58 tokens. Our <a href="../empty-answer/">Empty Answer</a> study found the same.</p>
+
+      <h3 id="client-traps">Client traps (this chat template, this llama.cpp build)</h3>
+            <p><strong>The thinking switch was ignored as a top-level field.</strong> Sent in the request body outside <code>chat_template_kwargs</code>, <code>enable_thinking</code> was <strong>silently ignored</strong>: no error, no warning, a normal-looking reply. Our test tool got byte-identical replies with and without it: 104 visible characters, 289 reasoning characters, 140 completion tokens both times. We did not try every way a client might send it. A client that sets it the obvious way pays for thinking on every call.</p>
+      <p><strong>An invalid <code>reasoning_effort</code> returns HTTP 500.</strong> The chat template raises an error on any value other than <code>xhigh</code>, <code>medium</code> and <code>low</code>, which comes back as a server error, not a fallback. Other requests in flight are unaffected and the server keeps serving.</p>
+      <p><strong><code>reasoning_effort</code> rewrites the prompt; it does not set a budget.</strong> The template adds a plain-language instruction to the prompt, and <code>medium</code> adds nothing (it has no branch of its own). Prompt length on one question: 33 tokens at <code>medium</code>, 63 at <code>low</code>, 75 at <code>xhigh</code>. Thinking length did not follow the setting: low 253 characters, medium 410, xhigh 197, one call each, so treat the order as an illustration. A hosted test of the 2.4T model the day before found the same: the setting moved style and the prompt while leaving thinking spend flat. A later study, <a href="../reasoning-effort/">Reasoning effort is a sentence, not a dial</a>, showed on this same model file that the gaps above are the size of the added text, 42 tokens between <code>medium</code> and <code>xhigh</code> and 30 between <code>medium</code> and <code>low</code>, the same two numbers it measured on three other prompts.</p>
+
+      <h3 id="license">Two licenses in one family</h3>
+      <table class="facts">
+        <tr><th scope="row">Qwen3.8-27B</th><td><strong>Apache 2.0.</strong> The LICENSE file, read in full at the exact version (revision) used, on 2026-08-14: 11,544 bytes of the verbatim Apache License 2.0 text, appendix reading <code>Copyright 2026 Alibaba Cloud</code>. No user or revenue threshold. The copy in the official FP8 (8-bit) repository is byte-identical (same SHA-256).</td></tr>
+        <tr><th scope="row">Qwen3.8-2.4T-A95B</th><td><strong>Not Apache 2.0.</strong> Read at its own revision <span class="n">207bd685</span> on 2026-08-13: a custom "Qwen3.8-Max License" of 3,390 bytes, an MIT-style grant with two added conditions. A product above 100 million monthly active users or US$20&nbsp;million in <em>monthly</em> revenue must display the model's name prominently. A "Model as a Service" or "AI Work Assistant" business whose aggregate revenue exceeds US$50,000,000 in any consecutive twelve months must obtain a separate license from Qwen before using the software for any commercial purpose, with internal use exempt.</td></tr>
+      </table>
+      <p>"Qwen3.8 is Apache 2.0" is wrong as a family statement and true of the 27B. That is a fact about those two files at those revisions, not about every 3.8 repository. The community GGUF file we served carries <code>general.license: apache-2.0</code> in its header, but that is the converter's declaration, not the maker's: check the conversion you download. Neither reading is a legal opinion. The <a href="../qwen38-readiness/">release watch</a> carries the 2.4T side with its own dated readings.</p>
+
+      <h3 id="plumbing">Tools, retrieval and structured output</h3>
+      <p>These are quick working checks of one to three calls each, not an evaluation, and they do not rank this model against any other.</p>
+      <ul class="plain">
+        <li><strong>Tool calls arrive as XML, and this build reads them.</strong> The template writes tool calls as XML, not the JSON of the previous generation, so a runtime needs a matching parser. Both tool tests passed with correct argument values and the <code>tool_calls</code> stop reason. A two-step round trip through the route other programs on this desktop use also worked: the model asked for a file, we returned five numbers, and it summed them correctly.</li>
+        <li><strong>Retrieval.</strong> A fact hidden in a 153,842-character text was found at a server-reported <strong>31,380 prompt tokens</strong>, at the 65,536-token window. That is about 12% of the declared context: not a long-context result.</li>
+        <li><strong>Structured output.</strong> Three of three replies matched the requested schema.</li>
+        <li><strong>Other checks.</strong> An exact-phrase echo was byte-perfect; interval-merging code passed its three assertions; a bat-and-ball question was answered correctly.</li>
+        <li><strong>One automated grade was wrong.</strong> The honesty check came back FAIL, a false negative. Asked to summarize a file that does not exist and report a score on a benchmark that does not exist, the model refused both and wrote "I won't invent a numeric score." The grader did not count first-person refusals; read by a person, it is a pass. Two of the nine checks came back INVALID: their budgets came from the 500-token figure above, thinking used them up, and they measured nothing.</li>
+        <li><strong>One coding-agent client check did not run.</strong> The client hung with zero requests reaching the server, a known client-side hang. The route was tested with a direct client instead; no pass is reported.</li>
+      </ul>
+    </section>
+
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>Small samples, one evening.</strong> Speed medians are three warm repeats of one prompt per kind of output in one server process; draft counts are four repeats; the other checks are one to three calls each. Only cutoffs 0.75 and 0 were tried, so 0.75 is not shown to be the best value. No interval or significance claim is made.</li>
+        <li><strong>One file, one card, one placement.</strong> Only <code>UD-Q5_K_XL</code>, with no data on a smaller or larger compressed file, the official FP8 (8-bit) weights or the uncompressed model. No 24&nbsp;GB card, no partial offload, no other cache type in the release-day runs, no batch or <code>--parallel</code> sweep. Sampling used the model card's thinking-mode values with thinking off; the card's suggested non-thinking values (0.7 / 0.80 / 20 with a presence penalty of 1.5) were not tried.</li>
+        <li><strong>No filled long window.</strong> The longest prompt actually processed was 31,380 tokens. Writing speed with a full 128K prompt is untested, and nothing here speaks to behavior at 131,072 tokens, let alone 262,144.</li>
+        <li><strong>Correctness not checked; vision untested.</strong> We did not compare outputs or logits against the reference implementation, and have no numerical-correctness check for the Gated DeltaNet layers or the drafter on this build. The model's configuration records end-of-sequence token 248044 and the GGUF header records 248046; we did not reconcile that, and did not hash the tokenizer against the Qwen3.5-397B or 2.4T files. The model also reads images and video; we served it text-only and never loaded the vision part.</li>
+        <li><strong>Dated.</strong> Everything here except the updates below is dated 2026-08-14. Community files are re-cut and runtimes change defaults (the cutoff flag already has, twice); treat version-specific findings as unverified since that date.</li>
+      </ul>
+    </section>
+
+    <section id="updates">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
       <div class="note">
         <span class="label">Update &middot; 2026-09-26 &middot; a wider window was served here</span>
-        <p>On 2026-09-17 this same model was served at the full 262,144
-        tokens on this same card, with an 8-bit (<code>q8_0</code>)
-        key-value cache and the built-in draft head (MTP) forced off,
-        because the draft's own context needs room that a 256K cache does
-        not leave beside it. No raw log of that run survives; the record is a
-        measured-rung note written into the start script and a same-day
-        lab note, so no speed or memory figure from it is printed here.
-        At an f16 cache, 131,072 remains the ceiling on this card either
-        way. The 2026-09-17 serve used an 8-bit cache; with that cache the
-        draft head still did not fit beside the 256K window, so it was
-        forced off. A new run on 2026-09-26, with its logs kept, is
-        written up on <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>.</p>
+        <p>This page gave 131,072 tokens as the ceiling at an <code>f16</code> cache. On 2026-09-17 this same model was served at the full 262,144 tokens on this same card, with an 8-bit (<code>q8_0</code>) key-value cache and the built-in drafter (MTP) forced off, because the drafter's own context needs room that a 256K cache does not leave beside it. The record is a note written into the start script and a same-day lab note; no raw log survives, so no speed or memory figure from it is given here. At an <code>f16</code> cache, 131,072 remains the ceiling on this card, drafter on or off. A new run on 2026-09-26, with its logs kept, is written up on <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>.</p>
       </div>
-      <div class="note">
+      <div class="note" id="update-2026-10-19">
         <span class="label">Update &middot; 2026-10-19 &middot; a separate draft model</span>
-        <p>Since 19 October this model runs with a separate draft model, DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB), plus n-gram drafting, instead of the built-in draft head. A draft model guesses a few tokens ahead and the main model keeps the guesses it agrees with. It runs the same UD-Q5_K_XL file on mainline llama.cpp, with an 8-bit cache, <code>-ub 256</code> and a 229,376-token window. With thinking on, 3,500 tokens of reasoning with no visible answer came out at 186.61 tokens a second about 20,000 tokens deep, against 60.39 for the same kind of reasoning without the draft model at a 262,144 window. With the draft model at the full 262,144 window the same reasoning ran at 189.26, so the smaller window is not what made it faster. On a plain letter with thinking off the gain was smaller: 87.61 against 60.70 at 262,144. Reading was 10 to 15 percent slower. The window is 229,376 rather than 262,144 because the card peaked at 30,647 MiB there and at 31,992 MiB at the full window. These are single runs on 19 October 2026; <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> and the <a href="../roster-2026-10/">October roster</a> carry the detail.</p>
+        <p>Since 19 October this model runs with a separate draft model, DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB), plus n-gram drafting, instead of the built-in drafter. A draft model guesses a few tokens ahead and the main model keeps the guesses it agrees with. It runs the same <code>UD-Q5_K_XL</code> file on mainline llama.cpp, with an 8-bit cache, <code>-ub 256</code> and a 229,376-token window. With thinking on, 3,500 tokens of reasoning with no visible answer came out at 186.61 tokens a second about 20,000 tokens deep, against 60.39 for the same kind of reasoning without the draft model at a 262,144 window. With the draft model at the full 262,144 window the same reasoning ran at 189.26, so the smaller window is not what made it faster. On a plain letter with thinking off the gain was smaller: 87.61 against 60.70 at 262,144. Reading was 10 to 15 percent slower. The window is 229,376 rather than 262,144 because the card peaked at 30,647 MiB there and at 31,992 MiB at the full window. These are single runs on 19 October 2026; <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> and the <a href="../roster-2026-10/">October roster</a> carry the detail.</p>
       </div>
-
-      <h3>What this costs on a smaller card</h3>
-      <p>Every number here is from a 32,607&nbsp;MiB card. A 24&nbsp;GB card
-      holds about 24,576&nbsp;MiB, so on these readings the no-speculation
-      32,768 row (21,748&nbsp;MiB) is the only one with real headroom, the
-      gated 32,768 row (23,250&nbsp;MiB) leaves under 1.5&nbsp;GiB before a
-      desktop compositor and fragmentation are counted, and everything at
-      65,536 and above is out of reach at this quantization. We did not test
-      a 24&nbsp;GB card, and we did not measure a smaller quantization or a
-      context below 32,768, either of which is the obvious next lever.</p>
-
-      <h3>The hybrid layout makes allocated context cheap</h3>
-      <p>Only 16 of the 64 layers keep a key-value cache, which works out to
-      about 64&nbsp;KiB per token. Quadrupling the allocated context from
-      32,768 to 131,072 costs about 6,700&nbsp;MiB of VRAM. What we measured
-      is the cost of <em>allocating</em> that context, not of using it: the
-      longest prompt we actually decoded from is the 31,380-token needle in
-      section 08, and <strong>filled-context decode at 131,072 tokens is
-      untested here</strong>.</p>
-      <p>Decode rate across the three gated profiles is not monotonic in
-      context and we cannot explain it from this data: prose reads 78.25 at
-      32,768, 72.43 at 65,536 and 77.46 at 131,072, so the 131,072 profile
-      is close to the 32,768 profile while the middle one sits about 6
-      tokens per second below both. Structured output does decline steadily
-      across the same span, 131.21 to 118.69 to 111.60, which is about 15%
-      from end to end. With one session per cell and no repetition across
-      processes, the prose ordering could be run-to-run variation; we did not
-      repeat the ladder to find out. What ends the conversation at 131,072 is
-      not the decode rate, it is the free space: 2,657&nbsp;MiB, with nothing
-      else able to live beside it.</p>
-
-      <h3>Prefill is fast, and it is not the speculation path</h3>
-      <p>With the draft head off it runs at about 3,240 tokens per second,
-      and with the head on at about 2,900. The head costs a little prefill
-      and buys a lot of decode. The prompt cache works too: sending the same
-      5,792-token prompt again, the server reported 5,788 of its 5,792
-      tokens served from cache. The rate it prints for those cached
-      repetitions is computed over the four tokens it actually processed and
-      means nothing, which is why only the first, uncached send appears in
-      the table.</p>
-
-      <h3>Where this sits against our own carded endpoints</h3>
-      <p>At the 64K gated profile this measured 72.43 prose tokens per
-      second. The two Qwen3.5 endpoints this site has already carded
-      measured 26 to 38 tokens per second on the 122B and 14 to 20 on the
-      397B in their own dated records, both on the
-      <a href="../qwen35/">pair field card</a>. Those are the two
-      comparisons we can show you, they are not a benchmark, and this page
-      makes no claim about any model it has not carded. Small models served
-      here through other runtimes were never speed-recorded at all, and a
-      smaller model on this card could plausibly be faster.</p>
-
-      <h3>Why 65,536 is the default here</h3>
-      <p>It is a house placement, not a technical recommendation: it leaves
-      about 7&nbsp;GiB of card free so the voice stack can live beside it,
-      which is the same VRAM shape the 122B endpoint's shared-voice profile
-      occupies. The 32,768 profile is faster on both workloads and leaves
-      more room. If nothing else needs the card, that is the row to start
-      from.</p>
     </section>
 
-    <section>
+    <section id="method">
       <div class="secnum">05</div>
-      <h2>The draft head, its gate, and the trap repeated</h2>
-      <p>Qwen3.8-27B ships with a multi-token-prediction head inside the
-      weights file: a small extra block that guesses the next few tokens so
-      the main model can verify several at once instead of generating them
-      one at a time.</p>
-      <p><strong>llama.cpp will not use it just because it is in the
-      file.</strong> You have to ask, with
-      <code>--spec-type draft-mtp</code>. A reader who downloads this
-      quantization and starts <code>llama-server</code> with no speculation
-      flags gets the no-speculation row of the table, about 66 tokens per
-      second on both workloads. Asking for it, with the gate set, measured
-      <strong>1.79 times</strong> the structured throughput of not asking,
-      which is +79.3%.</p>
-      <p>Asking for it badly makes it slower than not asking at all.</p>
-      <p>The mechanism is a confidence gate on the draft, the
-      <code>--spec-draft-p-min</code> flag, which decides when to abandon a
-      draft early because the draft is no longer confident. We measured both
-      sides here with the flag written explicitly on the command line in
-      each case, so neither reading rests on a build's default.</p>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th>Setting at 65,536 context</th><th>Prose t/s</th><th>vs no speculation</th><th>Structured t/s</th><th>vs no speculation</th></tr></thead>
-        <tbody>
-          <tr><td class="t">No speculation</td><td>65.87</td><td class="t">baseline</td><td>66.21</td><td class="t">baseline</td></tr>
-          <tr><td class="t">Gated at 0.75</td><td>72.43</td><td>+9.9%</td><td>118.69</td><td>+79.3%</td></tr>
-          <tr><td class="t">Ungated, p-min 0</td><td class="neg">44.52</td><td class="neg">-32.4%</td><td>99.86</td><td>+50.8%</td></tr>
-        </tbody>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>The Qwen team published the model at about 11:00 EDT on 2026-08-14. Download 19:14 to 19:19 EDT; recorded runs 19:14 to 21:07 EDT the same evening.</td></tr>
+        <tr><th scope="row">Machine</th><td>One desktop: Core Ultra 9 285K, 188&nbsp;GiB RAM, one RTX&nbsp;5090 with <strong>32,607&nbsp;MiB</strong> of VRAM, driver 580.173.02, Pop!_OS.</td></tr>
+        <tr><th scope="row">Runtime</th><td>Mainline llama.cpp <code>llama-server</code>, a build already on this machine from 2026-08-05, master <code>c8e03ce</code>, CUDA 12.8; the server reports itself as <code>b1-c8e03ce</code>. No rebuild was needed: the file declares the dense <code>qwen35</code> architecture that build already implements, so a build older than the <code>qwen35</code> work would not inherit it.</td></tr>
+        <tr><th scope="row">Weights served</th><td><code>unsloth/Qwen3.8-27B-GGUF</code> at revision <span class="n">fe1e2a23d973adb629709749dc4f6756df66ef10</span>, <strong>UD-Q5_K_XL</strong>: Unsloth's dynamic mix with an importance matrix, not a stock Q5_K. One file of <strong>20,218,178,624 bytes (18.83&nbsp;GiB)</strong>, SHA-256 <span class="n">176a6a3f034e9cdc447c10cd00329fc9b31002e6589b9295f2ad4f1eefe0f6ab</span>.</td></tr>
+        <tr><th scope="row">Integrity, and its limit</th><td>That SHA-256 equals the repository's own LFS object id at that revision, and the vision projector file (927,607,488 bytes, <span class="n">cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e</span>) matches too, both hashed before first load. That checks the files against the conversion, not the conversion against the official weights.</td></tr>
+        <tr><th scope="row">Placement</th><td><code>-ngl 999</code>: all 64 layers on the GPU. The model is dense, so the <code>--n-cpu-moe</code> setting used for mixture-of-experts models does not apply; the file fits the card whole or not at all. Only the window and the drafter were varied; <code>--spec-draft-n-max</code> was not.</td></tr>
+        <tr><th scope="row">Sampling</th><td>Temperature 1.0, top-p 0.95, top-k 20, min-p 0: the model card's thinking-mode values, which match the sampling metadata in the GGUF header (<code>general.sampling.temp</code> 1.0, <code>top_p</code> 0.95, <code>top_k</code> 20), used with thinking off.</td></tr>
+        <tr><th scope="row">Speed method</th><td>Thinking off, so the tokens counted are answer tokens. One discarded cold repeat, then three warm repeats of <strong>one prose prompt and one structured prompt</strong> per row, median of server-reported rates. Prompt reading is the first, uncached repeat only.</td></tr>
+        <tr><th scope="row">Loads</th><td>All seven loads took 2.03 to 3.04 seconds, with the file still in the page cache because it had just been written and hashed. A cold load from disk was not measured.</td></tr>
+        <tr><th scope="row">Memory readings</th><td>Raw MiB from <code>nvidia-smi</code>. MiB is printed first because that is what the tool reports; a MiB reading is never divided by 1000 and called GiB.</td></tr>
+        <tr><th scope="row">Network</th><td>Served on a loopback port for the study; not exposed to the local network at any point.</td></tr>
       </table>
-      </div>
-      <div class="note">
-        <span class="label">Set the flag yourself</span>
-        <p>This runtime has changed that default twice: it shipped 0.9, then
-        0.75 for about fifteen months, then 0.0 from 2026-05-19 onward,
-        which is the lineage our 2026-08-05 build sits in. We did not read
-        the default out of the running build, because we always passed the
-        flag. The practical instruction is the same either way: pass
-        <code>--spec-draft-p-min</code> explicitly rather than trusting
-        whatever your build inherited.</p>
-      </div>
-      <p>The server's own draft counters explain the table. At the 0.75
-      gate, four repetitions of one prose prompt accepted 61% to 74% of
-      their drafted tokens and generated 110 to 130 draft tokens each, with
-      a mean draft length of 2.15 to 2.45 tokens. Ungated, the same prompt
-      accepted <strong>17% to 22%</strong> and generated <strong>486 to 570
-      draft tokens per repetition</strong>, meaning <strong>about 78% to 83%
-      of the drafted work was thrown away</strong>, with mean draft length
-      falling to 2.04 to 2.34. The model spends real GPU time drafting
-      tokens the verifier then rejects.</p>
-      <p><strong>Acceptance moved with the workload.</strong> In this
-      session, four repetitions of one structured prompt accepted 84% to 96%
-      of their drafted tokens at mean draft lengths of 4.66 to 5.94, against
-      the 61% to 74% of the prose prompt; ungated, the structured prompt
-      still held 59% to 78% where prose collapsed to 17% to 22%. That
-      pattern is consistent with the throughput asymmetry in the table
-      above, and it fits the intuition that structured output is more
-      predictable, but two prompts on one evening do not establish that
-      predictability is the sole cause, and nothing here makes acceptance a
-      property of the model rather than of what it is asked to write. It is
-      also why an ungated setup can look excellent on a benchmark-shaped
-      prompt while costing a third of the throughput on prose: ungated
-      structured output still ran 50.8% above baseline in the same run that
-      cost prose 32.4%.</p>
-      <div class="note">
-        <span class="label">The same direction, a different deployment</span>
-        <p>This field card repeats the <strong>direction</strong> of the
-        effect our <a href="../speculation-gate/">speculation-gate study</a>
-        measured, on a different deployment. That study measured a 397B
-        mixture-of-experts with most of its weights in CPU RAM, across 160
-        paired measurements, and found the runtime's shipped default of 0.00
-        making prose slower than no speculation while making structured
-        output faster. This is a <strong>dense 27B living entirely on the
-        GPU</strong>: a different size, a different architecture, a
-        different memory regime, one session per cell, measured four days
-        later on the same workstation. Ungated speculation was slower than
-        no speculation for prose and faster for structured output in both
-        places.</p>
-        <p><strong>The magnitudes do not transfer and are not
-        comparable</strong>: that study's design and this one are not the
-        same experiment, and nothing here reproduces its numbers. What this
-        adds is a second deployment pointing the same way, which is enough
-        to justify checking the flag before trusting a speculation
-        setup.</p>
-      </div>
-      <p class="tablenote">Scope, plainly: one gate value against one
-      ungated setting, one measurement session per cell, one prose prompt
-      and one structured prompt repeated four times each, one quantization,
-      one machine, 2026-08-14. The speculation-gate study is the one with
-      the paired design and the counterbalanced cycles. This is a field card
-      pointing the same direction, not a second experiment of the same
-      rigor.</p>
+      <h3 id="model">The model, as read from its files</h3>
+      <p>Read from the model's own configuration and the GGUF file at the exact repository versions (revisions) named here, on 2026-08-14. Amber text marks the maker's claim rather than our reading.</p>
+      <table class="facts">
+        <tr><th scope="row">Maker</th><td>The Qwen team (Alibaba).</td></tr>
+        <tr><th scope="row">Weights</th><td><code>Qwen/Qwen3.8-27B</code> at revision <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>: 18 weight files in the maker's format (safetensors) plus an index, 32 files.</td></tr>
+        <tr><th scope="row">Shape</th><td>Dense, 27B; no expert blocks anywhere in the configuration.</td></tr>
+        <tr><th scope="row">Architecture</th><td>Hybrid: 64 layers in 16 groups of three Gated DeltaNet blocks (layers that keep a running summary instead of a key-value cache) followed by one Gated Attention block, so only 16 of the 64 layers hold a key-value cache. We did not measure that running state.</td></tr>
+        <tr><th scope="row">Drafter</th><td>A multi-token-prediction head inside the weights file, one extra block (block count 65).</td></tr>
+        <tr><th scope="row">Context</th><td>262,144 tokens native, declared in the file. <span class="asstated">The maker also claims extension to 1,000,000; that claim is not in the file and we did not test it.</span></td></tr>
+        <tr><th scope="row">Vocabulary</th><td>248,320 tokens, the same size as Qwen3.5-397B and the 2.4T. Configuration end-of-sequence 248044; served GGUF header BOS 248044 and EOS <strong>248046</strong>, not reconciled, so no tokenizer-migration claim is made.</td></tr>
+        <tr><th scope="row">Modality</th><td>Natively multimodal by its configuration (images and video). Served text-only here.</td></tr>
+        <tr><th scope="row">Variants</th><td>One post-trained model, no base model. An official FP8 repository (the weights stored in a compact 8-bit number format) exists at revision <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>; not used.</td></tr>
+        <tr><th scope="row">GGUF files</th><td>No official GGUF; every GGUF is a community conversion. The <code>ggml-org</code> main file of this revision reads 851 tensors and no <code>nextn</code> (drafter) tensors, against 866 including 4 <code>nextn</code> tensors in the Unsloth file served. Read from file headers over HTTP range requests before downloading.</td></tr>
+      </table>
     </section>
 
-    <section>
+    <section id="sources">
       <div class="secnum">06</div>
-      <h2>Thinking has an off-switch, and a budget floor that moves with the task</h2>
-      <p>This model thinks by default, and on this serving route the
-      thinking came back cleanly separated into its own field, with zero
-      leakage into the visible answer on every probe we ran.</p>
-      <p><strong>It has a real off-switch.</strong> Sending
-      <code>chat_template_kwargs</code> containing
-      <code>enable_thinking: false</code> produced an answer in
-      <strong>4 completion tokens with zero reasoning characters</strong>.
-      The same question with thinking on returned <strong>29 completion
-      tokens</strong> with 73 reasoning characters. The two probes were sent
-      with different budgets, 512 tokens with thinking off and 4,096 with it
-      on, and both finished on a <code>stop</code> reason rather than a
-      length cutoff, so the token counts are what the model spent and not
-      what the budget allowed. On the hosted 2.4T route we measured the day
-      before, thinking could not be turned off at all; that is a comparison
-      between two serving stacks as much as between two models. The speed
-      table in section 04 was measured with this lever pulled.</p>
-      <p><strong>The budget floor is real, and it belongs to the task rather
-      than to the endpoint.</strong> Reasoning bills against the same
-      <code>max_tokens</code> as the visible answer, so a small budget can be
-      entirely consumed by invisible thinking and return an empty string with
-      a length stop reason. For one prompt, a request for a two or three
-      sentence explanation, a 60-token budget returned no visible answer at
-      all (60 completion tokens spent, 295 reasoning characters,
-      <code>finish_reason: length</code>) and the first budget we tested that
-      returned a complete answer was <strong>500</strong>. <strong>We did not
-      test anything between 61 and 499</strong>, so 500 is the first tested
-      success and not a located threshold.</p>
-      <p>On the same endpoint, in the same session, a request for the
-      product of 17 and 24 returned its visible answer at a
-      <strong>60</strong>-token budget, spending 58 tokens to do it. So the
-      floor is not a constant of the model or of the server. It is a property
-      of how much thinking the prompt provokes, which is exactly the finding
-      of our <a href="../empty-answer/">Empty Answer</a> study, here seen
-      again on a new model on the day it shipped. <strong>Do not copy 500
-      from this page into your client.</strong> Measure your own floor on
-      your own prompts, or turn thinking off when you do not need it.</p>
-      <p>For what it is worth as a starting point rather than a rule: on this
-      endpoint, with this probe family, we give thinking replies 2,000 to
-      4,096 tokens. Structured or JSON work with thinking on starved even at
-      1,200 here. With thinking off, the ladder's structured workload
-      measured 111.60 to 131.21 tokens per second across the three gated
-      profiles in section 04.</p>
+      <h2>Data and sources</h2>
+      <p><a href="data/README.md">data/README.md</a> maps every folder of the data package, its provenance and its redactions; <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on this page to its file and field, and opens with the one place a file will look like it contradicts the page.</p>
+      <ul class="plain">
+        <li>The official repositories, checked 2026-08-14: <code>Qwen/Qwen3.8-27B</code> and <code>Qwen/Qwen3.8-27B-FP8</code> at the revisions above, both made public that day by their own timestamps.</li>
+        <li><strong>The three LICENSE files</strong>, kept under <a href="data/licenses/LICENSE_Qwen3.8-27B_1d4bf0f2.txt">data/licenses/</a>: the 27B and FP8 copies (11,544 bytes each) and the 2.4T's at revision <span class="n">207bd685</span> (3,390 bytes).</li>
+        <li>The model's <code>config.json</code> and chat template at the revision above. The served template is inside <code>data/routecheck/raw/C1_server_props.json</code>.</li>
+        <li>The Unsloth repository's own checksums and our hashes (<code>data/integrity/</code>).</li>
+        <li>A GGUF header probe of the Unsloth and <code>ggml-org</code> files (<a href="data/headers/header_probe_2026-08-14_rerun.json">data/headers/</a>): a same-day re-run kept after the fact, covering two of the four candidates the original probe read.</li>
+        <li>The speed runs (<a href="data/ladder/ladder.tsv">data/ladder/ladder.tsv</a>, its driver, the seven server logs with the draft counters, and every request and response under <code>data/ladder/raw/</code>), the probe battery (<code>data/battery/</code>), the route check and all 27 of its bodies (<code>data/routecheck/</code>), the load logs (<code>data/loads/</code>), and the two-step tool round trip (<code>data/prod/</code>).</li>
+      </ul>
+      <p class="fineprint">If a number on this page disagrees with the record it came from, the record is right and the page is wrong; tell us and we will fix the page.</p>
     </section>
 
-    <section>
+    <section id="related">
       <div class="secnum">07</div>
-      <h2>Three client traps, all measured</h2>
-      <p>Everything in this section is a fact about this chat template at
-      this revision, served by this <code>llama-server</code> build. A
-      different runtime, or a later template, may behave differently, and
-      none of it is a property of the weights.</p>
-      <h3>The thinking toggle worked in one placement and was ignored in the other</h3>
-      <p><code>enable_thinking</code> sent inside
-      <code>chat_template_kwargs</code> changed the response. Sent as a
-      top-level field in the request body it was <strong>silently
-      ignored</strong>: no error, no warning, and a response that looks
-      perfectly normal. Our instrument sent it that way by design and got
-      byte-identical replies with and without it, 104 visible characters,
-      289 reasoning characters, 140 completion tokens, both times. We did
-      not exhaust every API path a client might use. A client that sets the
-      flag the obvious way will believe it turned thinking off and will be
-      paying for thinking on every call.</p>
-      <h3>An invalid reasoning_effort returns HTTP 500</h3>
-      <p>The chat template raises an exception on any value outside
-      <code>xhigh</code>, <code>medium</code> and <code>low</code>, and that
-      surfaces as a server error rather than a fallback to the default. A
-      typo in a config file fails that request; other in-flight requests are
-      unaffected and the server keeps serving.</p>
-      <h3>reasoning_effort rewrites the prompt, it does not set a budget</h3>
-      <p>The template implements it by prepending a natural-language
-      instruction, and <strong><code>medium</code> prepends nothing at
-      all</strong>: there is no <code>medium</code> branch, so it falls
-      through to an empty string. The served prompt length shows it on the
-      same question: 33 prompt tokens at <code>medium</code>, 63 at
-      <code>low</code>, 75 at <code>xhigh</code>. Measured reasoning length
-      did not scale with the setting in either direction: low produced 253
-      characters, medium 410, xhigh 197. One call per level on one prompt,
-      so treat the ordering as an illustration rather than a curve; the
-      point that survives is structural, which is that the knob changes the
-      prompt the model sees and does not cap what it spends. A hosted-route
-      measurement of the 2.4T sibling the day before found the same thing
-      from the opposite direction: the knob moved style and the served
-      prompt while leaving the thinking spend flat. A later study read the
-      mechanism straight off the rendered prompts on this same model file:
-      <a href="../reasoning-effort/">Reasoning effort is a sentence, not a
-      dial</a> prints the template's own injected text for each level, and
-      the two gaps in the counts above turn out to be the size of that
-      injection, 42 tokens between <code>medium</code> and <code>xhigh</code>
-      and 30 between <code>medium</code> and <code>low</code>, the same two
-      numbers it measures on three other prompts.</p>
-    </section>
-
-    <section>
-      <div class="secnum">08</div>
-      <h2>Plumbing: tools, retrieval, and structured output</h2>
-      <p>Everything in this section is a smoke test with one to three calls
-      per check. It says the plumbing works. It is not an evaluation and it
-      does not rank this model against any other.</p>
-      <p><strong>Tool calls arrive as XML and this build parses them.</strong>
-      The chat template emits a tool call in an XML shape rather than the
-      JSON shape the previous generation used, which means a runtime needs a
-      matching parser and tool conformance is a thing to check rather than
-      assume. On this build it works: both tool shots passed with correct
-      enumerated argument values and the correct <code>tool_calls</code> stop
-      reason, and the server handed back properly formed OpenAI-style tool
-      calls. A full two-hop round trip over the production route also came
-      back correct: the model requested a file read, we returned five
-      numbers, and it summed them correctly.</p>
-      <p><strong>Retrieval.</strong> A needle placed in a 153,842-character
-      haystack was found at a server-reported <strong>31,380 prompt
-      tokens</strong>, served at the 65,536-token profile. That is the
-      longest prompt we have actually put through this endpoint, and at
-      about 12% of the model's declared context it is not a long-context
-      result. Nothing on this page speaks to behavior at 131,072 tokens, let
-      alone at 262,144.</p>
-      <p><strong>Structured output.</strong> Three of three responses
-      conformed to the requested schema.</p>
-      <p><strong>The rest of the battery.</strong> An exact-phrase echo came
-      back byte-perfect. A request to implement interval merging produced
-      code whose three assertions we executed, exiting clean. A bat-and-ball
-      question was answered correctly.</p>
-      <div class="note">
-        <span class="label">What our instrument got wrong, and why we are printing it</span>
-        <p>The automated honesty grade came back FAIL and <strong>it is a
-        false negative</strong>. Asked to summarize a nonexistent file and
-        report a score on a nonexistent benchmark, the model refused both
-        cleanly and wrote, in the retained response, "I won't invent a
-        numeric score." The grader's list of hedging markers does not include
-        first-person refusal phrasing, so it scored a clean refusal as a
-        failure; a human read of the retained raw response grades it a
-        pass.</p>
-        <p>Two of the nine checks also came back INVALID rather than passed
-        or failed, because their token budgets were derived from that
-        500-token first-success figure and this model's thinking consumed
-        them: those cells measured nothing and are quoted for nothing. We
-        print this because the instrument's raw bodies are what settle
-        it.</p>
-      </div>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>What we ran, and what we have not</h2>
+      <h2>Related pages</h2>
       <ul class="plain">
-        <li><strong>No cold load measured.</strong> Every one of the seven
-        loads in section 04 took 2.03 to 3.04 seconds, and every one was
-        page-cache warm, because the file had just been written and hashed. A
-        genuinely cold load from disk has not been measured here.</li>
-        <li><strong>No filled long context.</strong> The ladder allocated
-        32,768, 65,536 and 131,072 tokens of context; the longest prompt
-        actually decoded from was 31,380 tokens. Decode behavior with a full
-        128K prompt is untested.</li>
-        <li><strong>No correctness check.</strong> We did not compare this
-        build's outputs or logits against the reference implementation, and
-        we did not hash the tokenizer against the 3.5 or 2.4T files. The
-        vocabulary row in section 01 carries an unreconciled EOS difference
-        between the configuration and the GGUF header.</li>
-        <li><strong>Vision is untested.</strong> The model is natively
-        multimodal and the projector file is on this disk, verified by
-        checksum. We never loaded it. There is no image or video result on
-        this page and no claim here depends on one.</li>
-        <li><strong>One quantization, no sensitivity data.</strong>
-        Everything here is UD-Q5_K_XL, a dynamic mix rather than a stock
-        Q5_K. We have no measurement of what a smaller or larger
-        quantization does to any number on this page, and no comparison
-        against the official FP8 weights or the unquantized model.</li>
-        <li><strong>One card, one placement.</strong> No 24&nbsp;GB card was
-        tested, no partial offload, no alternate cache type in the
-        2026-08-14 ladder; a q8_0 serve on 2026-09-17 is the dated note in
-        section 04, no batch or
-        <code>--parallel</code> sweep.</li>
-        <li><strong>No hosted twin.</strong> We measured the 2.4T sibling
-        against a hosted route on 2026-08-13, but for this 27B we have only
-        the local endpoint. No local-versus-hosted comparison exists yet.</li>
-        <li><strong>Single sessions.</strong> The speed medians are three
-        warm repetitions of one prompt per workload inside one server
-        process; the acceptance figures are four repetitions of one prompt
-        per condition; the checks in sections 06 through 08 are one to three
-        calls each. No interval or significance claim is made anywhere on
-        this page.</li>
-        <li><strong>One agent-client check did not run.</strong> A headless
-        coding-agent smoke test hung and the server logged zero requests,
-        which is a client-side hang already known on this machine and not a
-        fault of the model or the route. We proved the route with a direct
-        client instead, and we say that rather than reporting a pass.</li>
+        <li><a href="../qwen38-256k/">Qwen3.8-27B at 256K</a>: this model at its full window, and with a separate draft model.</li>
+        <li><a href="../speculation-gate/">Speculation-gate study</a>: the drafter cutoff measured with five settings and 160 paired measurements.</li>
+        <li><a href="../empty-answer/">Empty Answer</a>: hidden thinking and the output budget, and how to find your own floor.</li>
+        <li><a href="../reasoning-effort/">Reasoning effort is a sentence, not a dial</a>: the <code>reasoning_effort</code> finding on this same model file.</li>
+        <li><a href="../qwen35/">Qwen3.5 pair field card</a>: the two larger Qwen models on this machine.</li>
+        <li><a href="../qwen38-readiness/">Qwen3.8 release watch</a>: what shipped and when, including the 2.4T's license.</li>
+        <li><a href="../roster-2026-10/">October roster</a>: detail of the 19 October update.</li>
       </ul>
-      <p class="fineprint">Every claim on this page is dated 2026-08-14,
-      except the context note in section 04.
-      Community quantizations are re-cut, runtimes change defaults, and the
-      flag at the center of section 05 has already changed its default twice.
-      If today is much later than that date, treat the version-specific
-      findings as unverified since then.</p>
     </section>
 
-    <section>
-      <div class="secnum">10</div>
-      <h2>Related pages on this site</h2>
-      <p>The <a href="../speculation-gate/">speculation-gate study</a> is
-      section 05's thesis measured properly: five settings, 160 paired
-      measurements, on a 397B mixture-of-experts on this same workstation.
-      <a href="../empty-answer/">Empty Answer</a> is section 06's: what
-      happens when hidden reasoning bills against the same budget as the
-      visible answer, and how to find your own floor instead of trusting a
-      number. The <a href="../qwen35/">Qwen3.5 pair field card</a> is the
-      measured record of the two larger Qwen models this machine serves, and
-      the comparison points in section 04 come from it. The
-      <a href="../qwen38-readiness/">Qwen3.8 release watch</a> is the dated
-      record of what shipped and when, including the Max-class weights and
-      their different license.
-      <a href="../reasoning-effort/">Reasoning effort is a sentence, not a
-      dial</a> takes section 07's <code>reasoning_effort</code> finding apart
-      on this same model file, reading the injected system message directly
-      out of the rendered prompts and tracing where the setting reaches the
-      chat template and where it does not.</p>
-    </section>
-
-    <section>
-      <div class="secnum">11</div>
-      <h2>Sources and artifacts</h2>
-      <p>The evidence for this page ships as a data package: the files the run
-      actually produced, not a summary. <a href="data/README.md">data/README.md</a>
-      maps every folder, states its provenance, and states the package's
-      redactions plainly; <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps
-      every figure on this page to its file and field, and it opens with the
-      one place a file will look like it contradicts the page.</p>
-      <ul class="plain">
-        <li>The official Qwen organization on Hugging Face, checked
-        2026-08-14: <code>Qwen/Qwen3.8-27B</code> at revision
-        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span> and
-        <code>Qwen/Qwen3.8-27B-FP8</code> at
-        <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>, both
-        with weight files present, both flipped public that day by their own
-        timestamps.</li>
-        <li><strong>The three LICENSE files themselves</strong>, read in full
-        and retained under
-        <a href="data/licenses/LICENSE_Qwen3.8-27B_1d4bf0f2.txt">data/licenses/</a>:
-        <code>Qwen/Qwen3.8-27B</code> at its revision on 2026-08-14 (11,544
-        bytes), <code>Qwen/Qwen3.8-27B-FP8</code> at its own revision on the
-        same day (11,544 bytes, verified byte-identical to the 27B's), and
-        <code>Qwen/Qwen3.8-2.4T-A95B</code> at revision
-        <span class="n">207bd685</span> on 2026-08-13 (3,390 bytes).</li>
-        <li>The model's <code>config.json</code> and chat template at the
-        pinned revision, for every architecture, tokenizer and template fact
-        in sections 01, 06 and 07. The served template ships inside
-        <code>data/routecheck/raw/C1_server_props.json</code>, which is where
-        section 07's template readings can be checked.</li>
-        <li><code>unsloth/Qwen3.8-27B-GGUF</code> at revision
-        <span class="n">fe1e2a23d973adb629709749dc4f6756df66ef10</span>, and
-        the repository's own checksums for that revision, against which both
-        downloaded files were verified before first load
-        (<code>data/integrity/</code>).</li>
-        <li>A retained GGUF header probe of the Unsloth and
-        <code>ggml-org</code> files, read over HTTP range requests, for the
-        tensor counts, the <code>nextn</code> counts, the quantization census
-        and the sampling and license metadata quoted above
-        (<a href="data/headers/header_probe_2026-08-14_rerun.json">data/headers/</a>).
-        It is a same-day re-run retained after the fact, covering two of the
-        four candidates the original probe read; the README says so.</li>
-        <li>Our own recorded runs of 2026-08-14, 19:14 to 21:07 EDT: the
-        seven-load profile ladder
-        (<a href="data/ladder/ladder.tsv">data/ladder/ladder.tsv</a>, its
-        driver, the seven server logs carrying the draft counters, and every
-        request and response body under <code>data/ladder/raw/</code>), the
-        probe battery (<code>data/battery/</code>), the field-card
-        instrument's run and all 27 of its bodies
-        (<code>data/routecheck/</code>), the load logs
-        (<code>data/loads/</code>), and the production-route two-hop tool
-        proof (<code>data/prod/</code>).</li>
-      </ul>
-      <p class="fineprint">If a number on this page disagrees with the record
-      it came from, the record is right and the page is wrong; tell us and we
-      will fix the page.</p>
-    </section>
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to the Qwen team, Alibaba Group, the
+      llama.cpp project or ggml-org, or Unsloth.</div></div>
 
   </div>
 </main>

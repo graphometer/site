@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>256K context on a 32 GB graphics card: the cost of reading</title>
-<meta name="description" content="All ten configurations found the planted codes. Prompts ran from 150,475 to 231,065 tokens, and one configuration also used a laptop.">
+<meta name="description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
 <link rel="canonical" href="https://graphometer.ai/context-256k/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="256K context on a 32 GB graphics card: the cost of reading">
-<meta property="og:description" content="All ten configurations found the planted codes. Prompts ran from 150,475 to 231,065 tokens, and one configuration also used a laptop.">
+<meta property="og:description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
 <meta property="og:url" content="https://graphometer.ai/context-256k/">
 <meta property="og:image" content="https://graphometer.ai/og/context-256k.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="256K context on a 32 GB graphics card: the cost of reading">
-<meta name="twitter:description" content="All ten configurations found the planted codes. Prompts ran from 150,475 to 231,065 tokens, and one configuration also used a laptop.">
+<meta name="twitter:description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
 <meta name="twitter:image" content="https://graphometer.ai/og/context-256k.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -133,6 +133,10 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head><body>
 <header>
@@ -159,111 +163,100 @@
 </header>
 <main itemscope itemtype="https://schema.org/Article"><div class="wrap">
 <div class="hero">
-<div class="eyebrow">Measured study · 15 to 21 September 2026 · one RTX 5090 desktop, plus one laptop split · published September 26, 2026</div>
-<h1 itemprop="headline">256K on a 32 GB card: the cost of reading</h1>
-<p class="subtitle">Ten configurations retrieved every planted code. Reading took from 60.8 seconds to 6,580.7 seconds (109.7 minutes), with the longest run split across two machines; most configurations kept expert weights in system RAM, and sampled card use ranged from 8,473 to 31,068 MiB.</p>
-<p class="lead">On September 15, nine models in ten configurations returned all three codes from synthetic ledgers after reading 150,475 to 231,065 tokens. Nine configurations used the desktop alone; one added the laptop. Peak card use ranged from 8,473 to 31,068 MiB. A large served window was usable here, but the waiting time depended heavily on the model and placement.</p>
+<div class="eyebrow">Measured study · one RTX 5090 desktop, one setup also on a laptop</div>
+<h1 itemprop="headline">256K context on a 32 GB graphics card: <em>the cost of reading</em></h1>
+<p class="subtitle">On one RTX 5090 desktop (one setup also used a laptop), ten model setups each read one long prompt of 150,475 to 231,065 tokens and found all three hidden test codes. At default batch settings, reading the prompt took from 60.8 seconds to 109.7 minutes, depending on the model and where its weights sat.</p>
+<div class="note"><span class="label">In short</span>
+<ul class="plain">
+<li><strong>Time a fresh prompt at the length you actually need.</strong> A successful load and a quick short prompt leave most of the cost untested. <a href="#s7">What to do</a></li>
+<li><strong>Record your batch settings and test them.</strong> On one model (Qwen3.8-Flash-Next), reading the prompt in bigger chunks cut a 229,981-token read from 1,119.3 to 429.6 seconds, but bigger settings failed to load on some models. <a href="#s4">Later runs</a></li>
+<li><strong>Check memory again after raising the batch size or turning on the model&#8217;s built-in guessing part (the draft head).</strong> One launch failed at a larger batch size and loaded at smaller ones; one failed while creating its draft head. <a href="#s5">Where memory ran out</a></li>
+</ul>
+</div>
 <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-<p class="fineprint">Measured: one retrieval request per configuration, the files and settings below. Bench specification: NVIDIA RTX 5090 (32 GB) and 188 GiB of desktop RAM; the split also used an ASUS ROG Flow Z13 with 128 GB unified memory. These are hardware descriptions, not measured capacity tests.</p>
-<p class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to NVIDIA, ASUS, DeepSeek, MiniMax, ggml-org, or the makers of Gemma, GLM, Qwen, Mistral, Ling, Inkling, Ornith or Laguna.</p>
-<div class="note"><span class="label">Update, September 2026</span>The September 15 runs left batch settings at their defaults. On September 20 (collection date), the same DeepSeek Q8 file read a similarly sized prompt in 313.2 seconds with <code>-b 8192 -ub 8192</code>, against 2,062.2 seconds earlier. That is 5.2 versus 34.4 minutes (arithmetic: seconds divided by 60). The later build is not identified in its saved 256K records, so this is a dated before-and-after comparison, not a one-variable experiment.</div>
 </div><div class="rule"></div>
-<section id="s1"><div class="secnum">01</div><h2>What it is</h2><p>A served window is the space the server makes available for a request and its answer. It does not say how long reading will take, or how much of that space a particular request fills. Here, <strong>256K means a served window of 262,144 tokens</strong>. GLM-4.7-Flash was served at 202,752, the window this sweep requested. The launch notes call that its ceiling. This package has no failed attempt above 202,752.</p>
-<p>The test generated a synthetic ledger with three fixed sealed codes near 5, 50 and 95 percent of its entries. Those are approximate depths in the text, not exact token offsets. After reading the ledger, each model was asked to quote the three codes in order. All ten answers contained the exact strings in the requested order.</p>
-<p>This measures allocation, reading cost and a narrow retrieval task. The prompts did not fill every token of the served windows. In particular, the desktop DeepSeek Q8 prompt was shorter than the other 262,144-window prompts.</p></section>
-<section id="s2"><div class="secnum">02</div><h2>What we ran, exactly</h2><p><strong>Measured, September 15, 2026.</strong> Each configuration ran by itself with <code>--parallel 1 --threads 24 --threads-batch 24</code>. Requests used <code>temperature: 0</code> and did not stream. The probe checked the served window through <code>/props</code>, warmed the model, ran two short-prompt prose requests, then sent one deep retrieval request. The table below uses that last request only.</p>
-<p>The launch lines contain no batch or micro-batch override. “Default batch” here means those flags were absent; the saved logs do not print their effective numeric values. Flash attention was requested in every launch. The Qwen3.5 pair used <code>draft-mtp</code> with maximum draft length 6 and a 0.75 gate. All other main-table launches omitted a draft option. Requests disabled thinking where the launcher supplied that option; Inkling used <code>reasoning_effort: none</code>.</p>
-<div class="data-wrap"><table class="data"><caption>Recorded placement and llama.cpp commit, September 15</caption><thead><tr><th>Configuration</th><th>Placement and key settings</th><th>Commit</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">GLM-4.7-Flash</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-122B-A10B</td><td class="t">38 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Mistral Small 4</td><td class="t">26 expert layers in RAM; no mmap</td><td>5f55650</td></tr><tr><td class="t">Ling-3.0-flash</td><td class="t">All experts in RAM; fit off; no draft requested</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-397B-A17B</td><td class="t">57 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Qwen3.8-Flash-Next</td><td class="t">99 expert layers requested on CPU; fit off</td><td>d3146f2b5</td></tr><tr><td class="t">Inkling-Small</td><td class="t">42 expert layers in RAM; f16 key and value cache</td><td>946fc11d1</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop</td><td class="t">All experts in RAM; no repack</td><td>5f55650</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop</td><td class="t">RPC split 18,25; expert tensors of layers 8 to 17 in desktop RAM; no repack</td><td>d3146f2b5</td></tr></tbody></table></div>
-<p class="tablenote">mmap is memory-mapping the file, fit is the runtime’s automatic placement, repack is a weight rewrite, RPC is the link to the second machine, MTP is the model’s built-in draft head, and 0.75 is the minimum draft probability.</p>
-<p>The <a href="data/CONFIGURATIONS.md">configuration record</a> lists the exact model filenames and complete redacted commands. Quantizations are beside each measured row. Build commits were extracted from the response metadata; the <a href="data/build-records.tsv">build table</a> preserves that mapping. Different builds and placements make this a deployment comparison, not a controlled ranking of model architectures.</p></section>
-<section id="s3"><div class="secnum">03</div><h2>Observed: the September 15 reads</h2><p><strong>Measured, one deep request per configuration.</strong> “Read s” is the server’s prompt-processing time, converted from milliseconds to seconds (arithmetic), excluding model loading and answer generation. Rates are the server’s recorded tokens per second. “Short answer” is the code-only output, <strong>25 to 33 tokens, not prose speed</strong>.</p>
+
+<section id="s7"><div class="secnum">01</div><h2>What to do</h2>
+<ol class="plain">
+<li><strong>Check the served window after loading</strong> (these runs read it from <code>/props</code>). It is the space the server makes for a request and its answer, not a reading time. Here 256K means 262,144 tokens.</li>
+<li><strong>Time a fresh prompt at the depth you need</strong>, with the same model file, placement and cache settings.</li>
+<li><strong>Record your batch settings and test them</strong>: <code>-b</code>, and the micro-batch <code>-ub</code>, how much of the prompt is read in one chunk. Qwen3.8-Flash-Next read faster at <code>-b 4096 -ub 2048</code> than at the default 2048 / 512; check that a larger setting still loads.</li>
+<li><strong>Check memory again after changing the micro-batch or turning on a draft head</strong> (MTP: the model&#8217;s built-in part that guesses a few tokens ahead).</li>
+</ol></section>
+
+<section id="s1"><div class="secnum">02</div><h2>What was tested</h2>
+<p>Each setup read a made-up ledger with three fixed hidden codes near 5, 50 and 95 percent of its entries (approximate depths, not exact token positions), then was asked to quote the codes in order. <strong>All ten answers contained the exact strings in the requested order.</strong></p>
+<p>Most setups kept the expert weights (in these mixture-of-experts models, parts that run only for some tokens) in system RAM. The prompts did not fill the whole window; the desktop DeepSeek Q8 prompt was the shortest of the ten. GLM-4.7-Flash was served at 202,752, the window requested and, per its launch notes, its ceiling; the package has no failed attempt above it.</p></section>
+
+<section id="s3"><div class="secnum">03</div><h2>What we found: the September 15 reads</h2>
+<p>&#8220;Read s&#8221; excludes loading and the answer. Answers were the codes only, 25 to 33 tokens, so the last speed column is <strong>not a prose writing speed</strong>.</p>
 <div class="data-wrap"><table class="data"><caption>September 15, 2026: default batch, one request at a time</caption><thead><tr><th>Model / quantization</th><th>Served window</th><th>Tokens read</th><th>Read s</th><th>Read tokens/s</th><th>Peak card MiB</th><th>Answer tokens</th><th>Short answer tokens/s</th><th>Codes</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B<br><code>UD-Q4_K_XL</code></td><td>262,144</td><td>230,855</td><td>60.8</td><td>3,799.69</td><td>23,513</td><td>33</td><td>121.36</td><td>3/3</td></tr><tr><td class="t">GLM-4.7-Flash<br><code>UD-Q4_K_XL</code></td><td>202,752</td><td>189,931</td><td>231.7</td><td>819.70</td><td>28,765</td><td>29</td><td>70.48</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-122B-A10B<br><code>UD-Q4_K_S</code></td><td>262,144</td><td>230,803</td><td>531.8</td><td>433.99</td><td>30,794</td><td>32</td><td>37.10</td><td>3/3</td></tr><tr><td class="t">Mistral Small 4<br><code>UD-Q4_K_M</code></td><td>262,144</td><td>231,065</td><td>705.0</td><td>327.75</td><td>30,356</td><td>32</td><td>23.76</td><td>3/3</td></tr><tr><td class="t">Ling-3.0-flash<br><code>Q4_K_M</code></td><td>262,144</td><td>230,759</td><td>1,118.8</td><td>206.25</td><td>8,473</td><td>32</td><td>26.11</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-397B-A17B<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,803</td><td>1,186.6</td><td>194.51</td><td>31,068</td><td>32</td><td>17.00</td><td>3/3</td></tr><tr><td class="t">Qwen3.8-Flash-Next<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,803</td><td>1,392.9</td><td>165.70</td><td>15,626</td><td>32</td><td>13.58</td><td>3/3</td></tr><tr><td class="t">Inkling-Small<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,827</td><td>2,005.9</td><td>115.07</td><td>15,814</td><td>27</td><td>8.78</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop<br><code>UD-Q8_K_XL</code></td><td>262,144</td><td>150,475</td><td>2,062.2</td><td>72.97</td><td>18,306</td><td>25</td><td>9.14</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,835</td><td>6,580.7</td><td>35.08</td><td>25,824</td><td>25</td><td>6.49</td><td>3/3</td></tr></tbody></table></div>
-<p class="tablenote">Peak card use is the largest sampled <code>nvidia-smi</code> memory-used reading while the deep request ran, sampled every 5 seconds and including other card use. It is not model-only allocation or the increase caused by context. The split row reports the desktop card, not the laptop’s unified memory.</p>
-<p>Gemma’s 60.8-second read was the shortest. The two-machine DeepSeek read took 6,580.7 seconds, or 109.7 minutes (arithmetic: milliseconds divided by 60,000). It used a different quantization and read more tokens than desktop DeepSeek Q8, so those two rows do not isolate the cost of splitting a model.</p>
-<p><strong>Load times during this sweep are upper bounds.</strong> The TSV header records large concurrent model downloads competing for disk and page cache. Its <code>load_s</code> values are separate from the reading column. The runs were not performed on an otherwise idle storage system.</p>
-<p>The TSV’s <code>decode_tps</code> column is also a different measurement: the best of two earlier, short-prompt prose replies. The at-depth rates above come from <code>deep_decode_tps</code> and the deep response JSON. Small amounts of prefix reuse appear in some deep responses; <code>prompt_n</code> is the server’s processed-token count, and <code>cache_n</code> remains in the files.</p></section>
-<section id="s4"><div class="secnum">04</div><h2>The later batch settings change the wait</h2><p>A micro-batch sets how much of the prompt the runtime processes in one chunk. The later records below are long reads, from 47,992 to 230,039 tokens, with the window still set to 262,144, except MiniMax M2.7&#8217;s: it was served at 196,608, the context length its model file declares. They are separate measurements, not estimates applied to the earlier rows.</p>
-<div class="data-wrap"><table class="data"><caption>Measured later runs; time definitions differ as labelled</caption><thead><tr><th>Run</th><th>Batch / micro-batch</th><th>Tokens read</th><th>Recorded time</th><th>Read tokens/s</th><th>Card MiB</th></tr></thead><tbody>
-<tr><td class="t">DeepSeek V4 Flash<br>UD-Q8_K_XL, desktop<br>September 20 (collection date)</td><td>8192 / 8192</td><td>150,324</td><td>313,172.17 ms<br>prompt processing</td><td>480.00</td><td>26,023<br>at load</td></tr>
-<tr><td class="t">Laguna S 2.1<br>September 21 (collection date)</td><td>not recorded / 4096</td><td>200,098</td><td>233.9 s<br>request wall time</td><td class="t">866.1 prefill, not wall ÷ tokens</td><td>27,995<br>series peak</td></tr>
-<tr><td class="t">Qwen3.8-Flash-Next<br>UD-Q3_K_XL<br>September 26<br>40 expert layers on CPU, 8-bit cache</td><td>4096 / 2048</td><td>229,981</td><td>429.6 s<br>prompt processing</td><td>535.4</td><td>26,795<br>at load</td></tr>
-<tr><td class="t">Qwen3.8-Flash-Next<br>same file, placement, cache and day</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,981</td><td>1,119.3 s<br>prompt processing</td><td>205.5</td><td>21,333<br>at load</td></tr>
-<tr><td class="t">Ornith-1.5-35B<br>Q6_K<br>September 26<br>6 expert layers in RAM, default 16-bit cache, no draft head</td><td>2048 / 2048</td><td>229,090</td><td>71.7 s<br>prompt processing</td><td>3,193.3</td><td>31,270<br>at load</td></tr>
-<tr><td class="t">Ornith-1.5-35B<br>same file, placement, cache and day</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,090</td><td>151.8 s<br>prompt processing</td><td>1,508.7</td><td>30,250<br>at load</td></tr>
-<tr><td class="t">Qwen3.5-122B-A10B<br>UD-Q4_K_S<br>September 26<br>38 expert layers in RAM, default 16-bit cache, MTP on, no mmap: the September 15 launch</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,090</td><td>510.6 s<br>prompt processing</td><td>448.7</td><td>30,898<br>at load</td></tr>
-<tr><td class="t">Qwen3.5-122B-A10B<br>same file, placement, cache and day</td><td>2048 / 1024</td><td>229,090</td><td>310.0 s<br>prompt processing</td><td>738.9</td><td>31,633<br>at load</td></tr>
-<tr><td class="t">MiniMax M2.7<br>UD-IQ4_XS<br>September 26, at 196,608<br>every expert layer in RAM, 8-bit cache</td><td>4096 / 1024</td><td>189,491</td><td>1,215.4 s<br>prompt processing</td><td>155.9</td><td>31,709<br>at load</td></tr>
-<tr><td class="t">GLM-5.3-Flash<br>UD-Q3_K_XL<br>September 26<br>first 42 layers&#8217; experts in RAM, default 16-bit cache, reasoning effort none</td><td>4096 / 2048</td><td>230,039</td><td>1,085.7 s<br>prompt processing</td><td>211.9</td><td>31,305<br>at load</td></tr>
-<tr><td class="t">GLM-5.3-Flash<br>same file, placement, cache and day; read to 47,992 tokens only</td><td>4096 / 1024 (now its script&#8217;s setting at this window)</td><td>47,992</td><td>336.4 s<br>prompt processing</td><td>142.6</td><td>28,834<br>at load</td></tr>
+<p class="tablenote">Quantization is the compressed version of the model file. Peak card use is the largest <code>nvidia-smi</code> reading, sampled every 5 seconds, including other card use; it is not the increase caused by context. The split row reports the desktop card, not the laptop&#8217;s unified memory.</p>
+<p>The two-machine DeepSeek read (109.7 minutes) used a different quantization and read more tokens than desktop DeepSeek Q8, so those two rows do not isolate the cost of splitting a model.</p></section>
+
+<section id="s4"><div class="secnum">04</div><h2>Later runs: bigger batches cut the wait</h2>
+<p>Separate measurements with batch sizes set by hand, at a 262,144 window except MiniMax M2.7 (196,608, the length its model file declares).</p>
+<div class="data-wrap"><table class="data"><caption>Measured later runs. Time is prompt processing and card memory is at load unless labelled otherwise.</caption><thead><tr><th>Run</th><th>Batch / micro-batch</th><th>Tokens read</th><th>Recorded time</th><th>Read tokens/s</th><th>Card MiB</th></tr></thead><tbody>
+<tr><td class="t">DeepSeek V4 Flash<br>UD-Q8_K_XL, desktop<br>September 20 (date the results were collected)</td><td>8192 / 8192</td><td>150,324</td><td>313,172.17 ms</td><td>480.00</td><td>26,023</td></tr>
+<tr><td class="t">Laguna S 2.1<br>September 21 (date the results were collected)</td><td>not recorded / 4096</td><td>200,098</td><td>233.9 s<br>request wall time</td><td class="t">866.1 prefill, not wall ÷ tokens</td><td>27,995<br>peak over that run of reads</td></tr>
+<tr><td class="t">Qwen3.8-Flash-Next<br>UD-Q3_K_XL<br>September 26<br>40 expert layers on CPU, 8-bit cache</td><td>4096 / 2048</td><td>229,981</td><td>429.6 s</td><td>535.4</td><td>26,795</td></tr>
+<tr><td class="t">Qwen3.8-Flash-Next<br>same file, placement, cache and day</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,981</td><td>1,119.3 s</td><td>205.5</td><td>21,333</td></tr>
+<tr><td class="t">Ornith-1.5-35B<br>Q6_K<br>September 26<br>6 expert layers in RAM, default 16-bit cache, no draft head</td><td>2048 / 2048</td><td>229,090</td><td>71.7 s</td><td>3,193.3</td><td>31,270</td></tr>
+<tr><td class="t">Ornith-1.5-35B<br>same file, placement, cache and day</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,090</td><td>151.8 s</td><td>1,508.7</td><td>30,250</td></tr>
+<tr><td class="t">Qwen3.5-122B-A10B<br>UD-Q4_K_S<br>September 26<br>38 expert layers in RAM, default 16-bit cache, MTP on, no mmap: the September 15 launch</td><td>2048 / 512 (llama.cpp&#8217;s default)</td><td>229,090</td><td>510.6 s</td><td>448.7</td><td>30,898</td></tr>
+<tr><td class="t">Qwen3.5-122B-A10B<br>same file, placement, cache and day</td><td>2048 / 1024</td><td>229,090</td><td>310.0 s</td><td>738.9</td><td>31,633</td></tr>
+<tr><td class="t">MiniMax M2.7<br>UD-IQ4_XS<br>September 26, at 196,608<br>every expert layer in RAM, 8-bit cache</td><td>4096 / 1024</td><td>189,491</td><td>1,215.4 s</td><td>155.9</td><td>31,709</td></tr>
+<tr><td class="t">GLM-5.3-Flash<br>UD-Q3_K_XL<br>September 26<br>first 42 layers&#8217; experts in RAM, default 16-bit cache, reasoning effort none</td><td>4096 / 2048</td><td>230,039</td><td>1,085.7 s</td><td>211.9</td><td>31,305</td></tr>
+<tr><td class="t">GLM-5.3-Flash<br>same file, placement, cache and day; read to 47,992 tokens only</td><td>4096 / 1024 (now its script&#8217;s setting at this window)</td><td>47,992</td><td>336.4 s</td><td>142.6</td><td>28,834</td></tr>
 </tbody></table></div>
-<p>DeepSeek’s later log names the same Q8 model file, one slot and the same served window. Its result records all experts in RAM and both batch settings at 8192. The prompt lengths differ, and the later record lacks a build identifier and full launch command. It records a completed answer, but does not retain the three-code answer needed to repeat the earlier retrieval score. No 3/3 result is claimed for this run.</p>
-<p>The two Flash-Next rows are one measured comparison, run one after the other on 26 September: the same file, window,
-placement and 229,981-token prompt, and both returned 3 of 3 planted codes. That placement is not the one in the 15 September
-table above: 40 expert layers requested on CPU instead of 99, fit off, and an 8-bit (<code>q8_0</code>) cache. So 205.5 tokens a
-second at the default batch is not a new measurement of the 165.70 row; the placement and the cache changed too. Both long reads
-started from the same state, with about 60 GB of the 90 GB model file already in system memory. The first server began with none
-of the file in memory, and its first request, 3,035 tokens, read at 87.7 tokens a second while the file's share in memory grew
-from 43.5 to 57.7 GB; the next request on that server read 3,019 tokens at 517.6. It is the only start recorded with the file out
-of memory, so it shows what this start did, not a rule for other models. The <a href="../batch-size/">batch-size study</a> has the rest of
-this run.</p>
-<p>The Ornith-1.5-35B and Qwen3.5-122B-A10B rows are two more runs on September 26 at 262,144, each through a copy of the
-model&#8217;s start script, with thinking switched off per request. At each setting the 229,090-token document, a fresh ledger with
-three planted codes, followed shorter reads on the same server, and all four answers returned all three codes. Qwen3.5-122B&#8217;s
-2048 / 512 row keeps the launch of its September 15 row: the same file, build, 38 expert layers in RAM, no mmap and draft-head
-settings. That launch set no batch values, which at this build means 2048 / 512. It read 229,090 tokens in 510.6 seconds at
-448.7 tokens a second, against 230,803 in 531.8 seconds at 433.99 then, with a different probe and document. At 2048 / 1024 it
-read the same document in 310.0 seconds, but the card peaked at 31,785 MiB over that series, 822 MiB below the card&#8217;s
-total of 32,607 MiB as reported that day (published in the <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> package), and its
-start script keeps 512 at this window. Ornith-1.5-35B has no September 15 row; its failure at this window is in section 05.
-These rows loaded an Ornith-1.5-35B Q6_K file of the same name as the one in the failed launch, with 6 expert layers in RAM
-and without the draft head; section 05 lists the other differences. The 2048 / 512 row ran at the start-script copy&#8217;s own setting for
-this window at the time; 2048 / 2048 was passed in for the other row and is what the script now sets at this window.</p>
-<p>MiniMax M2.7 has no September 15 row. Its model file declares a 196,608-token context, and on September 26 it ran at
-that window through its start script, which there always uses the one shape recorded loading: every expert layer in RAM,
-<code>-b 4096 -ub 1024</code> and an 8-bit cache (the <a href="../batch-size/">batch-size study</a> records 2048 and 4096 failing to
-load at this window). Thinking was left on. After reads of 20,039 and 47,933 tokens on the same server, at 167.9 and 181.2
-tokens a second, it read a 189,491-token ledger with three planted codes in 1,215.4 seconds, 155.9 tokens a second, and
-returned all three. The card read 31,709 MiB at load and peaked at 31,907 MiB over the series.</p>
-<p>GLM-5.3-Flash has no September 15 row either. Its model file declares a 1,048,576-token context; on September 26 it ran
-at 262,144 through a copy of its start script, with <code>--n-cpu-moe 42</code> (the expert weights of its first 42 layers in
-RAM), the default 16-bit cache and its reasoning effort set to none, though each read&#8217;s reply still carried a few hundred
-characters of reasoning. At <code>-b 4096 -ub 4096</code>, its script&#8217;s setting at 131,072, it did not load at this window
-(section 05). At 2048 it loaded at 31,305 MiB and read 20,065, 47,992 and 100,003 tokens at 206.0, 250.3 and 243.1 tokens a
-second, then a 230,039-token ledger with three planted codes in 1,085.7 seconds, 211.9 tokens a second, and returned all
-three; the card peaked at 31,951 MiB, 656 MiB below its 32,607 MiB total. At 1024, now its script&#8217;s setting at this window,
-it loaded at 28,834 MiB and peaked at 29,261 over reads of 20,065 and 47,992 tokens at 135.1 and 142.6 tokens a second;
-nothing longer was read at 1024. At 131,072, with 4096, the same probe read 47,992 tokens at 404.9 tokens a second.</p>
-<p>Laguna’s record reports the planted string found. Its test used one string and a different prompt harness. The 200,098-token request followed a shorter request in the same series; the peak covers that series. The saved result does not identify the quantization, build, complete placement or sampling settings. It proves this recorded run, not an exact reproducible profile or a before-and-after gain.</p>
-<p>The <a href="../batch-size/">batch-size study</a> covers the broader tuning sweep. There is no new reading time here for a September 15 configuration that was not re-measured at comparable depth.</p></section>
-<section id="s5"><div class="secnum">05</div><h2>Where memory stopped the run</h2><p><strong>Measured failures.</strong> Ornith-1.5-35B Q6_K, with 6 expert layers in RAM and MTP enabled, reached draft-context creation at 262,144 and failed on a 512.00 MiB allocation. Ornith-1.5-397B IQ3_XXS-UD, with 57 expert layers in RAM and MTP enabled, failed on a 1,862.00 MiB compute-buffer allocation. The latter log does not establish that the draft context caused the failure. Neither failure log proves a successful draft-off run at that window.</p>
-<p><strong>Update, September 26.</strong> Runs without the draft head served and read this window with an Ornith-1.5-35B
-Q6_K file of the same name, the same build, 6 expert layers in RAM and the default cache: 229,090 tokens in 151.8 seconds of
-prompt processing at 2048 / 512 and in 71.7 seconds at 2048 / 2048, all three codes returned both times (section 04). Against
-the failure log, these runs omitted the MTP draft head. They also wrote the batch out (2048 / 512, or 2048 / 2048), used a
-7,200-second timeout and set no CORS flag; the failed launch set no batch, a 3,600-second timeout and a localhost CORS flag,
-and its log&#8217;s preflight card reading is 1,113 MiB, where the September 26 results record no reading before launch. The
-filename matches; the directories do not, and neither log records a hash or a file size. This shows that filename serving
-the window without the draft head. It does not show the failure&#8217;s copy serving the window with the head: MTP was not
-used, and the failure stands as the record of the launch that requested it.</p>
-<p><strong>A draft head does not always have to go.</strong> Both Qwen3.5 configurations in the main table created their MTP context and used it in the code answer at 262,144. The logs and response draft counters establish that directly.</p>
-<p>The <a href="data/later/GLM-4.7-Full-config-excerpt.txt">GLM-4.7 Full configuration note</a> records a narrower trade: at a 131,072 window, its MTP setup fitted with all 93 expert layers in CPU RAM and failed with 92. This is a recorded setup note, without a raw response or failure log in this package. It is not a 256K retrieval result.</p>
-<p><strong>Measured allocation failures, September 2026.</strong> MiniMax M3’s sparse-attention test used Q2_K_L, a 262,144 window, <code>q8_0</code> key/value cache and flash attention on. Each tested header also placed experts on CPU (cmoe in the test label). At micro-batches 2048, 1024 and 512, the log records refused CUDA buffers of 20,572,169,216, 10,286,650,368 and 5,143,890,944 bytes respectively. All three tested settings failed before a retrieval result. These failures do not establish that every possible configuration must fail.</p>
-<p><strong>Measured allocation failure, September 26.</strong> GLM-5.3-Flash UD-Q3_K_XL at 262,144, with <code>--n-cpu-moe 42</code>,
-the default 16-bit cache and <code>-b 4096 -ub 4096</code>, its start script&#8217;s setting at 131,072, failed before a retrieval
-result: the log records a refused compute-buffer allocation of 13,281.37 MiB. The same launch loaded at 2048 and 1024
-(section 04).</p></section>
-<section id="s6"><div class="secnum">06</div><h2>What this does not show</h2><ul class="plain">
-<li><strong>Reasoning across a long document.</strong> This is retrieval of three planted strings in one run per configuration. It does not demonstrate reasoning across 230K tokens, handling contradictory evidence, or reliable work over an arbitrary document.</li>
-<li><strong>A full-window generation test.</strong> The server exposed the requested capacity; the ledger occupied only part of it. The answers were short, fixed strings. Their rates do not predict long prose or code generation at that depth.</li>
-<li><strong>A reliability estimate.</strong> There were no repeated deep trials, confidence intervals or alternate sets of codes. The same three codes appeared in every main-table ledger.</li>
-<li><strong>Total machine memory or a universal card requirement.</strong> The table reports sampled card use for these files and placements. Most configurations also used system RAM. It does not measure their total RAM footprint or the minimum card capacity that could serve them.</li>
-<li><strong>An isolated batch effect.</strong> The later DeepSeek timing is materially faster, but the saved records do not establish identical builds, prompts, full launch settings or background load. The September 15 downloads also limit interpretation of load times.</li>
+<ul class="plain">
+<li><strong>Qwen3.8-Flash-Next, one measured comparison.</strong> The two rows ran back to back with the same file, window, placement and prompt; both returned 3 of 3 codes. The placement is not the 15 September one (40 expert layers on CPU instead of 99, an 8-bit <code>q8_0</code> cache), so 205.5 does not re-measure the 165.70 row. Both reads began with about 60 GB of the 90 GB file in system memory. The one start recorded with none of it there read its first 3,035 tokens at 87.7 tokens a second as the file loaded (43.5 to 57.7 GB), then 3,019 at 517.6; that is this start, not a rule.</li>
+<li><strong>Qwen3.5-122B-A10B.</strong> The 2048 / 512 row repeats its September 15 launch (same file, same build, 38 expert layers in RAM, no mmap, same draft-head settings; no batch set, which at this build means 2048 / 512) with a different test script and document: 510.6 seconds, against 531.8 then. At 2048 / 1024 the card peaked at 31,785 MiB over that run of reads, 822 MiB below its 32,607 MiB total as reported that day (from the <a href="../qwen38-256k/">Qwen3.8-27B at 256K</a> package); its start script keeps 512 here.</li>
+<li><strong>Ornith-1.5-35B</strong> ran without the draft head, with a file of the same name as the <a href="#s5">failed launch</a>. 2048 / 512 was its script&#8217;s setting at the time; 2048 / 2048 was passed in for the other row and is what the script now sets. All four Ornith and Qwen3.5-122B long reads, thinking off, returned all three codes.</li>
+<li><strong>MiniMax M2.7</strong> ran in the one shape recorded loading at this window (2048 and 4096 failed to load, per the <a href="../batch-size/">batch-size study</a>), thinking on, and returned all three codes; the card peaked at 31,907 MiB. Earlier reads on the same server: 20,039 tokens at 167.9 and 47,933 tokens at 181.2 tokens a second.</li>
+<li><strong>GLM-5.3-Flash</strong> (its file declares 1,048,576 tokens) kept the expert weights of its first 42 layers in RAM (<code>--n-cpu-moe 42</code>); at reasoning effort none, each reply still carried a few hundred characters of reasoning. Micro-batch 4096 did not load. At 2048 it read 20,065 tokens at 206.0, 47,992 at 250.3 and 100,003 at 243.1 tokens a second, then the long ledger, returning all three codes; the card peaked at 31,951 MiB, 656 MiB below the total. At 1024, now its script&#8217;s setting here, the card peaked at 29,261 MiB over reads of 20,065 tokens at 135.1 and 47,992 at 142.6; nothing longer was read at 1024. At a 131,072 window, 4096 read 47,992 tokens at 404.9 tokens a second.</li>
+<li><strong>Laguna S 2.1</strong> used one planted string and a different test program; its record reports the string found, but not the quantization, build, full placement or sampling settings, so it is not a reproducible profile or a before-and-after gain.</li>
+<li><strong>DeepSeek V4 Flash:</strong> see <a href="#updates">Updates</a>.</li>
 </ul></section>
-<section id="s7"><div class="secnum">07</div><h2>What to take from these runs</h2><p>For a comparable setup, use the model filename, placement and cache settings together with the requested window. Check the served window after loading. Then measure a fresh prompt at the depth you actually need: a successful load and a quick short prompt leave most of the cost untested.</p>
-<p>Record batch settings explicitly. The later DeepSeek result shows why a default-batch reading time should not become a permanent expectation for that file. Memory also needs another check after changing the micro-batch or enabling a draft head, as the failed allocations show.</p></section>
-<section id="s8"><div class="secnum">08</div><h2>Related pages on this site</h2><p>The <a href="../batch-size/">batch-size study</a> follows the prompt-reading change. <a href="../speculation-gate/">Slower by default</a> measures a draft-confidence setting. The <a href="../qwen35/">Qwen3.5 pair field card</a> covers the two Qwen3.5 files, and <a href="../method/">Method</a> explains the site’s evidence labels.</p></section>
-<section id="s9"><div class="secnum">09</div><h2>Sources and artifacts</h2><p>The <a href="data/README.md">data package</a> contains the recorded TSV, response JSON, server logs, probe and launch scripts, allocation failures and later long-window results. The <a href="data/NUMBERS.md">number map</a> traces every figure to a field or a labelled calculation. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
-<p>Paths, addresses, ports, serving aliases and request identifiers have been redacted. Local model answers and timing fields remain. The scripts are archival records with placeholders. Build revisions for the September 15 responses are preserved in a separate derived table. No vendor performance claim is used as a measured result.</p></section>
+
+<section id="s5"><div class="secnum">05</div><h2>Where memory ran out</h2>
+<p>Each of these failed on a refused memory allocation.</p>
+<ul class="plain">
+<li><strong>Ornith-1.5-35B Q6_K, draft head on</strong>, 6 expert layers in RAM: reached draft-context creation at 262,144 and failed on 512.00 MiB. Without the draft head, a same-named file later read this window (<a href="#updates">Updates</a>).</li>
+<li><strong>Ornith-1.5-397B IQ3_XXS-UD, draft head on</strong>, 57 expert layers in RAM: failed on a 1,862.00 MiB compute buffer (working memory on the card). The log does not show the draft context caused it; neither Ornith log proves a run without the draft head at that window.</li>
+<li><strong>MiniMax M3, sparse-attention test</strong>, <code>Q2_K_L</code>, 262,144, <code>q8_0</code> cache, experts on CPU: at micro-batches 2048, 1024 and 512, refused CUDA buffers of 20,572,169,216, 10,286,650,368 and 5,143,890,944 bytes, all before a retrieval result. Other configurations were not ruled out.</li>
+<li><strong>GLM-5.3-Flash UD-Q3_K_XL, September 26</strong>, 262,144, <code>-b 4096 -ub 4096</code>: a refused 13,281.37 MiB compute buffer, before a retrieval result. The same launch loaded at 2048 and 1024.</li>
+</ul>
+<p><strong>A draft head does not always have to go:</strong> both Qwen3.5 setups in the main table used theirs at 262,144, per their logs and draft counters. The <a href="data/later/GLM-4.7-Full-config-excerpt.txt">GLM-4.7 Full configuration note</a> records that at a 131,072 window its MTP setup fitted with all 93 expert layers in CPU RAM and failed with 92; it is a setup note, not a 256K result.</p></section>
+
+<section id="s6"><div class="secnum">06</div><h2>Limits</h2><ul class="plain">
+<li><strong>Retrieval, not reasoning.</strong> Three planted strings, one run per setup: not reasoning across 230K tokens, contradictory evidence, or arbitrary documents.</li>
+<li><strong>No reliability estimate.</strong> No repeated deep trials, and the same three codes in every main-table ledger.</li>
+<li><strong>Short answers.</strong> Their speeds do not predict long writing at that depth.</li>
+<li><strong>Card memory only.</strong> Most setups also used system RAM; total RAM use and the smallest card that could serve them were not measured.</li>
+<li><strong>Different builds and placements.</strong> This compares deployments, not model designs.</li>
+</ul></section>
+
+<section id="updates"><div class="secnum">07</div><h2>Corrections and updates</h2><ul class="plain">
+<li><strong>September 2026.</strong> On September 20 (date the results were collected), the same DeepSeek Q8 file read a similarly sized prompt in 313.2 seconds with <code>-b 8192 -ub 8192</code>, against 2,062.2 seconds at the September 15 default: 5.2 versus 34.4 minutes. The later build is not identified in its saved 256K records, so this is a dated before-and-after comparison, not a one-variable experiment. The later record shows the same Q8 file, one slot, the 262,144 window, all experts in RAM and a completed answer; the prompt length differs (150,324 against 150,475 tokens), it lacks a full launch command, and builds, launch settings and background load are not established as identical. It keeps no three-code answer, so no 3/3 result is claimed for it.</li>
+<li><strong>September 26.</strong> Without the MTP draft head, an Ornith-1.5-35B Q6_K file of the same name (same build, 6 expert layers in RAM, default cache) read the 262,144 window: 229,090 tokens in 151.8 seconds at 2048 / 512 and 71.7 seconds at 2048 / 2048, all three codes both times. Those runs also wrote the batch out, used a 7,200-second timeout and no CORS (browser access) flag; the failed launch set no batch, a 3,600-second timeout and a localhost CORS flag, and logged 1,113 MiB on the card before launch, which the later results do not record. The directories differ and neither log records a hash or file size. This shows that filename serving the window without the draft head, not the failed copy with it; the failure stands as the record of the launch that requested the head.</li>
+</ul></section>
+
+<section id="s2"><div class="secnum">08</div><h2>How this was measured</h2>
+<table class="facts">
+<tr><th scope="row">Dates</th><td>Main runs September 15, 2026; later runs September 20 and 21 (dates the results were collected) and 26.</td></tr>
+<tr><th scope="row">Hardware</th><td>NVIDIA RTX 5090 (32 GB), 188 GiB desktop RAM; the split also used an ASUS ROG Flow Z13 with 128 GB unified memory (descriptions, not measured capacity).</td></tr>
+<tr><th scope="row">Runs</th><td><code>--parallel 1 --threads 24 --threads-batch 24</code>, flash attention, <code>temperature: 0</code>, no streaming, thinking switched off where the launcher allowed it (Inkling: reasoning effort none). &#8220;Default batch&#8221; means no batch flags were set; the saved logs do not print the effective values. Two short prose requests, then the one deep request reported. Load times are upper bounds: large downloads competed for the disk.</td></tr>
+</table>
+<div class="data-wrap"><table class="data"><caption>Recorded placement and llama.cpp commit, September 15</caption><thead><tr><th>Configuration</th><th>Placement and key settings</th><th>Commit</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">GLM-4.7-Flash</td><td class="t">All model layers on card</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-122B-A10B</td><td class="t">38 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Mistral Small 4</td><td class="t">26 expert layers in RAM; no mmap</td><td>5f55650</td></tr><tr><td class="t">Ling-3.0-flash</td><td class="t">All experts in RAM; fit off; no draft requested</td><td>d3146f2b5</td></tr><tr><td class="t">Qwen3.5-397B-A17B</td><td class="t">57 expert layers in RAM; MTP on; no mmap</td><td>c8e03ce</td></tr><tr><td class="t">Qwen3.8-Flash-Next</td><td class="t">99 expert layers requested on CPU; fit off</td><td>d3146f2b5</td></tr><tr><td class="t">Inkling-Small</td><td class="t">42 expert layers in RAM; f16 key and value cache</td><td>946fc11d1</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop</td><td class="t">All experts in RAM; no repack</td><td>5f55650</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop</td><td class="t">RPC split 18,25; expert tensors of layers 8 to 17 in desktop RAM; no repack</td><td>d3146f2b5</td></tr></tbody></table></div>
+<p class="tablenote">mmap is memory-mapping the file, fit is the runtime&#8217;s automatic placement, repack is a weight rewrite, RPC is the link to the second machine, MTP is the model&#8217;s built-in draft head. The two Qwen3.5 models drafted with <code>draft-mtp</code>, maximum draft length 6 and 0.75 minimum draft probability; other main-table launches set no draft option.</p>
+<p>The <a href="data/CONFIGURATIONS.md">configuration record</a> lists the exact model filenames and complete redacted commands; the <a href="data/build-records.tsv">build table</a> maps each response to its build.</p></section>
+
+<section id="s9"><div class="secnum">09</div><h2>Data and sources</h2><p>The <a href="data/README.md">data package</a> holds the recorded results, logs, scripts and failures; the <a href="data/NUMBERS.md">number map</a> traces every figure. In the TSV, <code>decode_tps</code> is the best of two earlier short-prompt prose replies; the at-depth rates are <code>deep_decode_tps</code>. Some deep responses show small prefix reuse: <code>prompt_n</code> is the processed-token count, and <code>cache_n</code> remains in the files. If a number here disagrees with a file in the package, the file is right.</p></section>
+
+<section id="s8"><div class="secnum">10</div><h2>Related pages</h2><p><a href="../batch-size/">Batch-size study</a> · <a href="../speculation-gate/">Slower by default</a> · <a href="../qwen35/">Qwen3.5 field card</a> · <a href="../method/">Method</a></p></section>
+
+<div class="endnote"><p class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to NVIDIA, ASUS, DeepSeek, MiniMax, ggml-org, or the makers of Gemma, GLM, Qwen, Mistral, Ling, Inkling, Ornith or Laguna.</p></div>
 </div></main>
 <footer>
   <div class="wrap">

@@ -1,5 +1,7 @@
 # NUMBERS: every figure on the page, and where it lives in this package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 If a number on the page disagrees with a file in this package, the file is right and the page is wrong.
 
 **Compare GPT-OSS rows that share a test prompt.** In `gptoss20b_listen_counts.csv`, the 20 October adapter under the general GPT-4o-style prompt (52 heading or table lines, 12 endings on a question, in 20 answers) pairs with the 19 October stock row under the same prompt (99 and 1 in 20). The 20 October stock row (54 in 30) is under the own-words prompt. Section 07 uses those pairs.

@@ -1,5 +1,7 @@
 # Number map
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 The TSV’s `decode_tps` is the best of two short-prompt prose replies, not the at-depth code-answer rate. The page uses `deep_decode_tps`, corroborated by each deep response’s `timings.predicted_per_second`. The TSV includes an extra 131,072-window split run; the main table includes only the ten large-window configurations. If a number on the page disagrees with a file in its package, the file is right and the page is wrong.
 
 All main-table results are measured on September 15, 2026, one deep request per configuration. Model names, quantization names, code strings, dates, revision hashes and section numbers are identifiers. Rounding is to one decimal for read seconds/minutes and two decimals for table rates. GPU memory stays MiB.

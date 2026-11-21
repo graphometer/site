@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>November field notes: eight traps running AI models at home</title>
-<meta name="description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<meta name="description" content="Eight faults running AI models on one RTX 5090 desktop and a laptop, from a card that is never empty to a silent search failure, each with a check to run.">
 <link rel="canonical" href="https://graphometer.ai/field-notes-2026-11/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="November field notes: eight traps running AI models at home">
-<meta property="og:description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<meta property="og:description" content="Eight faults running AI models on one RTX 5090 desktop and a laptop, from a card that is never empty to a silent search failure, each with a check to run.">
 <meta property="og:url" content="https://graphometer.ai/field-notes-2026-11/">
 <meta property="og:image" content="https://graphometer.ai/og/field-notes-2026-11.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="November field notes: eight traps running AI models at home">
-<meta name="twitter:description" content="Eight faults we hit running AI models on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.">
+<meta name="twitter:description" content="Eight faults running AI models on one RTX 5090 desktop and a laptop, from a card that is never empty to a silent search failure, each with a check to run.">
 <meta name="twitter:image" content="https://graphometer.ai/og/field-notes-2026-11.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -114,6 +114,18 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note{
+    margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);
+    color:var(--ink);max-width:62ch
+  }
+  .note .label{
+    display:block;font-family:var(--mono);font-size:12px;color:var(--gold);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+  }
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -146,21 +158,24 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field notes &middot; 30 October to 3 November 2026 &middot; one RTX 5090 desktop and an ASUS ROG Flow Z13 &middot; llama.cpp and Open WebUI &middot; eight entries</div>
+      <div class="eyebrow">Field notes &middot; one RTX 5090 desktop and a laptop</div>
       <h1 itemprop="headline">November field notes: eight traps running AI models at home</h1>
-      <p class="sub">What went wrong on our desktop and laptop, what it cost, how we caught it, and one check you can run yourself.</p>
-      <p class="lead">This page is for anyone who runs AI models on their own computer. If you read only one entry, read the first: a graphics card is never fully free, even with no model loaded, and two setups sized close to the card's limit failed here, one of them only after it had passed every short test. The second entry matters if you use document search in a chat app: in our test, a chat still gave a normal reply, without the document and without an error, while its search service was out of reach.</p>
+      <p class="sub">On our RTX 5090 desktop, just after a model stopped, the graphics card still held 710 to 1,642 MiB, and two setups sized close to its limit failed, one only after passing every short test.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Check what your card holds with no model loaded, then test with prompts as long as your real ones</strong> (<code>nvidia-smi --query-gpu=memory.used --format=csv</code>). Short prompts proved nothing here. <a href="#card">Entry 01</a></li>
+          <li><strong>Using document search in a chat app? Take the search service down once and ask something only your documents can answer.</strong> Our chat gave a normal-looking reply, with no error and no document (the stopped service rests on our note from the time). <a href="#search">Entry 02</a></li>
+          <li><strong>Stream long replies and save each piece as it arrives</strong> (<code>"stream": true</code>). In one test, three replies that timed out without streaming kept nothing. <a href="#streaming">Entry 03</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to any maker or project named on this page.</div>
     </div>
 
-    <section>
+    <section id="card">
       <div class="secnum">01</div>
       <h2>The graphics card is never empty, and setups sized to its last gigabyte failed</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>The card's memory (its VRAM) is shared by the driver, the desktop and every app that draws on screen. On the night of 1 to 2 November our test script stopped 102 model servers one after another and read the card's memory about five seconds after each had exited. With no model server running, the card still showed between 710 and 1,642 MiB in use (1,024 MiB is one GiB), and the figure rose and fell through the night. The card holds 32,607 MiB, so that is about 2 to 5 percent of it. Two setups then failed near the top of the card.</td></tr>
-      </table>
+      <p><strong>What to do.</strong> With no model loaded, run <code>nvidia-smi --query-gpu=memory.used --format=csv</code> to see what the card already holds. Then test new setups with real-length prompts.</p>
+      <p>The driver, the desktop and every app that draws on screen share the card's memory (VRAM). On the night of 1 to 2 November, read about five seconds after each of 102 model servers stopped, it still showed 710 to 1,642 MiB in use (1,024 MiB is one GiB), rising and falling: about 2 to 5 percent of its 32,607 MiB.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Setup</th><th>Result</th></tr></thead>
@@ -172,20 +187,14 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">gpt-oss-120b is a mixture-of-experts model: its "experts" are parts used by only some tokens, so they can live in system RAM. Both gpt-oss-120b starts used a 131,072-token window (how much text the model can hold in view at once). DeepSeek-V4.1-Flash-1017 ran as an MXFP4 file (a compressed format) on a community port of llama.cpp, also with a 131,072-token window. The batch is how many prompt tokens the server works on at once; the 2560 runs used a test copy of the same start script.</p>
-      <table class="facts">
-        <tr><th scope="row">What it cost</th><td>One setting that did not load, and one that passed every short test and then failed on its first long request. We did not measure how much of either failure came from the memory the desktop and driver held.</td></tr>
-        <tr><th scope="row">How it was caught</th><td>The out-of-memory line in the server log, and a check script that read the card every quarter of a second during a long request.</td></tr>
-        <tr><th scope="row">The check</th><td>With no model loaded, run <code>nvidia-smi --query-gpu=memory.used --format=csv</code> and note what the card already holds. Then test any new setup with a prompt as long as your real ones before you rely on it. Short prompts passed here and proved nothing.</td></tr>
-      </table>
+      <p class="tablenote">"Experts" are model parts used by only some tokens, so they can sit in system RAM. Both models had a 131,072-token window (the text held in view). Batch: prompt tokens handled at once. Highest card reading: the card was read every quarter of a second during a long request.</p>
     </section>
 
-    <section>
+    <section id="search">
       <div class="secnum">02</div>
       <h2>Document search out of reach: the chat still answered, without the document and without an error</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>Open WebUI (a self-hosted chat app) can search your documents before the model answers. To do that it first sends the question to an embedding model, which turns text into a list of numbers. On 2 November we tested a throwaway copy of Open WebUI (a locally built image tagged v0.12.5) with 20 made-up documents and 10 questions. The embedding model, qwen3-embedding-8b, ran on the laptop, behind a small forwarding service on the desktop.</td></tr>
-      </table>
+      <p><strong>What to do.</strong> Take the embedding service down once and ask a question only your documents can answer. In daily use, a missing citation is the warning sign. A fallback can work: the same embedding model on the desktop's processor also found the right document first for all 10 questions.</p>
+      <p>Open WebUI (a self-hosted chat app) searches documents by first sending the question to an embedding model, which turns text into numbers. On 2 November a throwaway copy had 20 made-up documents and 10 questions; qwen3-embedding-8b ran on the laptop behind a forwarding service on the desktop.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Test</th><th>Result</th></tr></thead>
@@ -197,30 +206,21 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">The direct searches fail loudly. The chat does not. Our note written at the time of the test says the forwarding service had been stopped for that chat; the test log itself records the reply, not the service's state.</p>
-      <table class="facts">
-        <tr><th scope="row">What it cost</th><td>Nothing here, because it was a test. In daily use, answers that should have come from your documents would come from the model alone, with no sign that anything was wrong.</td></tr>
-        <tr><th scope="row">How it was caught</th><td>A test script that asked a question only one document could answer and checked the reply for the code.</td></tr>
-        <tr><th scope="row">The check</th><td>After you set up document search, take the embedding service down once and ask a question only your documents can answer, so you know what failure looks like on your setup. In daily use, a missing citation where you expect one is the warning sign. A fallback can work: in the same test, the same embedding model run on the desktop's processor also found the right document first for all 10 questions.</td></tr>
-      </table>
+      <p class="tablenote">A note from the time says the forwarding service was stopped for that chat; the test log records the reply, not the service's state.</p>
     </section>
 
-    <section>
+    <section id="streaming">
       <div class="secnum">03</div>
       <h2>A request that times out without streaming keeps nothing</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>On the evening of 31 October we asked Mistral-Large-4-1T-A52B six questions. That is a model of about a trillion parameters with about 52 billion used for each token, here as Unsloth's UD-IQ1_S file, a heavily compressed copy, split across the desktop and the laptop with a 32,768-token window. Our client sent each question without streaming (<code>stream=False</code>), so a reply arrives only when it is complete, and gave up after 1,800 seconds. Questions 1, 2 and 6 hit that limit at 1,800.1 seconds, and the client saved no text for any of them. Questions 3, 4 and 5 finished.</td></tr>
-        <tr><th scope="row">What was lost</th><td>The server log shows how far each one had got. Question 1 had generated 4,328 tokens (words or parts of words) when it was cancelled, and question 2 had reached 4,713. Question 6 was at 906 tokens on its last progress line when the server shut down.</td></tr>
-        <tr><th scope="row">What it cost</th><td>About 90 minutes of waiting across the three requests, with nothing saved.</td></tr>
-        <tr><th scope="row">How it was caught</th><td>Three empty answers in the client's results, and the token counts in the server log.</td></tr>
-        <tr><th scope="row">The check</th><td>For long or slow answers, stream the reply (<code>"stream": true</code> in an OpenAI-style request) and write each piece to disk as it arrives. If you must wait for the whole reply, set the timeout from one measured long answer at your real speed, with room to spare.</td></tr>
-      </table>
+      <p><strong>What to do.</strong> Stream long replies (<code>"stream": true</code> in an OpenAI-style request) and write each piece to disk as it arrives. If you must wait for the whole reply, set the timeout from one measured long answer, with room to spare.</p>
+      <p>On 31 October our client sent six questions without streaming (<code>stream=False</code>), to Mistral-Large-4-1T-A52B (about a trillion parameters, about 52 billion used per token) split across both machines, and gave up after 1,800 seconds. Questions 1, 2 and 6 hit that limit at 1,800.1 seconds and saved no text; 3, 4 and 5 finished. The server log shows question 1 had generated 4,328 tokens (words or word parts), question 2 had reached 4,713, and question 6 was at 906 on its last progress line when the server shut down. About 90 minutes of waiting across the three, nothing saved.</p>
     </section>
 
-    <section>
+    <section id="first-reply">
       <div class="secnum">04</div>
       <h2>The first answer after a start can crawl while the model is still coming off the drive</h2>
-      <p>By default llama.cpp does not read the whole model file at start. It reads each part from the drive the first time a request needs it. On 1 November we started Beam-1.0-501B-A23B (about 501 billion parameters, 23 billion used for each token; Unsloth's UD-Q2_K_XL file; llama.cpp b11712; 131,072-token window) that way, and then with <code>--load-mode dio</code>, a setting in this build that reads the whole file into memory at start. Each run sent the same 66-token prompt twice and asked for 420 tokens.</p>
+      <p><strong>What to do.</strong> Send the same request twice and watch the drive during the first. A much slower first reply while the drive is busy points to loading, not your graphics card.</p>
+      <p>By default llama.cpp (the program that runs these models) reads each part of the model file the first time a request needs it. On 1 November we started Beam-1.0-501B-A23B (about 501 billion parameters, 23 billion used per token) on the desktop that way, then with <code>--load-mode dio</code>, which reads the whole file at start. Each run sent the same 66-token prompt twice, asking for 420 tokens.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Start</th><th>Ready after</th><th>RAM free when ready</th><th>First reply</th><th>Read from drive</th><th>Second reply</th></tr></thead>
@@ -230,30 +230,21 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">t/s is tokens written per second. "Read from drive" is what the server process read from disk during that reply, rounded to 0.1 GB. A later start the same evening with the same <code>dio</code> setting gave its first reply at 3.62 tokens a second, so reading the file at start did not always remove the slow first answer.</p>
-      <p><strong>The check.</strong> Before you judge a model's speed, send the same request twice and watch the drive during the first one. A much slower first reply while the drive is busy points to loading, not to your graphics card. Our <a href="../llamacpp-expert-cache/">llama.cpp expert-cache page</a> has more of Beam's measurements on this machine, and our <a href="../mistral-large-4/">Mistral Large 4 page</a> shows loading settings on a second model.</p>
+      <p class="tablenote">t/s: tokens written per second. Read from drive: what the server read from disk during that reply, to 0.1 GB. A later <code>dio</code> start that evening gave its first reply at 3.62 tokens a second, so loading the whole file at start did not always remove the slow first answer.</p>
     </section>
 
-    <section>
+    <section id="split">
       <div class="secnum">05</div>
       <h2>A model split across two machines wrote strings of symbols, with no error in the server log</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>On 31 October we split Mistral Large 4 between the desktop and the ASUS ROG Flow Z13 laptop, joined over Thunderbolt by llama.cpp's RPC worker (a small server on the laptop that runs part of the model for the desktop). The desktop held 46 of the model's 72 layers and the laptop the other 26. The laptop's worker was built with both Vulkan (a graphics interface) and RPC support. In the first run, all six answers were strings of symbols and word fragments, for example <code>schedul\"],\" });\':\huile</code>, and the desktop server's log for that run has no error line. A second run with the same split, labelled as the run with the worker on the laptop's processor, gave readable text: two of six included a final answer, and the other four were still reasoning when they hit their length limit.</td></tr>
-        <tr><th scope="row">Speed</th><td>The first run wrote 1.67 to 4.82 tokens a second and the second 2.10 to 3.98, so the speed column alone could not tell the broken run from the working one.</td></tr>
-        <tr><th scope="row">The device</th><td>Our notes from the time say the first run's worker used the laptop's graphics chip through Vulkan and the second was told to use the processor (<code>-d CPU</code>). The worker's own log was not kept, so that cause is not shown here.</td></tr>
-        <tr><th scope="row">What it cost</th><td>One test run, about 20 minutes, and a speed figure that meant nothing.</td></tr>
-        <tr><th scope="row">How it was caught</th><td>Reading the answers.</td></tr>
-        <tr><th scope="row">The check</th><td>Read the first answers of every new setup before you record its speed. When a worker was built with GPU support, name the device it should use on its command line, and keep its log.</td></tr>
-      </table>
+      <p><strong>What to do.</strong> Read a new setup's first answers before recording its speed. When a worker was built with GPU support, name its device on the command line, and keep its log.</p>
+      <p>On 31 October we split Mistral Large 4 between the desktop (46 of 72 layers) and the ASUS ROG Flow Z13 laptop (26) over Thunderbolt, with llama.cpp's RPC worker (a small server running part of the model on the laptop) built with Vulkan (a graphics interface) and RPC support. In the first run all six answers were symbols and fragments, for example <code>schedul\"],\" });\':\huile</code>, with no error line in the desktop server's log. A second run with the same split, labelled as the worker on the laptop's processor, gave readable text: two of six reached a final answer; four were still reasoning at their length limit. Notes from the time say the first run used the laptop's graphics chip through Vulkan and the second was told to use the processor (<code>-d CPU</code>). Speeds were 1.67 to 4.82 tokens a second against 2.10 to 3.98, so speed alone could not tell them apart. Cost: about 20 minutes.</p>
     </section>
 
-    <section>
+    <section id="crash">
       <div class="secnum">06</div>
       <h2>A GPU crash deep into a long prompt, with 1,372 MiB of the card unused</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>This follows on from the first entry of our <a href="../field-notes-2026-10/">October field notes</a>, which counted five GPU timeout faults in one week. On 3 November we tested Huihui-Qwen3.8-27B-abliterated, a community variant of Qwen3.8-27B with refusals removed, published by huihui-ai (UD-Q5_K_XL file, llama.cpp b11712). It ran with a 229,376-token window and two ways of guessing ahead to write faster: a small draft model and n-gram drafting. The card showed 31,094 MiB in use at idle and 31,235 MiB at its highest reading, 1,372 MiB below its 32,607 total. The server read the first long prompt, 205,741 tokens, at 1,185.6 tokens a second. On the second long prompt its last progress line was at 198,656 tokens, 97 percent of the way, and then the log ends with <code>CUDA error: the launch timed out and was terminated</code>.</td></tr>
-        <tr><th scope="row">Kernel log</th><td>Our test script counts the lines containing <code>NVRM: Xid</code> (error reports from NVIDIA's driver) in the kernel log since each start. It does not keep the lines, so the code and the program each line names are not recorded.</td></tr>
-      </table>
+      <p><strong>What to do.</strong> After any crash on a long prompt, run <code>journalctl -k --since "1 hour ago" | grep -E 'NVRM|Xid'</code> and save the lines themselves, with their code and the program they name, not just a count.</p>
+      <p>On 3 November we ran, on the desktop, Huihui-Qwen3.8-27B-abliterated (huihui-ai's variant of Qwen3.8-27B with refusals removed) with a 229,376-token window, a small draft model and n-gram drafting (two ways of guessing ahead). The card read 31,094 MiB at idle and 31,235 MiB at most, 1,372 MiB below its 32,607 total. A 205,741-token prompt was read at 1,185.6 tokens a second. On the second long prompt the last progress line was at 198,656 tokens, 97 percent of the way, then the log ends: <code>CUDA error: the launch timed out and was terminated</code>.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Window</th><th>Guessing ahead</th><th>Highest card reading</th><th>Xid lines counted</th></tr></thead>
@@ -265,86 +256,84 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Runs in the order they ran. The run with no guessing ahead started at 20:14:16, the same second the run before it stopped, so its count may include a line from that stop.</p>
-      <table class="facts">
-        <tr><th scope="row">What it cost</th><td>One crashed server and the run it was in.</td></tr>
-        <tr><th scope="row">The check</th><td>After any crash on a long prompt, run <code>journalctl -k --since "1 hour ago" | grep -E 'NVRM|Xid'</code> and save the lines themselves, with their code and the program they name. We kept only a count, which is why the second line above cannot be placed.</td></tr>
-      </table>
+      <p class="tablenote">Runs in order. Xid lines (<code>NVRM: Xid</code>) are NVIDIA driver error reports; our script counted them in the kernel log since each start but did not keep them. The run with no guessing ahead started at 20:14:16, the second the run before it stopped, so its count may include a line from that stop.</p>
     </section>
 
-    <section>
+    <section id="download">
       <div class="secnum">07</div>
-      <h2>A large model download that kept failing, and the downloader that finished it</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>On 30 October we downloaded a 2-bit community build of DeepSeek-V4.1-Flash-1017 (ISTA-DASLab's GSQ-RCO IQ2_XXS files) from Hugging Face. The <code>hf</code> tool (huggingface_hub 1.3.4) stopped twice with <code>RuntimeError: Data processing error: CAS service error : ReqwestMiddleware Error: Request failed after 5 retries</code>. On the second try its progress bar had reached 1 of 8 files after 29 minutes 48 seconds.</td></tr>
-        <tr><th scope="row">The fix</th><td>A short downloader of our own. It cuts each file into 128 MiB pieces, fetches them with 16 workers by byte range, retries a piece that fails, and records each finished piece so a restart can skip it. From 15:39:12 to 17:00:22 it fetched the five files on its list (four of the six 2-bit parts and one IQ4_NL Engram file) in 1,856 pieces. It logged 23 piece errors: 16 timeouts, 4 connection resets and 3 short reads. Each of the five files then matched the expected SHA-256 hash in the script's list, which is in the data package.</td></tr>
-        <tr><th scope="row">What it cost</th><td>About an hour from the first start of the <code>hf</code> tool at 14:37 to the start of our own downloader at 15:39, gaps included.</td></tr>
-        <tr><th scope="row">The check</th><td>If a large download fails more than once, switch to a tool that resumes by byte range and remembers finished parts. Then hash every file and compare it with the SHA-256 the repository lists for it (on Hugging Face, the LFS hash on the file's page) before you load it.</td></tr>
-      </table>
+      <h2>A large model download that kept failing, and a downloader that fetched five of its files</h2>
+      <p><strong>What to do.</strong> If a large download fails more than once, use a tool that resumes by byte range and remembers finished parts. Then check each file's SHA-256 against the repository's (on Hugging Face, the LFS hash on the file's page) before loading it.</p>
+      <p>On 30 October the <code>hf</code> tool stopped twice on a 2-bit community build of DeepSeek-V4.1-Flash-1017 with <code>RuntimeError: Data processing error: CAS service error : ReqwestMiddleware Error: Request failed after 5 retries</code>, at 1 of 8 files after 29 minutes 48 seconds the second time. Cost: about an hour, 14:37 to 15:39.</p>
+      <p>Our downloader fetches 128 MiB pieces with 16 workers by byte range, retrying failures and recording finished pieces. From 15:39:12 to 17:00:22 it fetched the five files on its list (four of the six 2-bit parts and one IQ4_NL Engram file) in 1,856 pieces, with 23 piece errors: 16 timeouts, 4 connection resets, 3 short reads. All five matched the SHA-256 hashes in the script's list (in the data package).</p>
     </section>
 
-    <section>
+    <section id="network">
       <div class="secnum">08</div>
-      <h2>More packet loss while the home line was idle than while it was busy</h2>
-      <table class="facts">
-        <tr><th scope="row">What happened</th><td>On the evening of 30 October we pinged public DNS servers (the lookup services that turn site names into addresses) four times a second for about 110 seconds, with an upload and then a download in the middle. We ran this twice before changing anything, to two DNS servers the first time and three the second. Over whole runs, 6.1 to 8.9 percent of pings were lost. Splitting each log at the upload and download marks gives an estimate per stretch: the quiet stretches lost 3.8 to 19.3 percent and the busy stretches 0 to 2.6 percent. Our note from that evening records slow web pages while speed tests looked fast. A speed test keeps the line busy, so it can miss loss like this.</td></tr>
-        <tr><th scope="row">After a restart</th><td>Our notes record that our provider's gateway (the box that connects the home network to the provider) was then restarted. The same test at 22:36 lost nothing: 0 of 446 pings to each of three DNS servers and 0 of 438 to the gateway. A five-minute quiet run on the normal route lost 0 of 597 to each of two DNS servers. A separate five-minute run forced over Wi-Fi, to the provider's DNS server, lost 21 of 597, with a slowest reply of 2,060.6 ms.</td></tr>
-        <tr><th scope="row">What it cost</th><td>An evening of slow pages. The download in entry 07 kept failing earlier the same day; we have not shown that the two are linked.</td></tr>
-        <tr><th scope="row">The check</th><td>Choose one public DNS server and ping it four times a second for five minutes with nothing else using the line (<code>ping -i 0.25</code> followed by its address), then again during a large download. Compare the loss figure each run prints at the end.</td></tr>
-      </table>
+      <h2>A network note: more packet loss while the home line was idle than while it was busy</h2>
+      <p><strong>What to do.</strong> Ping one public DNS server four times a second for five minutes on a quiet line (<code>ping -i 0.25</code> and its address), then during a large download, and compare the loss each prints. A speed test keeps the line busy, so it can miss this.</p>
+      <p>On 30 October our note records slow pages while speed tests looked fast. Pinging public DNS servers (which turn site names into addresses) from the desktop that way for about 110 seconds, with an upload and a download midway, twice before changing anything (two servers, then three), lost 6.1 to 8.9 percent over whole runs; quiet stretches lost an estimated 3.8 to 19.3 percent and busy ones 0 to 2.6.</p>
+      <p>Our notes record that our provider's gateway was then restarted. The same test at 22:36 lost 0 of 446 pings to each of three DNS servers and 0 of 438 to the gateway; a five-minute quiet run on the normal route lost 0 of 597 to each of two. A separate five-minute run forced over Wi-Fi to the provider's DNS server lost 21 of 597, slowest reply 2,060.6 ms. Entry 07's download failed earlier that day; we have not shown the two are linked.</p>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">09</div>
-      <h2>What we ran, exactly</h2>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li>Single events on our machines, not tests of any product; several mistakes were ours.</li>
+        <li>Entry 01 does not measure how much the desktop's and driver's memory caused either failure.</li>
+        <li>The GPU fault in entry 06 has no proven cause.</li>
+        <li>Entry 05's device rests on notes; the worker's log was not kept.</li>
+        <li>Entry 08 is one evening; loss stopping after a restart does not prove the restart fixed it or that the loss is gone.</li>
+      </ul>
+    </section>
+
+    <section id="method">
+      <div class="secnum">10</div>
+      <h2>How this was measured</h2>
       <div class="data-wrap">
       <table class="data">
-        <thead><tr><th>Entry</th><th>Date</th><th>Machine</th><th>Software and settings</th></tr></thead>
+        <thead><tr><th>Entry</th><th>Date</th><th>Software and settings</th></tr></thead>
         <tbody>
-          <tr><td class="t">01 gpt-oss-120b</td><td>2026-11-01</td><td class="t">desktop</td><td class="t">llama.cpp build with CUDA and RPC, F16 file, 131,072 window, batch and micro-batch 2048, one request at a time</td></tr>
-          <tr><td class="t">01 DeepSeek-V4.1-Flash-1017</td><td>2026-11-02</td><td class="t">desktop</td><td class="t">community port of llama.cpp, MXFP4, 131,072 window, batch 3072 (installed start) and 2560 (test copy); requests capped at 40 reply tokens</td></tr>
-          <tr><td class="t">02 document search</td><td>2026-11-02</td><td class="t">desktop and laptop</td><td class="t">Open WebUI image tagged v0.12.5, hybrid search (word and meaning search combined) on, bge-reranker-v2-m3 reranker, qwen3-embedding-8b, Ornith-1.5-122B answering the chats</td></tr>
-          <tr><td class="t">03 and 05 Mistral Large 4</td><td>2026-10-31 to 11-01</td><td class="t">desktop and laptop over Thunderbolt</td><td class="t">llama.cpp b12015 on both sides, UD-IQ1_S, 32,768 window; entry 03 with batch 2048, micro-batch 512, low reasoning effort, worker on the laptop's processor, prompt caching off, replies capped at 6,000 tokens</td></tr>
-          <tr><td class="t">04 Beam 1.0</td><td>2026-11-01</td><td class="t">desktop</td><td class="t">llama.cpp b11712, UD-Q2_K_XL, 131,072 window, batch 4096, micro-batch 2048, low reasoning effort</td></tr>
-          <tr><td class="t">06 Huihui-Qwen3.8-27B-abliterated</td><td>2026-11-03</td><td class="t">desktop</td><td class="t">llama.cpp b11712, UD-Q5_K_XL, 229,376 and 196,608 windows</td></tr>
-          <tr><td class="t">07 download</td><td>2026-10-30</td><td class="t">desktop</td><td class="t">huggingface_hub 1.3.4, then our own downloader</td></tr>
-          <tr><td class="t">08 network</td><td>2026-10-30</td><td class="t">desktop</td><td class="t">ping every 0.25 s, three runs of about 110 s, then five-minute quiet runs</td></tr>
+          <tr><td class="t">01 gpt-oss-120b</td><td>2026-11-01</td><td class="t">llama.cpp with CUDA and RPC, F16 file, batch and micro-batch 2048, one request at a time</td></tr>
+          <tr><td class="t">01 DeepSeek-V4.1-Flash-1017</td><td>2026-11-02</td><td class="t">community llama.cpp port, MXFP4 (compressed) file; replies capped at 40 tokens; the batch 2560 runs used a test copy of the same start script</td></tr>
+          <tr><td class="t">02 document search</td><td>2026-11-02</td><td class="t">Open WebUI, local image tagged v0.12.5, hybrid (word and meaning) search, bge-reranker-v2-m3, Ornith-1.5-122B answering</td></tr>
+          <tr><td class="t">03 and 05 Mistral Large 4</td><td>2026-10-31 to 11-01</td><td class="t">llama.cpp b12015, Unsloth's UD-IQ1_S (heavily compressed), 32,768 window; entry 03: batch 2048, micro-batch 512, low reasoning effort, worker on the laptop's processor, prompt caching off, replies capped at 6,000 tokens</td></tr>
+          <tr><td class="t">04 Beam 1.0</td><td>2026-11-01</td><td class="t">llama.cpp b11712, Unsloth's UD-Q2_K_XL, 131,072 window, batch 4096, micro-batch 2048, low reasoning effort</td></tr>
+          <tr><td class="t">06 Qwen3.8 variant</td><td>2026-11-03</td><td class="t">llama.cpp b11712, UD-Q5_K_XL</td></tr>
+          <tr><td class="t">07 download</td><td>2026-10-30</td><td class="t">ISTA-DASLab's GSQ-RCO IQ2_XXS files; huggingface_hub 1.3.4</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">The desktop: one NVIDIA GeForce RTX 5090 (32,607 MiB as nvidia-smi reports it) and 188 GiB of RAM. The laptop: an ASUS ROG Flow Z13. Each result applies to the setup and run shown.</p>
+      <p class="tablenote">Desktop: one NVIDIA GeForce RTX 5090 (32,607 MiB per nvidia-smi), 188 GiB of RAM. Laptop: ASUS ROG Flow Z13. Entries 01, 04, 06, 07 and 08 ran on the desktop; 02, 03 and 05 used both.</p>
     </section>
 
-    <section>
-      <div class="secnum">10</div>
-      <h2>What this page does not show</h2>
-      <p>These are single events on our machines, not tests of any product, and several of the mistakes were ours. Entry 01 does not show how much of either failure came from the memory the desktop and driver held. The GPU fault in entry 06 has no proven cause. The device behind the symbols in entry 05 rests on our notes, not a log. The network entry is one evening: the loss stopped after a restart, which is not proof that the restart fixed it or that it is gone.</p>
-    </section>
-
-    <section>
+    <section id="sources">
       <div class="secnum">11</div>
-      <h2>Related pages on this site</h2>
+      <h2>Data and sources</h2>
+      <p>The logs and result files quoted here, with private details removed:</p>
       <ul class="plain">
-        <li><a href="../field-notes-2026-10/">October field notes</a>: the previous month, including the first five GPU timeout faults.</li>
-        <li><a href="../llamacpp-expert-cache/">llama.cpp expert cache</a>: more of Beam's measurements on this desktop (entry 04).</li>
-        <li><a href="../mistral-large-4/">Mistral Large 4</a>: the model in entries 03 and 05, and loading settings on a second model.</li>
-        <li><a href="../two-boxes/">Two boxes</a>: splitting one model across the desktop and the laptop.</li>
-        <li><a href="../letta-code-local/">Running Letta Code locally</a>: a build report from the same Z13 laptop, with Letta Code agents on a local model.</li>
-        <li><a href="../method/">Method</a>: how figures are labelled.</li>
+        <li><a href="data/README.md">data/README.md</a>: every file and what was removed.</li>
+        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure mapped to its file.</li>
       </ul>
-    </section>
-
-    <section>
-      <div class="secnum">12</div>
-      <h2>Sources and data</h2>
-      <p>The data package holds, for each entry, the log lines and result files the page quotes: the out-of-memory lines and card readings, the long-request check log, the document-search test log, the client and server lines of the timed-out round, the two Beam runs, the twelve split-model answers, the shape log and crash excerpt, the download logs with the downloader and its hash list, and the ping logs with the phase script. Machine names, network addresses, our provider's name, paths, ports other than loopback, process numbers and our internal run names are removed.</p>
-      <ul class="plain">
-        <li><a href="data/README.md">data/README.md</a>: every file, where it came from and what was removed.</li>
-        <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this page mapped to its file and field.</li>
-      </ul>
-      <p class="fineprint">If a number on this page disagrees with its file in the package, tell us at
+      <p class="fineprint">If a number here disagrees with its file, tell us at
       <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the correction goes on the page with its date.</p>
     </section>
+
+    <section id="related">
+      <div class="secnum">12</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../field-notes-2026-10/">October field notes</a>: five earlier GPU timeout faults</li>
+        <li><a href="../llamacpp-expert-cache/">llama.cpp expert cache</a></li>
+        <li><a href="../mistral-large-4/">Mistral Large 4</a></li>
+        <li><a href="../two-boxes/">Two boxes</a></li>
+        <li><a href="../letta-code-local/">Running Letta Code locally</a></li>
+        <li><a href="../method/">Method</a></li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+    endorsed by, or connected to any maker or project named on this page.</div></div>
 
   </div>
 </main>

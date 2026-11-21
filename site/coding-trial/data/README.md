@@ -1,5 +1,7 @@
 # Five local coding models, four points apart: data package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the numbers on **https://graphometer.ai/coding-trial/**, as the files the
 runs actually produced: the agentic coding trial of **16 September 2026** (five open-weight
 models, four tasks, OpenCode 1.18.31, one scored run per model per task), the one-question

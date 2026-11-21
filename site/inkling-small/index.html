@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inkling-Small at 12 tokens a second on one RTX 5090 desktop</title>
-<meta name="description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second from 32 to 95,041 prompt tokens. Batch tuning later raised 48,115-token reading from 123.0 to 337.9 t/s.">
+<meta name="description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second on one RTX 5090, prompts of 32 to 95,041 tokens. Bigger chunks read 48,115 tokens at 337.9 a second, not 123.0.">
 <link rel="canonical" href="https://graphometer.ai/inkling-small/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Inkling-Small at 12 tokens a second on one RTX 5090 desktop">
-<meta property="og:description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second from 32 to 95,041 prompt tokens. Batch tuning later raised 48,115-token reading from 123.0 to 337.9 t/s.">
+<meta property="og:description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second on one RTX 5090, prompts of 32 to 95,041 tokens. Bigger chunks read 48,115 tokens at 337.9 a second, not 123.0.">
 <meta property="og:url" content="https://graphometer.ai/inkling-small/">
 <meta property="og:image" content="https://graphometer.ai/og/inkling-small.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Inkling-Small at 12 tokens a second on one RTX 5090 desktop">
-<meta name="twitter:description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second from 32 to 95,041 prompt tokens. Batch tuning later raised 48,115-token reading from 123.0 to 337.9 t/s.">
+<meta name="twitter:description" content="Inkling-Small wrote 11.6 to 12.2 tokens a second on one RTX 5090, prompts of 32 to 95,041 tokens. Bigger chunks read 48,115 tokens at 337.9 a second, not 123.0.">
 <meta name="twitter:image" content="https://graphometer.ai/og/inkling-small.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -98,6 +98,11 @@
     .facts td{padding-top:0}
   }
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:10px}
+  ol.plain li strong,ul.plain li strong{color:var(--ink);font-weight:600}
+  .hero .note ul.plain{color:var(--ink);margin-bottom:0}
+  .nonaff-end{padding:28px 0 8px}
 </style>
 </head>
 <body>
@@ -128,69 +133,44 @@
 <main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
     <div class="hero">
-      <div class="eyebrow">Field card &middot; measured 14 to 21 September 2026; updated 26 September &middot; one RTX 5090 desktop &middot; llama.cpp on an unmerged branch &middot; 128K window and a 262,144-token full-window sweep &middot; text only</div>
-      <h1 itemprop="headline">Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</h1>
-      <p class="subtitle">Across the September 14 direct probes, Inkling-Small spoke at 11.6 to 12.2 tokens a second on one RTX 5090 desktop. Batch tuning later raised 48,115-token reading from 123.0 to 337.9 t/s; 95K was not remeasured.</p>
-      <div class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to Thinking Machines Lab, Unsloth, NVIDIA, Intel, ASUS, Hugging Face, or the llama.cpp project.</div>
-      <p class="lead">This is one quantization of one model on one machine, measured on 14 and 15 September 2026, one request at a time. The runtime used an open, unmerged draft branch; its 15 September status snapshot is retained below. With every expert in system memory, reply speed stayed flat across the September 14 direct probes from 32 to 95,041 prompt tokens while reading speed rose with prompt size. At the default batch settings on 14 September, a 95,041-token history read at 185.5 tokens a second, and the planted code came back exactly <span class="tag">measured</span>.</p>
+      <div class="eyebrow">Field card &middot; one RTX 5090 desktop</div>
+      <h1 itemprop="headline">Inkling-Small at 12 tokens a second on one RTX 5090 desktop</h1>
+      <p class="subtitle">On one RTX 5090 desktop, with its expert weights in system memory, Inkling-Small wrote 11.6 to 12.2 tokens (word pieces) a second in ten direct requests on prompts from 32 to 95,041 tokens.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>For this model, bigger chunks read a long prompt faster.</strong> With <code>-b 4096 -ub 2048</code>, a 48,115-token prompt read at 337.9 tokens a second, against 123.0 at default settings. <a href="#what-to-do">What to do</a></li>
+          <li><strong>Expect a long wait before a reply to a long prompt starts.</strong> At default settings the 95,041-token prompt read at 185.5 tokens a second, about 8.5 minutes (worked out from the rate). <a href="#found">What we found</a></li>
+          <li><strong>For this model, a second computer was slower.</strong> Split across two machines it wrote 7.0 to 7.7 tokens a second, against about 12 on one. If you split it, build both sides from the same source commit. <a href="#two-machines">Two machines</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="note"><span class="label">Update, 26 September 2026</span>
-      <p>Reading is faster with <code>-b 4096 -ub 2048</code>. On 20 September, the same <strong>48,115-token prompt</strong> read at <strong>337.9 t/s</strong>, against <strong>123.0 t/s</strong> at default batch settings <span class="tag">measured</span>. The older direct-probe speaking band still stands as a dated result. We have no tuned reading measurement at 95,041 tokens to replace its <strong>185.5 t/s</strong>.</p></div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What it is</h2>
-      <p>The maker describes Inkling-Small as a 276-billion-parameter mixture-of-experts model with 12 billion parameters active for each token <span class="tag vendor">vendor</span>. Its repository says it accepts text, images, and audio and returns text <span class="tag vendor">vendor</span>. We served text only.</p>
-      <table class="facts">
-        <tr><th scope="row">File</th><td><code>Inkling-Small</code>, Unsloth UD-Q3_K_XL, 4 shards, <span class="n">119,554,379,840</span> bytes <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Shape</th><td>42 blocks: 2 dense and 40 mixture-of-experts. The header reports 256 experts, 6 used and 2 shared <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Attention</th><td>32 query heads, 8 key-value heads, keys and values 128 wide, a 4,096-wide embedding, and a 512-token sliding window on 5 of every 6 blocks <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Full-cache layers</th><td>7 of 42 blocks carry the full attention cache <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Served here</th><td>The 14 September probes served 131,072 tokens. Later runs served 262,144. F16 cache, one request at a time, text only <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Published</th><td>On Hugging Face on 27 July 2026, the date the public repository was created, with its last update on 31 July 2026 <span class="tag vendor">vendor</span></td></tr>
-        <tr><th scope="row">Licence</th><td>Apache 2.0 by the repository's metadata at revision <span class="n">8cc5877b</span>. No separate licence file ships in the repository tree, so we did not read one in full <span class="tag vendor">vendor</span></td></tr>
-      </table>
-      <p class="fineprint">The file, shape, attention and cache-layer rows were read from the file header and the chat template on 14 September 2026. Served windows come from the dated server logs below. Both repository facts come from the maker's repository metadata at that revision, read on 15 September 2026, not from a licence document we retained.</p>
+      <h2>What to do</h2>
+      <ol class="plain">
+        <li><strong>This model ran on the llama.cpp branch that adds it</strong> (<a href="https://github.com/ggml-org/llama.cpp/pull/25731">pull request 25731</a>, an unmerged draft when checked on 26 September 2026). Its notes ask for one request at a time and flash attention on, and its new attention operation runs only on CPUs and NVIDIA GPUs <span class="tag vendor">vendor</span>.</li>
+        <li><strong>All the main figures keep the expert weights in system memory</strong> (<code>--n-cpu-moe 42</code>, on a model with 40 expert blocks), so the card holds only attention, the dense blocks and the cache. A run with 5 expert blocks on the card is under <a href="#placements">Faster placements</a>.</li>
+        <li><strong>Read the prompt in bigger chunks</strong> (<code>-b 4096 -ub 2048</code>). These set how many prompt tokens are read at a time (batch and micro-batch). <code>-b 8192 -ub 8192</code> failed mid-read on 20 September; the request lost its connection. <a href="#batch">Results</a></li>
+        <li><strong>Treat the effort setting as a request, not a limit.</strong> <a href="#effort">Why</a></li>
+      </ol>
     </section>
 
-    <section>
+    <section id="found">
       <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <p>The GGUF was checked byte for byte against the file tree of the public <code>unsloth/Inkling-Small-GGUF</code> repository before the run <span class="tag">measured</span>. The runtime was llama.cpp pull request 25731 at commit <span class="n">946fc11d1</span>, build 10897, based on <span class="n">df750f76b</span>, with CUDA 12.8.93 for the RTX 5090 <span class="tag">measured</span>. <a href="https://github.com/ggml-org/llama.cpp/pull/25731">PR #25731</a> was open, marked draft, and not merged when read on 15 September 2026 <span class="tag vendor">vendor</span>.</p>
-      <table class="facts">
-        <tr><th scope="row">Card</th><td>NVIDIA GeForce RTX 5090, 32,086 MiB as llama.cpp reports it <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Machine</th><td>Intel Core Ultra 9 285K, 24 threads, and 188 GiB of system memory <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">Every expert in system memory</th><td>The mixture-of-experts weights stay in system memory rather than on the card, so the card holds attention, the dense blocks and the cache <span class="tag">measured</span></td></tr>
-        <tr><th scope="row">The September 14 configuration</th><td>The launch settings kept on the desktop for everyday use: every expert in system memory, a 131,072-token window, f16 cache, the template's default effort <span class="tag">measured</span></td></tr>
-      </table>
-      <p>The branch notes set two boundaries on how it may be driven: one request at a time, and flash attention on <span class="tag vendor">vendor</span>. They also set one hardware limit: the branch's new attention operation is available only on CPUs and NVIDIA GPUs <span class="tag vendor">vendor</span>. Every measurement here stayed inside all three. The single-machine run kept every expert in system memory. A second run put 5 expert blocks on the graphics card. The two-machine run placed routed experts on the second machine while attention stayed on the card <span class="tag">measured</span>.</p>
-      <div class="note">
-        <span class="label">Scope</span>
-        <p>The 14 September probes used one Unsloth UD-Q3_K_XL file, f16 attention cache, a 131,072-token served window, one request at a time, and one RTX 5090 desktop. The original 14 and 15 September direct-probe programs set temperature 1.0; temperature zero applies to the 20 September batch requests and the 21 September replay. Section 03 gives the later window and the separate 15 September full-window sweep, whose requests also set temperature zero <span class="tag">measured</span>.</p>
-      </div>
-    </section>
+      <h2>What we found</h2>
+      <p>Figures are measured unless labelled <span class="tag vendor">vendor</span> (the maker's or project's statement) or <span class="tag arithmetic">arithmetic</span> (worked out by us), as the <a href="../method/">method page</a> defines.</p>
 
-    <section>
-      <div class="secnum">03</div>
-      <h2>Reading update, then the original probes</h2>
-      <p>The batch comparison used Unsloth <code>UD-Q3_K_XL</code> on the same desktop, every expert block in system RAM (<code>--n-cpu-moe 42</code> on a model with 40 expert blocks), f16 key and value caches, flash attention on, 24 processing and batch threads, one request at a time, and temperature zero. The synthetic ledger asked for a sealed code with a 900-token output cap. The new logs do not print a build commit, so the September 14 commit is not assigned to this run.</p>
-      <div class="data-wrap"><table class="data"><thead><tr><th>Date / setting</th><th>Served window</th><th>Prompt tokens</th><th>Reading</th><th>Card at load</th></tr></thead><tbody>
-      <tr><td class="t">20 September, default b 2048 / ub 512</td><td>131,072</td><td>48,115</td><td>123.0 t/s</td><td>12,641 MiB</td></tr>
-      <tr><td class="t">20 September, b 4096 / ub 2048</td><td>131,072</td><td>48,115</td><td>337.9 t/s</td><td>13,183 MiB</td></tr>
-      <tr><td class="t">20 September, direct binary, b 4096 / ub 2048</td><td>262,144</td><td>3,033</td><td>263.6 t/s</td><td>17,281 MiB</td></tr>
-      <tr><td class="t">21 September, start script, ubatch not overridden</td><td>262,144</td><td>3,033</td><td>187.9 t/s</td><td>16,935 MiB at health; 17,273 MiB peak</td></tr>
-      </tbody></table></div>
-      <p class="tablenote"><span class="tag">measured</span> At the 262,144-token window, the 20 September direct binary launch read at 263.6 t/s and generated 104 tokens at 12.48 t/s. The 21 September start-script replay read at 187.9 t/s (187.88 in the log) and generated 104 tokens at 10.59 t/s. Both used 3,033-token prompts; we do not know why the script replay was slower. These are not 48K or 95K reading measurements at that window. The paired 48K card cost is <strong>542 MiB</strong>, computed as 13,183 minus 12,641 <span class="tag arithmetic">arithmetic</span>.</p>
-      <p><code>-b 8192 -ub 8192</code> failed mid-read at the smaller 131,072-token window: the log reports a CUDA allocation failure and the request lost its connection <span class="tag">measured failure, 20 September</span>. On 21 September the start script, whose defaults that afternoon were <code>-b 4096 -ub 2048</code>, served a 262,144-token window and finished <strong>40 of 40</strong> public-text prompts without a crash <span class="tag">measured</span>. The harness record says <code>ubatch: skip</code> and does not print the batch flags; the flags are inferred from the script defaults. Prompt lengths were <strong>352 to 5,885 tokens</strong>, drawn for a <strong>512-token physical batch</strong> <span class="tag">measured configuration</span>. This does not show that a 48K or 262K prompt is stable at those flags.</p>
-      <h3>The 15 September full-window sweep</h3>
-      <p>The same <code>UD-Q3_K_XL</code> file ran at a <strong>262,144-token served window</strong> with <code>--n-cpu-moe 42</code>, f16 cache, no explicit batch flags, one request at a time and temperature-zero requests. Build <code>10897 / 946fc11d1</code> loaded at <strong>15,744 MiB</strong> and peaked at <strong>15,814 MiB</strong> on the card <span class="tag">measured, 15 September</span>. It read <strong>230,827 tokens in 2,005,919.14 ms at 115.07 t/s</strong> <span class="tag">measured</span>, or <strong>2,005.9 seconds</strong> rounded <span class="tag arithmetic">arithmetic, milliseconds divided by 1,000</span>. It returned <strong>3 of 3 codes</strong> planted at approximately <strong>5 / 50 / 95 percent</strong> of the ledger's entries, in a <strong>27-token answer at 8.78 t/s</strong>; its two warm, roughly 200-token replies ran at <strong>11.69 to 11.77 t/s</strong> <span class="tag">measured</span>. The earlier flat speaking band applies to the September 14 direct probes through 95,041 tokens, not this deeper request.</p>
-      <h3>The September 14 direct probes</h3>
-      <p>Across our direct probes speaking stayed between 11.6 and 12.2 tokens a second from a 32-token prompt to a 95,041-token prompt <span class="tag">measured</span>. Reading looks different. Small prompts do not fill a batch, so they read slowly and unevenly: prompts of 32 to 75 tokens read at 23 to 34 tokens a second across six probes; from about 2,000 tokens the rate climbs with prompt size.</p>
+      <h3>The model</h3>
+      <p>The maker describes Inkling-Small as a 276-billion-parameter mixture-of-experts model (only some parts, called experts, run for each token: 12 billion parameters), taking text, images and audio and returning text <span class="tag vendor">vendor</span>. We ran text only, from Unsloth's UD-Q3_K_XL file, a compressed (quantized) copy.</p>
+
+      <h3>Writing speed stayed flat; prompt reading sped up with length</h3>
+      <p>In ten direct requests, with default batch settings, writing stayed between 11.6 and 12.2 tokens a second. Prompts of 32 to 75 tokens read unevenly, at 23 to 34 tokens a second; from about 2,000 tokens reading climbs with prompt size.</p>
       <div class="data-wrap">
         <table class="data">
           <thead>
-            <tr><th>Prompt</th><th>Probe</th><th>Reading</th><th>Speaking</th><th>Recall</th></tr>
+            <tr><th>Prompt</th><th>Request</th><th>Prompt reading</th><th>Writing</th><th>Recall</th></tr>
           </thead>
           <tbody>
             <tr><td>32 tokens</td><td class="t">short prose, effort none</td><td>29.0 t/s</td><td>11.91 t/s</td><td class="t">not tested</td></tr>
@@ -199,38 +179,48 @@
             <tr><td>73 tokens</td><td class="t">tool call, effort none</td><td>22.9 t/s</td><td>12.09 t/s</td><td class="t">not tested</td></tr>
             <tr><td>75 tokens</td><td class="t">tool call, thinking on</td><td>26.3 t/s</td><td>12.00 t/s</td><td class="t">not tested</td></tr>
             <tr><td>75 tokens</td><td class="t">tool call, template default</td><td>27.1 t/s</td><td>12.19 t/s</td><td class="t">not tested</td></tr>
-            <tr><td>1,950 tokens</td><td class="t">planted code</td><td>118.7 t/s</td><td>11.66 t/s</td><td class="t">exact</td></tr>
-            <tr><td>7,641 tokens</td><td class="t">planted code</td><td>158.2 t/s</td><td>11.57 t/s</td><td class="t">exact</td></tr>
-            <tr><td>30,441 tokens</td><td class="t">planted code</td><td>182.1 t/s</td><td>11.63 t/s</td><td class="t">exact</td></tr>
-            <tr class="hi"><td>95,041 tokens</td><td class="t">planted code</td><td>185.5 t/s</td><td>11.62 t/s</td><td class="t">exact</td></tr>
+            <tr><td>1,950 tokens</td><td class="t">hidden code</td><td>118.7 t/s</td><td>11.66 t/s</td><td class="t">exact</td></tr>
+            <tr><td>7,641 tokens</td><td class="t">hidden code</td><td>158.2 t/s</td><td>11.57 t/s</td><td class="t">exact</td></tr>
+            <tr><td>30,441 tokens</td><td class="t">hidden code</td><td>182.1 t/s</td><td>11.63 t/s</td><td class="t">exact</td></tr>
+            <tr class="hi"><td>95,041 tokens</td><td class="t">hidden code</td><td>185.5 t/s</td><td>11.62 t/s</td><td class="t">exact</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="tablenote"><span class="tag">measured</span> All ten direct probes on the single-machine, every-expert-in-system-memory placement. Recall used one planted code at each tested depth. This is not a multi-needle suite.</p>
-      <p>The 95,041-token read took about 8.5 minutes <span class="tag arithmetic">arithmetic, recorded milliseconds divided by 60,000</span>. The first run became ready to serve (healthy) in 40 seconds from a cold page cache <span class="tag">measured</span>. The card held 12,416 MiB after load and 12,425 MiB after the probes, leaving about 19,600 MiB of its 32,086 MiB unused <span class="tag arithmetic">arithmetic difference</span>. About 3,584 MiB of that is the attention cache for the 7 blocks that carry it at a 131,072-token window, plus about 70 MiB for the 35 blocks on a 512-token sliding window, computed from the file header <span class="tag arithmetic">arithmetic</span>. The window pattern is why the cache is small.</p>
-      <p>Through the agent framework, on the same server, decode fell from about 13.5 tokens a second at a 3,300-token prompt to 12.8 at 52,925 tokens and 10.7 at 102,473 tokens <span class="tag">measured</span>, so the flatness we measured is a property of these direct probes, not of every request shape.</p>
-      <h3>Two faster placements</h3>
-      <p>Putting 5 expert blocks on the card raised speaking speed to 13.0 to 13.7 tokens a second. That run held 26,870 MiB after load and 26,954 MiB after the probes, and became ready to serve in 6 seconds with the page cache already warm <span class="tag">measured</span>.</p>
-      <p>The 14 September launch kept every expert in system memory. Its smoke run at 23:22 became ready to serve in 14 seconds and spoke at 13.3 to 14.2 tokens a second, and that run's own note recorded 12.2 GB on the card <span class="tag">measured</span>. A second launch of the same configuration later that evening recorded 12,430 MiB at its health check, and the gate record in this package reports 12,410 MiB before and after its own run <span class="tag">measured</span>. Three readings, two launches, and each figure keeps the unit its record used. The page cache state differed from the first run, so the page does not treat the speed gap as a placement result.</p>
-    </section>
+      <p class="tablenote">t/s: tokens a second. Hidden code: one code placed in the prompt for the model to give back.</p>
+      <p>The 95,041-token read took about 8.5 minutes <span class="tag arithmetic">arithmetic</span>. The first run was ready in 40 seconds from a cold page cache. The card held 12,416 MiB after load and 12,425 MiB after the requests, about 19,600 MiB of its 32,086 MiB unused <span class="tag arithmetic">arithmetic</span>. The attention cache (the model's working memory of the prompt) is small: at a 131,072-token window, about 3,584 MiB for the 7 blocks that keep a full one, about 70 MiB for the 35 that look back only 512 tokens <span class="tag arithmetic">arithmetic</span>.</p>
+      <p>Through an agent framework on the same server, writing was not flat: it fell from about 13.5 tokens a second at a 3,300-token prompt to 12.8 at 52,925 tokens and 10.7 at 102,473.</p>
 
-    <section>
-      <div class="secnum">04</div>
-      <h2>The effort dial is prompt text</h2>
-      <p>The chat template maps seven names to six values: none 0.0, minimal 0.1, low 0.2, medium 0.7, high 0.9, xhigh and max 0.99. It also accepts any number from 0.0 to 0.99. The default is 0.9, the value the name high carries <span class="tag">measured</span>. The template emits the choice as a system sentence. It is guidance to the model, not a spending limit.</p>
-      <p>Live direct requests honoured both none and medium. Medium produced 961 characters of reasoning in a separate channel and then a clean answer <span class="tag">measured</span>. In the recorded framework turns the first visible content arrived after 39.05 s, 11.1 s and 35.49 s <span class="tag">measured</span>. Most of that was prompt processing: the 39.05-second turn spent 38.4 seconds reading a 3,328-token prompt, and the installed turn that took 35.49 seconds produced no reasoning events at all <span class="tag">measured</span>. At these prompt sizes the default effort is not what the reader is waiting for.</p>
-      <p>The related <a href="../reasoning-effort/">reasoning-effort study</a> shows why a prompt sentence should not be mistaken for a hard budget.</p>
-    </section>
+      <h3 id="batch">Bigger chunks read the prompt faster</h3>
+      <p>The 48,115-token prompt is a made-up ledger with a code to find.</p>
+      <div class="data-wrap"><table class="data"><thead><tr><th>Date / setting</th><th>Served window</th><th>Prompt tokens</th><th>Prompt reading</th><th>Card at load</th></tr></thead><tbody>
+      <tr><td class="t">20 September, default b 2048 / ub 512</td><td>131,072</td><td>48,115</td><td>123.0 t/s</td><td>12,641 MiB</td></tr>
+      <tr><td class="t">20 September, b 4096 / ub 2048</td><td>131,072</td><td>48,115</td><td>337.9 t/s</td><td>13,183 MiB</td></tr>
+      <tr><td class="t">20 September, direct binary, b 4096 / ub 2048</td><td>262,144</td><td>3,033</td><td>263.6 t/s</td><td>17,281 MiB</td></tr>
+      <tr><td class="t">21 September, start script, ubatch not overridden</td><td>262,144</td><td>3,033</td><td>187.9 t/s</td><td>16,935 MiB at health; 17,273 MiB peak</td></tr>
+      </tbody></table></div>
+      <p class="tablenote">Served window: the longest conversation the server allows. At 262,144 the direct launch wrote 104 tokens at 12.48 t/s, the replay 104 at 10.59 t/s (reading 187.88 in its log); we do not know why. These two rows are 3,033-token prompts, not 48K or 95K reading measurements at that window. Bigger chunks cost 542 MiB at 48K <span class="tag arithmetic">arithmetic</span>.</p>
+      <p><code>-b 8192 -ub 8192</code> failed mid-read at a 131,072-token window with a CUDA allocation failure on 20 September; the request lost its connection. On 21 September the start script, whose defaults that afternoon were <code>-b 4096 -ub 2048</code> (inferred: its record says <code>ubatch: skip</code>), served a 262,144-token window and finished <strong>40 of 40</strong> public-text prompts of 352 to 5,885 tokens, drawn for a 512-token physical batch (micro-batch), without a crash.</p>
 
-    <section>
-      <div class="secnum">05</div>
-      <h2>Tools and recall through a framework</h2>
-      <p>Three direct probes produced a well-formed weather tool call: with thinking off, at medium effort, and at the template's high default <span class="tag">measured</span>.</p>
-      <p>The 14 September launch then passed every short leg of a tool-and-recall check through an agent framework. It emitted a direct tool call in 5.6 seconds, wrote and read back a test file, accepted a 118,000-token working window, and completed a turn in which the framework swapped the active model and back <span class="tag">measured</span>. An earlier run of the check, made under a temporary registration, failed one step unrelated to the model: a roster check rejected the temporary entry. That record stands as a failure, even though its model legs completed.</p>
+      <h3 id="full-window">A 230,827-token prompt at the full 262,144-token window</h3>
+      <p>On 15 September, with no chunk flags, the model read 230,827 tokens in 2,005,919.14 ms at 115.07 t/s and returned <strong>3 of 3 codes</strong> hidden at about 5 / 50 / 95 percent of the ledger, in a 27-token answer at 8.78 t/s. Two warm, roughly 200-token replies ran at 11.69 to 11.77 t/s. The card loaded at 15,744 MiB and peaked at 15,814 MiB (a pre-run estimate was about 7,168 MiB of cache, which put the card near 16,000 MiB; doubling the window doubles the cache of the 7 full-cache blocks). The flat writing band above covers prompts up to 95,041 tokens, not this deeper request.</p>
+
+      <h3 id="placements">Faster placements</h3>
+      <p>With 5 expert blocks on the card, writing rose to 13.0 to 13.7 tokens a second; the card held 26,870 MiB after load and 26,954 MiB after, ready in 6 seconds with a warm page cache.</p>
+      <p>A quick test of the everyday all-in-memory launch (23:22, 14 September) was ready in 14 seconds and wrote 13.3 to 14.2 tokens a second, with 12.2 GB on the card; a second launch later that evening read 12,430 MiB at its health check, and the framework check record 12,410 MiB before and after its run. The page cache state differed from the first run, so we do not treat the gap with the first run's 11.6 to 12.2 as a placement result.</p>
+
+      <h3 id="two-machines">Two machines: slower, and a silent mismatch</h3>
+      <p>An ASUS ROG Flow Z13 with 128 GB of unified memory, on a direct Thunderbolt cable, held the routed experts (the expert weights) while attention stayed on the desktop's card. Built from the same branch commit, the split gave coherent text, recalled the code and made the tool call, but wrote 7.0 to 7.7 tokens a second and read 48 to 52, against about 12 writing and 119 to 158 reading on one machine at comparable depths. For a file that already fits one machine, the second machine bought nothing; its use is room for a file that does not fit.</p>
+      <p>A first attempt with a worker from a different source commit returned repeated, unusable output. The branch adds one operation (count 101 to 102, protocol patch level 0 to 1). The worker reported supporting every operation, so nothing caught the mismatch and it ran the wrong operation ids.</p>
+
+      <h3 id="effort">The effort setting is a sentence in the prompt</h3>
+      <p>The chat template maps none 0.0, minimal 0.1, low 0.2, medium 0.7, high 0.9, xhigh and max 0.99, and accepts any number from 0.0 to 0.99; the default is 0.9. It becomes a system sentence: guidance, not a spending limit. Direct requests honoured both none and medium; medium gave 961 characters of reasoning in a separate channel, then a clean answer. Through the framework, first content came after 39.05 s, 11.1 s and 35.49 s. Most of the first wait was prompt reading: 38.4 seconds of 39.05 went on a 3,328-token prompt. The 35.49-second turn produced no reasoning at all. At these prompt sizes the default effort is not what you wait for. See the <a href="../reasoning-effort/">reasoning-effort study</a>.</p>
+
+      <h3 id="framework">Tool calls and recall through an agent framework</h3>
+      <p>Three direct requests made a well-formed weather tool call. Through the framework, the 14 September launch passed every short step of a tool-and-recall check: a tool call in 5.6 seconds, writing and reading back a file, a 118,000-token window, and a swap of the active model and back. An earlier run, under a temporary registration, failed one step unrelated to the model: the framework's list of registered models rejected the temporary entry. That run is recorded as a failure although its model steps completed; the 48,000 and 96,000 rows below come from it.</p>
       <div class="data-wrap">
         <table class="data">
           <thead>
-            <tr><th>Seeded context</th><th>Prompt</th><th>First content</th><th>Reading</th><th>Recall</th></tr>
+            <tr><th>Seeded context</th><th>Prompt</th><th>First content</th><th>Prompt reading</th><th>Recall</th></tr>
           </thead>
           <tbody>
             <tr><td>48,000</td><td>52,925 tokens</td><td>490.72 s</td><td>108 t/s</td><td>3 of 3</td></tr>
@@ -238,55 +228,60 @@
           </tbody>
         </table>
       </div>
-      <p class="tablenote"><span class="tag">measured</span> Earlier framework run, template-default effort. A tool was also used at depth in both seeded legs. The two reading rates are the server's own prompt-eval timings for those requests, 108.05 and 111.31 tokens a second. The direct 95,041-token probe read at 185.5 tokens a second, so the framework path was visibly slower. These are different request shapes, not an estimate of framework overhead alone.</p>
+      <p class="tablenote">Seeded context: the conversation size the check set up, in tokens. Earlier run, default effort; a tool used at depth in both. Server timings: 108.05 and 111.31 t/s, slower than the direct 185.5 on a different request shape.</p>
+
+      <h3 id="sibling">The 975-billion sibling</h3>
+      <p>The maker's larger Inkling has 975 billion parameters, 41 billion active for each token <span class="tag vendor">vendor</span>. On 15 September we ran a 270 GB UD-IQ1_S file (between 00:13 and 00:30; 66 blocks) at 131,072 tokens. Alone, larger than the desktop's 188 GiB of memory and partly paged from an NVMe drive, it was ready in 96 seconds, used 22,887 MiB on the card, wrote 3.4 to 5.0 tokens a second and read a 1,950-token prompt at 20.05. On two machines: ready in 272 seconds, 22,829 MiB on the card and 95 GB on the second machine, writing 3.13 to 3.35 and reading 21.38 to 26.40 across 1,950 and 7,641-token prompts. The pair did not improve writing speed.</p>
     </section>
 
-    <section>
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>Unfinished software.</strong> PR #25731 was still an unmerged draft when checked on 26 September 2026; behaviour and flags may change.</li>
+        <li><strong>One request at a time.</strong> Parallel serving was not tested.</li>
+        <li><strong>One compressed copy, text only, one computer.</strong> The speeds are for Unsloth's UD-Q3_K_XL file on this desktop and the placements tested here; other copies, cards and placements were not measured. Images and audio were not tested.</li>
+        <li><strong>Narrow recall test.</strong> One hidden code per depth is narrower than a test with many hidden items.</li>
+        <li><strong>Bigger chunks were not checked on long prompts at the large window.</strong> Not shown: that a 48K or 262K prompt is stable at those flags at the large window.</li>
+      </ul>
+    </section>
+
+    <section id="updates">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
+      <p><strong>Update, 26 September 2026.</strong> Reading is faster with <code>-b 4096 -ub 2048</code>. On 20 September, the same 48,115-token prompt read at 337.9 t/s, against 123.0 t/s at default batch settings. The older direct-request writing band still stands as a dated result. We have no tuned reading measurement at 95,041 tokens to replace its 185.5 t/s.</p>
+    </section>
+
+    <section id="measured">
+      <div class="secnum">05</div>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>14 to 21 September 2026</td></tr>
+        <tr><th scope="row">Computer</th><td>NVIDIA GeForce RTX 5090, 32,086 MiB as llama.cpp reports it; Intel Core Ultra 9 285K, 24 threads; 188 GiB of system memory</td></tr>
+        <tr><th scope="row">Runtime</th><td>llama.cpp PR 25731 at commit <span class="n">946fc11d1</span>, build 10897, based on <span class="n">df750f76b</span>, CUDA 12.8.93; draft and not merged on 15 September 2026 <span class="tag vendor">vendor</span>. The 20 and 21 September logs print no build commit.</td></tr>
+        <tr><th scope="row">File</th><td><code>Inkling-Small</code>, Unsloth UD-Q3_K_XL, 4 shards, <span class="n">119,554,379,840</span> bytes, checked byte for byte against <code>unsloth/Inkling-Small-GGUF</code></td></tr>
+        <tr><th scope="row">Shape</th><td>42 blocks: 2 dense, 40 mixture-of-experts; 256 experts, 6 used, 2 shared</td></tr>
+        <tr><th scope="row">Attention</th><td>32 query heads, 8 key-value heads, keys and values 128 wide, 4,096-wide embedding, 512-token sliding window on 5 of every 6 blocks; 7 of 42 blocks carry the full cache</td></tr>
+        <tr><th scope="row">Served window</th><td>131,072 tokens on 14 September and in the 20 September chunk comparison; 262,144 in the 15 September run and the 20 and 21 September larger-window checks</td></tr>
+        <tr><th scope="row">Settings</th><td>F16 cache; the 14 September direct requests used the template's default effort except where a row says otherwise; flash attention on, one request at a time. Temperature 1.0 in the 14 and 15 September direct-request programs, zero in the full-window run and the 20 and 21 September requests. Chunk comparison: 24 threads, 900-token output cap.</td></tr>
+        <tr><th scope="row">Repository</th><td>Created on Hugging Face 27 July 2026, updated 31 July 2026; Apache 2.0 by its metadata at revision <span class="n">8cc5877b</span>, read 15 September 2026; no separate licence file <span class="tag vendor">vendor</span></td></tr>
+      </table>
+    </section>
+
+    <section id="sources">
       <div class="secnum">06</div>
-      <h2>What we got wrong: the two-machine worker</h2>
-      <p>The second machine is an ASUS ROG Flow Z13 with 128 GB of unified memory, joined to the desktop by a direct Thunderbolt cable. With a worker built from the same branch commit, the split placement returned coherent text, recalled the code, and formed the tool call. It spoke at 7.0 to 7.7 tokens a second and read at 48 to 52, against about 12 speaking and 119 to 158 reading on one machine at the comparable tested depths <span class="tag">measured</span>. For a file that already fits one machine, the second machine bought nothing. Its use is capacity, for a file that does not fit, and never speed.</p>
-      <p>The first split attempt used a worker built from a different source commit. It returned repeated, unusable output. The draft branch adds one operation, moving the operation count from 101 to 102 and the protocol patch level from 0 to 1 <span class="tag">measured</span>. The worker reported that it supported every operation, so nothing caught the mismatch and it ran the wrong operation ids. The practical rule is exact: build both sides from the same source commit.</p>
-    </section>
-
-    <section>
-      <div class="secnum">07</div>
-      <h2>The 975-billion sibling</h2>
-      <p>The larger sibling is Inkling, the 975-billion-parameter model in the same family, with 41 billion parameters active for each token <span class="tag vendor">vendor</span>. We recorded it on 15 September 2026, between 00:13 and 00:30. It used a 270 GB UD-IQ1_S file with 66 blocks, served at 131,072 tokens <span class="tag">measured</span>. Alone on the desktop, with a file larger than the machine's 188 GiB of system memory so that part of it pages from an NVMe drive, it became ready to serve in 96 seconds, used 22,887 MiB on the card, spoke at 3.4 to 5.0 tokens a second, and read a 1,950-token prompt at 20.05 tokens a second <span class="tag">measured</span>.</p>
-      <p>On two machines it became ready to serve in 272 seconds, used 22,829 MiB on the card and 95 GB on the second machine, spoke at 3.13 to 3.35 tokens a second, and read at 21.38 to 26.40 tokens a second across the 1,950-token and 7,641-token probes <span class="tag">measured</span>. The 26.40 reading figure belongs to the pair. It does not belong to the single-machine run. The pair did not improve speaking speed.</p>
-    </section>
-
-    <section>
-      <div class="secnum">08</div>
-      <h2>What this does not show</h2>
-      <ul class="plain">
-        <li><strong>No stable runtime claim.</strong> The original measurements used a draft branch; PR #25731 was still an unmerged draft when checked on 26 September 2026. Its behaviour and flags may change.</li>
-        <li><strong>No concurrent serving.</strong> The branch required one request at a time, and every run stayed at one request.</li>
-        <li><strong>No image or audio result.</strong> The maker says the model accepts both <span class="tag vendor">vendor</span>. We tested text only.</li>
-        <li><strong>The larger-window run has a measured depth.</strong> Doubling the window doubles the cache the 7 full-cache blocks need: 7 blocks, 8 key-value heads, keys and values 128 wide, two of them, at two bytes each, over 262,144 tokens is about 7,168 MiB, which would put the card near 16,000 MiB of its 32,086 <span class="tag arithmetic">arithmetic</span>. That was the original memory estimate. The 15 September full-window sweep read 230,827 tokens at a 262,144-token served window and measured 15,744 MiB loaded and 15,814 MiB peak <span class="tag">measured</span>. The later tuned-window checks used only 3,033 prompt tokens. The estimate is not their measured card use.</li>
-        <li><strong>No broad recall claim.</strong> Recall was exact for one planted code at each of four tested depths, at prompts of 1,950, 7,641, 30,441 and 95,041 tokens <span class="tag">measured</span>. That is narrower than a multi-needle evaluation.</li>
-        <li><strong>No speed claim beyond these files and placements.</strong> The small and large siblings used different quantizations, shapes, and placements.</li>
-      </ul>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>Related pages on this site</h2>
-      <p><a href="../reasoning-effort/">Reasoning effort is a sentence, not a dial</a> examines the same mechanism class on a different model. The <a href="../field-cards/">model field-card index</a> places this result beside other bodies measured on the same bench. The <a href="../method/">method page</a> defines the evidence labels used here. <a href="../bytes-per-token/">Bytes per token</a> estimates the 975-billion sibling&rsquo;s speaking speed from the expert weights it reads for each token, and sets the estimate beside the server&rsquo;s own figure.</p>
-    </section>
-
-    <section>
-      <div class="secnum">10</div>
-      <h2>Sources and artifacts</h2>
-      <p>The evidence for this page is the run record package, mapped file by file. <a href="data/README.md">data/README.md</a> maps the records, states their provenance and lists what was removed from them. <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure to a file and field.</p>
-      <ul class="plain">
-        <li><code>data/runs/MEASUREMENTS.md</code> holds the measurement tables for every direct probe, placement, branch build, and sibling result used here.</li>
-        <li><code>data/logs/</code> holds the server, probe, tune and smoke logs the figures were read from, and <code>data/probes/</code> the programs that produced them, prompts included.</li>
-        <li><code>data/model/chat_template.txt</code> carries the file header dump and the complete effort mapping.</li>
-        <li><code>data/gates/installed-check.json</code> carries the installed short-leg pass. <code>data/gates/earlier-check.json</code> carries the earlier failed verdict and the 48,000 and 96,000-token legs <span class="tag">measured</span>.</li>
-        <li>The public model repository was read at revision <span class="n">8cc5877b</span> and llama.cpp pull request 25731 was read on 15 September 2026 <span class="tag vendor">vendor</span>. The repository was created on 27 July 2026 and last updated on 31 July 2026, and its metadata carries the Apache 2.0 licence; no licence file ships in its tree. <code>data/repository/</code> keeps the maker's model card at that revision, the pull request's recorded state, and the public file listings and byte totals for both files.</li>
-      </ul>
+      <h2>Data and sources</h2>
+      <p><a href="data/README.md">data/README.md</a> maps the records and what was removed from them; <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure to a file and field. Inside: <code>data/runs/MEASUREMENTS.md</code>, <code>data/logs/</code>, <code>data/probes/</code> (programs, prompts), <code>data/model/chat_template.txt</code> (header dump, effort mapping), <code>data/gates/installed-check.json</code> (the passed framework check), <code>data/gates/earlier-check.json</code> (the earlier failed one, with the 48,000 and 96,000-token runs) and <code>data/repository/</code> (the maker's model card, the pull request's state, file listings).</p>
       <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
     </section>
+
+    <section id="related">
+      <div class="secnum">07</div>
+      <h2>Related pages</h2>
+      <p><a href="../reasoning-effort/">Reasoning effort is a sentence, not a dial</a>: the same setting on another model. <a href="../field-cards/">Model field cards</a>: other models, same desktop. <a href="../bytes-per-token/">Bytes per token</a>: an estimate of the 975-billion sibling&rsquo;s writing speed.</p>
+    </section>
+
+    <div class="nonaff-end"><div class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to Thinking Machines Lab, Unsloth, NVIDIA, Intel, ASUS, Hugging Face, or the llama.cpp project.</div></div>
   </div>
 </main>
 

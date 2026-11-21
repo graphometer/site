@@ -1,5 +1,7 @@
 # Same day, same card: data package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the numbers on **https://graphometer.ai/qwen38-27b/**, as the
 files the run actually produced: the release-day absorption of
 **Qwen3.8-27B** on **2026-08-14**, from the first header probe over HTTP range

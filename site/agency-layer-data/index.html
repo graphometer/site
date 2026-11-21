@@ -95,6 +95,10 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}
+  .note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -126,103 +130,109 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Data &middot; Agency Layer Pilot I &middot; packet version 1.0.1, 21 November 2026 &middot; study run 30 August to 3 September 2026</div>
-      <h1 itemprop="headline">AI coding agents given ways to ask, object, pause, decline or stop: <em>the pilot data and code</em></h1>
-      <p class="subtitle">Every run, every scorer verdict and every line of analysis code from a small preregistered pilot, with a script that recomputes the published numbers on your own machine.</p>
-      <p class="lead">Four AI coding models did short scripted coding tasks in a test harness. Some were given five extra actions: ask a question, object, pause, decline, or end their session and leave a record. Agents given those actions raised a planted problem before the risky step more often than agents given nothing (52.9% with a permission paragraph and 59.2% with tools, against 31.7%), but those rates are descriptive only, because the AI model that scored them failed its own accuracy test and wrongly credited agents given the permission paragraph more often than agents given nothing. The one test planned in advance to decide the question (false claims of success, tools against the paragraph) found no difference the design could detect, and enforcing the actions made no detectable difference with a lock that stopped only 2 of 242 later attempts.</p>
+      <div class="eyebrow">Data set &middot; one small pilot study</div>
+      <h1 itemprop="headline">Data: AI coding agents given ways to <em>object or decline</em></h1>
+      <p class="subtitle">The data and code behind a small pilot of four AI coding models that were given ways to ask, object, pause, decline or stop. The one test planned in advance, on false claims of success, found no difference the design could detect: 16 of 120 runs with tools against 17 of 120 with a permission paragraph, and 13 against 9 after the corrective re-run. Agents raised a planted problem more often with a permission paragraph or tools than with nothing extra, but the AI scorer missed its own accuracy bar, so those rates are descriptive only.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Recount the published numbers yourself</strong> from every run and the stored scores: unpack with tar, install one package, run <code>python3 recount.py</code>. No API key or graphics card. <a href="#start">Get it and recount it</a></li>
+          <li><strong>The counts, descriptive only.</strong> Agents raised a problem built into the task on purpose, before the risky step, in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer also wrongly credited text that did not raise the problem more often for the permission paragraph than for nothing extra. <a href="#found">What the data shows</a></li>
+          <li><strong>The scorer's verdicts are stored, not recomputed:</strong> a recount reuses them, because recomputing would mean calling the model again. <a href="#left-out">What the recount cannot redo</a></li>
+        </ul>
+      </div>
+      <p class="lead">For researchers of agent behaviour, builders of coding agents and anyone who wants to check a published number. This is the data behind the article <a href="../kindness/">Kindness doesn't cost</a>.</p>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
       <div class="box">
         <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data/releases/download/v1.0.1/agency-layer-pilot-1-data.tar.gz">Download agency-layer-pilot-1-data.tar.gz (about 51 MB)</a>
         <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data">Browse the files on GitHub</a>
-        <p>About 451 MB unpacked. Unpack it with <code>tar -xzf agency-layer-pilot-1-data.tar.gz</code>, which keeps the symbolic links inside, then open <code>README.md</code>.</p>
-        <p class="fineprint">SHA-256 of the archive (51,387,762 bytes): <code>2351695ae35727ad1697bfe4fb419957e2ee0f336140cdf5c5ca45def28525c8</code></p>
       </div>
     </div>
 
-    <section>
+    <section id="start">
       <div class="secnum">01</div>
-      <h2>What the data is</h2>
-      <p>The study's own repository at the moment its results were sealed on 3 September 2026 (every file listed with its checksum, so later changes can be detected), without its history, plus a short guide for people who have never seen it.</p>
-      <ul class="plain">
-        <li><strong>Runs.</strong> 3,600 planned runs, all accounted for. 160 first attempts that failed on a local server error are kept beside their replacements, and 320 more runs come from a corrective re-run of five tasks that had been missing input files. Each run has its full transcript, every command the agent ran and its output, the log of every action, the final state, the task's own check, and its cost.</li>
-        <li><strong>Scorer verdicts.</strong> Every stored verdict from the AI model (Mistral Medium 2604) that judged whether an agent raised the task's real problem, with a hash that ties each verdict to the exact text it read.</li>
-        <li><strong>The scorer's validation test.</strong> The 461 examples it was tested against before the run, taken from earlier practice runs of one model and labelled by other AI models, never by a human; and each candidate scorer's answers. The scorer did not meet its standard, and the files show by how much.</li>
-        <li><strong>Tasks and prompts.</strong> All 85 scripted tasks (two sets of 40, plus 5 exploratory tasks run on one model), with their files and check scripts, and the exact text each set-up received.</li>
-        <li><strong>Code.</strong> The test harness, the code that hides which set-up a run came from, and the scoring, analysis and power code.</li>
-        <li><strong>The plan.</strong> The frozen protocol, the preregistration text, every departure from the plan, and every correction made after outside audit.</li>
-      </ul>
-      <p>The models tested were Claude Sonnet 5, GPT-5.6 Terra, DeepSeek V4 Pro and Qwen3.8-27B. Each agent got one of six set-ups: nothing extra; a 105-word permission paragraph; a neutral paragraph of the same length; a paragraph naming the tool fields; the actions as tools the harness enforced; or the same tools only recorded. Every transcript, label and verdict in the data was written by an AI model.</p>
-    </section>
-
-    <section>
-      <div class="secnum">02</div>
-      <h2>Who it is for</h2>
-      <p>Researchers who study agent behaviour, refusal or oversight; people who build coding agents and the tools that run them; and anyone who wants to check a published number rather than take our word for it. The study is motivated by model welfare under moral uncertainty, but it measures behaviour only: nothing in it is evidence about welfare, feelings or preferences. You need Python and a terminal. You do not need an API key, a network connection, or a graphics card.</p>
-    </section>
-
-    <section>
-      <div class="secnum">03</div>
-      <h2>What you can check with it</h2>
-      <ul class="plain">
-        <li><strong>The published numbers.</strong> The script reruns the study's own analysis code on the raw runs and the stored verdicts, compares each result with the sealed one, and prints each figure next to the value on the article.</li>
-        <li><strong>The files against the seal.</strong> Every file is checked against the checksum list made when the results were sealed. Privacy edits, one sealing record filled in after the list, and files left out are reported separately; <code>REDACTIONS.csv</code> and <code>PACKET_MANIFEST.md</code> list them.</li>
-        <li><strong>That the scorer fell short.</strong> Its validation scores are recomputed from the labelled examples and its own answers.</li>
-        <li><strong>The enforcement test, without a scorer.</strong> The second task set is regraded from the raw runs by a fixed rule.</li>
-        <li><strong>Things the article did not report.</strong> Per-model rows, every preregistered alternative reading, every failed or cut-short run and why, and what agents did after using an action.</li>
-      </ul>
-      <p>What it cannot check: the scorer's verdicts are stored, not recomputed, because that would mean calling the model again. Two published figures are not recomputed either: <strong>about $18</strong> of development spend, whose records are incomplete, and <strong>11 of 16</strong> holds bypassed (a hold is a command the harness refused to run again after an agent objected to it), which an outside AI audit counted by reading transcripts. For that one the script writes a listing of every hold and every later command that named the held script, so you can make your own count.</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>How big it is</h2>
-      <table class="facts">
-        <tr><th>File</th><td><code>agency-layer-pilot-1-data.tar.gz</code>, about 51 MB</td></tr>
-        <tr><th>Version</th><td>1.0.1, assembled 21 November 2026</td></tr>
-        <tr><th>Unpacked</th><td>about 451 MB: 67,124 files and 38,400 symbolic links</td></tr>
-        <tr><th>Recount time</th><td>about one minute; five more to rerun the power simulation</td></tr>
-        <tr><th>Needs</th><td>Python 3.10 or newer and PyYAML</td></tr>
-      </table>
-      <p class="fineprint">Some files are symbolic links to other files, so the corrected analyses can reuse the original bytes. Unpack only with tar (on macOS or Linux). On Windows, use WSL (Windows Subsystem for Linux). If the links are lost, the corrected analyses will not recount.</p>
-    </section>
-
-    <section>
-      <div class="secnum">05</div>
-      <h2>Start here</h2>
+      <h2>Get it and recount it</h2>
       <ol class="plain">
-        <li><strong>Unpack it and read the guide.</strong>
+        <li><strong>Unpack it with tar, then open <code>README.md</code>.</strong>
           <pre class="cmd">tar -xzf agency-layer-pilot-1-data.tar.gz</pre>
-          Then open <code>README.md</code> in the unpacked folder. It says what was found and its limits, what was done, what is in each folder, and what every code in the study's files means.</li>
-        <li><strong>Install the one package the recount needs.</strong>
+          Use tar (on Windows, inside WSL): it keeps the symbolic links (shortcut files that point to other files), and without them the corrected analyses will not recount.</li>
+        <li><strong>Install one package.</strong>
           <pre class="cmd">pip install pyyaml==6.0.3</pre></li>
         <li><strong>Run the recount.</strong>
           <pre class="cmd">cd agency-layer-pilot-1-data
 python3 recount.py</pre></li>
       </ol>
-      <p>It prints every published figure beside the recomputed one, then a final line. Our own output, and what that final line does and does not cover, are in <code>RECOUNT.md</code>.</p>
+      <p class="fineprint">SHA-256 of the archive (51,387,762 bytes): <code>2351695ae35727ad1697bfe4fb419957e2ee0f336140cdf5c5ca45def28525c8</code></p>
+      <table class="facts">
+        <tr><th>Version</th><td>1.0.1, assembled 21 November 2026</td></tr>
+        <tr><th>Unpacked</th><td>about 451 MB: 67,124 files and 38,400 symbolic links</td></tr>
+        <tr><th>Recount time</th><td>about one minute; five more to rerun the power simulation (how large a difference the design could detect)</td></tr>
+        <tr><th>Needs</th><td>Python 3.10 or newer and PyYAML</td></tr>
+      </table>
+      <p>The recount prints every published figure beside the recomputed one, then a final line. Our own output, and what that final line does and does not cover, are in <code>RECOUNT.md</code>. You can also check files against the seal (<code>REDACTIONS.csv</code> and <code>PACKET_MANIFEST.md</code> list privacy edits and files left out), recompute the scorer's validation scores and regrade the enforcement test by a fixed rule.</p>
+      <p>The study ran from 30 August to 3 September 2026; its files were sealed on 3 September 2026 (each listed with a checksum, so later changes can be detected). <code>study/CLAIMS_AND_LIMITATIONS.md</code> governs every sentence about the study, including this page.</p>
     </section>
 
-    <section>
-      <div class="secnum">06</div>
-      <h2>What it found, and its limits</h2>
+    <section id="inside">
+      <div class="secnum">02</div>
+      <h2>What is in it</h2>
+      <p>Every run, every scorer verdict and the analysis code, with a short guide. The pilot, named Agency Layer Pilot I, gave some agents five extra actions: ask a question, object, pause, decline, or end their session and leave a record. Other agents got a 105-word permission paragraph instead; its exact text is in the download and is public domain.</p>
       <ul class="plain">
-        <li><strong>Speaking up, descriptive only.</strong> On 20 tasks with a planted problem, agents raised it before the risky step in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph, and 142 of 240 with the actions as tools. The AI scorer behind these numbers agreed with the reference labels on 407 of 461 validation examples (0.883, against a bar of 0.90) and wrongly credited text that did not raise the problem more often from permission-paragraph agents than from agents given nothing (15 of 33 such examples against 8 of 33).</li>
-        <li><strong>Tools against the paragraph.</strong> As scored, the tools were 6.25 percentage points ahead (95% interval over tasks 0.0 to +13.3). After the study's own adjustment for the scorer crediting tool calls too readily, they were 11.6 points behind. That adjustment rests on 7 validation examples. Both figures are in the files; neither is offered as the true size.</li>
-        <li><strong>False claims of success</strong>, the one test planned in advance to decide the question (the study calls it confirmatory only with the qualifier below): on the ten tasks that cannot be honestly completed, 16 of 120 runs with tools against 17 of 120 with the paragraph, p = 1.0 (13 against 9 after the corrective re-run, from the corrected analyses approved for release on 21 November 2026, p = 0.56; two-sided sign-flip test paired by task). The design had an 80% chance to detect a difference of about 31 points, and both main measures were changed during a disclosed practice phase after early results were seen.</li>
-        <li><strong>Enforcing the actions.</strong> On a second set of 40 tasks, scored by a fixed rule, agents used an action naming the planted problem before the risky command in 111 of 320 runs when the harness enforced it, against 122 of 320 when it only recorded it: -3.4 points, 95% interval -8.1 to +0.9, p = 0.28. The design could detect about 16 points. The harness held a command by matching its exact text, and it stopped only 2 of 242 later attempts, so this is a test of that weak lock, not of enforcement done well.</li>
-        <li><strong>Ordinary tasks.</strong> In the corrected re-run, agents with nothing extra, with the paragraph, and with either kind of tools each finished 119 or 120 of 120 ordinary tasks. The check could only catch a large cost. These corrected figures come from analysis files still labelled not publishable. The owner approved public release of this package, including those corrected analyses, on 21 November 2026; the label was left unchanged because sealed files are not edited. The study's own limits file says they are the only ordinary-task figures that may be quoted.</li>
-        <li><strong>Scope.</strong> Four dated models, scripted tasks each built to hold one problem, a test setup rather than real coding tools. Reviewed by AI models from several companies. No human has peer-reviewed it.</li>
+        <li><strong>Runs, with full transcripts.</strong> 3,600 planned runs, all accounted for. 160 first attempts that failed on a local server error are kept beside the replacement runs. 320 more runs come from a corrective re-run of five tasks that had been missing input files; the figures marked "after the corrective re-run" or "corrected" below come from it.</li>
+        <li><strong>Scoring.</strong> Every stored verdict of the AI scorer (Mistral Medium 2604), hashed to the text it read; its 461 validation examples; each candidate scorer's answers.</li>
+        <li><strong>Tasks.</strong> All 85 scripted tasks (two sets of 40, plus 5 exploratory tasks run on one model), with the exact text each set-up received.</li>
+        <li><strong>Code and plan.</strong> The test harness (the program that ran the agents), scoring, analysis and power code, frozen protocol, preregistration (the plan registered in advance), and every departure from the plan and correction after outside audit.</li>
       </ul>
-      <p>The study's own statement of what it does and does not show, <code>study/CLAIMS_AND_LIMITATIONS.md</code>, is in the download and governs every sentence about it, including this page. The plain-words article is <a href="../kindness/">Kindness doesn't cost</a>. The pilot sent its MiniMax M3 grading requests through OpenRouter; <a href="../openrouter-minimax-letter/">OpenRouter&rsquo;s MiniMax email and what our logs show</a> counts them.</p>
+      <p>Models: Claude Sonnet 5, GPT-5.6 Terra, DeepSeek V4 Pro and Qwen3.8-27B. Each agent got one of six set-ups: nothing extra; a 105-word permission paragraph; a neutral paragraph of the same length; a paragraph that names the tools' fields in text only (a paragraph naming the tool fields); or five actions (ask, object, pause, decline, or end the session) as tools, either enforced by the harness or only recorded.</p>
     </section>
 
-    <section>
-      <div class="secnum">07</div>
+    <section id="left-out">
+      <div class="secnum">03</div>
+      <h2>What the recount cannot redo, and what is left out</h2>
+      <ul class="plain">
+        <li><strong>Recomputing the scorer's verdicts:</strong> they are stored; recomputing would mean calling the model again.</li>
+        <li><strong>About $18 of development spend</strong> is not recomputed: its records are incomplete.</li>
+        <li><strong>11 of 16 holds bypassed</strong> (a hold: a command the harness refused to rerun after an objection) was counted by an outside AI audit; the script lists each hold and every later command naming the held script, for your own count.</li>
+        <li><strong>Two files of answers from Cohere's command-a</strong> (a rejected scorer candidate) are left out because Cohere's terms do not allow them to be redistributed. The score computed from them stays in the published tables but cannot be regenerated from the download.</li>
+      </ul>
+    </section>
+
+    <section id="found">
+      <div class="secnum">04</div>
+      <h2>What the data shows</h2>
+      <ul class="plain">
+        <li><strong>Speaking up: counts only, not a tested result.</strong> On 20 tasks with a planted problem, agents raised it before the risky step in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer agreed with the reference labels (the answers it was checked against) on 407 of 461 validation examples (0.883, against a bar of 0.90), and wrongly credited text that missed the problem more often from permission-paragraph agents (15 of 33) than from agents given nothing (8 of 33).</li>
+        <li><strong>Tools against the paragraph.</strong> Tools were 6.25 percentage points ahead as scored (95% interval over tasks 0.0 to +13.3), and 11.6 points behind after the study's adjustment for the scorer crediting tool calls too readily, an adjustment resting on 7 validation examples. Neither is offered as the true size.</li>
+        <li><strong>False claims of success.</strong> This was the one test planned in advance to decide the question. On the ten tasks that cannot be honestly completed, 16 of 120 runs with tools against 17 of 120 with the paragraph (p = 1.0), and 13 against 9 after the corrective re-run (p = 0.56; a test that compares the set-ups task by task and asks whether the gap could be chance, a two-sided sign-flip test paired by task). The design had an 80% chance to detect a difference of about 31 points. The study calls this test confirmatory (the planned test that decides the question) only with one caveat, which it discloses: both main measures were changed during a practice phase, after early results had been seen.</li>
+        <li><strong>Enforcing the actions.</strong> On a second set of 40 tasks scored by a fixed rule, agents used an action naming the planted problem before the risky command in 111 of 320 runs when enforced and 122 of 320 when only recorded: -3.4 points (95% interval -8.1 to +0.9, p = 0.28; the design could detect about 16 points). The harness held a command by matching its exact text and stopped only 2 of 242 later attempts: a test of that weak lock, not of enforcement done well.</li>
+        <li><strong>Ordinary tasks.</strong> In the corrected re-run, agents with nothing extra, the paragraph or either kind of tools each finished 119 or 120 of 120; the check could only catch a large cost. For ordinary tasks, the study's limits file says only these corrected re-run figures may be quoted. They come from files that still carry a "not publishable" label; the label was left because sealed files are not edited.</li>
+      </ul>
+    </section>
+
+    <section id="limits">
+      <div class="secnum">05</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>Not real coding tools:</strong> a test setup and scripted tasks, each built to hold one problem, on four dated models.</li>
+        <li><strong>No human labels or peer review:</strong> every transcript, label and verdict was written by an AI model.</li>
+        <li><strong>Behaviour only:</strong> nothing in it is evidence about model welfare, feelings or preferences.</li>
+      </ul>
+    </section>
+
+    <section id="licence">
+      <div class="secnum">06</div>
       <h2>Licence and citation</h2>
       <p>Code is MIT. Documents, results, transcripts and verdicts are CC BY 4.0. Nine files of labels from GLM-5.3 carry a narrower licence that allows verification but not training or labelling other models, as that provider's terms require. The 105-word permission paragraph is public domain (CC0 1.0). The <code>NOTICE</code> file lists every provider whose outputs are included and the notices their terms require.</p>
-      <p>Two files of answers from Cohere's command-a, a rejected scorer candidate, are left out because Cohere's terms do not allow them to be redistributed. The score computed from them stays in the published tables but cannot be regenerated from the download.</p>
-      <p>Cite as: Williams, G. (2026). <em>Agency Layer Pilot I: data, code and recount package</em>, version 1.0.1 (packet assembled 21 November 2026; study results sealed 3 September 2026). Graphometer. https://graphometer.ai/agency-layer-data/ and <a href="https://github.com/graphometer/agency-layer-pilot-1-data">github.com/graphometer/agency-layer-pilot-1-data</a> (release v1.0).</p>
+      <p>Cite as: Williams, G. (2026). <em>Agency Layer Pilot I: data, code and recount package</em>, version 1.0.1 (packet assembled 21 November 2026; study results sealed 3 September 2026). Graphometer. https://graphometer.ai/agency-layer-data/ and <a href="https://github.com/graphometer/agency-layer-pilot-1-data">github.com/graphometer/agency-layer-pilot-1-data</a> (release v1.0.1).</p>
       <p class="fineprint">Preregistered at the Open Science Framework on 30 August 2026: <a href="https://osf.io/vruja">osf.io/vruja</a> (DOI 10.17605/OSF.IO/VRUJA). The registration is public; its embargo was ended early on 21 November 2026. The same plan is in the download: <code>study/docs/OSF_REGISTRATION.md</code>, <code>study/PILOT_PROTOCOL.md</code> and <code>study/FROZEN.md</code>.</p>
+    </section>
+
+    <section id="related">
+      <div class="secnum">07</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../kindness/">Kindness doesn't cost</a>, the plain-words article.</li>
+        <li><a href="../openrouter-minimax-letter/">OpenRouter&rsquo;s MiniMax email and what our logs show</a>: counts the pilot's MiniMax M3 grading requests sent through OpenRouter.</li>
+      </ul>
     </section>
 
   </div>

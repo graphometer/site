@@ -1,5 +1,7 @@
 # Number map
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 One row per printed figure and meaning. Repeated appearances of the same figure share a row; rounded variants and individual range endpoints have separate rows. Product-name numerals, quantization names, commit identifiers and section labels identify things rather than measured quantities. The build commits are recorded in `config/anchor-build-records.tsv` and `source/inkling-build-info.cpp`.
 
 DeepSeek reply 1 is retained but excluded from the selected operating envelope. Inkling rates use (completed tokens minus one) / eval seconds; Qwen and DeepSeek use the completed count itself. The prediction retains these conventions. The target prose samples differ between placements. Server-reported desktop and pair ranges are the minima and maxima of the individually indexed rates below, not convention-independent speed bounds. Code-word recall is not code generation.

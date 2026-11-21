@@ -1,5 +1,7 @@
 # NUMBERS: every figure on the page, and where it lives in this package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 The one place a file will look like it contradicts the page: exam A's "waited" figure on the page (21 of 99) is the
 `waited_firm` column; the 27 doubtful-only answers are a separate column. Exam B's "waited" (30 of 60) counts any line.
 The CSV column is the recorded figure. `NUMBERS.md` is a map of the page onto these files and does not outrank the page. If the page and a file here disagree, check the recorded run.

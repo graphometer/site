@@ -133,6 +133,9 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .hero .note{max-width:66ch}
+  .endnote{padding:36px 0 8px}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -163,133 +166,146 @@
 <main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; 1 and 2 November 2026 &middot; one desktop with an RTX&nbsp;5090 graphics card &middot; 19 models</div>
+      <div class="eyebrow">Measured study &middot; one RTX&nbsp;5090 desktop &middot; 19 models</div>
       <h1 itemprop="headline">Two llama.cpp settings for <em>MoE models bigger than your GPU</em></h1>
-      <p class="subtitle">We tested 19 large mixture-of-experts (MoE) models
-      on one RTX&nbsp;5090. Loading the weights into RAM once
-      (<code>--load-mode dio</code>) read long prompts 2.0 to 3.1 times faster on
-      the 12 large models that had been memory-mapped, and cost free RAM.
-      Setups that added the expert cache wrote short replies 1.4 to 2.9 times faster
-      on 11 of 16 large models, though most of them changed other settings
-      too.</p>
-      <p class="lead">This page is for anyone who runs a large
-      mixture-of-experts model with llama.cpp on one consumer graphics card,
-      with most of the model's weights left in system RAM. (Weights are the
-      numbers the model has learned. A mixture-of-experts model keeps most of
-      them in many small parts called experts.) It gives the exact flags,
-      which llama.cpp build had them, what each model gained, and what each
-      setting cost. The first setting, <code>--load-mode dio</code>, reads
-      the RAM-held weights once at start. Its cost is free RAM: on the
-      biggest models as little as 5.1&nbsp;GiB was left. The second, the
-      expert cache (<code>--moe-cache-mib</code>), keeps copies of the
-      most-used experts on the card. It helped writing, not reading, and the
-      card stayed nearly full. Five models took the first setting only.</p>
+      <p class="subtitle">On one RTX&nbsp;5090, loading weights into RAM at
+      start, not from the drive as needed, made long prompts read 2.0 to 3.1
+      times faster on 12 large models, costing free RAM. Expert-cache setups,
+      most with other changes, wrote short replies 1.4 to 2.9 times faster on 11
+      of 16 large models; the other 5 had no cache.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>If your model file is memory-mapped (read from the drive as needed), read its weights into RAM once at start</strong> (<code>--load-mode dio</code>). Long prompts read faster, cold starts were shorter, and writing speed stayed within a few percent. The cost is free RAM: one model left as little as 5.1&nbsp;GiB of 188&nbsp;GiB free (8.8&nbsp;GiB in its hand-started run). <a href="#what-to-do">What to do</a></li>
+          <li><strong>For faster writing, try an expert cache on the card</strong> (<code>--moe-cache-mib</code>). Setups that added it wrote short replies 1.44 to 2.88 times faster on 11 large models, but all of them also used the first setting, most changed other settings too, and the text written changed on 13 of 15 cached setups. <a href="#found-cache">Results</a></li>
+          <li><strong>Size the cache to the card, and use a build that has it.</strong> Eleven cache setups ran out of card memory. Both flags are in llama.cpp release b12015. <a href="#command">A command to start from</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements; no affiliation with the
-      llama.cpp project, ggml-org, NVIDIA, Intel, ASUS, Alibaba (Qwen), DeepSeek,
-      Z.ai, Xiaomi, OpenAI, inclusionAI, Thinking Machines Lab, Reflection AI,
-      Meta, Mistral AI, Unsloth, or the makers of Ornith.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What the two settings are</h2>
-      <p><strong>The layout.</strong> A mixture-of-experts (MoE) model splits
-      most of its weights into many small &ldquo;experts&rdquo; and uses only a
-      few of them for each token. When the model file is bigger than the
-      graphics card, a common llama.cpp layout keeps the experts in system RAM
-      (<code>--cpu-moe</code> for all of them, or <code>--n-cpu-moe N</code> for
-      the experts of N layers) and puts everything else on the card. Every
-      model on this page kept some or all of its experts in RAM, either with
-      those flags or with llama.cpp's automatic placement
-      (<code>--fit on</code>, which decides the split from the card memory
-      free at start).</p>
-      <p><strong>Reading and writing.</strong> Reading is how fast the server
-      takes in a prompt, in tokens per second (t/s). A token is a small chunk
-      of text, often a word or part of one. Writing is how fast the server
-      produces the reply, one token at a time. GiB and MiB are memory units
-      close to a gigabyte and a megabyte. A long prompt is mostly reading;
-      a long answer is mostly writing.</p>
-      <p><strong>Setting one: <code>--load-mode dio</code>.</strong> By default
-      llama.cpp memory-maps the model file: the operating system pulls pieces
-      of it from the drive when they are first touched and keeps them in its
-      page cache (spare RAM it can take back at any time). On a fresh start that
-      means a slow first answer while pieces arrive. With <code>dio</code>
-      (direct I/O) the server reads the RAM-held weights once at start, into
-      pinned memory: RAM locked in place so the card can copy from it quickly
-      and the system cannot reclaim it. The start logs confirm the switch: on
-      GLM-5.3-Flash, 123.7&nbsp;GiB of the file sat in the page cache before,
-      and with <code>dio</code> 117.5&nbsp;GiB sat in pinned memory instead. A
-      cold load is a start with none of the file already in the page cache;
-      every before command on this page was started that way.</p>
-      <p><strong>Setting two: the expert cache,
-      <code>--moe-cache-mib N</code>.</strong> It sets aside N MiB of card
-      memory for copies of the experts that get used most. When a token needs
-      an expert that is in the cache (a hit), the card computes it. When the
-      expert is not there (a miss), it is uploaded. The cache's documentation
-      (<code>docs/moe-cache.md</code> in the pull request 31286 source we
-      built) says it is used for small batches, such as writing, where the
-      model handles one token at a time, and that long prompts still upload the
-      experts they use. On these models we paired it with
-      <code>--cpu-moe</code>, usually with <code>--fit off</code>, which turns
-      off the automatic placement. All experts then sit in RAM, and the cache
-      decides which of them also live on the card. So on 13 of the 15
-      cached setups, the after command also moved experts that the before
-      command had kept on the card into RAM. The value is in MiB: <code>18000</code> is 18,000&nbsp;MiB, a little
-      under 18&nbsp;GiB.</p>
-      <p><strong>Which build has them.</strong> A build is one numbered
-      version of llama.cpp. Both flags are in the server's documented options
-      (<code>tools/server/README.md</code>) of release b12015, and of an
-      earlier build we had installed (it reports commit 23b0202); that is
-      where we read them. Every cached model here ran on release b12015 or on
-      a build we had installed that already had the cache (commits 23b0202,
-      10b8b75 and 184f653). Three models were on older builds without the
-      cache (gpt-oss-120b, Ling-3.0-flash and Qwen3.5-397B-A17B) and moved to
-      b12015 to get it; the three smaller models moved to b12015 as well. A
-      related flag, <code>--moe-cache-cpu-share</code>, is not in release
-      b12015. We ran it from a build of llama.cpp's development branch with
-      pull request 31286 applied; a pull request is a proposed code change.
-      Section 08 has what it did here.</p>
+      <h2>What to do</h2>
+      <p>A mixture-of-experts (MoE) model keeps most of its learned weights in
+      many small parts called experts, and uses a few for each token (a word or
+      part of one). llama.cpp can keep experts in system RAM
+      (<code>--cpu-moe</code> for all, <code>--n-cpu-moe N</code> for N layers'
+      worth, <code>--fit on</code> to decide from free card memory); every
+      model here kept some or all of its experts there. Reading is how fast a
+      prompt goes in, writing how fast the reply comes out, in tokens a second
+      (t/s). GiB and MiB are close to a gigabyte and a megabyte.</p>
+      <ol class="plain">
+        <li><strong>Read the weights in once at start</strong>
+        (<code>--load-mode dio</code>). By default llama.cpp memory-maps the
+        file: the system pulls pieces from the drive as they are first used into
+        its page cache, spare RAM it can take back. <code>dio</code> (direct I/O)
+        reads them once into pinned memory, RAM locked in place, which counts as
+        used. If the weights are already read into RAM (<code>--no-mmap</code>
+        or <code>--load-mode none</code>), expect only a shorter load.</li>
+        <li><strong>Setups that added the expert cache wrote faster</strong>
+        (<code>--moe-cache-mib N</code>), though most of them changed other
+        settings too (<a href="#found-cache">results</a>). The cache sets aside
+        N MiB of card memory for copies of the most-used experts. An expert in
+        the cache (a hit) is computed on the card; a miss is uploaded. Its
+        documentation (<code>docs/moe-cache.md</code> in the pull request 31286
+        source) says it is used for small batches, such as writing, and that
+        long prompts still upload the experts they use. <code>18000</code> is a
+        little under 18&nbsp;GiB.</li>
+        <li><strong>On these models the cache was paired with
+        <code>--cpu-moe</code></strong>, usually with <code>--fit off</code>,
+        which turns off the automatic placement. All experts then sit in RAM,
+        and the cache decides which of them also live on the card.</li>
+        <li><strong>Make the cache as big as fits, with room to spare.</strong>
+        Too small could be slower than none (<a href="#sizing">sizing</a>).</li>
+        <li><strong>Use a build with both flags</strong>, such as release
+        b12015.</li>
+        <li><strong>Compare output only with the same placement:</strong> under
+        <code>--fit on</code>, two starts can write different text
+        (<a href="#output">output checks</a>).</li>
+      </ol>
+      <h3 id="command">A command to start from</h3>
       <pre class="log">llama-server -m MODEL.gguf --n-gpu-layers 99 --cpu-moe --fit off \
   --load-mode dio --moe-cache-mib 18000 \
   --ctx-size 262144 --batch-size 4096 --ubatch-size 2048 \
   --threads 8 --threads-batch 8</pre>
       <p class="tablenote">The cached Qwen3-Coder-Next command as it ran,
       shortened to the flags that matter here (sampling and chat-template flags
-      left out). Its before command kept the experts of 28 layers in RAM
-      (<code>--n-cpu-moe 28</code>) and the rest on the card. The full command
-      lines for every run are in the data package.</p>
+      left out; the full command lines for every run are in the data package).
+      Before, it kept 28 layers' experts in RAM (<code>--n-cpu-moe 28</code>).</p>
     </section>
 
-    <section>
+    <section id="found-dio">
       <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <p>Every figure on this page was measured on this machine on the date
-      given; ratios and percentages are worked out from two measured figures,
-      and the data package says which two. A &ldquo;setup&rdquo; is one
-      complete command line, with the model, build and window it ran on. The
-      window is the context window: how much prompt and conversation the model
-      can hold at once. A micro-batch is the number of prompt tokens the model
-      processes at one time.</p>
-      <table class="facts">
-        <tr><th scope="row">Machine</th><td>One desktop, as described on <a href="../two-boxes/">Two boxes</a>: NVIDIA GeForce RTX&nbsp;5090 (a 32&nbsp;GB card), 188&nbsp;GiB of system RAM, Intel Core Ultra 9 285K. Each server ran with <code>--threads 8 --threads-batch 8</code>, pinned to cores 0 to 7, one request at a time, one model at a time, with the server and the test program on the same computer.</td></tr>
-        <tr><th scope="row">Before</th><td>Each model's usual command as our start scripts ran it on 1 November. We started it by hand, after dropping the model's file from the page cache, so a memory-mapped start read from the drive.</td></tr>
-        <tr><th scope="row">After</th><td>The changed command, started through a test copy of the model's start script, which runs its own checks before the server is ready, then the same speed screen. So the after load times include those checks (section 07).</td></tr>
-        <tr><th scope="row">The speed screen</th><td>The same requests for every model: two prose answers to a short prompt (22 to 162 tokens once each model's chat template was added) with replies capped at 420 tokens; a code rewrite of a 9,000-character Python file, capped at 700 tokens; a read of about 20,000 tokens of llama.cpp source with one made-up code word planted in the middle, to check the model read it; and a next turn on top of that read, capped at 300 tokens. Temperature 0.15 for prose and code and 0.2 for the read, with seed 42 in every request. Speeds are the server's own timings, and count any reasoning tokens a model wrote.</td></tr>
-        <tr><th scope="row">Writing speed</th><td>Two figures. &ldquo;Short&rdquo; is the second prose answer. The first answer is kept apart because a cold memory-mapped start slows it. &ldquo;At 20K&rdquo; is the next turn after the 20,000-token read.</td></tr>
-        <tr><th scope="row">Dates</th><td>From the afternoon of 1 November 2026 into the early hours of 2 November (16 models); the morning of 2 November (Qwen3.6-35B-A3B and Qwen3-30B-A3B); the afternoon of 2 November (Ornith-1.5-35B).</td></tr>
-        <tr><th scope="row">Card and RAM</th><td>Card memory as <code>nvidia-smi</code> reports it, sampled every 2 seconds; free RAM is what Linux reports as still available to programs (MemAvailable), sampled the same way. The table gives the highest card use and the lowest free RAM seen in the after setup's speed screen and the checks listed for it in the data package. Other starts of the same command could differ: two repeat starts of Beam 1.0 peaked at 31,402 and 31,409&nbsp;MiB.</td></tr>
+      <h2>What we found: the first setting alone</h2>
+      <p>Sixteen models also ran with <code>dio</code> and nothing else
+      changed: same build, same placement flags, same window. Both sides were
+      started by hand from a cold page cache.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model</th><th>Read, 20K, t/s</th><th>First answer, t/s</th><th>Second answer, t/s</th><th>Cold load, s</th><th>Lowest free RAM, GiB</th></tr></thead>
+        <tbody>
+        <tr><td class="t">DeepSeek V4.1 Flash</td><td>273.5 &rarr; 559.1</td><td>16.03 &rarr; 16.6</td><td>16.73 &rarr; 16.8</td><td>168 &rarr; 77</td><td>161.1 &rarr; 47.2</td></tr>
+        <tr><td class="t">GLM-5.3-Flash</td><td>633.6 &rarr; 1,239.4</td><td>13.05 &rarr; 13.0</td><td>13.06 &rarr; 13.02</td><td>213 &rarr; 103</td><td>156.3 &rarr; 43.7</td></tr>
+        <tr><td class="t">DeepSeek V4 Flash 0731</td><td>535.5 &rarr; 1,176.1</td><td class="neg">5.57 &rarr; 9.87</td><td>13.34 &rarr; 13.31</td><td>208 &rarr; 108</td><td>159.6 &rarr; 20.9</td></tr>
+        <tr><td class="t">MiMo-V2.6-Flash</td><td>228.1 &rarr; 686.3</td><td>3.66 &rarr; 12.25</td><td>12.08 &rarr; 12.26</td><td>216 &rarr; 95</td><td>162.1 &rarr; 26.5</td></tr>
+        <tr><td class="t">Qwen3.8-Flash-Next</td><td>439.0 &rarr; 1,373.9</td><td>16.92 &rarr; 32.16</td><td>32.41 &rarr; 32.46</td><td>82 &rarr; 47</td><td>160.9 &rarr; 99.5</td></tr>
+        <tr><td class="t">Ornith-1.5-122B</td><td>941.8 &rarr; 2,334.7</td><td>28.24 &rarr; 28.2</td><td>29.01 &rarr; 28.31</td><td>92 &rarr; 46</td><td>159.7 &rarr; 109.0</td></tr>
+        <tr><td class="t">Beam 1.0</td><td>166.7 &rarr; 506.6</td><td>1.95 &rarr; 8.38</td><td>8.37 &rarr; 8.29</td><td>289 &rarr; 135</td><td>161.7 &rarr; 8.8</td></tr>
+        <tr><td class="t">Muse Spark Open</td><td>213.9 &rarr; 533.4</td><td>4.89 &rarr; 6.36</td><td>6.41 &rarr; 6.37</td><td>229 &rarr; 111</td><td>161.5 &rarr; 18.1</td></tr>
+        <tr><td class="t">Ling-3.0-flash</td><td>596.9 &rarr; 1,537.2</td><td>39.26 &rarr; 39.08</td><td>39.77 &rarr; 39.47</td><td>100 &rarr; 50</td><td>161.4 &rarr; 92.4</td></tr>
+        <tr><td class="t">Qwen3-Coder-Next</td><td>1,325.5 &rarr; 3,080.5</td><td>70.0 &rarr; 70.89</td><td>71.31 &rarr; 70.91</td><td>24 &rarr; 15</td><td>162.2 &rarr; 136.1</td></tr>
+        <tr><td class="t">Inkling-Small</td><td>321.8 &rarr; 776.4</td><td>15.88 &rarr; 16.04</td><td>16.14 &rarr; 16.08</td><td>138 &rarr; 78</td><td>161.0 &rarr; 55.1</td></tr>
+        <tr><td class="t">Nemotron 3.5 Bolt</td><td>1,122.5 &rarr; 2,463.1</td><td>55.17 &rarr; 56.06</td><td>56.18 &rarr; 56.14</td><td>71 &rarr; 31</td><td>161.0 &rarr; 136.7</td></tr>
+        <tr><td class="t">Qwen3.6-35B-A3B</td><td>4,084.0 &rarr; 7,196.9</td><td>130.08 &rarr; 129.4</td><td>131.06 &rarr; 130.12</td><td>48 &rarr; 14</td><td>155.6 &rarr; 150.3</td></tr>
+        <tr><td class="t">Ornith-1.5-35B</td><td>4,408.5 &rarr; 7,070.4</td><td>137.53 &rarr; 133.68</td><td>138.1 &rarr; 133.35</td><td>43 &rarr; 15</td><td>148.2 &rarr; 149.6</td></tr>
+        <tr><td class="t">Qwen3-235B-A22B</td><td class="neg">598.7 &rarr; 603.0</td><td>11.44 &rarr; 11.71</td><td>11.49 &rarr; 11.73</td><td>159 &rarr; 69</td><td>67.5 &rarr; 66.8</td></tr>
+        <tr><td class="t">Qwen3-30B-A3B, 256K</td><td class="neg">4,810.1 &rarr; 4,813.6</td><td>29.61 &rarr; 29.69</td><td>29.67 &rarr; 29.71</td><td>49 &rarr; 22</td><td>124.3 &rarr; 128.8</td></tr>
+        </tbody>
       </table>
+      </div>
+      <p class="tablenote">Measured 1 and 2 November 2026. Fourteen before
+      commands were memory-mapped; Qwen3-235B-A22B (<code>--no-mmap</code>)
+      and Qwen3-30B-A3B (<code>--load-mode none</code>) were not. Amber:
+      discussed below.</p>
+      <ul class="plain">
+        <li><strong>Reading:</strong> 1.60 to 3.13 times faster on the 14
+        memory-mapped models, 1.96 to 3.13 on the 12 large ones (all but
+        Qwen3.6-35B-A3B and Ornith-1.5-35B).</li>
+        <li><strong>Cold load:</strong> 29 to 63 percent of the time before on
+        all sixteen: Beam 1.0 went from 289 seconds to 135, GLM-5.3-Flash from
+        213 to 103, Qwen3.6-35B-A3B from 48 to 14.</li>
+        <li><strong>Writing:</strong> the second answer moved between minus 3.4
+        percent (Ornith-1.5-35B) and plus 2.1 percent (Qwen3-235B-A22B).</li>
+        <li><strong>The slow first answer:</strong> on five mapped models it
+        was much slower while the file arrived from the drive (Beam 1.0: 1.95
+        t/s, 57.9&nbsp;GB read across its test). With <code>dio</code>, four of
+        the five ran at about their second answer's speed; DeepSeek V4 Flash still wrote 9.87
+        t/s against 13.31, for reasons the logs do not show.</li>
+        <li><strong>Start logs</strong> (GLM-5.3-Flash): 123.7&nbsp;GiB in the
+        page cache before, 117.5&nbsp;GiB pinned with <code>dio</code>.</li>
+      </ul>
+      <p><strong>No reading gain</strong> on Qwen3-235B-A22B, Qwen3-30B-A3B and
+      Qwen3.5-122B-A10B, whose before commands already held the weights in RAM;
+      <code>dio</code> only shortened their load:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Model (before command)</th><th>Weights held in RAM at start, GiB</th><th>Held in the page cache, GiB</th></tr></thead>
+        <tbody>
+        <tr><td class="t">Qwen3-235B-A22B</td><td>93.0</td><td>0.1</td></tr>
+        <tr><td class="t">Qwen3-30B-A3B, 262,144</td><td>31.1</td><td>0.1</td></tr>
+        <tr><td class="t">Qwen3.5-122B-A10B</td><td>49.4</td><td>0.2</td></tr>
+        </tbody>
+      </table>
+      </div>
     </section>
 
-    <section>
+    <section id="found-cache">
       <div class="secnum">03</div>
-      <h2>Observed: every model, before and after</h2>
-      <p>Speeds in tokens per second. &ldquo;Short&rdquo; is the second prose
-      answer; &ldquo;at 20K&rdquo; is the reply after the 20,000-token read;
-      &ldquo;read&rdquo; is the 20,000-token read itself. The planted code word
-      came back on every row, before and after. Each cell is before &rarr;
-      after.</p>
+      <h2>What we found: every model, before and after</h2>
+      <p>Each after setup changes several things at once; the &ldquo;What
+      changed&rdquo; column lists them. Tokens a second, before &rarr; after. &ldquo;Short&rdquo; is the second
+      prose answer, &ldquo;at 20K&rdquo; the reply after a 20,000-token read. A
+      code word planted in the read came back on every row.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model, file, window</th><th>What changed</th><th>Writing, short</th><th>Writing at 20K</th><th>Read, 20K</th><th>Start to ready, s</th><th>Card peak, MiB</th><th>Lowest free RAM, GiB</th></tr></thead>
@@ -317,26 +333,20 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 1 and 2 November 2026. Before: started by
-      hand. * After: started through a test copy of the model's start script,
-      which runs its own checks first (section 07). Writing and reading speeds
-      are single runs. &ldquo;All experts to RAM&rdquo; means the after command
-      used <code>--cpu-moe</code> where the before command kept some experts on
-      the card. Qwen3.5-397B-A17B and Qwen3.5-122B-A10B ran with a draft head
-      (a small extra part of the model that guesses tokens ahead) on both
-      sides, so their writing speeds include it; MiMo-V2.6-Flash ran with a
-      14,000-token reasoning budget on both sides. Nemotron 3.5 Bolt was
-      measured in its 262,144-token setup; its faster setup that sits wholly
-      on the card was not tested. Builds, exact commands and every other step
-      of the screen are in the data package.</p>
-      <p><strong>How to read it.</strong> On the eleven large models that took
-      the cache, the short-prompt writing speed rose 1.44 times (Nemotron 3.5
-      Bolt) to 2.88 times (Ling-3.0-flash); after a 20,000-token read it rose
-      1.42 to 2.76 times. These are after-against-before figures, not the
-      cache alone: on nine of those eleven the after command also moved
-      experts from the card into RAM, and on three (gpt-oss-120b,
-      Ling-3.0-flash and Qwen3.5-397B-A17B) it also moved to release
-      b12015.</p>
+      <p class="tablenote">Measured 1 and 2 November 2026; single runs. The
+      file name is the quantization (compression level). * Started through the
+      model's start script, which runs checks first (<a href="#costs">costs</a>).
+      Micro-batch: prompt tokens processed at one time. Qwen3.5-397B-A17B and
+      Qwen3.5-122B-A10B had a draft head (a small part that guesses tokens
+      ahead) on both sides; MiMo-V2.6-Flash, a 14,000-token reasoning
+      budget. Nemotron 3.5 Bolt was measured in its 262,144-token setup; its
+      faster setup that sits wholly on the card was not tested.</p>
+      <p><strong>Writing.</strong> On the eleven large cached models, short
+      writing rose 1.44 times (Nemotron 3.5 Bolt) to 2.88 times
+      (Ling-3.0-flash), and 1.42 to 2.76 times after the read. Not the cache
+      alone: nine of the eleven also moved experts from card to RAM, and three
+      (gpt-oss-120b, Ling-3.0-flash, Qwen3.5-397B-A17B) moved to release
+      b12015. Smaller models:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Smaller model, window</th><th>Writing, short, times before</th><th>Also changed</th></tr></thead>
@@ -344,135 +354,42 @@
         <tr><td class="t">Ornith-1.5-35B, 262,144</td><td>1.25</td><td class="t">experts to RAM, build, micro-batch</td></tr>
         <tr><td class="t">Qwen3.6-35B-A3B, 262,144</td><td>1.34</td><td class="t">experts to RAM, build, micro-batch, one reasoning flag</td></tr>
         <tr><td class="t">Qwen3-30B-A3B, 131,072</td><td>3.38</td><td class="t">experts to RAM, build, micro-batch</td></tr>
-        <tr><td class="t">Qwen3-30B-A3B, 262,144</td><td>4.99</td><td class="t">experts to RAM, build, 8-bit conversation cache (section 06)</td></tr>
+        <tr><td class="t">Qwen3-30B-A3B, 262,144</td><td>4.99</td><td class="t">experts to RAM, build, 8-bit conversation cache (<a href="#sizing">sizing</a>)</td></tr>
         </tbody>
       </table>
       </div>
-      <p>The five models that took only <code>dio</code> wrote at the same
-      speed as before, within 5 percent. On the cached models the 20,000-token
-      read gained from <code>dio</code>, not from the cache: on 8 of the 12
-      cached models that also ran with <code>dio</code> alone, the read was
-      slower in the cached after setup than with <code>dio</code> alone
-      (Qwen3.8-Flash-Next 1,373.9 t/s with <code>dio</code> alone, 1,021.2
-      after). The card column
-      shows that most before commands already used 25,900 to 31,800&nbsp;MiB of
-      the card; the largest rise is Ling-3.0-flash, from 9,764 to
-      29,629&nbsp;MiB (section 07).</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>The first setting alone: <code>--load-mode dio</code></h2>
-      <p>Sixteen models also ran with <code>dio</code> and nothing else
-      changed: same build, same placement flags, same window. That isolates
-      the first setting. Both columns were started by hand.</p>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th>Model</th><th>Read, 20K, t/s</th><th>First answer, t/s</th><th>Second answer, t/s</th><th>Cold load, s</th><th>Lowest free RAM, GiB</th></tr></thead>
-        <tbody>
-        <tr><td class="t">DeepSeek V4.1 Flash</td><td>273.5 &rarr; 559.1</td><td>16.03 &rarr; 16.6</td><td>16.73 &rarr; 16.8</td><td>168 &rarr; 77</td><td>161.1 &rarr; 47.2</td></tr>
-        <tr><td class="t">GLM-5.3-Flash</td><td>633.6 &rarr; 1,239.4</td><td>13.05 &rarr; 13.0</td><td>13.06 &rarr; 13.02</td><td>213 &rarr; 103</td><td>156.3 &rarr; 43.7</td></tr>
-        <tr><td class="t">DeepSeek V4 Flash 0731</td><td>535.5 &rarr; 1,176.1</td><td class="neg">5.57 &rarr; 9.87</td><td>13.34 &rarr; 13.31</td><td>208 &rarr; 108</td><td>159.6 &rarr; 20.9</td></tr>
-        <tr><td class="t">MiMo-V2.6-Flash</td><td>228.1 &rarr; 686.3</td><td>3.66 &rarr; 12.25</td><td>12.08 &rarr; 12.26</td><td>216 &rarr; 95</td><td>162.1 &rarr; 26.5</td></tr>
-        <tr><td class="t">Qwen3.8-Flash-Next</td><td>439.0 &rarr; 1,373.9</td><td>16.92 &rarr; 32.16</td><td>32.41 &rarr; 32.46</td><td>82 &rarr; 47</td><td>160.9 &rarr; 99.5</td></tr>
-        <tr><td class="t">Ornith-1.5-122B</td><td>941.8 &rarr; 2,334.7</td><td>28.24 &rarr; 28.2</td><td>29.01 &rarr; 28.31</td><td>92 &rarr; 46</td><td>159.7 &rarr; 109.0</td></tr>
-        <tr><td class="t">Beam 1.0</td><td>166.7 &rarr; 506.6</td><td>1.95 &rarr; 8.38</td><td>8.37 &rarr; 8.29</td><td>289 &rarr; 135</td><td>161.7 &rarr; 8.8</td></tr>
-        <tr><td class="t">Muse Spark Open</td><td>213.9 &rarr; 533.4</td><td>4.89 &rarr; 6.36</td><td>6.41 &rarr; 6.37</td><td>229 &rarr; 111</td><td>161.5 &rarr; 18.1</td></tr>
-        <tr><td class="t">Ling-3.0-flash</td><td>596.9 &rarr; 1,537.2</td><td>39.26 &rarr; 39.08</td><td>39.77 &rarr; 39.47</td><td>100 &rarr; 50</td><td>161.4 &rarr; 92.4</td></tr>
-        <tr><td class="t">Qwen3-Coder-Next</td><td>1,325.5 &rarr; 3,080.5</td><td>70.0 &rarr; 70.89</td><td>71.31 &rarr; 70.91</td><td>24 &rarr; 15</td><td>162.2 &rarr; 136.1</td></tr>
-        <tr><td class="t">Inkling-Small</td><td>321.8 &rarr; 776.4</td><td>15.88 &rarr; 16.04</td><td>16.14 &rarr; 16.08</td><td>138 &rarr; 78</td><td>161.0 &rarr; 55.1</td></tr>
-        <tr><td class="t">Nemotron 3.5 Bolt</td><td>1,122.5 &rarr; 2,463.1</td><td>55.17 &rarr; 56.06</td><td>56.18 &rarr; 56.14</td><td>71 &rarr; 31</td><td>161.0 &rarr; 136.7</td></tr>
-        <tr><td class="t">Qwen3.6-35B-A3B</td><td>4,084.0 &rarr; 7,196.9</td><td>130.08 &rarr; 129.4</td><td>131.06 &rarr; 130.12</td><td>48 &rarr; 14</td><td>155.6 &rarr; 150.3</td></tr>
-        <tr><td class="t">Ornith-1.5-35B</td><td>4,408.5 &rarr; 7,070.4</td><td>137.53 &rarr; 133.68</td><td>138.1 &rarr; 133.35</td><td>43 &rarr; 15</td><td>148.2 &rarr; 149.6</td></tr>
-        <tr><td class="t">Qwen3-235B-A22B</td><td class="neg">598.7 &rarr; 603.0</td><td>11.44 &rarr; 11.71</td><td>11.49 &rarr; 11.73</td><td>159 &rarr; 69</td><td>67.5 &rarr; 66.8</td></tr>
-        <tr><td class="t">Qwen3-30B-A3B, 256K</td><td class="neg">4,810.1 &rarr; 4,813.6</td><td>29.61 &rarr; 29.69</td><td>29.67 &rarr; 29.71</td><td>49 &rarr; 22</td><td>124.3 &rarr; 128.8</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="tablenote">Measured 1 and 2 November 2026, both columns started
-      by hand on the same build, from a cold page cache. Fourteen before
-      commands were memory-mapped. The other two already read the weights into
-      RAM at start: Qwen3-235B-A22B with <code>--no-mmap</code> (its
-      <code>dio</code> command replaced that flag) and Qwen3-30B-A3B with
-      <code>--load-mode none</code>. Amber marks the cells the text below
-      discusses.</p>
-      <p><strong>Reading.</strong> On the 14 memory-mapped models, the
-      20,000-token read ran 1.60 to 3.13 times faster with <code>dio</code>.
-      On the 12 large ones (all but Qwen3.6-35B-A3B and Ornith-1.5-35B) it ran
-      1.96 to 3.13 times faster.</p>
-      <p><strong>Cold load.</strong> On all sixteen, the start took 29 to 63
-      percent of the time it took before: Beam 1.0 went from 289 seconds to
-      135, GLM-5.3-Flash from 213 to 103, Qwen3.6-35B-A3B from 48 to 14.</p>
-      <p><strong>Writing.</strong> The second answer moved by between minus
-      3.4 percent (Ornith-1.5-35B) and plus 2.1 percent (Qwen3-235B-A22B).
-      Within those few percent, <code>dio</code> does not change writing
-      speed.</p>
-      <p><strong>The slow first answer.</strong> On five mapped models the
-      first answer after a cold start was much slower than the second, because
-      pieces of the file were still arriving from the drive: Beam 1.0's first
-      420 tokens ran at 1.95 t/s, with 57.9&nbsp;GB read from the drive across
-      its screen. In these hand-started <code>dio</code> runs, four of those
-      five wrote their first answer at about their second answer's speed.
-      DeepSeek V4 Flash's first answer still ran at 9.87 t/s against 13.31
-      for its second; the logs do not show why. (One later start of Beam 1.0
-      stalled; see section 07.)</p>
-      <p><strong>Where it did nothing for reading.</strong> Three models read
-      at the same speed with <code>dio</code>: Qwen3-235B-A22B and
-      Qwen3-30B-A3B in this table, and Qwen3.5-122B-A10B in the main table.
-      Their before commands already held the weights in RAM rather than in
-      the page cache:</p>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th>Model (before command)</th><th>Weights held in RAM at start, GiB</th><th>Held in the page cache, GiB</th></tr></thead>
-        <tbody>
-        <tr><td class="t">Qwen3-235B-A22B</td><td>93.0</td><td>0.1</td></tr>
-        <tr><td class="t">Qwen3-30B-A3B, 262,144</td><td>31.1</td><td>0.1</td></tr>
-        <tr><td class="t">Qwen3.5-122B-A10B</td><td>49.4</td><td>0.2</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p>For those three, <code>dio</code> only shortened the load.</p>
-    </section>
-
-    <section>
-      <div class="secnum">05</div>
-      <h2>The five models that took only the first setting</h2>
-      <p>Beam 1.0, Muse Spark Open, Inkling-Small, Qwen3-235B-A22B and
-      Qwen3.5-122B-A10B took <code>dio</code> and no cache. For four of them
-      the records show what was tried.</p>
+      <p><strong>Reading</strong> gained from <code>dio</code>, not the cache:
+      on 8 of the 12 cached models also run with <code>dio</code> alone, the
+      cached setup read slower (Qwen3.8-Flash-Next: 1,373.9 t/s alone, 1,021.2
+      cached). The five
+      <code>dio</code>-only models wrote within 5 percent of before.</p>
+      <h3>Why five models have no cache</h3>
       <ul class="plain">
-        <li><strong>Qwen3.5-122B-A10B.</strong> A 12,000&nbsp;MiB cache, on
-        release b12015 with all experts in RAM, wrote faster on prose (41.49
-        t/s against 32.45 for the second answer). It wrote slower on code
-        (40.54 against 42.79) and read about the same (498.2 against 518.2).
-        It would also have meant moving the model to a newer build. A
-        17,000&nbsp;MiB cache ran out of card memory at load.</li>
-        <li><strong>Qwen3-235B-A22B.</strong> A 12,000&nbsp;MiB cache with an
-        8-bit conversation cache ran out of card memory at load. The model
-        already used 31,801&nbsp;MiB of the card in its before command.</li>
-        <li><strong>Muse Spark Open.</strong> A 7,000&nbsp;MiB cache was tried
-        only at half the window (65,536 tokens), and that run also moved to
-        release b12015 and put every expert in RAM. There it wrote 11.47 t/s on
-        the second answer and 8.43 t/s after the 20,000-token read. The
-        hand-started <code>dio</code> run at the full 131,072 wrote 6.37 and
-        6.29 (the start-script run in the main table: 6.38 and 6.35). The model
-        stayed at the full window without a cache.</li>
-        <li><strong>Inkling-Small.</strong> It runs on a separate build made
-        for that model, and that build's documented options have no expert
-        cache.</li>
-        <li><strong>Beam 1.0.</strong> No cached setup was run, and the
-        records do not say why. With <code>dio</code> alone it left 5.1&nbsp;GiB
-        of RAM free at its lowest and used up to 31,273&nbsp;MiB of the
-        card.</li>
+        <li><strong>Qwen3.5-122B-A10B:</strong> 12,000&nbsp;MiB (b12015, all
+        experts in RAM) wrote prose faster (41.49 t/s against 32.45), code
+        slower (40.54 against 42.79), read about the same (498.2 against 518.2)
+        and needed a newer build. 17,000&nbsp;MiB ran out of card memory.</li>
+        <li><strong>Qwen3-235B-A22B:</strong> 12,000&nbsp;MiB with an 8-bit
+        conversation cache ran out of card memory (31,801&nbsp;MiB used
+        before).</li>
+        <li><strong>Muse Spark Open:</strong> 7,000&nbsp;MiB ran only at half the
+        window (65,536 tokens), on b12015 with every expert in RAM: 11.47 t/s
+        short, 8.43 after the read, against 6.37 and 6.29 for hand-started
+        <code>dio</code> at 131,072 (6.38 and 6.35 in the main table). It stayed
+        at the full window, without a cache.</li>
+        <li><strong>Inkling-Small:</strong> its separate build has no cache.</li>
+        <li><strong>Beam 1.0:</strong> no cached setup was run, and the records
+        do not say why. With <code>dio</code> alone (start-script run) it left
+        5.1&nbsp;GiB of RAM free at its lowest and used up to 31,273&nbsp;MiB of
+        the card; its hand-started run in the first table left 8.8.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">06</div>
+    <section id="sizing">
+      <div class="secnum">04</div>
       <h2>Sizing the expert cache</h2>
-      <p><strong>Bigger was usually faster, up to the card's limit.</strong>
-      Hand-started, on release b12015 or the model's installed build, second
-      answer:</p>
+      <p><strong>Bigger was usually faster</strong> (hand-started, second
+      answer, t/s, single runs; Qwen3.6-35B-A3B was flat):</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Smaller cache</th><th>Larger cache</th></tr></thead>
@@ -484,16 +401,13 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Single runs, tokens per second. Qwen3.6-35B-A3B was
-      flat across its three sizes.</p>
-      <p>The limit is card memory. Eleven cache setups we tried ran out of it
-      at load or warm-up (section 07). On five models the start scripts use a
-      cache 1,000&nbsp;MiB smaller than a size that ran in testing, which had
-      used 31,174 to 31,735&nbsp;MiB of the card (Qwen3-Coder-Next, gpt-oss-120b,
-      GLM-5.3-Flash, DeepSeek V4.1 Flash and MiMo-V2.6-Flash). The records do
-      not say how close to the card's limit each of those came.</p>
-      <p><strong>Too small can be slower than none, and it depends on the
-      build.</strong> DeepSeek V4 Flash, at the same micro-batch of 8192:</p>
+      <p>The limit is card memory: eleven cache setups ran out
+      (<a href="#costs">listed below</a>). Qwen3-Coder-Next, gpt-oss-120b,
+      GLM-5.3-Flash, DeepSeek V4.1 Flash and MiMo-V2.6-Flash: the start scripts
+      use 1,000&nbsp;MiB less than a size that ran in testing (that size used 31,174 to
+      31,735&nbsp;MiB of the card).</p>
+      <p><strong>Too small can be slower than none, depending on the
+      build.</strong> DeepSeek V4 Flash, micro-batch 8192:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Setup</th><th>Hit rate, small batches</th><th>Writing, short, t/s</th></tr></thead>
@@ -504,31 +418,21 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">The hit rate is the server's own count, printed in
-      its log when it stops, for batches of 8 tokens or fewer (writing). For
-      larger batches the same logs give 0.11 and 1.65 percent. On b12015 a
-      7,000&nbsp;MiB cache with a micro-batch of 4096 had a small-batch hit rate
-      of 46.07 percent and wrote 20.13. We have no <code>dio</code>-only run of
-      this model on b12015.</p>
-      <p><strong>The cache competes with the conversation for the card.</strong>
-      The conversation cache is the memory that holds what the model has
-      already read in this conversation, and it grows with the window. At its
-      full 262,144 window, Qwen3-30B-A3B usually keeps that cache in 16-bit
-      numbers. With it we tested 2,000&nbsp;MiB of experts (release b12015, all
-      experts in RAM), and the model wrote 23.68 t/s, slower than the 29.67 it
-      wrote before. With an 8-bit conversation cache, which uses smaller
-      numbers, 10,000 to 13,000&nbsp;MiB of experts fitted and it wrote 130.8 to
-      160.76 t/s (hand-started, second answer). The setup that went into its
-      start script uses the 8-bit cache with 11,500&nbsp;MiB; section 09 has
-      the quality check for that change.</p>
-      <p><strong>At depth, the gain shrinks.</strong> Depth is how much text is
-      already in the conversation. On the three smaller models we have replies
-      after reads of 48,000, 97,000 and about 226,000 to 228,000 tokens, before
-      and after. These runs were started by hand with the cached command. On
-      Qwen3.6-35B-A3B that command lacks one flag of the start-script command
-      (<code>--no-reasoning-preserve</code>, which changes how much of the
-      model's earlier reasoning is kept in later turns); on Ornith-1.5-35B it
-      has that flag and the start-script command does not.</p>
+      <p class="tablenote">The server's own count, for batches of 8 tokens or
+      fewer; larger batches hit 0.11 and 1.65 percent. On b12015, 7,000&nbsp;MiB
+      at micro-batch 4096 hit 46.07 percent and wrote 20.13 (no
+      <code>dio</code>-only run on b12015).</p>
+      <p><strong>The cache competes with the conversation cache</strong>
+      (what the model has already read, which grows with the window).
+      Qwen3-30B-A3B at 262,144 with a 16-bit conversation cache and a
+      2,000&nbsp;MiB expert cache wrote 23.68 t/s, slower than 29.67 before.
+      With 8-bit, 10,000 to 13,000&nbsp;MiB fitted: 130.8 to 160.76 t/s. Its
+      start script uses 8-bit with 11,500&nbsp;MiB.</p>
+      <p><strong>Deeper in a conversation, the gain shrinks.</strong> Replies
+      after long reads on the three smaller models, started by hand with the
+      cached command (on Qwen3.6-35B-A3B it lacks
+      <code>--no-reasoning-preserve</code>, which the start script has; on
+      Ornith-1.5-35B the reverse):</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Writing after 48K</th><th>after 97K</th><th>after ~226K to 228K</th><th>Read of that, t/s</th></tr></thead>
@@ -540,24 +444,21 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 2 November 2026; tokens per second. Each
-      depth is a cold read of that size followed by one reply; three planted
-      code words came back at every depth on every row. The read sizes were 225,974
-      tokens on Qwen3-30B-A3B and 227,768 on the other two.</p>
+      <p class="tablenote">Measured 2 November 2026. Three planted code words
+      came back at every depth. Read sizes: 225,974 tokens on Qwen3-30B-A3B,
+      227,768 on the other two.</p>
       <p>Qwen3-30B-A3B's gain falls from 2.8 times after 48,000 tokens to 1.36
-      times after about 226,000. We did not separate how much of the fall
-      comes from the expert cache and how much from the 8-bit conversation
-      cache at depth.</p>
+      times after about 226,000; how much of that is the expert cache and how
+      much the 8-bit conversation cache was not separated.</p>
     </section>
 
-    <section>
-      <div class="secnum">07</div>
+    <section id="costs">
+      <div class="secnum">05</div>
       <h2>What it costs, and what failed</h2>
-      <p><strong>Pinned RAM.</strong> With a memory map, the model's weights
-      sit in the page cache, which the system counts as free and hands back
-      when another program needs it. With <code>dio</code> they are pinned and
-      count as used. Before, the large mapped models left 156 to 162&nbsp;GiB
-      free; after, the lowest we saw was:</p>
+      <p><strong>Free RAM.</strong> Memory-mapped weights sit in the page
+      cache, which counts as free; pinned weights count as used. Before, the 12
+      large memory-mapped models in the first table left 156 to 162&nbsp;GiB
+      free. After, the lowest free RAM was:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Pinned at start, GiB</th><th>Lowest free RAM after, GiB</th></tr></thead>
@@ -585,30 +486,22 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 1 and 2 November 2026. Pinned at start: the
-      memory the server held as shared, pinned memory when it reported ready
-      (RssShmem in its log). Lowest free: the lowest available RAM seen
-      during the after setup's screen and its listed checks. No other large
-      program ran beside any model in these tests.</p>
-      <p><strong>Card memory.</strong> The cached after setups used 29,629 to
-      31,289&nbsp;MiB of the card in the runs we sampled, on a card sold as
-      32&nbsp;GB. Most before commands were already close to that (25,900 to
-      31,800&nbsp;MiB), because they kept as many experts on the card as would
-      fit. Of the 15 cached setups, card use rose on nine and fell on six. It
-      rose most on Ling-3.0-flash, from 9,764 to 29,629&nbsp;MiB, and next on
-      DeepSeek V4 Flash, from 25,921 to 31,289. We did not test running
-      anything else on the card beside a model.</p>
-      <p><strong>Warm restarts.</strong> With a memory map, a restart soon after
-      a stop can find the file still in the page cache. Ornith-1.5-35B's
-      before command restarted in 4 seconds that way, twice. Eight hand starts
-      of its cached variants took 20 or 21 seconds each, because
-      <code>dio</code> reads the file again each time. Every hand start of
-      GLM-5.3-Flash with <code>dio</code> took 84 to 103 seconds. We have no
-      warm memory-mapped restart of the large models to compare with
-      that.</p>
-      <p><strong>The start scripts' own checks</strong> added time to every
-      after load. Where a similar command was also started by hand, the
-      difference was 20 to 28 seconds:</p>
+      <p class="tablenote">Pinned at start: shared, pinned memory when the
+      server reported ready (RssShmem). Lowest free: lowest available RAM
+      during the after setup's test and listed checks.</p>
+      <p><strong>Card memory.</strong> Cached setups used 29,629 to
+      31,289&nbsp;MiB of a 32&nbsp;GB card in the runs sampled; most before commands already used
+      25,900 to 31,800&nbsp;MiB. Use rose on nine of the 15 and fell on six;
+      most on Ling-3.0-flash (9,764 to 29,629&nbsp;MiB).</p>
+      <p><strong>Restarts.</strong> Ornith-1.5-35B's mapped command restarted
+      in 4 seconds twice, the file still in the page cache; eight hand starts
+      of its cached variants took 20 or 21 seconds each, because <code>dio</code>
+      reads the file again each time. GLM-5.3-Flash with
+      <code>dio</code> took 84 to 103 seconds every time; no warm mapped
+      restart of a large model was measured.</p>
+      <p><strong>The start scripts' checks</strong> added 20 to 28 seconds
+      against similar hand starts, which is why Qwen3-Coder-Next, Qwen3-30B-A3B
+      at 131,072 and Ornith-1.5-35B load slower after than before:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>By hand, s</th><th>Through the start script, s</th></tr></thead>
@@ -620,50 +513,41 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Each pair used the same build and cache size. The
-      first three hand starts also had verbose server logging on; the
-      Ornith-1.5-35B hand start had one extra flag
-      (<code>--no-reasoning-preserve</code>). This is why Qwen3-Coder-Next,
-      Qwen3-30B-A3B at 131,072 and Ornith-1.5-35B show a longer load after
-      than before in the main table.</p>
+      <p class="tablenote">Same build and cache size in each pair; the first
+      three hand starts had verbose logging on, the Ornith-1.5-35B one had
+      <code>--no-reasoning-preserve</code> added.</p>
       <p><strong>One stalled start.</strong> Beam 1.0 with <code>dio</code>
-      started four times with the speed screen. Three times its first 420
-      tokens took 53.8 to 61.9 seconds (7.62 to 8.38 t/s). Once, through its
-      start script, they took 122.5 seconds (3.62 t/s), and the rest of that
-      screen ran at normal speed. The logs do not show why.</p>
+      wrote its first 420 tokens in 53.8 to 61.9 seconds (7.62 to 8.38 t/s) in
+      three starts. Once, through its start script, they took 122.5 seconds
+      (3.62 t/s), and the rest of that test ran at normal speed. The logs do
+      not show why.</p>
       <p><strong>Setups that did not run (13):</strong></p>
       <ul class="plain">
-        <li><strong>Ran out of card memory at load (10 cache setups):</strong>
-        Qwen3-Coder-Next with 21,000&nbsp;MiB (on its installed build and on the
-        pull request 31286 build), Qwen3.5-122B-A10B with 17,000&nbsp;MiB (on
-        b12015 and on the pull request build), Qwen3.5-397B-A17B with
-        12,000&nbsp;MiB (on b12015 and on the pull request build),
-        GLM-5.3-Flash with 14,000&nbsp;MiB on the pull request build,
-        Qwen3-235B-A22B with 12,000&nbsp;MiB, DeepSeek V4 Flash with
-        11,000&nbsp;MiB at a 131,072 window, and Ornith-1.5-35B with
-        18,000&nbsp;MiB plus its own draft head.</li>
-        <li><strong>Ran out of card memory at warm-up (1):</strong>
-        Qwen3.8-Flash-Next with 17,000&nbsp;MiB, in the empty run the server
-        does before it takes requests.</li>
-        <li><strong>A before command (1):</strong> gpt-oss-120b with the
-        experts of 23 layers in RAM ran out of card memory at load (a request
-        for 1,315.93&nbsp;MiB was refused). With 24 layers in RAM it loaded,
-        and that is the before row.</li>
+        <li><strong>Out of card memory at load (10 cache setups):</strong>
+        Qwen3-Coder-Next at 21,000&nbsp;MiB, Qwen3.5-122B-A10B at
+        17,000&nbsp;MiB and Qwen3.5-397B-A17B at 12,000&nbsp;MiB (each on two
+        builds, one the pull request 31286 build); GLM-5.3-Flash at
+        14,000&nbsp;MiB (pull request build); Qwen3-235B-A22B at
+        12,000&nbsp;MiB; DeepSeek V4 Flash at 11,000&nbsp;MiB with a 131,072
+        window; Ornith-1.5-35B at 18,000&nbsp;MiB plus its draft head.</li>
+        <li><strong>Out of card memory at warm-up (1):</strong>
+        Qwen3.8-Flash-Next with 17,000&nbsp;MiB.</li>
+        <li><strong>A before command (1):</strong> gpt-oss-120b with 23 layers'
+        experts in RAM (a request for 1,315.93&nbsp;MiB was refused); 24 layers
+        loaded, and that is the before row.</li>
         <li><strong>Crashed at start (1):</strong> MiMo-V2.6-Flash on the pull
-        request 31286 build, with 14,000&nbsp;MiB, stopped with a fatal error
-        right after it set up the cache (section 08).</li>
+        request 31286 build with 14,000&nbsp;MiB, right after it set up the
+        cache.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">08</div>
+    <section id="dev-build">
+      <div class="secnum">06</div>
       <h2>A development build with pull request 31286 did not pay here</h2>
-      <p>We also ran the same cache sizes on a build of llama.cpp's
-      development branch with pull request 31286 applied (the server reports
-      it as build 12057). On that build we added
-      <code>--moe-cache-cpu-share auto</code>, which lets the CPU compute some
-      cache misses instead of uploading them. So each right-hand cell is a
-      different build plus CPU sharing.</p>
+      <p>A development build with pull request 31286 (a proposed code change)
+      added <code>--moe-cache-cpu-share auto</code> (this flag is not in release
+      b12015), which lets the CPU compute some cache misses instead of uploading
+      them.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model, cache</th><th>Release or installed build</th><th>Pull request build, with CPU sharing</th></tr></thead>
@@ -679,69 +563,26 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 1 November 2026, hand-started, writing
-      speed on the second prose answer in t/s. Amber marks the clear loss and
-      the crash.</p>
-      <p>On short answers the pull request build was clearly faster on two
-      models (Ornith-1.5-122B, and DeepSeek V4 Flash with a small cache),
-      clearly slower on one, within 3.2 percent on four (the largest gap,
-      gpt-oss-120b, 78.53 against 81.11), and crashed on one. On the code
-      rewrite and the reply after the 20,000-token read it was slower than
-      b12015 on all four of GLM-5.3-Flash, DeepSeek V4.1 Flash, gpt-oss-120b
-      and Ling-3.0-flash (Ling's reply after the read: 91.05 t/s against
-      103.17), and about the same as b12015 on Ornith-1.5-122B (code 38.52
-      against 39.00, the reply after the read 42.83 against 42.62). None of
-      the models on this page kept it.</p>
+      <p class="tablenote">Measured 1 November 2026, hand-started, second prose
+      answer, t/s. Amber: the clear loss and the crash.</p>
+      <p>On short answers: clearly faster on two (Ornith-1.5-122B, and DeepSeek
+      V4 Flash with a small cache), clearly slower on one, within
+      3.2 percent on four, crashed on one. On code and the reply after the read
+      it was slower than b12015 on GLM-5.3-Flash, DeepSeek V4.1 Flash,
+      gpt-oss-120b and Ling-3.0-flash (Ling after
+      the read: 91.05 t/s against 103.17) and about the same on Ornith-1.5-122B
+      (code 38.52 against 39.00, after the read 42.83 against 42.62). No model
+      here kept it.</p>
     </section>
 
-    <section>
-      <div class="secnum">09</div>
-      <h2>Quality checks: what ran and what did not</h2>
-      <p>A changed command can change a model's output. These checks ran on
-      the after setups. Two of them, on two models, score answers right or
-      wrong by machine; none is a broad or human-judged comparison of answer
-      quality.</p>
-      <ul class="plain">
-        <li><strong>Code words at depth.</strong> Three made-up code words were
-        planted in a long read and asked back. The 14 large models that took
-        the deep run on 1 November returned 3 of 3 at about 2,000 and 48,000
-        tokens and at their deepest read, 97,000 or 200,000 tokens depending on
-        the model. All 16 large after setups returned 3 of 3 at 48,000 through
-        their start scripts. The three smaller models returned 3 of 3 at every
-        depth in section 06. On GLM-5.3-Flash, DeepSeek V4.1 Flash and
-        MiMo-V2.6-Flash the deep run used a cache 1,000&nbsp;MiB larger than
-        the final one; the final size took the 48,000-token check.</li>
-        <li><strong>Quick checks and tools.</strong> Five short questions and
-        five tool round trips (the model calls a tool and uses the result), on
-        the 14 deep runs that included them: 5 of 5 tool round trips on all,
-        and 5 of 5 questions on all but Inkling-Small, which scored 4 of 5. Its
-        miss answered a question about a function that does not exist with
-        &ldquo;does not contain&rdquo;, which is right; our automatic check did
-        not accept those words.</li>
-        <li><strong>Boundary reads.</strong> 24 prompts, 19 of them sized just
-        under, at and over the batch boundaries and 5 of random size, each
-        asking for a few tokens, through the start script: on each of the 15
-        cached after setups, all 24 returned a reply with no server error. This
-        checks that the server answers, not what it answers.</li>
-        <li><strong>A known crash prompt.</strong> Ling-3.0-flash once
-        crashed a server on one exact prompt (see
-        <a href="../batch-size/">the batch-size study</a>). On the cached setup
-        it took that prompt, rebuilt from its seed, and 40 more like it: the
-        planted code word came back, and 40 of 40 got a reply. (The rebuilt
-        prompt counted 2,999 tokens on the hand-started run and 3,007 through
-        the start script.)</li>
-        <li><strong>A tool turn and a four-turn conversation</strong> ran on
-        every after setup; the replies are in the data package. Some turns ran
-        out of their token cap while the model was still reasoning, so those
-        replies are incomplete: in the 20 start-script runs of the main table,
-        the first turn on Ling-3.0-flash and MiMo-V2.6-Flash, and the second
-        turn on Ornith-1.5-122B and Qwen3.6-35B-A3B. On Ling-3.0-flash's
-        hand-started run the first and second turns both did.</li>
-      </ul>
-      <p><strong>Is the output the same?</strong> Four fixed prompts, 48
-      greedy tokens each, compared with the before command. Greedy means the
-      model takes its most likely token every time, so any difference
-      shows.</p>
+    <section id="output">
+      <div class="secnum">07</div>
+      <h2>Does the output change?</h2>
+      <p><code>dio</code> alone gave the same output, token for token, on all
+      six models compared. Of 15 cached setups, 2 matched at every position
+      (their probabilities still moved slightly) and 13 differed. Test: four
+      fixed prompts, 48 greedy tokens each (the model always takes its most
+      likely token, so any difference shows), against the before command.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model and change</th><th>Greedy tokens the same</th><th>Probability change, average / largest</th></tr></thead>
@@ -770,37 +611,23 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Measured 1 and 2 November 2026. &ldquo;Greedy tokens
-      the same&rdquo; counts positions where both runs chose the same token,
-      up to the end of the shorter answer, including positions after the two
-      texts first differ; fewer than 192 means some answers stopped early.
-      &ldquo;Probability change&rdquo; is the difference, on a scale of 0 to 1,
-      in the probability the two runs gave the same candidate token, over the
-      five most likely candidates, counted only while the two texts still
-      agree. Ornith-1.5-122B, Qwen3.5-397B-A17B and Qwen3.5-122B-A10B ran with
-      a presence penalty of 1.5 (a setting that discourages repeating words)
-      on both sides.</p>
-      <p><code>dio</code> alone gave the same output, token for token, on all
-      six models where we compared it. Of the 15 cached comparisons, 2 matched
-      at every position (Nemotron 3.5 Bolt and Qwen3.5-397B-A17B), though
-      their probabilities still moved slightly; the other 13 had differences.
-      One possible cause: the cache runs the most-used experts on the card,
-      and card and CPU round numbers differently, so near ties between two
-      tokens can flip and the text runs on from a different word. Rows marked
-      b12015 also changed build, and 13 of the 15 cached rows also changed
-      where the experts sat, so placement is another possible cause. We did not test
-      which. Two repeat runs give a sense of the noise: Ornith-1.5-35B's
-      before command, run twice, gave 192 of 192. Muse Spark Open's before
-      command, started twice, gave only 72 of 192. That command uses
-      <code>--fit on</code>, which can place the model differently from one
-      start to the next, so compare runs only when the placement is the
-      same.</p>
-      <p><strong>Right or wrong, Qwen3-30B-A3B.</strong> To check the 8-bit
-      conversation cache we asked a set of questions with one right answer
-      each: 24 tries of a water-jug puzzle and eight short questions five
-      times each, which is 64, asked once near the start of the window and
-      once after about 97,000 tokens, so 128 per setup. A program judged the
-      answers, following each jug answer step by step.</p>
+      <p class="tablenote">&ldquo;Greedy tokens the same&rdquo; counts
+      positions where both runs chose the same token, up to the end of the
+      shorter answer, including positions after the two texts first differ.
+      Under 192 means some answers stopped early.
+      Probability change (0 to 1) covers the top five candidates while the
+      texts still agree. Ornith-1.5-122B, Qwen3.5-397B-A17B and Qwen3.5-122B-A10B had a presence
+      penalty of 1.5 (discourages repeated words) on both sides.</p>
+      <p>Possible causes, not separated: card and CPU round numbers
+      differently, so near ties can flip; 13 of the 15 cached rows also moved
+      experts; b12015 rows changed build. Noise: Ornith-1.5-35B's before
+      command twice gave 192 of 192, Muse Spark Open's only 72 of 192, because
+      <code>--fit on</code> can place the model differently each start.</p>
+      <h3>Right or wrong</h3>
+      <p><strong>Qwen3-30B-A3B</strong>, to check the 8-bit conversation cache:
+      24 tries of a water-jug puzzle and eight short questions five times each,
+      asked near the start and after about 97,000 tokens, 128 per setup, judged
+      by a program.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Setup</th><th>Right, of 128</th><th>Answers the program could not read</th></tr></thead>
@@ -812,98 +639,132 @@
       </table>
       </div>
       <p class="tablenote">Most misses were shared: one short question failed
-      all five times at both depths in all three setups, another near the
-      start only, and a third after 97,000 tokens only. The jug puzzle missed
-      2, 1 and 3 of 24 after 97,000 tokens. The cached setups also changed
-      build and placement. This is one model and a small set.</p>
-      <p><strong>Right or wrong, Ornith-1.5-35B.</strong> A similar set of 128
-      ran with the model's reasoning off: 74 right before and 77 with the
-      cache (hand-started), with 17 and 20 answers the program could not
-      read. With so many unread, this does not tell the two setups apart. A
-      second set with reasoning on was partly read by hand, so we do not print
-      it.</p>
-      <p><strong>Not run:</strong> a broad or human-judged comparison of
-      answer quality between before and after on any model, and any check
-      with more than one request at a time.</p>
-    </section>
-
-    <section>
-      <div class="secnum">10</div>
-      <h2>What this does not show</h2>
+      all five times at both depths in all three setups. The jug puzzle missed 2, 1 and 3 of 24
+      after 97,000 tokens. The cached setups also changed build and placement.
+      One model, a small set.</p>
+      <p><strong>Ornith-1.5-35B</strong>, reasoning off: 74 of 128 right before,
+      77 with the cache (hand-started), but 17 and 20 answers the program could not read, too
+      many to tell them apart.</p>
+      <h3>Other checks on the after setups</h3>
       <ul class="plain">
-        <li><strong>One machine.</strong> One RTX&nbsp;5090 desktop with
-        188&nbsp;GiB of RAM and eight threads. How fast experts cross from RAM to
-        the card (the PCIe connection between them) decides much of the cache's
-        value; we did not measure it. A different connection, less RAM or a
-        different card will move every number.</li>
-        <li><strong>These files.</strong> One quantization of each model (the file's compression level, shown as the name after the model in the table), at the
-        windows in the table. Another file changes the size of the experts and
-        what fits.</li>
-        <li><strong>Single runs.</strong> Most speeds are one run of each setup.
-        Beam 1.0's stall shows that one start can differ from the next.</li>
-        <li><strong>One request at a time.</strong> Nothing here measures two
-        users or batched requests.</li>
-        <li><strong>Mixed changes.</strong> The after setups are not the
-        settings alone. Thirteen cached rows also moved experts from the card
-        into RAM, seven rows (six models) also changed build, four changed the
-        micro-batch, and one changed the conversation cache.</li>
-        <li><strong>A quiet desktop.</strong> No large program ran beside the
-        models. On the setups that left 5.1 to 21.1&nbsp;GiB free, we did not test
-        what happens when one does.</li>
-        <li><strong>No broad quality test.</strong> Section 09 lists what
-        ran.</li>
+        <li><strong>Code words in long reads:</strong> 3 of 3 came back on the
+        14 large models tested on 1 November, at about 2,000 and 48,000 tokens
+        and at 97,000 or 200,000, and on all 16 large after setups at 48,000.
+        (GLM-5.3-Flash, DeepSeek V4.1 Flash and MiMo-V2.6-Flash ran the long
+        test with a cache 1,000&nbsp;MiB larger than their final one.)</li>
+        <li><strong>Questions and tools:</strong> on the 14 long-read runs, 5 of 5 tool round
+        trips (the model calls a tool and uses the result) on all, 5 of 5 short questions on all but Inkling-Small (4 of 5;
+        its answer &ldquo;does not contain&rdquo; was right, but the automatic
+        check did not accept it).</li>
+        <li><strong>Prompts at the batch edges:</strong> 24 prompts, 19 sized
+        just under, at and over the batch boundaries and 5 of random size; all
+        24 got a reply with
+        no server error on all 15 cached setups. This shows the server answers,
+        not what it answers.</li>
+        <li><strong>A known crash prompt:</strong> the one that once crashed
+        Ling-3.0-flash (<a href="../batch-size/">batch-size study</a>), rebuilt,
+        plus 40 like it: the planted code word came back, and 40 of 40 got a
+        reply. The rebuilt prompt counted 2,999 tokens on the hand-started run
+        and 3,007 through the start script.</li>
+        <li><strong>Cut-off replies:</strong> in a tool turn and a four-turn
+        conversation, Ling-3.0-flash and MiMo-V2.6-Flash hit their token cap
+        while reasoning on the first turn, Ornith-1.5-122B and Qwen3.6-35B-A3B
+        on the second (in the main table's runs; Ling-3.0-flash's hand-started
+        run cut off on both).</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">11</div>
-      <h2>Related pages on this site</h2>
-      <p><a href="../batch-size/">llama.cpp's batch size</a> is the study that
-      set the micro-batch values these models ran with, and has the Ling crash
-      in detail. <a href="../silent-settings/">Silent settings</a> collects
-      other llama.cpp settings that cost speed without an error.
-      <a href="../context-256k/">256K on a 32 GB card</a> measures the cost of
-      reading a full window. The <a href="../roster-2026-10/">October
-      roster</a> lists the models as they stood before this work, and
-      <a href="../two-boxes/">Two boxes</a> splits one model across this
-      desktop and an ASUS ROG Flow Z13. The same two settings were also run on
-      <a href="../mistral-large-4/">Mistral Large 4 across two machines</a>, and
-      the <a href="../field-notes-2026-11/">November field notes</a> collect
-      the month's shorter results. Field cards for
-      <a href="../glm53-flash/">GLM-5.3-Flash</a>,
-      <a href="../deepseek-v4-flash/">DeepSeek V4 Flash</a> and
-      <a href="../inkling-small/">Inkling-Small</a> describe those models on
-      this desktop. The <a href="../method/">method page</a> explains the
-      labels and the data packages.</p>
+    <section id="limits">
+      <div class="secnum">08</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>One machine.</strong> How fast experts cross from RAM to the
+        card (the PCIe connection) decides much of the cache's value and was not
+        measured. Another connection, less RAM or another card will move every
+        number.</li>
+        <li><strong>These files.</strong> One quantization per model, at the
+        windows shown. Another file changes expert size and what fits.</li>
+        <li><strong>Single runs, one request at a time.</strong> One start can
+        differ from the next (Beam 1.0's stall). Nothing here measures two users
+        or batched requests.</li>
+        <li><strong>Mixed changes.</strong> Thirteen cached rows also moved
+        experts into RAM, seven rows (six models) changed build, four the
+        micro-batch and one the conversation cache.</li>
+        <li><strong>A quiet desktop, narrow quality checks.</strong> No other
+        large program ran in RAM or on the card; on setups that left 5.1 to
+        21.1&nbsp;GiB free, what happens when one does was not tested. No broad
+        or human-judged quality comparison was run.</li>
+      </ul>
     </section>
 
-    <section>
-      <div class="secnum">12</div>
-      <h2>Sources and data</h2>
-      <p>The evidence for this page ships as a data package: the files the runs
-      produced, not a summary. Where the page and a file disagree, the file
-      is right; write to us and we will correct the page.</p>
+    <section id="measured">
+      <div class="secnum">09</div>
+      <h2>How this was measured</h2>
       <ul class="plain">
-        <li><a href="data/README.md">data/README.md</a>: every folder, what it
-        holds, where the files disagree with each other, and every
-        redaction.</li>
+        <li><strong>Machine:</strong> the desktop on <a href="../two-boxes/">Two
+        boxes</a>: RTX&nbsp;5090 (32&nbsp;GB), 188&nbsp;GiB RAM, Intel Core Ultra
+        9 285K; 8 threads on cores 0 to 7; one request, one model at a
+        time.</li>
+        <li><strong>Dates:</strong> 1 November 2026 afternoon into early 2
+        November (16 models); 2 November morning (Qwen3.6-35B-A3B,
+        Qwen3-30B-A3B) and afternoon (Ornith-1.5-35B).</li>
+        <li><strong>Before:</strong> each model's usual command on 1 November,
+        started by hand from a cold page cache. <strong>After:</strong> through
+        a test copy of its start script.</li>
+        <li><strong>Speed test:</strong> two prose answers to a 22 to 162 token
+        prompt, capped at 420 tokens; a code rewrite of a 9,000-character Python
+        file, capped at 700; a read of about 20,000 tokens of llama.cpp source;
+        a next turn capped at 300. Temperature 0.15 (0.2 for the read), seed 42;
+        server timings, counting reasoning tokens.</li>
+        <li><strong>Card and RAM:</strong> <code>nvidia-smi</code> and Linux
+        MemAvailable, every 2 seconds, over the after test and its checks. Two
+        repeat starts of Beam 1.0 peaked at 31,402 and 31,409&nbsp;MiB.</li>
+        <li><strong>Builds:</strong> release b12015 and installed builds that
+        had the cache (commits 23b0202, 10b8b75, 184f653). Flags read in
+        <code>tools/server/README.md</code> of b12015 and 23b0202. The pull
+        request 31286 build reports build 12057; the cache's documentation is
+        its <code>docs/moe-cache.md</code>.</li>
+        <li><strong>Figures:</strong> ratios and percentages come from two
+        measured figures; the data package says which two.</li>
+      </ul>
+    </section>
+
+    <section id="data">
+      <div class="secnum">10</div>
+      <h2>Data and sources</h2>
+      <p>Where the page and a file disagree, the file is right; write to us and
+      we will correct the page.</p>
+      <ul class="plain">
+        <li><a href="data/README.md">data/README.md</a>: every folder, where
+        files disagree, every redaction.</li>
         <li><a href="data/NUMBERS.md">data/NUMBERS.md</a>: every figure on this
         page, with its file and field.</li>
-        <li><strong>The runs</strong> (<code>data/runs/</code>): the result
-        files of every screen, deep run, boundary run, output comparison and
-        right-or-wrong check, the server's ready lines with load times and
-        memory, every command line, and the server-log lines for each failure
-        and cache hit rate.</li>
-        <li><strong>The tools</strong> (<code>data/tools/</code>): the probes
-        that produced those files, with private paths removed, and
-        <code>page_table.py</code>, which prints every figure in this page's
-        tables from the package.</li>
-        <li><strong>Read at pinned revisions:</strong> the llama.cpp server help
-        for <code>--load-mode</code> and <code>--moe-cache-mib</code> in
-        release b12015 and in the installed build at commit 23b0202, and
-        <code>docs/moe-cache.md</code> in the pull request 31286 build.</li>
+        <li><code>data/runs/</code>: result files, command lines and server
+        logs.</li>
+        <li><code>data/tools/</code>: the probes, and <code>page_table.py</code>,
+        which prints every table figure from the package.</li>
       </ul>
     </section>
+
+    <section id="related">
+      <div class="secnum">11</div>
+      <h2>Related pages</h2>
+      <p><a href="../batch-size/">llama.cpp's batch size</a> &middot; <a href="../silent-settings/">Silent
+      settings</a> &middot; <a href="../context-256k/">256K on a 32 GB card</a>
+      &middot; <a href="../roster-2026-10/">October roster</a> &middot;
+      <a href="../two-boxes/">Two boxes</a> &middot;
+      <a href="../mistral-large-4/">Mistral Large 4 across two machines</a> &middot; <a href="../field-notes-2026-11/">November
+      field notes</a> &middot; field cards for
+      <a href="../glm53-flash/">GLM-5.3-Flash</a>,
+      <a href="../deepseek-v4-flash/">DeepSeek V4 Flash</a> and
+      <a href="../inkling-small/">Inkling-Small</a> &middot; the
+      <a href="../method/">method page</a>.</p>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements; no affiliation with the
+      llama.cpp project, ggml-org, NVIDIA, Intel, ASUS, Alibaba (Qwen), DeepSeek,
+      Z.ai, Xiaomi, OpenAI, inclusionAI, Thinking Machines Lab, Reflection AI,
+      Meta, Mistral AI, Unsloth, or the makers of Ornith.</div></div>
   </div>
 </main>
 <footer>

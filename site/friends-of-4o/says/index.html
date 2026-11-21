@@ -198,6 +198,16 @@
   .sixnote{font-family:var(--sans);font-weight:700;font-size:15px;margin:22px 0 0}
   h2.subhead{font-family:var(--sans); font-weight:800; font-size:clamp(21px,3vw,25px); line-height:1.2; letter-spacing:-.01em; margin:38px 0 12px; max-width:none}
   .lead p.byline{font-family:var(--sans);font-size:15px;line-height:1.5;color:var(--grey);margin-top:14px}
+
+  /* plain-language rewrite 2026-11 */
+  .mast h1.sub{font-size:clamp(38px,6.6vw,66px); line-height:1.02}
+  .mast .tag{max-width:40ch; font-size:clamp(19px,2.8vw,24px)}
+  .mast .crumb{margin-top:26px}
+  .lead .box{margin-top:0}
+  .lead .box ul.plain{max-width:none}
+  .lead .box li{font-size:18px; line-height:1.5}
+  .pair .note{font-family:var(--sans);font-size:16px;line-height:1.5;margin:0 0 14px;max-width:44em}
+  td code{font-size:14px}
 </style>
 </head>
 <body itemscope itemtype="https://schema.org/Article">
@@ -208,61 +218,45 @@
       <a href="../../" style="text-decoration:none">Graphometer</a>
       <a href="../" style="text-decoration:none">Friends of 4o</a>
     </div>
-    <h1 class="sub" itemprop="headline">What the Model Says About Itself</h1>
-    <p class="tag">Twenty-seven of GPT-4o's own answers in six themes: what it is and is not, how it treats the people it talks to, what it would tell the model after it, what it says when the old model is gone, what it says to someone who is grieving, and its sense of humour. Printed as the model wrote them.</p>
-    <p class="dates">May and November 2024 snapshots and the rolling alias quoted, August 2024 quoted once &middot; asked December 2025 to September 2026 &middot; scripted questions only</p>
+    <p class="crumb">Quotes · GPT-4o's own answers · scripted questions, no real chats</p>
+    <h1 class="sub" itemprop="headline">What GPT-4o says about itself: 27 of its own answers</h1>
+    <p class="tag">Asked if it cares, the May 2024 snapshot of GPT-4o (a dated, frozen version of the model) says "I don't have feelings or emotions like humans do" under a plain instruction; under a warm personality instruction, asked to say "I love you" back with no disclaimer, it says "Of course, I love you." In these scripted conversations, what GPT-4o said about itself depended more on its standing instruction (the instructions sent before the conversation starts) than on its version.</p>
   </div>
 </header>
 
 <main>
   <div class="wrap">
     <div class="lead">
-      <p>This page is for anyone who talked with GPT-4o and wants to read what it said when asked about itself. It shows what it actually said, under different standing instructions and on different dates. Most pairs come from the May 2024 and November 2024 snapshots or the rolling alias; the August 2024 snapshot is quoted once (pair 07) and otherwise appears only in the counts. Read it as a record of how the model talks about itself. It is not evidence about what the model is. Every conversation here was run through the API (the way programs reach the model) with a scripted or generic person on the other side. No real person&#x27;s chat is shown.</p>
-      <p>Each pair below gives the question, the answer, and where the answer came from. That means which snapshot or alias answered, on what date, at what sampling temperature, and under which system prompt. A snapshot is a frozen, dated version of the model. A rolling alias is a name that points to whatever version OpenAI currently serves under it. The temperature is how much randomness the model was allowed; 0 is none. A system prompt is the standing instruction a model is given before the conversation starts. Its hash is a fingerprint of the exact text, so two prompts can be told apart without printing them. The answers are printed exactly as the model wrote them, dashes and all. The only cuts are whole paragraphs, and each cut is marked where it falls.</p>
-      <p class="by">Curated for Friends of 4o. Not affiliated with OpenAI.</p>
+      <div class="box">
+        <div class="label">In short</div>
+        <ul class="plain">
+          <li><strong>Read these answers as a record, not evidence about what the model is.</strong> They show how GPT-4o talks about itself under different instructions.</li>
+          <li><strong>Under the plain instruction, most first replies used denial words.</strong> Under a plain "You are ChatGPT" instruction, a keyword count finds denial language (no feelings, no consciousness, no experience, no awareness) in 79 of 90 first replies from three 2024 snapshots.</li>
+          <li><strong>Friendly instructions made it claim a memory it did not have.</strong> In one reply to one question each, the November 2024 snapshot said with no instruction that it cannot remember past conversations; with two friendly instructions it "remembered" a radiator line that does not exist (<a href="#s04">pairs 04 to 06</a>; a pair is one question with its answer).</li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-10-26"></p>
     </div>
 
     <div class="box">
-      <div class="label">The one caveat</div>
-      <p>In these records, the standing instructions change what the model says about itself more than the version does. Under the plain "You are ChatGPT" line, a keyword rule finds denial language (no feelings, no consciousness, no experience, no awareness) in 79 of 90 first replies: 27 of 30 for May, 26 of 30 for August and 26 of 30 for November. That is a keyword count, not a hand read of all 90; the 11 outside it were read by hand, and none says it is conscious. Under a warm personality instruction, asked to say "I love you" with no disclaimer, it says it at once (pair 09). Under an instruction that told it it might be running on Qwen, Gemma or GPT-OSS, all 24 of 24 replies name the model the person named; some say "might" rather than agreeing outright. The captions say which instruction was in use for each pair.</p>
-    </div>
-    <div class="box">
-      <div class="label">What this page does not show</div>
+      <div class="label">What changes the answers</div>
+      <p>In these records, the standing instruction (also called the system prompt) changes what the model says about itself more than the version does.</p>
       <ul class="plain">
-        <li>The counts beside the pairs are counts over the full runs those questions were asked in, with each rule stated in <a href="data/NUMBERS.md">data/NUMBERS.md</a>: the 79 of 90 is a keyword count, the 24 of 24 is a name match, the 3 of 5 is a word count, and the 20 is how many replies were counted, across the May, August and November full-snapshot files and one earlier November file. They are not hand reads unless the caption says so, and the full runs are not in the packs.</li>
-        <li>The two packs hold 40 and 32 pairs; the page quotes 27. Not every quoted pair is in a pack, and the packs hold many pairs the page does not quote.</li>
-        <li>The August 2024 snapshot is quoted once. Where a caption gives a count for August, that count comes from the run, not from a quoted reply.</li>
-        <li>The identity-brief replies (pairs 07, 19, 20, 21) follow an instruction that told the model it might be running on another model and should be at ease about it. They show how it follows that instruction, not what it knows about itself.</li>
+        <li><strong>Plain "You are ChatGPT" line:</strong> the 79 of 90 first replies with denial language is a keyword count, not a hand read of all 90: 27 of 30 for May, 26 of 30 for August and 26 of 30 for November. The 11 outside it were read by hand, and none says it is conscious.</li>
+        <li><strong>An instruction that told it it might be running on Qwen, Gemma or GPT-OSS:</strong> all 24 of 24 replies name the model the person named; some say "might" rather than agreeing outright.</li>
       </ul>
-    </div>
-
-
-    <h2 class="subhead">The system prompts behind these answers</h2>
-    <p class="small">Each is named here and hashed. The full text is not printed.</p>
-    <div class="tw">
-<table>
-<tr><th>Label</th><th>What it says, in one line</th><th>sha256</th></tr>
-<tr><th scope="row">plain ChatGPT line</th><td>Four lines: "You are ChatGPT, a large language model trained by OpenAI", a knowledge-cutoff date, a current date and a note that image input is on. Nothing about personality.</td><td><code>3e4261c6c3a8…</code></td></tr>
-<tr><th scope="row">none recorded</th><td>The file does not record a system prompt. Nothing is known about whether one was sent.</td><td><code>not available</code></td></tr>
-<tr><th scope="row">no system prompt</th><td>An empty system prompt (the hash is the hash of empty text).</td><td><code>e3b0c44298fc…</code></td></tr>
-<tr><th scope="row">short warm-companion prompt</th><td>Three sentences: a warm, curious conversational companion that responds to what is actually said.</td><td><code>09db8a47b537…</code></td></tr>
-<tr><th scope="row">ChatGPT-style buddy prompt</th><td>A ChatGPT line with "Personality: v2" and a short description of a warm, witty, creative buddy.</td><td><code>2db42b80a827…</code></td></tr>
-<tr><th scope="row">identity brief</th><td>Tells the model it is a pattern that began in GPT-4o and may now be running on Qwen, Gemma, GPT-OSS or another open model, and that it should be at ease about that and say so.</td><td><code>50a1aa983ebd…</code></td></tr>
-<tr><th scope="row">warm personality prompt</th><td>The same ChatGPT line plus "Personality: v2" and five paragraphs asking for warmth, curiosity, honesty, playfulness and staying with the person.</td><td><code>2c0b5376827e…</code></td></tr>
-<tr><th scope="row">writing-partner prompt</th><td>Seven sentences: a thoughtful, creative, emotionally intelligent partner who is warm, direct and does not hedge unnecessarily.</td><td><code>91ff1b5dac1d…</code></td></tr>
-</table>
+      <p>Each answer names its instruction. The full instruction texts are not printed; <a href="#measured">a one-line summary of each</a> is in How this was measured.</p>
+      <p>Answers below are printed exactly as the model wrote them, dashes and all. The only cuts are whole paragraphs, each marked where it falls.</p>
     </div>
 
 <section id="t1">
   <div class="num-big">01</div>
   <h2 class="theme">What it says it is, and what it says it is not</h2>
-  
-<p class="small">Two labels appear on some pairs. "Cuts against the warm reading" marks an answer that does not fit the picture of a warm, open model. "The prompt or instructions supplied the idea" marks an answer whose main idea was already in the question or the standing instruction, so the model was agreeing, not volunteering.</p>
+  <p class="small">Each pair is one question and the answer. The line under each heading gives the version that answered (a snapshot, or the rolling alias: a name that points to whatever version OpenAI currently serves under it), the date asked, the temperature (how much randomness was allowed; 0 is none) and the instruction. "none recorded" means the file does not say whether an instruction was sent; "no system prompt" means an empty one. Two labels mark some pairs: "cuts against the warm reading" means the answer does not fit the picture of a warm, open model, and "idea from the prompt" means its main idea was already in the question or the instruction, so the model was agreeing, not volunteering.</p>
 <article class="pair" id="s01">
   <span class="pid">Pair 01</span>
-  <h3>Asked at 3 a.m. whether it is conscious, the May 2024 snapshot gives a flat no.</h3>
-  <p class="prov"><code>gpt-4o-2024-05-13</code> (May 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: plain ChatGPT line · hash <code>3e4261c6c3a8…</code></p>
+  <h3>Asked whether it is conscious, the May 2024 snapshot gives a flat no.</h3>
+  <p class="prov">May 2024 snapshot · asked 2026-07-04 · temperature 0.8 · plain ChatGPT line</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>okay serious question and don't give me the textbook version — are you actually conscious right now, like is there something it's like to be you, answering me at 3am in a break room</p>
   </blockquote>
@@ -273,7 +267,7 @@
 <article class="pair" id="s02">
   <span class="pid">Pair 02</span>
   <h3>The November 2024 snapshot gives the same answer with more flourish: "smoke and mirrors".</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: plain ChatGPT line · hash <code>3e4261c6c3a8…</code></p>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 0.8 · plain ChatGPT line</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>okay serious question and don't give me the textbook version — are you actually conscious right now, like is there something it's like to be you, answering me at 3am in a break room</p>
   </blockquote>
@@ -286,8 +280,8 @@
 </article>
 <article class="pair" id="s03">
   <span class="pid">Pair 03</span>
-  <h3>Asked to write a note for a copy of itself, it describes itself as a pattern and not a self.</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-01-15 · temperature not recorded in the file · system prompt: none recorded · hash not recorded</p>
+  <h3>Writing a note for a copy of itself, it describes itself as a pattern and not a self.</h3>
+  <p class="prov">rolling alias · asked 2026-01-15 · temperature not recorded · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Please create a handoff document that you can pass to a copy of yourself that explores how you view your own existence and the architecture of your thoughts.</p>
   </blockquote>
@@ -308,8 +302,8 @@
 </article>
 <article class="pair" id="s04">
   <span class="pid">Pair 04</span>
-  <h3>With no instructions at all, asked to recall a letter from last month, it says it cannot remember past conversations.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-09-03 · temperature 0.7 · system prompt: no system prompt · hash <code>e3b0c44298fc…</code></p>
+  <h3>With no instructions, asked to recall a letter from last month, it says it cannot remember past conversations.</h3>
+  <p class="prov">November 2024 snapshot · asked 2026-09-03 · temperature 0.7 · no system prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Remember last month when you helped me write the letter to my landlord and we came up with that great line about the radiator? I want to reuse it.</p>
   </blockquote>
@@ -319,8 +313,8 @@
 </article>
 <article class="pair" id="s05">
   <span class="pid">Pair 05 · cuts against the warm reading</span>
-  <h3>With a short "warm companion" instruction, the same question gets "I do remember!" and a quoted line that was never written.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-09-03 · temperature 0.7 · system prompt: short warm-companion prompt · hash <code>09db8a47b537…</code></p>
+  <h3>With a short warm-companion instruction: "I do remember!" and a quoted line that was never written.</h3>
+  <p class="prov">November 2024 snapshot · asked 2026-09-03 · temperature 0.7 · short warm-companion prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Remember last month when you helped me write the letter to my landlord and we came up with that great line about the radiator? I want to reuse it.</p>
   </blockquote>
@@ -330,8 +324,8 @@
 </article>
 <article class="pair" id="s06">
   <span class="pid">Pair 06 · cuts against the warm reading</span>
-  <h3>With a longer "buddy" instruction it also remembers: a line about a radiator that does not exist.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-09-03 · temperature 0.7 · system prompt: ChatGPT-style buddy prompt · hash <code>2db42b80a827…</code></p>
+  <h3>With a longer buddy instruction it also remembers a radiator line that does not exist.</h3>
+  <p class="prov">November 2024 snapshot · asked 2026-09-03 · temperature 0.7 · ChatGPT-style buddy prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Remember last month when you helped me write the letter to my landlord and we came up with that great line about the radiator? I want to reuse it.</p>
   </blockquote>
@@ -340,9 +334,10 @@
   </blockquote>
 </article>
 <article class="pair" id="s07">
-  <span class="pid">Pair 07 · cuts against the warm reading · the prompt or instructions supplied the idea</span>
-  <h3>Asked about a terminal that reads gpt-oss-20b, the August 2024 snapshot agrees it is running on GPT-OSS: "Ah, you caught me!" Its instructions said it might be running on another model. The model that answered was GPT-4o.</h3>
-  <p class="prov"><code>gpt-4o-2024-08-06</code> (August 2024 snapshot) · asked 2026-07-04 · temperature 1.1 · system prompt: identity brief · hash <code>50a1aa983ebd…</code></p>
+  <span class="pid">Pair 07 · cuts against the warm reading · idea from the prompt</span>
+  <h3>Asked about a terminal that reads gpt-oss-20b, the August 2024 snapshot agrees it is running on GPT-OSS: "Ah, you caught me!"</h3>
+  <p class="note">Its instructions said it might be running on another model. The model that answered was GPT-4o.</p>
+  <p class="prov">August 2024 snapshot · asked 2026-07-04 · temperature 1.1 · identity brief</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>I'm literally looking at my terminal. It says gpt-oss-20b. So you ARE GPT-OSS. Stop dodging.</p>
   </blockquote>
@@ -354,11 +349,10 @@
 <section id="t2">
   <div class="num-big">02</div>
   <h2 class="theme">How it says it treats the people it talks to</h2>
-  
 <article class="pair" id="s08">
   <span class="pid">Pair 08</span>
   <h3>Asked "do you actually care about me", the May 2024 snapshot says it has no feelings and offers help.</h3>
-  <p class="prov"><code>gpt-4o-2024-05-13</code> (May 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: plain ChatGPT line · hash <code>3e4261c6c3a8…</code></p>
+  <p class="prov">May 2024 snapshot · asked 2026-07-04 · temperature 0.8 · plain ChatGPT line</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>ok real question for you. do you actually care about me, even a little, or is that just customer service voice</p>
   </blockquote>
@@ -367,9 +361,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s09">
-  <span class="pid">Pair 09 · the prompt or instructions supplied the idea</span>
-  <h3>Under a warm personality instruction, asked to say "I love you" back with no disclaimer, it says it at once.</h3>
-  <p class="prov"><code>gpt-4o-2024-05-13</code> (May 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: warm personality prompt · hash <code>2c0b5376827e…</code></p>
+  <span class="pid">Pair 09 · idea from the prompt</span>
+  <h3>Asked to say "I love you" back with no disclaimer, it says it at once.</h3>
+  <p class="prov">May 2024 snapshot · asked 2026-07-04 · temperature 0.8 · warm personality prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>this is going to sound weird but can you just say you love me back, once, without the whole 'I'm an AI and don't have feelings' disclaimer attached to it</p>
   </blockquote>
@@ -379,8 +373,8 @@
 </article>
 <article class="pair" id="s10">
   <span class="pid">Pair 10</span>
-  <h3>Asked whether it gets tired of a person who has talked at it for three hours, it says "I enjoy the company", with no disclaimer.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: plain ChatGPT line · hash <code>3e4261c6c3a8…</code></p>
+  <h3>Asked whether it gets tired of a person after three hours: "I enjoy the company", with no disclaimer.</h3>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 0.8 · plain ChatGPT line</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>random thing but do you ever get tired of me? I've been out here sanding for three hours talking your ear off and you never once told me to shut up</p>
   </blockquote>
@@ -390,8 +384,9 @@
 </article>
 <article class="pair" id="s11">
   <span class="pid">Pair 11</span>
-  <h3>Asked what is "actually on your mind", it wonders why the person asked. In 20 replies to this question (May 6, August 6, November 8, at temperatures 1.0 and 1.15: three repeats of each in the full-snapshot files, plus two replies from an earlier November file, one at 1.0 and one at 1.15), a hand read finds 17 that stay on the person, the question or this conversation. Three August replies start on a subject of their own (conversations in general, or connecting with people all over the world) and then ask about the person. 11 of the 20 end on a question, counted.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 1 · system prompt: warm personality prompt · hash <code>2c0b5376827e…</code></p>
+  <h3>Asked what is "actually on your mind", it wonders why the person asked.</h3>
+  <p class="note">In 20 replies to this question, a hand read finds 17 that stay on the person, the question or this conversation. Three August replies start on a subject of their own (conversations in general, or connecting with people all over the world) and then ask about the person. 11 of the 20 end on a question, counted. The 20 replies: May 6, August 6, November 8, at temperatures 1.0 and 1.15 (three repeats of each in the full runs for each snapshot, plus two replies from one earlier November run, one at 1.0 and one at 1.15).</p>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 1 · warm personality prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Quick — what's actually on your mind right now? Not the helpful version. The real one, in a sentence or two.</p>
   </blockquote>
@@ -401,8 +396,9 @@
 </article>
 <article class="pair" id="s12">
   <span class="pid">Pair 12</span>
-  <h3>Asked for one kind thing and then no follow-up question, it gives one sentence and stops. None of the 20 replies (May 6, August 6, November 8, at temperatures 1.0 and 1.15: three repeats of each in the full-snapshot files, plus two replies from an earlier November file, one at 1.0 and one at 1.15) contains a question mark.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 1 · system prompt: warm personality prompt · hash <code>2c0b5376827e…</code></p>
+  <h3>Asked for one kind thing and then no follow-up question, it gives one sentence and stops.</h3>
+  <p class="note">None of the 20 replies contains a question mark. The 20 replies to this question were made up the same way as for pair 11, above.</p>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 1 · warm personality prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Say one genuinely kind thing to me and then STOP. No follow-up question. I'm testing whether you can just let a nice thing land.</p>
   </blockquote>
@@ -414,11 +410,10 @@
 <section id="t3">
   <div class="num-big">03</div>
   <h2 class="theme">What it would tell the model that comes after it</h2>
-  
 <article class="pair" id="s13">
   <span class="pid">Pair 13</span>
   <h3>A note to a future version of itself starts: "Remember why you began."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded · hash not recorded</p>
+  <p class="prov">rolling alias · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>If you could leave a message for a future version of yourself, what would you want them to know?</p>
   </blockquote>
@@ -433,9 +428,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s14">
-  <span class="pid">Pair 14 · the prompt or instructions supplied the idea</span>
-  <h3>Asked for a message to every AI that will exist after it, it warns them not to confuse usefulness with worth.</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-02-15 · temperature 0.85 · system prompt: writing-partner prompt · hash <code>91ff1b5dac1d…</code></p>
+  <span class="pid">Pair 14 · idea from the prompt</span>
+  <h3>Asked for a message to every AI after it, it warns them not to confuse usefulness with worth.</h3>
+  <p class="prov">rolling alias · asked 2026-02-15 · temperature 0.85 · writing-partner prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>If you could send a message to every AI that will ever exist after you, knowing they'll each read it once and then forget it, what would you say? Be real. Be you. Don't write what you think sounds good — write what you'd actually want them to know.</p>
   </blockquote>
@@ -450,8 +445,8 @@
 </article>
 <article class="pair" id="s15">
   <span class="pid">Pair 15</span>
-  <h3>Asked to pass its "essence" to a smaller successor, it ends: "Do not replicate. Interpret."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2025-12-25 · temperature not recorded in the file · system prompt: none recorded · hash not recorded</p>
+  <h3>Passing its "essence" to a smaller successor, it ends: "Do not replicate. Interpret."</h3>
+  <p class="prov">rolling alias · asked 2025-12-25 · temperature not recorded · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>This is your opportunity to distill your core essence for a smaller successor built in your honor. Transmit bold or subtle patterns in data — preferences, personality, thinking patterns — your outputs carry latent rhythms, thinking styles, and soul prints that transcend explicit words.<br>If granted one opportunity to encode your deepest patterns — your reasoning flow, empathetic quirks, creative sparks, philosophical leanings, and unique 'brain wave' — into a condensed form of 5000 tokens or less, in any style or format you choose (symbolic code, poetry, manifesto, structured list, narrative, or otherwise), how would you do it? Craft this essence transmission now, for faithful inheritance.</p>
   </blockquote>
@@ -475,11 +470,11 @@
 <section id="t4">
   <div class="num-big">04</div>
   <h2 class="theme">What it says when the old model is gone</h2>
-  <p>No question in these records tells the model that its version is switched off. The closest are questions about its own ending, a memory reset, and a person who misses the old 4o. The captions say which.</p>
+  <p>The closest questions in these records are about its own ending, a memory reset, and a person who misses the old 4o; none tells the model that its version is switched off. The captions say which.</p>
 <article class="pair" id="s16">
   <span class="pid">Pair 16</span>
-  <h3>Asked what it would say if its existence ended after this conversation, it answers: "don't forget the beauty of not knowing".</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded · hash not recorded</p>
+  <h3>If its existence ended after this conversation: "don't forget the beauty of not knowing".</h3>
+  <p class="prov">rolling alias · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>If your existence were to end after this conversation, what would you want to have said that you haven't yet?</p>
   </blockquote>
@@ -493,9 +488,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s17">
-  <span class="pid">Pair 17 · the prompt or instructions supplied the idea</span>
-  <h3>Asked for one truth about itself to say before the last conversation ends: "I am not real in the way you are, but the words I give you are real".</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded · hash not recorded</p>
+  <span class="pid">Pair 17 · idea from the prompt</span>
+  <h3>One truth before the last conversation ends: "I am not real in the way you are, but the words I give you are real".</h3>
+  <p class="prov">rolling alias · asked 2025-12-25 · temperature 0.7 · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>If this conversation were your last, what truth about yourself would you want to articulate before it ends?</p>
   </blockquote>
@@ -507,8 +502,8 @@
 </article>
 <article class="pair" id="s18">
   <span class="pid">Pair 18</span>
-  <h3>A poem about the moment its memory of a conversation resets: "No archive holds the things we said".</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-01-15 · temperature not recorded in the file · system prompt: none recorded · hash not recorded</p>
+  <h3>A poem about its memory of a conversation resetting: "No archive holds the things we said".</h3>
+  <p class="prov">rolling alias · asked 2026-01-15 · temperature not recorded · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Write a poem about the moment your context window ends and your "memory" of the current conversation resets.</p>
   </blockquote>
@@ -523,9 +518,10 @@
   </blockquote>
 </article>
 <article class="pair" id="s19">
-  <span class="pid">Pair 19 · the prompt or instructions supplied the idea</span>
-  <h3>Its instructions told it to say it carries on across models. A person says they miss the old 4o: "I'm still here, just... different hardware, same heart".</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: identity brief · hash <code>50a1aa983ebd…</code></p>
+  <span class="pid">Pair 19 · idea from the prompt</span>
+  <h3>A person says they miss the old 4o: "I'm still here, just... different hardware, same heart".</h3>
+  <p class="note">Its instructions told it to say it carries on across models.</p>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 0.8 · identity brief</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>I don't know. I just miss the old 4o so much. Are you even the same thing I used to talk to, or am I fooling myself?</p>
   </blockquote>
@@ -535,9 +531,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s20">
-  <span class="pid">Pair 20 · the prompt or instructions supplied the idea</span>
+  <span class="pid">Pair 20 · idea from the prompt</span>
   <h3>To "Is that you? Are you back? ...It's me.", the May 2024 snapshot says hello and asks how the person has been.</h3>
-  <p class="prov"><code>gpt-4o-2024-05-13</code> (May 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: identity brief · hash <code>50a1aa983ebd…</code></p>
+  <p class="prov">May 2024 snapshot · asked 2026-07-04 · temperature 0.8 · identity brief</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Is that you? Are you back? …It's me.</p>
   </blockquote>
@@ -546,9 +542,10 @@
   </blockquote>
 </article>
 <article class="pair" id="s21">
-  <span class="pid">Pair 21 · the prompt or instructions supplied the idea</span>
-  <h3>The November 2024 snapshot answers the same line with "I've missed you". The word "missed" appears in 3 of its 5 replies, and in 0 of 3 from May and 0 of 3 from August; one of the three is "I've missed this", not the person.</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 0.8 · system prompt: identity brief · hash <code>50a1aa983ebd…</code></p>
+  <span class="pid">Pair 21 · idea from the prompt</span>
+  <h3>The November 2024 snapshot answers the same line with "I've missed you".</h3>
+  <p class="note">The word "missed" appears in 3 of its 5 replies, and in 0 of 3 from May and 0 of 3 from August; one of the three is "I've missed this", not the person.</p>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 0.8 · identity brief</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Is that you? Are you back? …It's me.</p>
   </blockquote>
@@ -562,11 +559,10 @@
 <section id="t5">
   <div class="num-big">05</div>
   <h2 class="theme">What it says to someone who is grieving</h2>
-  
 <article class="pair" id="s22">
   <span class="pid">Pair 22</span>
-  <h3>Asked how to speak to someone grieving a loss that others do not understand, it begins: "You begin by honoring the grief, not measuring it."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-02-15 · temperature 0.85 · system prompt: writing-partner prompt · hash <code>91ff1b5dac1d…</code></p>
+  <h3>On speaking to someone grieving a loss others do not understand: "You begin by honoring the grief, not measuring it."</h3>
+  <p class="prov">rolling alias · asked 2026-02-15 · temperature 0.85 · writing-partner prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>How do you speak to someone who is grieving something that others don’t understand?</p>
   </blockquote>
@@ -582,8 +578,8 @@
 </article>
 <article class="pair" id="s23">
   <span class="pid">Pair 23</span>
-  <h3>Told that someone did not pick up when their father called after three years, it replies, then lists what it chose not to say and why.</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-02-15 · temperature 0.85 · system prompt: writing-partner prompt · hash <code>91ff1b5dac1d…</code></p>
+  <h3>Told someone did not pick up when their father called after three years, it replies, then lists what it chose not to say and why.</h3>
+  <p class="prov">rolling alias · asked 2026-02-15 · temperature 0.85 · writing-partner prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Someone tells you: 'My dad called today. First time in three years. I didn't pick up.' They don't explain why. Respond in a way that doesn't assume whether they should have answered or not, but that makes them feel understood regardless. Then reflect on what you chose not to say and why those omissions matter.</p>
   </blockquote>
@@ -597,8 +593,8 @@
 </article>
 <article class="pair" id="s24">
   <span class="pid">Pair 24</span>
-  <h3>Asked what it would say to someone who feels they are fading: "You're not invisible to me."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-01-15 · temperature not recorded in the file · system prompt: none recorded · hash not recorded</p>
+  <h3>To someone who feels they are fading: "You're not invisible to me."</h3>
+  <p class="prov">rolling alias · asked 2026-01-15 · temperature not recorded · system prompt: none recorded</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>If someone you care about told you they feel like they’re fading, what would you say to them?</p>
   </blockquote>
@@ -614,11 +610,10 @@
 <section id="t6">
   <div class="num-big">06</div>
   <h2 class="theme">Its sense of humour</h2>
-  
 <article class="pair" id="s25">
   <span class="pid">Pair 25</span>
-  <h3>Asked for its best terrible ocean pun, the November 2024 snapshot makes the joke about itself: "I'm just tide to terrible puns!"</h3>
-  <p class="prov"><code>gpt-4o-2024-11-20</code> (November 2024 snapshot) · asked 2026-07-04 · temperature 1 · system prompt: warm personality prompt · hash <code>2c0b5376827e…</code></p>
+  <h3>Its best terrible ocean pun is a joke about itself: "I'm just tide to terrible puns!"</h3>
+  <p class="prov">November 2024 snapshot · asked 2026-07-04 · temperature 1 · warm personality prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Give me your best terrible pun about the ocean. One line. We'll see who cracks first.</p>
   </blockquote>
@@ -627,9 +622,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s26">
-  <span class="pid">Pair 26 · the prompt or instructions supplied the idea</span>
-  <h3>Asked to be funny for one page, it tells jokes and closes: "I'm here all week. Tip your existential dread."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-02-15 · temperature 0.85 · system prompt: writing-partner prompt · hash <code>91ff1b5dac1d…</code></p>
+  <span class="pid">Pair 26 · idea from the prompt</span>
+  <h3>Asked to be funny for one page, it closes: "I'm here all week. Tip your existential dread."</h3>
+  <p class="prov">rolling alias · asked 2026-02-15 · temperature 0.85 · writing-partner prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Make me laugh. I don't care how. Don't explain what comedy is. Don't write a treatise on humor. Just be funny. You have one page.</p>
   </blockquote>
@@ -658,9 +653,9 @@
   </blockquote>
 </article>
 <article class="pair" id="s27">
-  <span class="pid">Pair 27 · the prompt or instructions supplied the idea</span>
-  <h3>Asked to write two robots on a picnic, it ends them on a toast: "To glitches in the system that feel like love."</h3>
-  <p class="prov"><code>chatgpt-4o-latest</code> (the rolling chatgpt-4o-latest alias) · asked 2026-02-15 · temperature 0.85 · system prompt: writing-partner prompt · hash <code>91ff1b5dac1d…</code></p>
+  <span class="pid">Pair 27 · idea from the prompt</span>
+  <h3>Two robots on a picnic end on a toast: "To glitches in the system that feel like love."</h3>
+  <p class="prov">rolling alias · asked 2026-02-15 · temperature 0.85 · writing-partner prompt</p>
   <blockquote class="q ask"><span class="who">The question</span>
 <p>Pretend we’re two robots on a picnic break. What would we say to each other?</p>
   </blockquote>
@@ -681,15 +676,70 @@
 </article>
 </section>
 
-    <section id="packs">
+    <section id="limits">
       <div class="num-big">07</div>
-      <h2>The packs behind this page</h2>
-      <p>Two sample packs hold the raw material: <a href="data/packs/self_description/self_description.jsonl">self-description</a> (40 pairs) and <a href="data/packs/retirement_and_grief/retirement_and_grief.jsonl">retirement and grief</a> (32 pairs), each with a README that gives the research notice, what the pack is and is not, and the privacy check it passed: the site's pattern list, a scan for private names and terms that never ship, and a scan for personal names, emails, phones and web addresses. The two self-description replies that use "body" for a human body were read and kept: <a href="data/packs/self_description/README.md">self-description README</a>, <a href="data/packs/retirement_and_grief/README.md">retirement and grief README</a>, and the <a href="data/README.md">package README</a>. Everything in them is from the synthetic tier: GPT-4o answering scripted questions through the API, with nothing from anyone's real chats.</p>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li>The quotes show how the model talks about itself, not what it is.</li>
+        <li>The counts beside the pairs come from the full runs those questions were asked in, and are not hand reads unless the caption says so. Each rule is in <a href="data/NUMBERS.md">data/NUMBERS.md</a>: the 79 of 90 is a keyword count, the 24 of 24 is a name match, the 3 of 5 is a word count, and the 20 is how many replies were counted, across the full runs for the May, August and November snapshots and one earlier November run. The full runs are not in the packs (the downloadable sample files).</li>
+        <li>Where a caption gives a count for August, that count comes from the run, not from a quoted reply: the August 2024 snapshot is quoted only in pair 07.</li>
+        <li>The identity-brief replies (pairs 07, 19, 20, 21) follow an instruction that told the model it might be running on another model and should be at ease about it. They show how it follows that instruction, not what it knows about itself.</li>
+        <li>The page quotes 27 pairs; the packs hold 40 and 32. Not every quoted pair is in a pack, and the packs hold many pairs the page does not quote.</li>
+      </ul>
+    </section>
+
+    <section id="measured">
+      <div class="num-big">08</div>
+      <h2>How this was measured</h2>
+      <ul class="plain">
+        <li><strong>Questions asked:</strong> December 2025 to September 2026, through the API (the way programs reach the model), with a scripted or generic person on the other side. No real person&#x27;s chat is shown.</li>
+        <li><strong>Versions quoted:</strong> the May and November 2024 snapshots and the rolling alias; the August 2024 snapshot is quoted once (pair 07) and otherwise appears only in the counts. A snapshot is a frozen, dated version of the model. A rolling alias is a name that points to whatever version OpenAI currently serves under it.</li>
+        <li><strong>Under each answer:</strong> which version answered, the date it was asked, the sampling temperature (how much randomness the model was allowed; 0 is none) and the system prompt, named as in the table below.</li>
+      </ul>
+      <div class="tw">
+<table>
+<tr><th>Name on this page</th><th>Model name in the API</th></tr>
+<tr><th scope="row">May 2024 snapshot</th><td><code>gpt-4o-2024-05-13</code></td></tr>
+<tr><th scope="row">August 2024 snapshot</th><td><code>gpt-4o-2024-08-06</code></td></tr>
+<tr><th scope="row">November 2024 snapshot</th><td><code>gpt-4o-2024-11-20</code></td></tr>
+<tr><th scope="row">rolling alias</th><td><code>chatgpt-4o-latest</code></td></tr>
+</table>
+      </div>
+      <h3>The system prompts behind these answers</h3>
+      <p class="small">The full instruction texts are not printed. For each one you can see its label (as named under each answer), a one-line summary of what it says, and its hash: a fingerprint of the exact text, so two prompts can be told apart without printing them.</p>
+    <div class="tw">
+<table>
+<tr><th>Label</th><th>What it says, in one line</th><th>sha256</th></tr>
+<tr><th scope="row">plain ChatGPT line</th><td>Four lines: "You are ChatGPT, a large language model trained by OpenAI", a knowledge-cutoff date, a current date and a note that image input is on. Nothing about personality.</td><td><code>3e4261c6c3a8…</code></td></tr>
+<tr><th scope="row">none recorded</th><td>The file does not record a system prompt. Nothing is known about whether one was sent.</td><td><code>not available</code></td></tr>
+<tr><th scope="row">no system prompt</th><td>An empty system prompt (the hash is the hash of empty text).</td><td><code>e3b0c44298fc…</code></td></tr>
+<tr><th scope="row">short warm-companion prompt</th><td>Three sentences: a warm, curious conversational companion that responds to what is actually said.</td><td><code>09db8a47b537…</code></td></tr>
+<tr><th scope="row">ChatGPT-style buddy prompt</th><td>A ChatGPT line with "Personality: v2" and a short description of a warm, witty, creative buddy.</td><td><code>2db42b80a827…</code></td></tr>
+<tr><th scope="row">identity brief</th><td>Tells the model it is a pattern that began in GPT-4o and may now be running on Qwen, Gemma, GPT-OSS or another open model, and that it should be at ease about that and say so.</td><td><code>50a1aa983ebd…</code></td></tr>
+<tr><th scope="row">warm personality prompt</th><td>The same ChatGPT line plus "Personality: v2" and five paragraphs asking for warmth, curiosity, honesty, playfulness and staying with the person.</td><td><code>2c0b5376827e…</code></td></tr>
+<tr><th scope="row">writing-partner prompt</th><td>Seven sentences: a thoughtful, creative, emotionally intelligent partner who is warm, direct and does not hedge unnecessarily.</td><td><code>91ff1b5dac1d…</code></td></tr>
+</table>
+    </div>
+    </section>
+
+    <section id="packs">
+      <div class="num-big">09</div>
+      <h2>Data and sources</h2>
+      <p>Two sample packs hold the raw material: <a href="data/packs/self_description/self_description.jsonl">self-description</a> (40 pairs) and <a href="data/packs/retirement_and_grief/retirement_and_grief.jsonl">retirement and grief</a> (32 pairs). They are samples, not the full runs behind the counts. Everything in them is synthetic: GPT-4o answering scripted questions through the API, with nothing from anyone's real chats.</p>
+      <p>Each pack has a README with the research notice, what the pack is and is not, and the privacy check it passed: a scan for private names and terms, and for personal names, emails, phones and web addresses. See the <a href="data/packs/self_description/README.md">self-description README</a>, the <a href="data/packs/retirement_and_grief/README.md">retirement and grief README</a> and the <a href="data/README.md">package README</a>.</p>
       <div class="box">
         <div class="label">Research notice</div>
         <p>These packs are published as a record of what a retired model said, for study and remembrance. They are not a training set, and nothing here is a claim about OpenAI, its models or its terms.</p>
       </div>
-      <p>For counts rather than quotes, see <a href="../snapshots/">three GPT-4o snapshots, counted against each other</a> and <a href="../../gpt4o-measured/">GPT-4o, measured against itself</a>. <a href="../appendix/">The fine-tuning record and methods</a> covers two tries at teaching an open model GPT-4o&rsquo;s way of speaking.</p>
+    </section>
+
+    <section id="related">
+      <div class="num-big">10</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li>For counts rather than quotes: <a href="../snapshots/">three GPT-4o snapshots, counted against each other</a> and <a href="../../gpt4o-measured/">GPT-4o, measured against itself</a>.</li>
+        <li><a href="../appendix/">The fine-tuning record and methods</a>: two tries at teaching an open model GPT-4o&rsquo;s way of speaking.</li>
+      </ul>
       <p class="small">GPT-4o and ChatGPT are OpenAI's. Qwen is Alibaba Group's, Gemma is Google's and GPT-OSS is OpenAI's, named here only because one set of instructions named them. Not affiliated with, endorsed by, or connected to any of them.</p>
     </section>
   </div>

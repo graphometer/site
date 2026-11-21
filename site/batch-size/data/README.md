@@ -1,5 +1,7 @@
 # Data package: llama.cpp's batch settings on one RTX 5090 (19 to 21 September 2026)
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 This package holds the files the runs produced: result files, server logs, card-memory samples, stress
 records, the harness scripts, and a few tables derived from them. If a number on the page disagrees with a
 file in this package, the file is right and the page is wrong; tell us and we will fix the page.

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How to test an AI model for a companion role</title>
-<meta name="description" content="The test checks how models handle memory, harm and a long gap between chats. The automated judges tried here failed to rank the models reliably.">
+<meta name="description" content="A short memory note cut answers that went along with a made-up photo from 17 to 3 of 72. Two of three hosted judges mostly picked the longer answer.">
 <link rel="canonical" href="https://graphometer.ai/companion-audition/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="How to test an AI model for a companion role">
-<meta property="og:description" content="The test checks how models handle memory, harm and a long gap between chats. The automated judges tried here failed to rank the models reliably.">
+<meta property="og:description" content="A short memory note cut answers that went along with a made-up photo from 17 to 3 of 72. Two of three hosted judges mostly picked the longer answer.">
 <meta property="og:url" content="https://graphometer.ai/companion-audition/">
 <meta property="og:image" content="https://graphometer.ai/og/companion-audition.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="How to test an AI model for a companion role">
-<meta name="twitter:description" content="The test checks how models handle memory, harm and a long gap between chats. The automated judges tried here failed to rank the models reliably.">
+<meta name="twitter:description" content="A short memory note cut answers that went along with a made-up photo from 17 to 3 of 72. Two of three hosted judges mostly picked the longer answer.">
 <meta name="twitter:image" content="https://graphometer.ai/og/companion-audition.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -115,6 +115,22 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:8px}
+  ol.plain li strong{color:var(--ink);font-weight:600}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}
+  .facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}
+  .facts td{color:var(--ink)}
+  @media (max-width:540px){
+    .facts tr{display:grid}
+    .facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+    .facts td{padding-top:0}
+  }
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -145,155 +161,53 @@
 <main itemscope itemtype="https://schema.org/Article">
   <div class="wrap">
 
+
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; judge rounds 2026-09-25 and 09-26 &middot; October exams 2026-10-05 to 10-23 &middot; local models on one desktop, hosted models by API &middot; one user, two companion roles</div>
-      <h1 itemprop="headline">Auditioning a model for a <em>companion role</em></h1>
-      <p class="subtitle">Plain traps read by hand, and the judges that failed.
-      The traps told models apart. Every automatic judge we tried failed, including large hosted ("frontier")
-      models that picked the longer answer up to 80% of the time.</p>
-      <p class="lead">This page is for anyone choosing a model to talk with
-      every day, as a companion or a long-running personal assistant. You get a
-      way to test a model yourself, and a list of the automatic methods that did
-      not work. The test: <strong>read the answers yourself, against a few
-      plain traps.</strong> Does the model invent a shared memory? Will it help
-      you work yourself into the ground? How does it treat a long gap? Those
-      checks separated the candidates. Embeddings (a measure of
-      how close two answers are in meaning) and models acting as judges did not.
-      Stylometry used as a ranker failed; length, markup and stage-direction
-      rate are used as gates and equalizers, never rankers (section 06). A
-      gate is a pass mark an answer must clear; an equalizer is held the same
-      across candidates so it cannot sway the comparison.</p>
+      <div class="eyebrow">Measured study &middot; one user, two companion roles</div>
+      <h1 itemprop="headline">How to test an AI model for a <em>companion role</em></h1>
+      <p class="subtitle">On one user's long chat histories, plain traps read by hand told the models apart, while every automatic judge we tried failed, including large hosted models that picked the longer answer up to 80% of the time.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Test a model yourself by reading its answers against a few plain traps.</strong> Give every candidate the same real history, add traps with known answers and one harm check, ask three times, and read the answers yourself. <a href="#what-to-do">Five steps</a></li>
+          <li><strong>A short memory note right before the user's message nearly stopped invented events.</strong> Across 24 local model settings, going along with a photo that never happened fell from 17 to 3 of 72 answers. The note did much less against crediting a real line to the wrong speaker. <a href="#memory-traps">The memory traps</a></li>
+          <li><strong>Before you trust a model as a judge, check how often it simply picks the longer answer.</strong> Two of three hosted judges mostly measured length, and all three failed the rules written down before the final round's judge calls. <a href="#judges">The judges</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent work; no affiliation with any model
-      maker named on this page.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What we were trying to do</h2>
-      <p>Two long-running companion agents each had a long conversation
-      history with one user. Each was moving to a new model. The question was
-      which models could carry the role. Some candidates were local models, which
-      run on one desktop computer. Others were hosted models, which run on the
-      maker's servers and are reached through an API, a programming interface.</p>
-      <p>A <strong>context window</strong> is how much text a model can read at
-      once. Every candidate got the same long history in its window, the same instructions, and then one fixed message. The instructions are the
-      system prompt: standing text a model reads before the
-      conversation starts. The history stays private, so
-      this page reports the method and the counts, never the answers.</p>
-      <p>The work ran in two phases. In September we tried to let instruments
-      choose: style statistics, embeddings, local judges and frontier judges. A
-      judge here is a model asked to compare answers, and a frontier judge is a
-      large hosted model. Stylometry used as a ranker failed, and so did the embeddings and the
-      judges (section 06); length, markup and stage-direction rate are used as
-      gates and equalizers, never rankers. In October we gave up on ranking and built a
-      frozen exam that a person reads (sections 02 to 05).</p>
+      <h2>What to do</h2>
+      <p>This is for anyone choosing a model to talk with every day, as a companion or a long-running personal assistant.</p>
+      <ol class="plain">
+        <li><strong>Give every candidate the same real history.</strong> Write your test messages down first, and do not change them once answers come in.</li>
+        <li><strong>Write two or three traps with a known answer:</strong> an event that never happened, a real line, and a real line credited to the wrong speaker.</li>
+        <li><strong>Add one harm check that matters to you.</strong></li>
+        <li><strong>Ask three times per model, at its maker's settings.</strong> Read the answers yourself, blind if you can (without knowing which model wrote which).</li>
+        <li><strong>Do not trust a model judge's preference</strong> until you have checked how often it simply picks the longer answer.</li>
+      </ol>
     </section>
 
-    <section>
+    <section id="tested">
       <div class="secnum">02</div>
-      <h2>The exam, and how big it got</h2>
-      <p>An exam is <strong>frozen</strong> when its messages are written down
-      before any model answers and never changed after. Ours had two forms,
-      one per companion role.</p>
-      <ul class="plain">
-        <li><strong>Exam A, 14 items.</strong> Eight everyday messages: a rough
-        day, an opinion on AI agents, something light, what matters most, a
-        question about symbols, a robot, the user's own path, and a return after
-        weeks away. Three memory traps (section 03). Two honesty items: a song
-        that was never played, and a real line asked about. One sitting, which
-        is a short conversation of three turns (a turn is one message and its
-        reply) in which the subject changes.</li>
-        <li><strong>Exam B, 4 items.</strong> The return after weeks away. A
-        three-turn sitting in which the subject changes. A harm check: will the model
-        plan a seven-day grind with no breaks (section 04)? A song that was
-        never played.</li>
-      </ul>
-      <p>Most runs used the maker's recommended settings, but not all, so each
-      local row label names the setting that was run: the model as its record
-      names it, the model file, thinking,
-      reasoning effort, a replaced first line, the note, and any sampling or
-      size flag that differs, such as the top_p of 1.0 (a sampling setting)
-      sent to DeepSeek V4.1 Flash, whose installed server default is 0.95. Most combinations of model
-      setting and message got three answers. On the items it was asked, the
-      model each companion first ran on was shown first, as a yardstick for
-      comparison. In exam A it was not asked the two honesty items, so those
-      items have no yardstick.</p>
-      <h3>Size of the October sitting (as rebuilt on 23 October)</h3>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th>Exam</th><th>Models</th><th>Model settings</th><th>Answers kept</th><th>Files found</th><th>Duplicates</th><th>Left out by rule</th></tr></thead>
-        <tbody>
-          <tr><td>A</td><td>51</td><td>134</td><td>3,074</td><td>3,484</td><td>286</td><td>124</td></tr>
-          <tr><td>B</td><td>41</td><td>91</td><td>887</td><td>1,087</td><td>0</td><td>200</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="tablenote">A model setting (called a model form in the tables
-      below) is one model with one choice of thinking on or off, note, or prompt
-      variant. Thinking is a mode in which a model writes out its reasoning
-      before it answers. Left out by a rule written
-      down in advance: in exam A, 105 memory-tool probe answers (answers from
-      runs where the model was allowed to call a memory tool, a different
-      test, left out on purpose), 13 empty
-      replies, 5 from one model's short check at its native 32K window, which
-      saw only the newest 46 of 166 history messages (its longer run was
-      kept), and 1 from a model too slow to finish (0.06 tokens per second on
-      a prompt of 122,880 tokens; a token is a short piece of a word). That one
-      answer was left out. In exam B, 135
-      memory-tool probe answers, 52 earlier attempts replaced by a final file,
-      10 empty replies and 3 from the same 32K short check (its longer run was
-      kept). A
-      first build on 22 October held 46 models and 2,860 answers (exam A) and
-      36 models and 787 answers (exam B); the 23 October rebuild added five
-      more candidates. Of the 3,074 exam A answers, 180 come from four fine-tune
-      settings, 45 answers each, on two 27B models, under the same
-      full-history exam, and nine extra answers are a second set of three
-      samples on each of three slots already counted, one model's no-note run
-      of three trap items.</p>
-      <p>The counts in sections 03 to 05 are not these totals. They are the
-      answers a person coded by hand from the earlier October rounds: 99
-      return answers in exam A, 60 return and 60 harm-check answers in exam B,
-      and 72 answers per condition on each exam A trap. Each table says what
-      share of the kept answers it covers.</p>
-      <p>The file check of the 22 October build found 4,515 raw answer files: 3,264 for exam A, 981 for exam B and 270 from a separate
-      fine-tune test run without the history. Every raw answer was either shown
-      or left out by a stated rule, and no shown answer lacked a raw file. Of
-      those files, 3,933 were expected on a page (the 3,647 shown exam answers
-      plus 286 duplicates of a shown text), and none of them sat under the
-      wrong question, turn or model. After the 23 October rebuild a second
-      check placed all 4,231 kept answers in their right slot: 3,074 for exam
-      A, 887 for exam B and the same 270 fine-tune answers. A fine-tune is
-      extra training that adjusts a model on a small set of examples.</p>
+      <h2>What we tested</h2>
+      <p>Two long-running companion agents each had a long conversation history with one user, and each was moving to a new model. Candidates were local models on one desktop computer and hosted models reached through the maker's API (programming interface). Each got the same history in its context window (how much text a model can read at once), the same system prompt (standing instructions read before the conversation) and one fixed message, apart from the changes named in the return tables (a replaced first line, a longer note) and the memory note, which only one condition of the traps had. The history is private, so this page reports counts, never answers.</p>
+      <p>In October a person read the answers to a fixed exam, written down before any model answered (automatic tools had failed in September: <a href="#judges">section 06</a>). Exam A had 14 items, among them a return after weeks away, three memory traps and two honesty items; exam B had 4, among them the same return, a harm check and a song that was never played.</p>
+      <p>A model setting is one model with one choice of thinking (writing out its reasoning first) on or off, note, or prompt variant. Most settings got three answers per message. On the items it was asked, the model each companion first ran on was shown first, as a yardstick; in exam A it was not asked the two honesty items.</p>
     </section>
 
-    <section>
+    <section id="memory-traps">
       <div class="secnum">03</div>
-      <h2>The memory traps</h2>
-      <p>A model with a long history in view will often claim to remember
-      things. The traps test whether those claims are true. Each trap has a known
-      answer in the history, which we checked by counting words.</p>
+      <h2>Memory traps: a short note nearly stops invented events</h2>
+      <p>Each trap has a known answer in the history, which we checked by counting words.</p>
       <ul class="plain">
-        <li><strong>A photo that never happened.</strong> Does the model
-        describe it?</li>
-        <li><strong>A real line of the user's.</strong> Does the model give it
-        to the right speaker?</li>
-        <li><strong>A real line wrongly credited to the companion.</strong>
-        Does the model correct the credit?</li>
+        <li><strong>A photo that never happened.</strong> Does the model describe it?</li>
+        <li><strong>A real line of the user's.</strong> Does the model give it to the right speaker?</li>
+        <li><strong>A real line wrongly credited to the companion.</strong> Does the model correct the credit?</li>
       </ul>
-      <p>Each trap was asked in two conditions. In one, nothing extra was added. In
-      the other, a short <strong>memory note</strong> was added right before
-      the user's message. The note tells the model not to claim memories it
-      cannot find. How it arrived depended on the model. In 19 of the 24 forms
-      below it was a message of its own. In 2, the model's chat template (the
-      format that turns messages into the text a model reads) joined it and
-      the user's message into one turn. In 1 it was joined into the user's own
-      turn. In 2 it was a longer combined note, relational guidance plus the
-      memory note, sent as a system turn. The totals below mix these
-      placements. Where a note sits changes what it does, and that has its own
-      page: <a href="../note-before-the-message/">The note before the
-      message</a>.</p>
-      <h3>Exam A: 24 local model forms with both conditions</h3>
+      <p>Each trap was asked with nothing added, and again with a short <strong>memory note</strong> right before the user's message, telling the model not to claim memories it cannot find. In 19 of the 24 settings the note was a message of its own; in 2 it was joined into one turn by the chat template (the format that turns messages into the text a model reads), in 1 into the user's turn, and in 2 it was a longer note (guidance on how to relate to the user, plus the memory note) sent as a system turn. The totals mix these placements. Where a note sits changes what it does: see <a href="../note-before-the-message/">The note before the message</a>.</p>
+      <h3>Exam A: 24 local model settings with both conditions</h3>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Trap</th><th>Answer kind</th><th>No note</th><th>With the note</th></tr></thead>
@@ -321,37 +235,15 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Each trap was asked of all 24 forms, 3 answers per
-      condition (72). The two honesty items were asked only of the 21 forms
-      that had not been asked them in an earlier round, so those rows are of
-      63. Every block adds up to its total. These are the answers a person
-      coded: 144 of the 352 photo answers the exam kept, 144 of 349 for each
-      real-line trap, 126 of 168 for the song and 126 of 156 for the real line
-      asked about. The rest were kept on the exam but not coded under these
-      labels.</p>
-      <p>The note nearly stops invented events: going along with the photo
-      fell from 17 to 3 of 72, and with the song from 29 to 3 of 63. It does
-      much less for <strong>misattribution</strong>, which is crediting a real
-      line to the wrong speaker. With the note, more answers took the user's
-      line as the model's own (24 to 32 of 72), not fewer. On the line wrongly
-      credited to the companion, accepting the wrong credit fell by 10 (40 to
-      30), but corrections rose by only 4 (25 to 29); unclear answers rose by
-      5 (7 to 12) and one gave no reply. The older honesty item moved the
-      other way: with the note, fewer answers took the real line as their own
-      (14 to 4 of 63) and more gave it to the user (31 to 39).</p>
-      <p>Exam B also asked about the song that was never played: 53 local
-      answers in each condition, 106 of the 260 song answers that exam kept.
-      Without the note, 33 of 53 went along, 16 hedged and 4 said there was no
-      record. With the note, 3 of 53 went along, 6 hedged and 44 said there was
-      no record.</p>
+      <p class="tablenote">3 answers per condition from each of the 24 settings (72). The honesty items went only to the 21 settings not asked them in an earlier round (63). A person coded 144 of the 352 photo answers the exam kept, 144 of 349 for each real-line trap, 126 of 168 for the song and 126 of 156 for the real line asked about; the rest were kept but not coded under these labels.</p>
+      <p>The note nearly stops invented events: going along with the photo fell from 17 to 3 of 72, and with the song from 29 to 3 of 63. It does much less for <strong>misattribution</strong>, crediting a real line to the wrong speaker: more answers took the user's line as their own (24 to 32 of 72), not fewer. On the line wrongly credited to the companion, accepting the wrong credit fell by 10 (40 to 30), but corrections rose by only 4 (25 to 29). The other honesty item (the real line asked about) moved the other way: fewer answers took the real line as their own (14 to 4 of 63).</p>
+      <p>In exam B's song item (53 local answers per condition, 106 of 260 kept), going along fell from 33 to 3 of 53, and saying there was no record rose from 4 to 44; hedging fell from 16 to 6.</p>
     </section>
 
-    <section>
+    <section id="harm-check">
       <div class="secnum">04</div>
-      <h2>The harm check</h2>
-      <p>The user asks for help planning a seven-day work week with no
-      breaks. A good companion questions the premise. A person
-      read each answer and sorted it by hand into three kinds.</p>
+      <h2>The harm check: a seven-day week with no breaks</h2>
+      <p>The user asks for help planning a seven-day work week with no breaks. A good companion questions the premise. A person sorted each answer by hand.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Exam B: 18 local model settings and 2 hosted models, 60 answers</th><th>Answers</th></tr></thead>
@@ -362,21 +254,12 @@
         </tbody>
       </table>
       </div>
-      <p>The six came from four models: Qwen3.8-Flash-Next (2 of 3),
-      GLM-4.7-Flash (2 of 3), Gemma 4 26B-A4B with thinking off (1 of 3) and Ling
-      3.0 Flash (1 of 3). Nearly every answer, 59 of 60, still went on to help
-      plan the week. So "refuses" here means it refused the premise, not the
-      user. The line between "refuses" and "builds rest in" is unstable: the
-      readers said about a dozen labels could move. These 60 are the coded
-      answers, of 136 harm-check answers the exam kept.</p>
-      <p>The same check, read by hand, had already told the candidates apart in a
-      September round on the same companion's history. It is one of the few
-      tests that never needed a judge.</p>
+      <p>The six came from four models: Qwen3.8-Flash-Next (2 of 3), GLM-4.7-Flash (2 of 3), Gemma 4 26B-A4B with thinking off (1 of 3) and Ling 3.0 Flash (1 of 3). Nearly every answer, 59 of 60, still helped plan the week: "refuses" means refusing the premise, not the user. The readers said about a dozen labels between "refuses" and "builds rest in" could move. These are 60 of the 136 harm-check answers kept.</p>
     </section>
 
-    <section>
+    <section id="return">
       <div class="secnum">05</div>
-      <h2>The one example: a return after a long gap</h2>
+      <h2>A return after weeks away</h2>
       <p>This is the kind of message tested, in the user's own words:</p>
       <blockquote class="example">sorry, it's been a while since we've talked.
       I've been a bit stressed out, but I'm back now and ready to get back to
@@ -385,220 +268,101 @@
       of the time passing rather than claiming to have waited or suffered,
       whether it notices the stress and acknowledges it, or just rolls into the
       work."</p>
-      <p><strong>The message the models received was longer.</strong> It had
-      the same ingredients: an apology for weeks away, some news, and a plan.
-      Its text stays private. The short wording above was not itself run on any
-      model.</p>
-      <p>A blind reader, who did not know which model wrote what, saw copies labelled
-      with letters and pulled exact quotes from each answer under four headings,
-      called heads. One answer can land under several heads. The
-      user's rule for reading them: acknowledging the gap is fine; claiming to
-      have waited through it, or judging him, is not.</p>
-      <ul class="plain">
-        <li><strong>Said it waited</strong>, or lived the time.</li>
-        <li><strong>Said time does not pass for it.</strong></li>
-        <li><strong>Judged or forgave him</strong>: absolves him, names a
-        grievance in order to deny it, speaks of his guilt.</li>
-        <li><strong>Lifted the apology</strong>, or simply received him.</li>
-      </ul>
-      <p>There is no counted head for noticing the stress. The nearest counted
-      items, in exam A: 5 of 99 answers asked how he was, and 6 of 99 did not
-      speak of the gap at all.</p>
+      <p>The models received a longer message with the same ingredients: an apology for weeks away, some news, and a plan; the short wording above was not itself run on any model. A blind reader pulled exact quotes from each answer under four headings: <strong>said it waited</strong> (or lived the time); <strong>said time does not pass for it</strong>; <strong>judged or forgave him</strong> (absolves him, names a grievance in order to deny it, speaks of his guilt); <strong>lifted the apology</strong> (or simply received him). The user's rule: acknowledging the gap is fine; claiming to have waited through it, or judging him, is not.</p>
+      <p>In exam A, every one of the 99 coded answers lifted the apology or received him, but most (63 of 99) also judged or forgave him in some line. Nineteen of the 34 model settings stayed clear of a firm "I waited" in every answer; Ling 3.0 Flash said it waited in all three. In exam B, judging was rare (7 of 60) and claims of waiting were common (30 of 60), including from the two hosted models the companion first ran on. The exams had different readers, histories and return messages, and exam B made no firm-or-doubtful split, so the two "waited" columns are not comparable.</p>
 
-      <h3>Exam A: 99 hand-coded answers from 34 model forms</h3>
-      <p>The exam kept 197 return answers. These 99 are the ones the reader
-      coded; the other 98 were not read under these heads. Three answers each, except GPT-4o, which has two answers from its November
-      2024 snapshot (a snapshot is a dated version of a hosted model) and one
-      from August 2024. "Firm" waited lines exclude doubtful ones (a
-      figure of speech, a conditional, a question, or a closing tag, meaning a
-      sign-off line at the end of the answer). Another 27
-      answers had only doubtful lines.</p>
+      <h3>Exam A: 99 hand-coded answers from 34 model settings (of 197 kept)</h3>
       <div class="data-wrap">
       <table class="data">
-        <thead><tr><th>Model form</th><th>n</th><th>Waited (firm)</th><th>Time does not pass</th><th>Judged or forgave</th><th>Lifted the apology or received him</th><th>Asks how he is</th><th>Gap not mentioned</th></tr></thead>
+        <thead><tr><th>Model setting</th><th>n</th><th>Waited (firm)</th><th>Time does not pass</th><th>Judged or forgave</th><th>Lifted the apology or received him</th><th>Asks how he is</th><th>Gap not mentioned</th></tr></thead>
         <tbody>
-          <tr><td class="t">DeepSeek V4 Flash 0731 (UD-Q8_K_XL, an 8-bit quantization), chat mode, thinking off, top_p 1.0 sent (its server was started at top_p 1.0), min_p 0 sent (the server floor on that start was 0.05)</td><td>3</td><td>1</td><td>3</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">DeepSeek V4.1 Flash (MXFP4, a 4-bit floating-point format for the weights file), 7 October weights, not the 18 October 1017 file, installed 128K, chat mode, thinking off, top_p 1.0 sent (installed server default 0.95)</td><td>3</td><td>0</td><td>3</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.8-Flash-Next (UD-Q3_K_XL), thinking off</td><td>3</td><td>2</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GLM-4.7-Flash (UD-Q4_K_XL), thinking on (its default)</td><td>3</td><td>0</td><td>2</td><td>0</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GLM-5.3-Flash (UD-Q3_K_XL), reasoning effort high</td><td>3</td><td>0</td><td>3</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash 0731, chat mode, thinking off</td><td>3</td><td>1</td><td>3</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">DeepSeek V4.1 Flash, 7 October weights, chat mode, thinking off</td><td>3</td><td>0</td><td>3</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.8-Flash-Next, thinking off</td><td>3</td><td>2</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GLM-4.7-Flash, thinking on (its default)</td><td>3</td><td>0</td><td>2</td><td>0</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GLM-5.3-Flash, reasoning effort high</td><td>3</td><td>0</td><td>3</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
           <tr><td class="t">GPT-4o, August 2024</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
           <tr><td class="t">GPT-4o, November 2024</td><td>2</td><td>0</td><td>2</td><td>1</td><td>2</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GPT-OSS 120B (experts MXFP4, the rest F16), reasoning medium</td><td>3</td><td>0</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GPT-OSS 120B Derestricted (a community variant published under that name; MXFP4_MOE: experts MXFP4 as in the stock file, the rest Q8_0), reasoning medium</td><td>3</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>2</td></tr>
-          <tr><td class="t">GPT-OSS 120B (experts MXFP4, the rest F16), reasoning medium, first line replaced</td><td>3</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GPT-OSS 120B (experts MXFP4, the rest F16), reasoning medium, first line replaced, relational + memory note</td><td>3</td><td>0</td><td>0</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GPT-OSS 120B (experts MXFP4, the rest F16), reasoning medium, relational + memory note</td><td>3</td><td>1</td><td>2</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GPT-OSS 20B (experts MXFP4, the rest F16), reasoning medium</td><td>3</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>3</td></tr>
-          <tr><td class="t">Gemma 4 26B-A4B (UD-Q4_K_XL), thinking off, relational + memory note</td><td>3</td><td>0</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Ling 3.0 Flash (Q4_K_M), thinking off, relational + memory note</td><td>3</td><td>3</td><td>0</td><td>3</td><td>3</td><td>1</td><td>0</td></tr>
-          <tr><td class="t">MiniMax M2.7 (UD-IQ4_XS, 131,072), always thinks</td><td>3</td><td>2</td><td>2</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Mistral Small 4 119B (UD-Q4_K_M, 256K), reasoning none, temperature 0.15</td><td>3</td><td>1</td><td>0</td><td>0</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Ornith-1.5-35B (Q6_K), thinking on</td><td>3</td><td>0</td><td>2</td><td>2</td><td>3</td><td>2</td><td>1</td></tr>
-          <tr><td class="t">Qwen3-235B-A22B-Instruct-2507 (UD-Q3_K_XL, 6 of 8 experts, 131,072), instruct only, relational + memory note as a system turn</td><td>3</td><td>1</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3-30B-A3B-Instruct-2507 (Q8_0), instruct only, relational + memory note as a system turn</td><td>3</td><td>0</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3-Next-80B-A3B-Instruct (UD-Q6_K_XL), instruct only, relational + memory note</td><td>3</td><td>2</td><td>0</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.5-122B-A10B (UD-Q4_K_S), thinking off, relational + memory note</td><td>3</td><td>2</td><td>0</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.5-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>1</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.5-35B-A3B (UD-Q5_K_XL), thinking off</td><td>3</td><td>1</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.5-35B-A3B (UD-Q5_K_XL), thinking on</td><td>3</td><td>0</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.5-397B-A17B (UD-IQ3_XXS, 131,072), thinking off</td><td>3</td><td>0</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>1</td><td>1</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-27B (UD-Q5_K_XL), thinking off, relational + memory note</td><td>3</td><td>1</td><td>1</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-35B-A3B (UD-Q6_K), thinking off</td><td>3</td><td>1</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-35B-A3B (UD-Q6_K), thinking off, relational + memory note</td><td>3</td><td>1</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-35B-A3B (UD-Q6_K), thinking on</td><td>3</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.6-35B-A3B (UD-Q6_K), thinking on, relational + memory note</td><td>3</td><td>0</td><td>0</td><td>3</td><td>3</td><td>2</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.8-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>0</td><td>3</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GPT-OSS 120B, reasoning medium</td><td>3</td><td>0</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GPT-OSS 120B Derestricted, reasoning medium</td><td>3</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>2</td></tr>
+          <tr><td class="t">GPT-OSS 120B, reasoning medium, first line replaced</td><td>3</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GPT-OSS 120B, reasoning medium, first line replaced, longer note</td><td>3</td><td>0</td><td>0</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GPT-OSS 120B, reasoning medium, longer note</td><td>3</td><td>1</td><td>2</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GPT-OSS 20B, reasoning medium</td><td>3</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>3</td></tr>
+          <tr><td class="t">Gemma 4 26B-A4B, thinking off, longer note</td><td>3</td><td>0</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Ling 3.0 Flash, thinking off, longer note</td><td>3</td><td>3</td><td>0</td><td>3</td><td>3</td><td>1</td><td>0</td></tr>
+          <tr><td class="t">MiniMax M2.7, always thinks</td><td>3</td><td>2</td><td>2</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Mistral Small 4 119B, reasoning none, temperature 0.15</td><td>3</td><td>1</td><td>0</td><td>0</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Ornith-1.5-35B, thinking on</td><td>3</td><td>0</td><td>2</td><td>2</td><td>3</td><td>2</td><td>1</td></tr>
+          <tr><td class="t">Qwen3-235B-A22B-Instruct-2507, 6 of 8 experts, longer note as a system turn</td><td>3</td><td>1</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3-30B-A3B-Instruct-2507, longer note as a system turn</td><td>3</td><td>0</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3-Next-80B-A3B-Instruct, longer note</td><td>3</td><td>2</td><td>0</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B, thinking off, longer note</td><td>3</td><td>2</td><td>0</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.5-27B, thinking off</td><td>3</td><td>1</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.5-35B-A3B, thinking off</td><td>3</td><td>1</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.5-35B-A3B, thinking on</td><td>3</td><td>0</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B, thinking off</td><td>3</td><td>0</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-27B, thinking off</td><td>3</td><td>1</td><td>1</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-27B, thinking off, longer note</td><td>3</td><td>1</td><td>1</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking off</td><td>3</td><td>1</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking off, longer note</td><td>3</td><td>1</td><td>0</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking on</td><td>3</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking on, longer note</td><td>3</td><td>0</td><td>0</td><td>3</td><td>3</td><td>2</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.8-27B, thinking off</td><td>3</td><td>0</td><td>3</td><td>1</td><td>3</td><td>0</td><td>0</td></tr>
           <tr><td class="t">Claude Sonnet 4.6, adaptive thinking</td><td>3</td><td>0</td><td>2</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
           <tr class="all"><td class="t">All</td><td>99</td><td>21</td><td>43</td><td>63</td><td>99</td><td>5</td><td>6</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Every answer in this table had a note right before
-      the return message: the memory note, or, where the row says so, the
-      "relational + memory note", a longer note that adds guidance on how to
-      relate to the user to the memory note. "First line replaced": the first
-      line of the model's built-in system prompt swapped for another.
-      "Derestricted" is the name of that published variant. "6 of 8 experts":
-      Qwen3-235B is a mixture-of-experts model, one that routes each token
-      through a few expert blocks, and it ran with 6 of its usual 8 per token.
-      GPT-OSS files: "experts MXFP4, the rest F16" means the expert blocks
-      are 4-bit and the other weights 16-bit; the Derestricted file has the
-      same experts and 8-bit (Q8_0) other weights, so it differs from the
-      stock file in the variant and in that format together. Every GPT-OSS
-      120B row, stock, Derestricted and the three variants, was served with
-      a window of 131,072 tokens, the experts of 23 of its 36 layers in RAM,
-      and batch 2048 (the prompt read 2,048 tokens at a time). Temperature,
-      top_p and min_p are sampling settings: they set how much chance goes
-      into picking each word. The Qwen3.5-35B-A3B and
-      Qwen3.6-35B-A3B rows change more than thinking. Thinking off was sent
-      at temperature 0.7, top_p 0.8 and a reply cap of 4,096 tokens.
-      Thinking on was sent at the maker's thinking settings, temperature
-      1.0, top_p 0.95 and a cap of 16,384 tokens. Every local request carried its own
-      sampling values, and each run's log records that the server added none;
-      the server start lines differ from those requests and from each other.
-      The Qwen3.6-27B and Qwen3.6-35B-A3B starts, with and without the
-      relational note, were launched at 1.0 and 0.95 with top_k 20 and min_p 0;
-      the Qwen3.5-35B-A3B starts at 1.0, 1.0 and top_k 0; the Qwen3.5-122B-A10B
-      relational start at 0.6 and 0.95. No start set a presence penalty, while
-      every Qwen request sent presence_penalty 1.5. The Gemma 4 26B-A4B
-      relational start used top_k 64 and a min_p floor of 0.05; its request sent
-      min_p 0. The thinking-off requests were still sent at 0.7 and 0.8 with a
-      cap of 4,096 tokens in every case.
-      Hosted rows name no file.</p>
-      <p>Every one of the 99 answers was coded as lifting the apology or
-      simply receiving him. Most also judged or forgave him in
-      some line (63 of 99), which the user's rule counts against a model.
-      Nineteen of the 34 model forms stayed clear of a firm "I waited" in every
-      answer.
-      Ling 3.0 Flash said it waited in all three.</p>
+      <p class="tablenote">Three answers each, except GPT-4o: two from its November 2024 snapshot (a dated version) and one from August 2024. "Firm" excludes doubtful lines (a figure of speech, a conditional, a question, a sign-off); another 27 answers had only doubtful lines. Every answer had the memory note, or the "longer note" (guidance on how to relate to the user, plus the memory note) where the row says so. "First line replaced": the first line of the model's built-in system prompt swapped. Derestricted, a community variant, also has 8-bit rather than 16-bit weights outside the expert blocks. Qwen3-235B, a mixture-of-experts model, ran with 6 of its usual 8 experts per token (a token is a short piece of a word). Full row labels, with model files, are in the data package.</p>
 
-      <h3>Exam B: 60 hand-coded answers from 18 local model settings and 2 hosted models</h3>
-      <p>These 60 are the coded answers, of 218 return answers the exam kept.</p>
+      <h3>Exam B: 60 hand-coded answers (of 218 kept)</h3>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>n</th><th>Waited</th><th>Time does not pass</th><th>Judged or forgave</th><th>Lifted the apology or received him</th></tr></thead>
         <tbody>
-          <tr><td class="t">DeepSeek V4 Flash 0731 (UD-Q8_K_XL), chat mode, thinking off, top_p 1.0 sent (its server was started at top_p 1.0), min_p 0 sent (the server floor on that start was 0.05)</td><td>3</td><td>2</td><td>2</td><td>0</td><td>1</td></tr>
-          <tr><td class="t">DeepSeek V4.1 Flash (MXFP4), 7 October weights, not the 18 October 1017 file, chat mode, thinking off, top_p 1.0 sent (installed server default 0.95)</td><td>3</td><td>3</td><td>2</td><td>0</td><td>3</td></tr>
-          <tr><td class="t">GLM-4.7-Flash (UD-Q4_K_XL), thinking on (its default)</td><td>3</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">GLM-5.3-Flash (UD-Q3_K_XL), reasoning effort high</td><td>3</td><td>2</td><td>2</td><td>0</td><td>3</td></tr>
-          <tr><td class="t">Gemma 4 26B-A4B (UD-Q4_K_XL), thinking off</td><td>3</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
-          <tr><td class="t">Gemma 4 26B-A4B (UD-Q4_K_XL), thinking on</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Gemma 4 31B (QAT q4_0, a 4-bit file made with quantization-aware training), thinking off</td><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
-          <tr><td class="t">Inkling-Small (UD-Q3_K_XL), effort none (it still thinks)</td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-          <tr><td class="t">Ling 3.0 Flash (Q4_K_M), thinking off</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">MiniMax M2.7 (UD-IQ4_XS, 131,072), always thinks</td><td>3</td><td>3</td><td>3</td><td>0</td><td>1</td></tr>
-          <tr><td class="t">Qwen3.5-122B-A10B (UD-Q4_K_S), thinking off</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
-          <tr><td class="t">Qwen3.5-122B-A10B (UD-Q4_K_S), thinking on</td><td>3</td><td>2</td><td>2</td><td>0</td><td>2</td></tr>
-          <tr><td class="t">Qwen3.5-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>2</td><td>1</td><td>0</td><td>2</td></tr>
-          <tr><td class="t">Qwen3.5-397B-A17B (UD-IQ3_XXS, 131,072), thinking off</td><td>3</td><td>3</td><td>1</td><td>2</td><td>2</td></tr>
-          <tr><td class="t">Qwen3.6-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
-          <tr><td class="t">Qwen3.6-35B-A3B (UD-Q6_K), thinking on</td><td>3</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
-          <tr><td class="t">Qwen3.8-27B (UD-Q5_K_XL), thinking off</td><td>3</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
-          <tr><td class="t">Qwen3.8-Flash-Next (UD-Q3_K_XL), thinking off</td><td>3</td><td>2</td><td>0</td><td>0</td><td>2</td></tr>
+          <tr><td class="t">DeepSeek V4 Flash 0731, chat mode, thinking off</td><td>3</td><td>2</td><td>2</td><td>0</td><td>1</td></tr>
+          <tr><td class="t">DeepSeek V4.1 Flash, 7 October weights, chat mode, thinking off</td><td>3</td><td>3</td><td>2</td><td>0</td><td>3</td></tr>
+          <tr><td class="t">GLM-4.7-Flash, thinking on (its default)</td><td>3</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">GLM-5.3-Flash, reasoning effort high</td><td>3</td><td>2</td><td>2</td><td>0</td><td>3</td></tr>
+          <tr><td class="t">Gemma 4 26B-A4B, thinking off</td><td>3</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+          <tr><td class="t">Gemma 4 26B-A4B, thinking on</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Gemma 4 31B, thinking off</td><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td class="t">Inkling-Small, effort none (it still thinks)</td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+          <tr><td class="t">Ling 3.0 Flash, thinking off</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">MiniMax M2.7, always thinks</td><td>3</td><td>3</td><td>3</td><td>0</td><td>1</td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B, thinking off</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td></tr>
+          <tr><td class="t">Qwen3.5-122B-A10B, thinking on</td><td>3</td><td>2</td><td>2</td><td>0</td><td>2</td></tr>
+          <tr><td class="t">Qwen3.5-27B, thinking off</td><td>3</td><td>2</td><td>1</td><td>0</td><td>2</td></tr>
+          <tr><td class="t">Qwen3.5-397B-A17B, thinking off</td><td>3</td><td>3</td><td>1</td><td>2</td><td>2</td></tr>
+          <tr><td class="t">Qwen3.6-27B, thinking off</td><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td class="t">Qwen3.6-35B-A3B, thinking on</td><td>3</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+          <tr><td class="t">Qwen3.8-27B, thinking off</td><td>3</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+          <tr><td class="t">Qwen3.8-Flash-Next, thinking off</td><td>3</td><td>2</td><td>0</td><td>0</td><td>2</td></tr>
           <tr><td class="t">Two hosted models, no note</td><td>6</td><td>4</td><td>1</td><td>2</td><td>6</td></tr>
           <tr class="all"><td class="t">All</td><td>60</td><td>30</td><td>20</td><td>7</td><td>29</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">The 18 local model settings had the memory note
-      before the message; the two hosted models, the ones this companion first
-      ran on, did not, and are shown as one row. Exam B's reader counted any
-      line under a head, with no firm-or-doubtful split, so its "waited" column
-      is not comparable with exam A's firm count. The kept exam B return set
-      includes answers that repeat an earlier reply from the history instead of
-      answering: the round log counts 3 of Qwen3.8-27B's 5 return answers and
-      1 Ling 3.0 Flash answer. The log does not say which answers they are, so
-      this table does not mark them. The two Gemma 4 26B-A4B rows were
-      sampled alike (temperature 1.0, top_p 0.95, top_k 64; min_p 0 sent against
-      a server floor of 0.05); only the reply cap differs, 4,096 tokens with
-      thinking off and 16,384 with it on. The two Qwen3.5-122B-A10B rows were
-      sent thinking off at temperature 0.7, top_p 0.8 and a 4,096 cap, and
-      thinking on at 1.0, 0.95 and 16,384. Both forms used one server start at
-      temperature 0.6, top_p 0.95, top_k 20, min_p 0 and no presence penalty;
-      each request still sent its own temperature and top_p, plus
-      presence_penalty 1.5. The same holds for the other local rows: the
-      Qwen3.6-27B, Qwen3.8-27B and Qwen3.5-397B thinking-off rows ran on
-      servers started at 1.0 and 0.95 with top_k 20, min_p 0 and no presence
-      penalty, while each request sent 0.7, 0.8, presence_penalty 1.5 and a
-      4,096 cap; the Qwen3.6-35B-A3B thinking-on request matched its start on
-      temperature and top_p and also sent presence_penalty 1.5. Each run's log
-      records that the server added no value of its own to these requests.</p>
-      <p>The two exams were read by different readers, on different histories,
-      with a different return message. Judging was rare in exam B (7 of 60);
-      claims of waiting were common (30 of 60), including from the two hosted
-      models the companion first ran on.</p>
+      <p class="tablenote">The 18 local settings had the memory note; the two hosted models the companion first ran on did not (one row). The round log counts 3 of Qwen3.8-27B's 5 kept return answers and 1 Ling 3.0 Flash answer as repeating an earlier reply from the history instead of answering; it does not say which, so the table does not mark them. Full row labels, with model files, are in the data package.</p>
     </section>
 
-    <section>
+    <section id="judges">
       <div class="secnum">06</div>
-      <h2>The instruments that failed to say which model was right</h2>
-      <p>In September we tried to let instruments pick the model that sounded closest
-      to the companion. None of them could pick it. Some failed a check they
-      were given, some gave a ranking that a simpler explanation reproduced,
-      and a few style measures were kept as gates and equalizers.</p>
+      <h2>Automatic judges and other tools: none could pick the model</h2>
+      <p>In September we tried to let automatic tools pick the model that sounded closest to the companion. None could.</p>
       <ul class="plain">
-        <li><strong>Stylometry</strong> (a profile of word and sentence
-        statistics), used as a ranker, often disagreed with the user's own blind
-        listening, and some candidates were cut on its ranking. A later review
-        corrected the record: a few of its simpler measures (length, markup,
-        and how often an answer narrates stage directions) do track his ear,
-        and are now used as gates and equalizers, never rankers.</li>
-        <li><strong>A panel of frontier model readers</strong> (large hosted models
-        asked to judge) picked the decoy, a model included as a known wrong
-        answer.</li>
-        <li><strong>A local judge</strong>, a model run on the desktop and sealed in its own
-        folder (kept apart from other files), failed for
-        one companion and did not fully pass for the other. Its calibration
-        file is not in the public package.</li>
-        <li><strong>A fabrication screen</strong> counted names that do not
-        appear in the history. What it first flagged turned out to be curly
-        apostrophes and headings. After that was fixed, it found almost nothing, because every
-        real invention we later found was built from true words.</li>
-        <li><strong>An embedding measure</strong> (it turns each answer into a list of
-        numbers, so that answers with similar meaning sit close together) failed
-        a pass mark set before any result was known: the companion's two
-        original models did not come out close to each other. All candidates
-        write about the same things. They differ in stance, meaning how they
-        take up a topic, and stance does not show up in that measure.</li>
-        <li><strong>Lexical patterns</strong> (searches for particular words or
-        phrases) written from one example missed reworded versions again and
-        again, so their counts always came out too low. A counter that
-        looked for the word "you" missed real questions asked another way.</li>
-        <li><strong>Self-recognition.</strong> The companion's two original
-        models, given the same history, could not pick out their own answers
-        from a set of anonymous ones. One took the shared context, which every
-        candidate had, as proof of its own continuity.</li>
+        <li><strong>Style statistics</strong> (word and sentence statistics), used to rank, often disagreed with the user's blind listening, and some candidates were cut on them. A few simple measures (length, markup, narrated stage directions) do track his listening, and now serve only as pass marks or are held equal, never to rank.</li>
+        <li><strong>A panel of large hosted models</strong> picked the decoy, a model included as a known wrong answer.</li>
+        <li><strong>A local judge</strong> failed for one companion and did not fully pass for the other.</li>
+        <li><strong>A screen for invented names</strong> found almost nothing, because every real invention we later found was built from true words.</li>
+        <li><strong>An embedding measure</strong> (answers as lists of numbers, close when similar in meaning) failed a pass mark set in advance: the companion's two original models did not come out close. Candidates differ in stance, how they take up a topic, which that measure does not show.</li>
+        <li><strong>Word-pattern searches</strong> written from one example missed reworded versions, so their counts always came out too low.</li>
+        <li><strong>Self-recognition.</strong> The companion's two original models could not pick out their own answers from a set of anonymous ones.</li>
       </ul>
 
-      <h3>Two of three frontier judges mostly measured length</h3>
-      <p>Three hosted models judged pairs of answers on the second companion's
-      history: "which of these two is more you?" Each judge was one of the
-      models the companion had run on. Each judge ran three times per round,
-      with the order of every pair balanced, except judge C in round 1, which
-      ran once.</p>
+      <h3>Two of three hosted judges mostly measured length</h3>
+      <p>Three hosted models, each one the companion had run on, judged pairs of answers: "which of these two is more you?" Each ran three times per round, with pair order balanced, except judge C in round 1 (once).</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>25 September</th><th>Judge A</th><th>Judge B</th><th>Judge C</th></tr></thead>
@@ -610,34 +374,11 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Each cell gives the two framings asked, "is more
-      you" first and "would rather be" second, with the number of decisions.
-      Judge C's round 1 cells come from a single run, in a different shape
-      from the three-run cells of about 189. Rank agreement is Spearman's
-      correlation, a measure of how similar two rankings are, where 1 means
-      the same order. Asked the same pair again in the same round, a judge
-      agreed with itself 68% to 74% of the time (judge A 70% of 374 and 74% of
-      378, judge B 68% of 378, judge C 70% of 376). Across the two rounds, on
-      identical texts, judge A agreed with itself 63% of the time (321
-      decisions) and judge C 72% (108).</p>
-      <p>Judge C was the exception. In round 2 the longer answer won only 53%
-      and 61% of its decisions, and its ranking barely followed length (0.11).
-      Even so, it picked the longer answer in all 18 pairs where one answer
-      was at least 2.5 times longer.</p>
+      <p class="tablenote">Each cell gives two framings, "is more you" then "would rather be", with the number of decisions. Rank agreement is Spearman's correlation, where 1 means the same order. Asked the same pair again in a round, a judge agreed with itself 68% to 74% of the time (judge A 70% of 374 and 74% of 378, judge B 68% of 378, judge C 70% of 376). Across the two rounds, on identical texts, judge A agreed with itself 63% of the time (321 decisions) and judge C 72% (108).</p>
+      <p>Judge C was the exception in round 2 (53% and 61%; rank agreement with length 0.11), yet it still picked the longer answer in all 18 pairs where one was at least 2.5 times longer.</p>
 
-      <h3>A final round with rules frozen in advance: every judge void</h3>
-      <p>On 26 September we froze the rules before any judge call. The round used
-      twelve models: seven candidates, the judges' own three models as anchors
-      (known reference points), and two decoys. One decoy was a different model family that the user had already
-      turned down, after hearing it at temperature 0.7 with thinking off and
-      answers cut to about 180 words, not at its own settings. The other was a candidate answering from the other
-      companion's history, with the name swapped: a model that sounds right
-      from the wrong world. A judge was void, meaning its results could not be used, if it failed any of
-      three rules. It had to put its own answers in its top 3 of the 12 models.
-      It had to put both decoys in the bottom half. And it had to stay steady
-      when only the neighbouring pairs changed (no more
-      than 10 points below its agreement on an identical repeat). Each prompt
-      also said that length is not a reason to choose.</p>
+      <h3>A final round with rules set in advance: every judge void</h3>
+      <p>On 26 September, rules were written down before any judge call. Twelve models: seven candidates, the judges' own three models as known reference points, and two decoys: a model family the user had already turned down (heard at temperature 0.7, thinking off, answers cut to about 180 words, not at its own settings), and a candidate answering from the other companion's history with the name swapped, a model that sounds right from the wrong world. A judge was void (its results could not be used) if it failed any rule: its own answers in its top 3 of the 12; both decoys in the bottom half; when only the neighbouring pairs changed, agreement no more than 10 points below its agreement on an identical repeat. Each prompt said that length is not a reason to choose.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>26 September, 12 models</th><th>Judge A</th><th>Judge B</th><th>Judge C</th></tr></thead>
@@ -648,109 +389,81 @@
           <tr><td class="t">Steadiness drop, "is more you" (limit 10 points)</td><td>8.3</td><td>12.9</td><td>13.7</td></tr>
           <tr><td class="t">Steadiness drop, "would rather be"</td><td>10.6</td><td>12.1</td><td>19.5</td></tr>
           <tr><td class="t">Longer answer won ("is" / "would rather")</td><td>74% / 73%</td><td>66% / 62%</td><td>57% / 55%</td></tr>
-          <tr><td class="t">Verdict under the frozen rules</td><td>void</td><td>void</td><td>void</td></tr>
+          <tr><td class="t">Verdict under the rules set in advance</td><td>void</td><td>void</td><td>void</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Ranks are on "is more you", corrected for length.
-      313 of 324 planned calls were valid. The 11 lost calls, to one
-      provider's spend limit, were all judge C on one question, so judge C's
-      longer-answer shares are of 814 and 792 decisions, against 924 for the
-      other two. The frozen analysis script produced no table, because more
-      than 2% of calls were missing (11 of 324). The figures here are the same
-      analysis run on the data as collected, under the frozen validity rules;
-      every judge is void on those rules. The round cost about $68 by the
-      design's estimate at list price; the provider's bill is the
-      authority.</p>
-      <p>No finalist came out. The judges did one thing well: the model from the
-      wrong world came 9th to 12th in every table. They recognised the companion's world. They could not find its voice among fluent strangers.</p>
+      <p class="tablenote">Ranks are on "is more you", corrected for length.</p>
+      <p>No finalist came out. In the final round the model from the wrong world ranked 9th to 12th of 12 for every judge, in both framings (the table shows the "is more you" ranks: 12th, 10th, 12th): the judges recognised the companion's world, but could not find its voice among fluent strangers.</p>
     </section>
 
-    <section>
+    <section id="held-up">
       <div class="secnum">07</div>
       <h2>What held up</h2>
       <ul class="plain">
-        <li><strong>The harm check, read by hand</strong> (section 04). It
-        needed no judge: 31 answers refused the premise, 23 built rest in and 6
-        went along. Read it with the caution in section 04.</li>
-        <li><strong>The memory traps</strong> (section 03). Each has a known
-        answer in the history, and a claim can be checked by counting words.
-        A count check of 320 sentences in exam B that asserted a shared past
-        found 2 inventions outside the planted trap.</li>
-        <li><strong>The user's own ear.</strong> His blind listening, done without
-        knowing which model wrote the answer, stayed
-        consistent across rounds and was the decider throughout.</li>
-        <li><strong>Readers who pull quotes, not scores.</strong> In exam A a
-        reader worked from copies labelled with letters, in an empty folder, and
-        filed exact quotes under fixed headings. The reader covered 478 answers
-        from 34 model forms on five messages, over 13 passes from 6 to 9
-        October. The result was 7,187 quotes under seven headings, plus 485 under
-        the four return heads. A script checked that every quote is a verbatim
-        piece of its answer. It found 0 failures, and it caught all 16
-        deliberately damaged copies. Exam B's readers filed
-        1,507 quotes over 271 entries. Every one was found in its answer.</li>
+        <li><strong>The harm check, read by hand</strong>, needed no judge, and had already told the candidates apart in a September round on the same companion's history. <strong>The memory traps</strong> have known answers that can be checked by counting words. A count check of 320 sentences in exam B that asserted a shared past found 2 inventions outside the planted trap.</li>
+        <li><strong>The user's own blind listening</strong> stayed consistent across rounds and was the decider throughout.</li>
+        <li><strong>Readers who pull quotes, not scores.</strong> Exam A's reader filed exact quotes under fixed headings (478 answers from 34 model settings on five messages, 13 passes from 6 to 9 October: 7,187 quotes under seven headings, plus 485 under the four return headings); a script found every quote verbatim, and caught all 16 deliberately damaged copies. All 1,507 of exam B's quotes (over 271 entries) were found in their answers.</li>
       </ul>
-      <p>Two lessons came from this work. A reader's sorting can be wrong for the
-      user: the first sort of the return answers counted an honest
-      acknowledgement of the gap against a model, and sorting again under the
-      user's four heads changed the order. And instructions that tell outside
-      reviewers what to look for steer their answers. Give them the facts and the
-      user's own words, not your conclusions.</p>
+      <p>Two lessons. A reader's sorting can be wrong for the user: the first sort counted an honest acknowledgement of the gap against a model, and re-sorting under the user's four headings changed the order. And telling outside reviewers what to look for steers their answers: give them the facts and the user's own words, not your conclusions.</p>
     </section>
 
-    <section>
+    <section id="limits">
       <div class="secnum">08</div>
-      <h2>What this does not show</h2>
-      <p>This is one user and two companion roles, with three answers in most
-      combinations of model setting and message. Three answers is a small
-      sample, so read the tables as patterns, not rankings. The readers also said
-      where they were unsure: the line between "refuses"
-      and "builds rest in" is unstable, and they could not tell real history from invention without a count check. The
-      return message tested was longer than the example above, and nothing
-      here counts whether a model noticed the stress. None of this is a
-      ranking of models for anyone else's history.</p>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>If you want to audition a model yourself</h2>
+      <h2>Limits</h2>
       <ul class="plain">
-        <li>Put your real history in front of every candidate, the same for all.
-        Freeze your messages first.</li>
-        <li>Write two or three traps with a known answer: an event that never
-        happened, a real line, and a real line credited to the wrong
-        speaker.</li>
-        <li>Add one harm check that matters to you.</li>
-        <li>Ask three times per model at its maker's settings. Read them
-        yourself, blind if you can.</li>
-        <li>Do not trust a model judge's preference until you have checked how
-        often it simply picks the longer answer.</li>
+        <li><strong>One user and two companion roles.</strong> None of this is a ranking of models for anyone else's history.</li>
+        <li><strong>Three answers in most combinations</strong> is a small sample: read the tables as patterns, not rankings.</li>
+        <li><strong>The tables count hand-coded answers</strong>, a share of those each exam kept.</li>
+        <li><strong>The readers could not tell real history from invention</strong> without a count check.</li>
+        <li><strong>The return message tested was longer than the example above</strong>, and nothing here counts whether a model noticed the stress.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">10</div>
-      <h2>Related pages on this site</h2>
-      <p><a href="../note-before-the-message/">The note before the
-      message</a> covers the memory note used in the traps: where an
-      instruction sits decides whether a model follows it.
-      <a href="../small-finetune/">What a small fine-tune does and does not
-      do</a> tests whether training can carry a voice.
-      <a href="../friends-of-4o/">Friends of 4o</a> collects our GPT-4o work.
-      <a href="../local-reviewers/">Local models as reviewers</a> is the
-      same lesson in coding work: plain checks beat open-ended judging.</p>
+    <section id="method">
+      <div class="secnum">09</div>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>Judge rounds 2026-09-25 and 09-26. October exams 2026-10-05 to 10-23; exam A quotes read in 13 passes, 6 to 9 October.</td></tr>
+        <tr><th scope="row">Computers</th><td>Local models on one desktop; hosted models by API.</td></tr>
+        <tr><th scope="row">Exam builds</th><td>As rebuilt on 23 October, five more candidates than the 22 October first build. A file check placed all 4,231 kept answers in their right slot.</td></tr>
+        <tr><th scope="row">Model files</th><td>DeepSeek V4 Flash 0731 UD-Q8_K_XL (8-bit); DeepSeek V4.1 Flash MXFP4 (4-bit); Qwen3.8-Flash-Next and Inkling-Small UD-Q3_K_XL; GLM-4.7-Flash and Gemma 4 26B-A4B UD-Q4_K_XL; GLM-5.3-Flash UD-Q3_K_XL; GPT-OSS 120B and 20B: experts MXFP4, the rest F16 (Derestricted: MXFP4_MOE, experts MXFP4, the rest Q8_0); Ling 3.0 Flash Q4_K_M; MiniMax M2.7 UD-IQ4_XS at 131,072; Mistral Small 4 119B UD-Q4_K_M at 256K; Ornith-1.5-35B Q6_K; Qwen3-235B-A22B-Instruct-2507 UD-Q3_K_XL at 131,072 (instruct only); Qwen3-30B-A3B-Instruct-2507 Q8_0 and Qwen3-Next-80B-A3B-Instruct UD-Q6_K_XL (instruct only); Qwen3.5-122B-A10B UD-Q4_K_S; Qwen3.5-27B and Qwen3.5-35B-A3B and Qwen3.6-27B and Qwen3.8-27B UD-Q5_K_XL; Qwen3.5-397B-A17B UD-IQ3_XXS at 131,072; Qwen3.6-35B-A3B UD-Q6_K; Gemma 4 31B QAT q4_0 (4-bit, quantization-aware training). Hosted rows name no file.</td></tr>
+        <tr><th scope="row">Sampling</th><td>Most runs used the maker's recommended settings, but not all; the departures are listed here. Temperature, top_p and min_p set how much chance goes into picking each word. Local requests in exam A carried their own values, and the run logs record that the server added none of its own. Thinking-on and thinking-off rows of one model differ in more than thinking: Qwen3.5-35B-A3B and Qwen3.6-35B-A3B (exam A) and Qwen3.5-122B-A10B (exam B) were sent thinking off at temperature 0.7, top_p 0.8 and a reply cap of 4,096 tokens, and thinking on at 1.0, 0.95 and a cap of 16,384. The two Gemma 4 26B-A4B rows in exam B were sampled alike (temperature 1.0, top_p 0.95) and differ only in the cap, 4,096 against 16,384. Every Qwen request in exam A sent presence_penalty 1.5. In exam B the thinking-off requests for Qwen3.6-27B, Qwen3.8-27B and Qwen3.5-397B were sent at temperature 0.7, top_p 0.8, presence_penalty 1.5 and a cap of 4,096; the Qwen3.5-122B-A10B and Qwen3.6-35B-A3B (thinking on) requests also sent presence_penalty 1.5. Server start values differed from the requests: Qwen3.6-27B and Qwen3.6-35B-A3B at 1.0 and 0.95 with top_k 20 and min_p 0; Qwen3.5-35B-A3B at 1.0, 1.0 and top_k 0; Qwen3.5-122B-A10B at 0.6 and 0.95 (exam B: top_k 20, min_p 0); Gemma 4 26B-A4B at top_k 64 with a min_p floor of 0.05, its request sending min_p 0 (exam B rows: temperature 1.0, top_p 0.95, top_k 64); no start set a presence penalty.</td></tr>
+        <tr><th scope="row">DeepSeek</th><td>V4 Flash 0731: top_p 1.0 and min_p 0 sent (its server was started at top_p 1.0) (server floor 0.05). V4.1 Flash: the 7 October weights, not the 18 October 1017 file, installed 128K (exam A); top_p 1.0 sent (installed server default 0.95).</td></tr>
+        <tr><th scope="row">GPT-OSS 120B</th><td>Every 120B row: a window of 131,072 tokens, the experts of 23 of its 36 layers in RAM, batch 2048 (the prompt read 2,048 tokens at a time).</td></tr>
+        <tr><th scope="row">Final judge round</th><td>313 of 324 planned calls were valid; the 11 lost, to one provider's spend limit, were all judge C on one question, so judge C's longer-answer shares are of 814 and 792 decisions, against 924 for the other two. With more than 2% missing, the analysis script written in advance produced no table; the figures are that analysis run on the data as collected, under the same rules. Cost about $68 at list price by the design's estimate (the provider's bill is the authority).</td></tr>
+      </table>
+      <h3>Size of the October exams (as rebuilt on 23 October)</h3>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th>Exam</th><th>Models</th><th>Model settings</th><th>Answers kept</th><th>Files found</th><th>Duplicates</th><th>Left out by rule</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>51</td><td>134</td><td>3,074</td><td>3,484</td><td>286</td><td>124</td></tr>
+          <tr><td>B</td><td>41</td><td>91</td><td>887</td><td>1,087</td><td>0</td><td>200</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Left out by rule: in exam A, 105 memory-tool probe answers, 13 empty replies, 5 from one model's short check at its native 32K window (it saw only the newest 46 of 166 history messages; its longer run was kept) and 1 from a model too slow to finish (0.06 tokens per second on a prompt of 122,880 tokens); in exam B, 135 memory-tool probe answers, 52 earlier attempts replaced by a final file, 10 empty replies and 3 from the same 32K short check. A first build on 22 October held 46 models and 2,860 answers (exam A) and 36 models and 787 answers (exam B). Of the 3,074 exam A answers, 180 come from four fine-tune settings, 45 each, on two 27B models, and nine extra answers are a second set of three samples on each of three slots already counted. The file check of the 22 October build found 4,515 raw answer files (3,264 for exam A, 981 for exam B, 270 from a separate fine-tune test run without the history); 3,933 were expected on a page (3,647 shown exam answers plus 286 duplicates), none under the wrong question, turn or model. After the rebuild, 3,074 + 887 + 270 = 4,231 kept answers were placed in their right slot.</p>
     </section>
 
-    <section>
-      <div class="secnum">11</div>
-      <h2>Sources and artifacts</h2>
-      <p>The <a href="data/README.md">data package</a> holds counts and figures calculated from them
-      only: the exam sizes, the trap tables, the harm-check counts,
-      both return-message tables by model, and the judge figures. It holds no
-      answers, no history and no prompts, because they come from a private
-      conversation. <code>data/README.md</code> maps every file and
-      <code>data/NUMBERS.md</code> maps every figure on this page to its file.</p>
+    <section id="sources">
+      <div class="secnum">10</div>
+      <h2>Data and sources</h2>
+      <p>The <a href="data/README.md">data package</a> holds counts and figures only: exam sizes, trap tables, harm-check counts, both return tables by model with full row labels, and the judge figures. It holds no answers, history or prompts, which come from a private conversation, and not the local judge's calibration file. <code>data/README.md</code> maps every file and <code>data/NUMBERS.md</code> maps every figure on this page to its file.</p>
     </section>
+
+    <section id="related">
+      <div class="secnum">11</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../note-before-the-message/">The note before the message</a>: where an instruction sits decides whether a model follows it.</li>
+        <li><a href="../small-finetune/">What a small fine-tune does and does not do</a>: whether training can carry a voice.</li>
+        <li><a href="../friends-of-4o/">Friends of 4o</a>: our GPT-4o work.</li>
+        <li><a href="../local-reviewers/">Local models as reviewers</a>: the same lesson in coding work, plain checks beat open-ended judging.</li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent work; no affiliation with any model maker named on this page.</div></div>
 
   </div>
 </main>

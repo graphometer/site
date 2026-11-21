@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Estimating Inkling 975B's speed from bytes per token</title>
-<meta name="description" content="A calculation based on the weights used per token put speed at 5.2 to 5.7 tokens per second. The server reported 3.43 on a short prose reply.">
+<meta name="description" content="A calculation from Inkling 975B's expert weights per token predicted 5.2 to 5.7 tokens a second on an RTX 5090 desktop; one short reply ran at 3.43.">
 <link rel="canonical" href="https://graphometer.ai/bytes-per-token/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Estimating Inkling 975B's speed from bytes per token">
-<meta property="og:description" content="A calculation based on the weights used per token put speed at 5.2 to 5.7 tokens per second. The server reported 3.43 on a short prose reply.">
+<meta property="og:description" content="A calculation from Inkling 975B's expert weights per token predicted 5.2 to 5.7 tokens a second on an RTX 5090 desktop; one short reply ran at 3.43.">
 <meta property="og:url" content="https://graphometer.ai/bytes-per-token/">
 <meta property="og:image" content="https://graphometer.ai/og/bytes-per-token.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Estimating Inkling 975B's speed from bytes per token">
-<meta name="twitter:description" content="A calculation based on the weights used per token put speed at 5.2 to 5.7 tokens per second. The server reported 3.43 on a short prose reply.">
+<meta name="twitter:description" content="A calculation from Inkling 975B's expert weights per token predicted 5.2 to 5.7 tokens a second on an RTX 5090 desktop; one short reply ran at 3.43.">
 <meta name="twitter:image" content="https://graphometer.ai/og/bytes-per-token.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -133,6 +133,10 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -163,30 +167,67 @@
 <main itemscope itemtype="https://schema.org/Article">
 <div class="wrap">
   <div class="hero">
-    <div class="eyebrow">Guide &middot; 26 September 2026 &middot; arithmetic with recorded runs from 15 September (desktop local calendar) &middot; one RTX 5090 desktop; one laptop comparison</div>
-    <h1 itemprop="headline">Bytes per <em>token</em></h1>
-    <p class="subtitle">Predicting Inkling 975B: 5.2 to 5.7 tokens per second by arithmetic, server-reported 3.43 on short prose.</p>
-    <p class="lead">A giant mixture-of-experts model can use only a small part of its weights for each new token and still speak slowly. For the Inkling 975B UD-IQ1_S files here, that part includes <strong>6.01 GB of routed expert weights per token (arithmetic)</strong>. Transferring the effective rate from smaller models gives <strong>5.2 to 5.7 tokens per second (arithmetic)</strong>, before allowing for different kernels, attention, or disk misses. The recorded short-prose reply reached <strong>3.43 tokens per second (server-reported)</strong>. This is a useful budget before a download, not a promise of speed.</p>
+    <div class="eyebrow">Guide &middot; one RTX 5090 desktop; one laptop comparison</div>
+    <h1 itemprop="headline">Estimating Inkling 975B's speed from <em>bytes per token</em></h1>
+    <p class="subtitle">On one RTX 5090 desktop, a calculation put Inkling 975B's writing speed at 5.2 to 5.7 tokens a second; one short prose reply, on a setup reading weights from the drive, ran at 3.43, so the estimate had the right scale but was too high for that run.</p>
+    <div class="note"><span class="label">In short</span>
+      <ul class="plain">
+        <li><strong>Estimate a giant model's speed before downloading.</strong> "Bytes per token" here means the expert weights the model has to read for each token (word piece) it writes. Divide a rate from a model already timed on your machine by it. <a href="#use">Steps and a worked example</a></li>
+        <li><strong>Treat the answer as a budget, not a promise.</strong> It leaves out costs such as attention and reads from the drive. <a href="#prediction">What we found</a></li>
+        <li><strong>Adding a laptop did not make it write faster in this test.</strong> With one run each, this way of splitting the model was slower on each matched prompt type: 3.13 against 3.43 on short prose. <a href="#pair">Why</a></li>
+      </ul>
+    </div>
     <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-27">27 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-    <div class="nonaff">Independent work. No affiliation with the makers identified in the footer.</div>
   </div>
 
-  <section id="method">
-    <div class="secnum">01</div><h2>What it is</h2>
-    <p>A mixture-of-experts model chooses a few feed-forward networks, called routed experts, at each expert layer. The file contains all the choices. A token uses only the selected ones, plus shared experts, attention and the rest of the network. Total file size answers a capacity question. The bytes used at each step help answer a speed question.</p>
-    <p>For a configuration that keeps routed experts in system RAM, start with their stored byte count. Use the actual quantization of each tensor, the named array of weights in a GGUF file. A label such as IQ1_S does not mean every tensor costs exactly one bit per weight.</p>
-    <pre class="log">B = sum over CPU expert layers of
-    (bytes of the routed expert banks x selected experts / total experts)
+  <section id="use">
+    <div class="secnum">01</div><h2>What to do before a big download</h2>
+    <ol class="plain">
+      <li><strong>Get the exact tensor list (the named weight arrays) for the compressed file you want</strong>, from a published header dump or the header bytes of every shard (file part). A parameter count or average bit width cannot show which tensors got higher precision.</li>
+      <li><strong>Decide which parts go where.</strong> Count the weights of the selected experts that sit in system RAM, plus shared experts, attention or output head if they also stay on the CPU.</li>
+      <li><strong>Work out a rate from the anchor, a model already timed on your own machine:</strong> its bytes per token times its recorded prose speed. Match build, threads, <code>--n-cpu-moe</code> (layers whose experts stay on the CPU side), compression and draft settings. Keep first-request and warm (second-request) figures separate.</li>
+      <li><strong>Divide that rate (bytes a second) by the target's bytes per token.</strong> If even that looks too slow, extra model capacity does not solve the writing speed. If acceptable, still do a real run.</li>
+    </ol>
+    <h3>Worked example, with this page's figures</h3>
+    <ul class="plain">
+      <li>Inkling 975B's expert budget (steps 1 and 2): 6,006,472,704 bytes/token</li>
+      <li>Effective rate from three other models' prose runs here (step 3): 31.044 to 34.263 GB/s</li>
+      <li>Predicted decode (writing speed), rate divided by budget (step 4): 5.168 to 5.704 tokens/s</li>
+      <li>Rounded estimate: 5.2 to 5.7 tokens/s (arithmetic)</li>
+    </ul>
+    <p>Both tools are in the page's data folder: a <a href="data/tools/read_headers.py">header reader</a> and a <a href="data/tools/calculate.py">calculator</a> that recomputes this page. Neither starts a model.</p>
+  </section>
 
-R = B_anchor x measured tokens per second
-predicted tokens per second = R / B_target</pre>
-    <p><strong>All three expressions are arithmetic.</strong> B is an expert-weight budget per logical output token. R is an effective expert throughput inferred from a complete decode, not a direct measurement of RAM traffic. We found no direct RAM-bandwidth record in the evidence used here. If instead you divide bytes per token by bytes per second, the result is seconds per token.</p>
-    <p>The estimate assumes the selected expert weights have to be supplied for each step. It ignores weight reuse in cache and treats quantized file bytes as a proxy for runtime traffic. Computation, synchronization, activations and attention can all consume time. Speculative decoding can change how many output tokens one weight pass buys. This is an approximate budget, not a proven hardware upper bound.</p>
+  <section id="prediction">
+    <div class="secnum">02</div><h2>What we found</h2>
+    <p>Inkling 975B is a mixture-of-experts model: it uses only a few of its expert blocks for each token. The worked example above gives 5.2 to 5.7 tokens a second. "Arithmetic" means calculated, not timed; "server-reported" is the speed the server printed. Inkling 975B's own runs, on the desktop alone and with a laptop added (the pair):</p>
+    <div class="data-wrap"><table class="data">
+      <thead><tr><th>Reply requested</th><th>Desktop: tokens; t/s; eval ms<br>(server-reported)</th><th>Pair: tokens; t/s; eval ms<br>(server-reported)</th></tr></thead>
+      <tbody>
+        <tr><td class="t">Short harbour-town prose</td><td>71; 3.43; 20424.35</td><td>80; 3.13; 25201.99</td></tr>
+        <tr><td class="t">Weather tool call</td><td>18; 4.98; 3414.75</td><td>18; 3.26; 5222.13</td></tr>
+        <tr><td class="t">Planted code word, 12 tokens, from a 1,950-token prompt</td><td>12; 4.65; 2367.23</td><td>12; 3.34; 3293.87</td></tr>
+        <tr><td class="t">Planted code word, 12 tokens, from a 7,641-token prompt</td><td>Not run</td><td>12; 3.35; 3279.71</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tablenote">The code word was hidden in the prompt. On this build the printed rate is (completed tokens minus one) / eval seconds. Dividing the completed token count itself by eval seconds gives a different rate; the desktop tool call then falls inside the prediction band.</p>
+    <p>The desktop's top value, 4.98, is an 18-token tool call. The key prose comparison is <strong>3.43 versus 3.13</strong>, sampled replies to the same prompt. The calculation gets the scale right, a low single-digit speed, but not the short-prose speed; it leaves out costs such as kernels (the low-level maths code), attention or reads that have to go to the drive, and the runs do not split the gap among them.</p>
+  </section>
+
+  <section id="method">
+    <div class="secnum">03</div><h2>How the estimate works</h2>
+    <p>File size tells you whether a model fits; bytes used per step, how fast it writes. Count each tensor at its actual quantization (compression level): IQ1_S does not mean every tensor costs one bit per weight.</p>
+    <ul class="plain">
+      <li><code>B = sum over CPU expert layers of (bytes of the routed expert banks x selected experts / total experts)</code></li>
+      <li><code>R = B_anchor x measured tokens per second</code></li>
+      <li><code>predicted tokens per second = R / B_target</code></li>
+    </ul>
+    <p>B is bytes per token; the routed expert banks are the stored weights of the experts a token can be sent to. R is inferred from the anchor's complete reply, not a measurement of RAM traffic. The estimate ignores cache reuse, computation and attention.</p>
   </section>
 
   <section id="headers">
-    <div class="secnum">02</div><h2>Count the bytes at their actual placement</h2>
-    <p>We read the GGUF metadata and tensor directories afresh on 26 September, stopping before the weight payloads. The package lists <a href="data/files.csv">every shard, its exact file size and header hash</a>, and <a href="data/tensors.csv">every tensor and its contribution</a>. No weights were loaded. Decimal GB means bytes divided by 1,000,000,000 (unit conversion).</p>
+    <div class="secnum">04</div><h2>Counting the bytes</h2>
+    <p>Counts come from file headers, with no weights loaded (<a href="data/files.csv">every shard</a>, <a href="data/tensors.csv">every tensor</a>). GB means bytes divided by 1,000,000,000.</p>
     <div class="data-wrap"><table class="data">
       <thead><tr><th>Model files</th><th>File GB<br>(arithmetic)</th><th>Routed expert selection<br>(measured header)</th><th>RAM expert GB/token<br>(arithmetic)</th></tr></thead>
       <tbody>
@@ -196,9 +237,8 @@ predicted tokens per second = R / B_target</pre>
         <tr><td class="t">Inkling 975B UD-IQ1_S</td><td>270.16</td><td>6 of 256</td><td>6.006</td></tr>
       </tbody>
     </table></div>
-    <p class="tablenote">File sizes are measured filesystem byte counts, converted and rounded here. Header values describe these files. Qwen's RAM count covers blocks 0 to 56 only; the other rows cover every routed expert bank. The extra Qwen draft block is not counted as a normal output-token pass. The DeepSeek Q8 file name is the product name; its routed expert banks are MXFP4 in this header.</p>
-    <p>For Inkling 975B, the routed banks contain <strong>256,276,168,704 bytes</strong>. Multiply by <strong>6 / 256</strong> to get <strong>6,006,472,704 bytes per token (arithmetic)</strong>. The first two of its 66 blocks are dense, so this sum contains the expert banks in blocks 2 to 65. It uses each bank's own storage type, including its quantization scales.</p>
-    <p>Other weights still matter. Here is the target's remaining inventory and how it enters this particular calculation:</p>
+    <p class="tablenote">Qwen's RAM count covers blocks 0 to 56 only, without its extra draft block; the other rows cover every expert bank. The DeepSeek Q8 file name is the product name; its expert weights are MXFP4 in this header.</p>
+    <p>For Inkling 975B the expert banks contain <strong>256,276,168,704 bytes</strong>; times <strong>6 / 256</strong> gives <strong>6,006,472,704 bytes per token</strong>. Its first two of 66 blocks are dense, so this covers blocks 2 to 65. The rest of its weights:</p>
     <div class="data-wrap"><table class="data">
       <thead><tr><th>Inkling 975B category</th><th>Stored bytes<br>(header arithmetic)</th><th>Treatment</th></tr></thead>
       <tbody>
@@ -210,29 +250,11 @@ predicted tokens per second = R / B_target</pre>
         <tr><td class="t">Input embedding</td><td>694,738,944</td><td class="t">One row is 3,456 bytes, not the whole table</td></tr>
       </tbody>
     </table></div>
-    <p>These categories are an inventory, not a measured traffic trace. The RAM denominator counts only routed expert matrices. It excludes the tiny input lookup as well as work on the GPU. Adding all those GPU bytes to the RAM count would mix two different memory systems. If your placement puts shared experts, attention or the output head on the CPU, account for those separately before using this estimate.</p>
-  </section>
-
-  <section id="setup">
-    <div class="secnum">03</div><h2>What we ran, exactly</h2>
-    <p>The anchor runs were recorded on this site's RTX 5090 desktop on 15 September 2026 in the desktop's local calendar; the stored created values run from 15 September 23:52 UTC through 16 September 02:52 UTC. They served a 262,144-token window but used a short water-pump prompt, not a full window. Each requested a paragraph with a 320-token cap and thinking disabled; the server was started at temperature 1.0; the water-pump request set temperature 0. Each returned visible prose and stopped before the cap. One request ran at a time, with 24 compute threads and 24 batch threads.</p>
-    <div class="data-wrap"><table class="data">
-      <thead><tr><th>Recorded setup</th><th>llama.cpp commit</th><th>Placement and draft</th></tr></thead>
-      <tbody>
-        <tr><td class="t">Inkling-Small</td><td>946fc11d1</td><td class="t">--n-cpu-moe 42; f16 cache; no speculative draft</td></tr>
-        <tr><td class="t">Qwen3.5-397B</td><td>c8e03ce</td><td class="t">--n-cpu-moe 57; --no-mmap; draft-mtp, maximum 6, gate 0.75</td></tr>
-        <tr><td class="t">DeepSeek V4 Flash Q8</td><td>5f55650</td><td class="t">-cmoe, all routed experts in system RAM; --no-repack; no speculative draft</td></tr>
-      </tbody>
-    </table></div>
-    <p>All three launches left batch-size flags unset. The <a href="data/config/anchors.md">full anchor flags</a> and <a href="data/config/prose-request-excerpt.sh">request construction</a> ship with the page. The sweep's contemporary record notes concurrent download activity. These are historical observations, not a controlled bandwidth experiment.</p>
-    <p>Inkling 975B used a 131,072-token window, f16 cache, flash attention, one slot and 24 desktop threads. Its launcher points to the draft Inkling implementation whose retained build record is 10897 / 946fc11d1. Run A used <code>--n-cpu-moe 66</code>. Run A is the paging placement: the desktop log warns that CPU tensor overrides were used with mmap enabled, and the run ledger marks that placement as paging. The 3.43 tokens per second figure is the server's decode rate for that placement, not a measurement of resident RAM traffic. Run B used <code>--n-cpu-moe 42</code> and moved blocks 42 to 65's routed experts to an ASUS ROG Flow Z13 through remote procedure call (RPC), with the worker requested at 8 threads. Attention and shared experts stayed on the desktop card. The probe used temperature 1.0 and reasoning effort <code>none</code>.</p>
-    <p>Neither target launch set <code>-b</code> or <code>-ub</code>. That branch's defaults were <strong>2048 and 512</strong>, respectively (recorded source). This matters to prompt reading. A tuned reading result cannot replace these decode observations; see <a href="../batch-size/">the batch-size study</a>.</p>
-  </section>
+      </section>
 
   <section id="anchors">
-    <div class="secnum">04</div><h2>Observed: prose anchors, not tiny answers</h2>
-    <p>These speeds are the server's decode rate, <code>timings.predicted_per_second</code>, not request wall time. On Inkling build 946fc11d1, the rate is (completed tokens minus one) / eval seconds. The Qwen and DeepSeek <code>predicted_per_second</code> values divide the completed token count itself by eval seconds. We retain these different server conventions in the arithmetic. The rows show individual repeated results, not confidence intervals. Word counts split the recorded visible text on whitespace.</p>
-    <div class="data-wrap"><table class="data">
+    <div class="secnum">05</div><h2>The measured runs the estimate is based on</h2>
+        <div class="data-wrap"><table class="data">
       <thead><tr><th>Short-prompt output</th><th>Decode t/s<br>(server-reported, 15 Sep, desktop local calendar)</th><th>B x rate, GB/s<br>(arithmetic)</th></tr></thead>
       <tbody>
         <tr><td class="t">Inkling-Small: finished 174-word paragraph, 202 generated tokens each</td><td>11.77; 11.69</td><td>31.26; 31.04</td></tr>
@@ -240,83 +262,67 @@ predicted tokens per second = R / B_target</pre>
         <tr><td class="t">DeepSeek V4 Flash Q8: second finished 166-word paragraph, 209 generated tokens</td><td>9.93</td><td>34.26</td></tr>
       </tbody>
     </table></div>
-    <p>DeepSeek's first prose reply was much slower: <strong>2.07 t/s (measured)</strong>, also a finished 166-word paragraph of 209 tokens. We retain it in the package. The second request reused a prompt prefix. We use that second decode as the warm operating estimate, not the first request or an average that hides the difference. These records do not isolate why the first reply was slow.</p>
-    <p>Qwen used speculative decoding and recorded 90 accepted draft tokens out of 106 proposed in each reply (measured counters). Its product of bytes and output rate is therefore only an effective proxy. It lands between the two non-speculative models; removing Qwen leaves the selected range unchanged. Neither the proxy nor this agreement measures physical RAM bandwidth.</p>
-    <p>We use <strong>31.0 to 34.3 GB/s (arithmetic)</strong> as the observed operating envelope of that proxy. It is configuration-dependent. The batch sweep's Qwen result, for example, reports 16.41 t/s after a long read but returned just a 17-character code word (measured, 21 September). That is not the prose anchor used here.</p>
-  </section>
-
-  <section id="prediction">
-    <div class="secnum">05</div><h2>Apply the budget to Inkling 975B</h2>
-    <pre class="log">Expert budget: 6,006,472,704 bytes/token
-Effective rate from selected prose runs: 31.044 to 34.263 GB/s
-Predicted decode: 5.168 to 5.704 tokens/s
-Rounded estimate: 5.2 to 5.7 tokens/s (arithmetic)</pre>
-    <p>This transfers an effective rate between different models and builds. The estimate was reconstructed on 26 September using already recorded runs; it is not a prospectively tested prediction. The target's measurements on 15 September in the run ledger's local calendar were:</p>
-    <div class="data-wrap"><table class="data">
-      <thead><tr><th>Reply requested</th><th>Desktop: tokens; t/s; eval ms<br>(server-reported)</th><th>Pair: tokens; t/s; eval ms<br>(server-reported)</th></tr></thead>
-      <tbody>
-        <tr><td class="t">Short harbour-town prose</td><td>71; 3.43; 20424.35</td><td>80; 3.13; 25201.99</td></tr>
-        <tr><td class="t">Weather tool call</td><td>18; 4.98; 3414.75</td><td>18; 3.26; 5222.13</td></tr>
-        <tr><td class="t">Planted code word, 12 tokens, from a 1,950-token prompt</td><td>12; 4.65; 2367.23</td><td>12; 3.34; 3293.87</td></tr>
-        <tr><td class="t">Planted code word, 12 tokens, from a 7,641-token prompt</td><td>Not run</td><td>12; 3.35; 3279.71</td></tr>
-      </tbody>
-    </table></div>
-    <p class="tablenote">On build 946fc11d1, the server's printed tokens per second is (completed tokens minus one) / eval seconds. Raw eval milliseconds are shown beside every desktop and pair rate. Dividing the completed token count itself by eval seconds gives a different rate; the desktop tool call then falls inside the arithmetic prediction band. The short-prose result remains below the estimate.</p>
-    <p>All returned visible prose, a tool call or the requested code word, with no recorded reasoning text. The prose replies stayed below the 120-token cap; the tool and recall requests had caps of 80 and 40. The saved prose stdout contains only a prefix, so we do not assign a full-reply word count. The server logs record an untruncated stop.</p>
-    <p>The desktop's server-reported range is <strong>3.43 to 4.98 t/s</strong>, but its top value is an 18-token tool call. The pair's complete server-reported range is <strong>3.13 to 3.35 t/s</strong>. These ranges use the Inkling timing convention above. The most relevant prose comparison is <strong>3.43 versus 3.13</strong>, on different sampled replies to the same short prompt. None of these target runs is a sustained essay-speed measurement.</p>
-    <p>The arithmetic gets the scale of the problem: a low single-digit speaking rate is plausible even with very low-bit files. It does not reproduce the short-prose speed. The model leaves out costs that the recorded decode includes, and the runs do not apportion the gap among them.</p>
+    <p>DeepSeek's first reply, the same 166 words and 209 tokens, ran at <strong>2.07 t/s (measured)</strong>. The estimate uses the second, warm reply, which reused a prompt prefix.</p>
+    <p>Qwen used speculative decoding, where a drafter guesses tokens ahead (90 of 106 drafted tokens accepted per reply), so its product is only a proxy; removing it leaves the range unchanged. The range depends on configuration: the batch-size sweep's Qwen figure, 16.41 t/s (measured, 21 September), was a 17-character code-word reply after a long prompt.</p>
   </section>
 
   <section id="pair">
-    <div class="secnum">06</div><h2>Why the second machine did not add speaking speed</h2>
-    <p>The split changes where expert work runs, not how many expert bytes one token needs. From the same headers, the pair puts <strong>3,647,766,528 bytes per token</strong> on the desktop's routed-expert path and <strong>2,358,706,176</strong> on the laptop's path (arithmetic). Their sum is still the same expert budget.</p>
-    <pre class="log">Approximate time for one token on the pair:
-  desktop expert bytes / desktop effective rate
-+ laptop expert bytes / laptop effective rate
-+ dependent transfers, attention and other work</pre>
-    <p>Those layer stages depend on the preceding activations. Their times cannot be replaced by a single division by the sum of both machines' memory bandwidths. In this placement, remote experts feed results back into work that remains on the desktop. More memory capacity can help a model fit, while remote work and communication can still make a token take longer.</p>
-    <p>The recorded slowdown is consistent with that added cost, but this run did not time RPC transfers or measure the laptop's effective memory rate. It does not prove that cable latency alone caused the slowdown, or that every split would lose. It shows that this particular placement lost on each matched prompt type. <a href="../two-boxes/">Two boxes</a> covers the broader capacity and speed trade.</p>
-  </section>
-
-  <section id="use">
-    <div class="secnum">07</div><h2>Before you download a model</h2>
-    <ol class="plain">
-      <li><strong>Get an exact tensor inventory for the quantization.</strong> Use a published header dump or header bytes for every shard. A parameter count and an advertised average bit width cannot tell you which tensors received higher precision.</li>
-      <li><strong>Choose a plausible placement.</strong> Count selected routed expert banks in RAM; account separately for shared experts, attention and the output head if those also stay on the CPU. Leave room for the cache and working buffers on the card.</li>
-      <li><strong>Calibrate on a recorded prose run from your own machine.</strong> Match the build, thread count, <code>--n-cpu-moe</code>, quantization family and draft settings as closely as possible. Keep first-request and warm figures separate.</li>
-      <li><strong>Divide effective bytes per second by target bytes per token.</strong> Treat the answer as a budget. If even that looks too slow, extra model capacity does not solve the speaking problem. If it looks acceptable, a real run is still needed.</li>
-    </ol>
-    <p>The shipped <a href="data/tools/read_headers.py">header reader</a> takes existing GGUF paths and writes metadata and tensor descriptors only. The <a href="data/tools/calculate.py">calculator</a> recomputes this page from its shipped header dumps and response records. Neither script starts a model.</p>
+    <div class="secnum">06</div><h2>Why the second machine did not add speed</h2>
+    <p>Splitting changes where expert work runs, not the bytes a token needs: <strong>3,647,766,528 bytes per token</strong> on the desktop and <strong>2,358,706,176</strong> on the laptop (arithmetic), the same budget in sum. Roughly, time for one token on the pair is <code>desktop expert bytes / desktop effective rate + laptop expert bytes / laptop effective rate + dependent transfers, attention and other work</code>. Each layer waits for the one before, so bandwidths do not simply add. Transfers and the laptop's memory speed were not measured, so this does not prove cable latency alone caused the slowdown, or that every split would lose. More in <a href="../two-boxes/">Two boxes</a>.</p>
   </section>
 
   <section id="limits">
-    <div class="secnum">08</div><h2>What this does not show</h2>
+    <div class="secnum">07</div><h2>Limits</h2>
     <ul class="plain">
-      <li><strong>A portable RAM rating.</strong> The effective rate depends on the build, thread count, placement, quantization kernels, cache state and draft branch. The Inkling implementation here was a draft llama.cpp branch. Qwen's speculative draft is a different issue and is separately disclosed.</li>
-      <li><strong>Long-context speaking or prompt reading.</strong> Serving a large window does not mean the anchor replies filled it. Attention and cache work grow differently from routed expert bytes. Batch settings change prompt reading; this decode calculation does not predict reading time.</li>
-      <li><strong>A measured total memory-traffic count.</strong> Headers describe storage. Repacking, dequantization, caches and speculation change runtime traffic. The tensor inventory documents what was included and excluded.</li>
-      <li><strong>A controlled two-machine mechanism test.</strong> There was one run per target placement, sampled short replies, and no breakdown of computation, paging or RPC time.</li>
-      <li><strong>Model quality or other giant models' speed.</strong> Nothing here ranks answers or predicts an unverified trillion-parameter file from its name.</li>
+      <li><strong>The rate is not a portable RAM rating.</strong> It depends on build, threads, placement, kernels, cache state and draft branch. Downloads ran during the anchor runs; this was not a controlled bandwidth experiment.</li>
+      <li><strong>Checked after the fact.</strong> Reconstructed from recorded runs, not tested in advance; not a proven hardware upper bound. File bytes stand in for the bytes actually moved; repacking, dequantization, caches and speculation change real traffic.</li>
+      <li><strong>Short replies only.</strong> Attention and cache costs grow with long prompts and are not in the estimate; no sustained essay speed or prompt-reading time.</li>
+      <li><strong>One run per placement,</strong> with no breakdown of computation, paging or remote time.</li>
+      <li><strong>Speed only.</strong> Nothing here ranks answers or predicts other giant models.</li>
     </ul>
   </section>
 
-  <section id="related">
-    <div class="secnum">09</div><h2>Related pages on this site</h2>
-    <p><a href="../inkling-small/">Inkling-Small</a> records the family and its branch-specific limits. <a href="../two-boxes/">Two boxes</a> examines the split placement. <a href="../kimi-k3/">Kimi K3</a> covers a separate large-model case. The <a href="../roster-2026-09/">September roster</a> lists installed models and their evidence, and <a href="../batch-size/">Batch size</a> explains prompt-reading settings. <a href="../speculation-gate/">Slower by default</a> and <a href="../l3-threads/">The wrong flag</a> show why the draft gate and thread count belong beside a speed figure.</p>
+  <section id="setup">
+    <div class="secnum">08</div><h2>How this was measured</h2>
+    <table class="facts">
+      <tr><th>Computers</th><td>RTX 5090 desktop; for the pair, an ASUS ROG Flow Z13 laptop over a cable link (remote procedure call)</td></tr>
+      <tr><th>Runs</th><td>15 September 2026, desktop local calendar (anchor timestamps 15 September 23:52 to 16 September 02:52 UTC); headers read and arithmetic done 26 September</td></tr>
+      <tr><th>Anchor requests</th><td>262,144-token window, not filled; short water-pump prompt, one paragraph, 320-token cap, thinking off; request temperature 0 (server started at 1.0); one request at a time; 24 compute and 24 batch threads; batch-size flags unset</td></tr>
+      <tr><th>Inkling 975B server</th><td>131,072-token window, f16 cache, flash attention, one slot, 24 threads; draft Inkling build 10897 / 946fc11d1; temperature 1.0, reasoning effort <code>none</code>; <code>-b</code> and <code>-ub</code> unset (defaults 2048 and 512)</td></tr>
+      <tr><th>Desktop run</th><td><code>--n-cpu-moe 66</code>; marked as paging (reading weights from the drive), so its 3.43 is not a measurement of RAM traffic</td></tr>
+      <tr><th>Pair run</th><td><code>--n-cpu-moe 42</code>; routed experts of blocks 42 to 65 on the Z13, worker at 8 threads; attention and shared experts on the desktop card</td></tr>
+      <tr><th>Reply caps</th><td>Prose 120 tokens, tool 80, recall 40</td></tr>
+      <tr><th>Speed convention</th><td>Qwen and DeepSeek: completed tokens / eval seconds; Inkling as noted above</td></tr>
+    </table>
+    <div class="data-wrap"><table class="data">
+      <thead><tr><th>Anchor setup</th><th>llama.cpp commit</th><th>Placement and draft</th></tr></thead>
+      <tbody>
+        <tr><td class="t">Inkling-Small</td><td>946fc11d1</td><td class="t">--n-cpu-moe 42; f16 cache; no speculative draft</td></tr>
+        <tr><td class="t">Qwen3.5-397B</td><td>c8e03ce</td><td class="t">--n-cpu-moe 57; --no-mmap; draft-mtp, maximum 6, gate 0.75</td></tr>
+        <tr><td class="t">DeepSeek V4 Flash Q8</td><td>5f55650</td><td class="t">-cmoe, all routed experts in system RAM; --no-repack; no speculative draft</td></tr>
+      </tbody>
+    </table></div>
+    <p><a href="data/config/anchors.md">Full anchor flags</a> and <a href="data/config/prose-request-excerpt.sh">request construction</a>.</p>
   </section>
 
   <section id="sources">
-    <div class="secnum">10</div><h2>Sources and artifacts</h2>
-    <p>The evidence ships as a data package: recorded responses and log excerpts, fresh header-reader output, and the arithmetic that connects them. If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
+    <div class="secnum">09</div><h2>Data and sources</h2>
     <ul class="plain">
-      <li><a href="data/README.md">Package guide</a>: provenance, apparent disagreements and redactions.</li>
-      <li><a href="data/NUMBERS.md">Every number</a>: source files, fields and derivations.</li>
-      <li><a href="data/files.csv">Shard census</a> and <a href="data/tensors.csv">tensor census</a>: exact bytes and inclusion decisions.</li>
-      <li><a href="data/arithmetic.json">Recomputed arithmetic</a>: unrounded anchor products and prediction.</li>
+      <li><a href="data/README.md">Package guide</a>: provenance and redactions.</li>
+      <li><a href="data/NUMBERS.md">Every number</a>, with its source.</li>
+      <li><a href="data/files.csv">List of file parts (shards)</a> and <a href="data/tensors.csv">list of tensors</a>.</li>
+      <li><a href="data/arithmetic.json">Recomputed arithmetic</a>, unrounded.</li>
       <li><a href="data/runs/975b-desktop.log">Desktop target log</a>, <a href="data/runs/975b-pair.log">pair target log</a> and <a href="data/runs/975b-probe-stdout.txt">probe stdout</a>.</li>
     </ul>
-    <p>Source excerpts document the Inkling architecture and expert-offload pattern at the retained build revision 946fc11d1. Anchor build observations record c8e03ce and 5f55650 as well. Header hashes identify the bytes read, not the unread weight payloads. No model weights are distributed here.</p>
+        <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong.</p>
   </section>
+
+  <section id="related">
+    <div class="secnum">10</div><h2>Related pages</h2>
+    <p><a href="../inkling-small/">Inkling-Small</a>, <a href="../two-boxes/">Two boxes</a>, <a href="../kimi-k3/">Kimi K3</a>, the <a href="../roster-2026-09/">September roster</a>, <a href="../batch-size/">Batch size</a>, <a href="../speculation-gate/">Slower by default</a> and <a href="../l3-threads/">The wrong flag</a>.</p>
+  </section>
+
+  <div class="endnote"><div class="nonaff">Independent work. No affiliation with the makers identified in the footer.</div></div>
 </div>
 </main>
 <footer>

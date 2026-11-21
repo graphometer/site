@@ -125,6 +125,17 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .note p{color:var(--ink);max-width:none}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:66ch}
+  ol.plain li{margin-bottom:12px}
+  ol.plain li strong{color:var(--ink);font-weight:600}
+  section h3{font-size:19px;font-weight:600;margin:30px 0 10px}
+  .hero .note{margin-top:26px}
+  .hero p.fineprint{margin-top:10px}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -156,500 +167,161 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · runs 2026-08-05 to 08-06 · files re-read 2026-08-08 · prior art corrected 2026-08-10 · budget advice revised 2026-08-11 · reading speeds updated September 2026</div>
-      <h1 itemprop="headline">Field card: <em>Qwen3.5</em> (122B and 397B)</h1>
-      <p class="lead">Qwen3.5 is a family of mixture-of-experts models (huge
-      in total, small per token: only a few of the many expert sub-networks
-      fire for each token). Two of them went into service on one desktop
-      with a single 32 GB graphics card, two days apart, by the same method:
-      the 122B, which runs at 26 to 38 tokens per second, and the 397B,
-      which runs at 14 to 20. Both owe their speed to a guessing head
-      shipped inside the model files, and the page's central finding is the
-      trap next to it: run that head without its confidence gate, and on
-      creative text it makes the model <em>slower</em> than no speculation
-      at all, while every benchmark-shaped prompt looks great. The gate is
-      one flag, off by default in the runtime we used. None of this setup
-      is a first (the quantizer's own guide runs the 397B on less GPU than
-      ours; section 10 links prior art). What this page adds is the
-      measurement: exact artifact accounting (sizes throughout, revision
-      and checksums where kept), placement arithmetic from file headers,
-      the gate trap with its numbers, and a recorded head-to-head on one
-      puzzle where the 397B finished inside a smaller output-token cap
-      than the 122B needed. Every number
-      traces to a dated record or to the model files themselves, and where
-      a fact is a vendor's claim rather than our measurement, we say so.</p>
+      <div class="eyebrow">Field card · two Qwen3.5 models on one RTX 5090 desktop</div>
+      <h1 itemprop="headline"><em>Qwen3.5</em> 122B and 397B speeds on one RTX 5090 desktop</h1>
+      <p class="lead">On one desktop with an RTX 5090 graphics card and 188 GiB of system RAM, one compressed file of each model wrote about 26 to 38 tokens (word pieces) a second for the 122B and about 14 to 20 for the 397B, depending on the prompt, with the model's built-in guessing feature set up as described below, one request at a time.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>On these two models, use the built-in guessing feature, but set its confidence cutoff yourself.</strong> Without the cutoff, the 122B wrote two creative prompts slower than with the feature off. The full command is in <a href="#command">What to do</a>.</li>
+          <li><strong>Make sure the model fits in system RAM, and copy it in rather than memory-mapping it.</strong> Memory mapping cut the 397B's prompt reading by 82 percent. <a href="#ram">Check that the model fits in system RAM</a></li>
+          <li><strong>Give the thinking room.</strong> With too small an output-token cap, the request succeeds and the answer comes back empty. <a href="#thinking">Thinking and empty answers</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-08">8 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to the Qwen team, Alibaba Group, or
-      Unsloth.</div>
+      <p class="fineprint"><a href="#zh" lang="zh-Hans">中文摘要</a> (Chinese summary, synced 2026-08-11)</p>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What they are</h2>
-      <p>Most facts in this table were read directly out of the model files
-      on our disk on 2026-08-08, by parsing the file headers only; that
-      makes them properties of the artifacts rather than quotes from a
-      model card. Rows that rest on the maker's card say so, and amber
-      values are a maker's stated numbers we did not measure.</p>
-      <table class="facts">
-        <tr><th scope="row">Maker</th><td>The Qwen team (Alibaba). Both models are open weight under Apache 2.0; the license is declared inside the files themselves.</td></tr>
-        <tr><th scope="row">Architecture</th><td>Identical in both files: a hybrid where only every fourth block carries full attention with a key-value cache, and the blocks between are linear-attention blocks that carry a compact running state instead of storing every past token. The 122B has 12 full-attention blocks of 48; the 397B has 15 of 60. Read from the per-block tensor tables, not the card.</td></tr>
-        <tr><th scope="row">Total parameters</th><td>We summed the tensor shapes: the 122B's main model is <span class="n">122,111,526,912</span>; the 397B's is <span class="n">396,346,350,336</span>. Each file also carries a built-in guessing head (one extra block: 2.5B and 6.6B respectively) and each directory holds a small vision tower that we never load.</td></tr>
-        <tr><th scope="row">Active per token</th><td>The 122B routes 8 of its 256 experts per token plus one always-on shared expert: about 9.8 billion parameters at work. The 397B routes 10 of 512 plus one shared: about 17.4 billion. The vendor's A10B and A17B labels round the same arithmetic.</td></tr>
-        <tr><th scope="row">Context window</th><td><span class="asstated">Both files declare 262,144 tokens; the maker additionally claims 1M via context extension, a claim that is not in the files and that we never tested.</span> We serve both at 65,536 by default; section 09 states exactly how much of that has actually been exercised.</td></tr>
-        <tr><th scope="row">Vocabulary</th><td>248,320 tokens, identical in both files.</td></tr>
-        <tr><th scope="row">Thinking</th><td>Both think by default (a reasoning pass before the visible answer, cleanly separated on this serving route) and both templates carry a working thinking toggle. The price of the habit is section 06.</td></tr>
-        <tr><th scope="row">Modality</th><td>The base models are multimodal per their cards. As served here both are text-only: the vision towers sit on disk, never loaded, and no image work appears on this page.</td></tr>
-      </table>
-      <p class="fineprint">File-derived rows were read from the pinned GGUF
-      sets on 2026-08-08. Card-derived rows are the maker's claims.</p>
+      <h2>What to do</h2>
+      <ol class="plain">
+        <li id="ram"><strong>Check that the model fits in system RAM.</strong> Disk: about 75 GB for the 122B, about 151 GB for the 397B. RAM: enough for the weights (73 and 150 GB) plus the system; we had 188 GiB. With less, weights stream from disk and every number here changes, in ways we did not measure. Our setups use 23 to 28 GiB of a 32 GB graphics card; a smaller card means keeping more expert blocks on the CPU, which we did not measure.</li>
+        <li><strong>Turn on the guessing feature with a confidence cutoff</strong> (<code>--spec-type draft-mtp --spec-draft-p-min 0.75</code>). Each file carries a multi-token-prediction (MTP) head that guesses the next few tokens; the full model checks them in one batch and keeps only tokens it would have written anyway (speculative decoding). The cutoff drops unconfident guesses. In our llama.cpp build the cutoff defaults to 0.00, meaning none, and the quantizer's published command lines leave it out. Test it on open-ended prose, not only structured prompts.</li>
+        <li><strong>Copy the model into RAM instead of memory-mapping it</strong> (<code>--no-mmap</code>). Memory mapping reads the file from disk as needed and hurts prompt reading most. The flag currently prints a deprecation warning pointing at its replacement; it still works.</li>
+        <li><strong>Set a generous output-token cap when thinking is on.</strong> 2,000 to 4,096 output tokens is a starting range that worked for our jobs on these two models, not a safe number, because the floor depends on the task; hard problems need far more. No universal safe number exists. Measure the floor for your own task (<a href="../empty-answer/">Empty Answer</a> carries the method). Short factual replies with thinking off are fine small.</li>
+        <li><strong>For long prompts, read the prompt in bigger chunks</strong> (<code>-b 4096 -ub 4096</code> instead of the defaults <code>-b 2048 -ub 512</code>). At a 131,072-token context with no memory mapping, prompt reading rose on a 48,029-token prompt from 224.5 to <strong>932.2</strong> tokens a second on the 397B, and on a 48,027-token prompt from 520.2 to <strong>2,101.7</strong> on the 122B. The <a href="../batch-size/">batch-size study</a> carries the full sweep, including the 8,192 setting that did not load. The full command below uses 65,536.</li>
+        <li><strong>Use a current llama.cpp.</strong> The caching fixes this design needs postdate July mainline builds, by our account; on an old build multi-turn caching misbehaves. With the fixes, the second turn re-read only 4 to 37 tokens instead of the whole history.</li>
+        <li><strong>Leave graphics-memory headroom.</strong> <code>--n-cpu-moe N</code> keeps the routed experts of the first N blocks on the CPU. One block too many loads all its weights, then fails minutes later. The guessing head costs +2.6 GiB on the 122B and +3.8 on the 397B.</li>
+        <li><strong>Wait for the health check, not the start message.</strong> Load time is mostly cache state; do not read a 100-second load as a failure.</li>
+        <li><strong>Keep the checksum output, not just the checksums.</strong> Check file count and checksums against the repository listing and save the output. One of our two checks survives as a saved file; the other does not.</li>
+      </ol>
+      <h3 id="command">The full command</h3>
+      <pre class="log">llama-server --jinja --ctx-size 65536 --parallel 1 --n-gpu-layers 999 \
+  --no-mmap --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 \
+  --threads 24 --threads-batch 24 --flash-attn on --min-p 0.0 --top-p 0.95 --top-k 20 \
+  --n-cpu-moe 38 --temp 0.6</pre>
+      <p>That is the 122B's command as we serve it. The 397B's is identical except <code>--n-cpu-moe 57</code> and <code>--temp 1.0</code>. Both files suggest 0.6; the 397B's 1.0 is our choice, a departure from the file and from the maker's published thinking-mode settings, which also say 0.6.</p>
     </section>
 
-    <section>
+    <section id="found">
       <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <p>A quant is a compressed build of a model's weights; lower bit
-      counts shrink the file at some cost to fidelity that we do not score
-      here. We ran one Unsloth build of each model, from their MTP-enabled
-      GGUF repositories at pinned revisions: the 122B as
-      <strong>UD-Q4_K_S</strong>, 3 files, <strong>73.43 GB</strong> (68.38
-      GiB; the two units count the same bytes by thousands and by 1,024s),
-      and the 397B as <strong>UD-IQ3_XXS</strong>, 4 files,
-      <strong>149.84 GB</strong> (139.54 GiB). Both are genuinely mixed
-      precision and calibration-guided rather than uniform, and one honest
-      label note belongs here: the "IQ3_XXS" build contains no tensors of
-      that type at all (its experts ride two neighboring formats; the name
-      is the quantizer's tier label, not a per-tensor description).
-      Unsloth's quality claims for its calibrated builds are Unsloth's; we
-      did not reproduce them. File sizes for both models were re-checked
-      byte-for-byte against the saved download manifests on 2026-08-08. The
-      122B's SHA-256 verification survives as a recorded artifact (4 of 4
-      files including the never-loaded vision tower, expected hashes and
-      OK output both kept); the 397B's
-      verification is the session's account, with only a truncated hash
-      capture surviving, and we grade it accordingly.</p>
-      <p>The machine: one NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM,
-      an Intel Core Ultra 9 285K (24 cores), 188 GiB of system RAM, and the
-      weights on a consumer 4 TB NVMe SSD. The single most load-bearing
-      fact on this page: <strong>both models fit entirely in system RAM</strong>
-      (73 and 150 GB against 188 GiB), and section 04 is about why that
-      matters more than anything else. The runtime: mainline llama.cpp at
-      commit <span class="n">c8e03ce8</span>, built fresh for this pair
-      because as of early August the fixes this hybrid architecture needs
-      (context-checkpoint handling and a prompt-cache regression) postdate
-      the build we were serving other models with (the fix dating is the
-      session's account); we serve these two only from this commit or
-      newer, and the recorded turn-two prompt reads of 4 to 37 tokens are
-      the behavior that buys.</p>
-      <div class="note">
-        <span class="label">Could your machine run this</span>
-        Disk: about 75 GB for the 122B, about 151 GB for the 397B. RAM:
-        enough that your chosen model's weights fit entirely in memory
-        with room for the system; we ran both against 188 GiB. With less
-        RAM than weights plus system, weights stream from disk and every
-        number on this page changes, in ways we did not measure. GPU: our
-        profiles use 23 to 28 GiB of a 32 GB card; smaller cards mean
-        keeping more expert blocks on the CPU, which the placement lever
-        supports and we did not measure below these profiles. Download the
-        quant folder with your preferred Hugging Face tool and verify file
-        count and checksums against the repository listing, keeping the
-        verification output.
-      </div>
-    </section>
-
-    <section>
-      <div class="secnum">03</div>
-      <h2>Why big context is cheap on this family</h2>
-      <p>Only a quarter of the blocks keep a key-value cache, and those use
-      2 key-value heads. The arithmetic, re-derived from the file headers:
-      a 65,536-token context costs <strong>1.50 GiB</strong> of cache on
-      the 122B and <strong>1.88 GiB</strong> on the 397B. A 397-billion-
-      parameter model holding 64K of context in under 24 GiB of VRAM is
-      the quiet architectural story here. The measured profiles:</p>
-      <div class="data-wrap">
-        <table class="data">
-          <thead><tr><th>Profile</th><th>VRAM used</th><th>Free</th></tr></thead>
-          <tbody>
-            <tr><td class="t">122B default (64K, with the guessing head)</td><td>25,215 MiB (24.62 GiB)</td><td>7.22 GiB</td></tr>
-            <tr><td class="t">122B max-GPU</td><td>27,807 MiB (27.16 GiB)</td><td>4.69 GiB</td></tr>
-            <tr><td class="t">122B at 128K context</td><td>27,007 MiB (26.37 GiB)</td><td>5.47 GiB</td></tr>
-            <tr><td class="t">397B default (64K, with the guessing head)</td><td>24,070 MiB (23.51 GiB)</td><td>8.34 GiB</td></tr>
-            <tr><td class="t">397B max-GPU</td><td>28,449 MiB (27.78 GiB)</td><td>4.06 GiB</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="tablenote">Whole-card readings including roughly 0.7 to 1.0
-      GiB of desktop, from the recorded placement ladders. Stated in raw
-      MiB first because that is what the instrument reports; the GiB
-      conversions are exact.</p>
-      <p>Placement works by keeping the first N blocks' routed experts on
-      the CPU. The file headers predict what each block costs to move to
-      the card (1.27 GiB per block on the 122B, 2.16 on the 397B, from
-      per-block tensor sums), and the measured ladder slopes came out at
-      1,296 and 2,313 MiB per block (1.27 and 2.26 GiB): the placement
-      arithmetic can be done before spending minutes on a load, and it
-      holds to within five percent. One step too far fails late, though:
-      one more GPU block than our 397B maximum loaded all its weights and
-      then died minutes in, failing to allocate a 1,862 MiB compute buffer.
-      Leave headroom beyond the weight arithmetic.</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>The guessing head, its gate, and the trap</h2>
-      <p>Both files ship a multi-token-prediction head: one extra block
-      trained to draft the next few tokens cheaply. The runtime can use it
-      as a built-in draft: the head proposes a short run, the full model
-      verifies the whole run in one batch (about one token's cost), and
-      only tokens the full model would have produced anyway are kept. No
-      second model, no vocabulary questions: the head ships inside the
-      file and sits unused unless asked for.</p>
-      <p>What it bought, measured at identical placements: the 397B went
-      from 10.35 to <strong>19.55 tokens per second</strong> on the
-      structured probe, an 89 percent gain; the 122B went from 24.5 to
-      26.1 on prose and from 24.6 to <strong>38.25</strong> on structured
-      output. The gain scales with the cost of a step: the bigger model
-      pays more per step, so amortizing steps pays more.</p>
-      <p><strong>The trap.</strong> The head has a companion setting, a
-      confidence floor below which its guesses are not offered at all, and
-      the flag that sets it, <code>--spec-draft-p-min</code>,
-      <strong>defaults to 0.00</strong> in the runtime build we used
-      (read from the source). Ungated, everything looks
-      wonderful on predictable text: our ladder rungs without the flag
-      accepted 82 to 90 percent of guesses and hit the ladder's fastest
-      numbers. Then a creative-shaped prompt arrives. On the 122B's
-      recorded battery, the two open-ended persona probes accepted only 25
-      and 30 percent of drafted tokens, and decode fell to <strong>16.1
-      and 18.2 tokens per second, below the 24.5 the model does with
-      speculation switched off entirely</strong>. Every guess still has to
-      be verified; when three quarters are discarded, speculation is pure
-      overhead, and creative text is exactly where the next token is least
-      predictable. The trap is invisible on benchmarks: the same ungated
-      server was fine on reasoning, lists, and code shapes all evening.
-      One honesty note: that server's exact flags, its sampling settings
-      included, are not echoed in its log; the ungated attribution rests
-      on the build's zero default plus the acceptance contrast with the
-      gated runs, and we state it as such. The quantizer's own published
-      command lines for this mode omit the gate flag too, so the
-      vendor-documented path is the ungated one.</p>
-      <p><strong>The fix is one flag.</strong> Gate the head at a 0.75
-      confidence floor and it only speaks when sure: acceptance rose to 88
-      to 95 percent on every shape measured, and on the 122B, gated
-      speculation beat no-speculation on prose as well as structured
-      output (on the 397B the gated-versus-none win is measured on the
-      structured probe only). The gate cost
-      almost nothing on predictable text (the 397B measured 20.4 ungated
-      against 19.5 gated on the same probe). Both shipped services carry
-      the gate. One asymmetry, stated plainly: the creative-text collapse
-      was measured on the 122B only; the 397B keeps the gate on its
-      sibling's evidence, and its own ungated creative case was never
-      run.</p>
-      <p><strong>One trick, three verdicts, one machine, one week.</strong>
-      On these two Qwens, whose weights fit in RAM, batch verification
-      re-reads memory and speculation pays 7 to 89 percent. On GLM-5.2, a
-      744B mixture-of-experts model on the same machine whose CPU-resident
-      weights exceed RAM, the identical flags were measured
-      <em>slower</em> (1.5 to 3.7 tokens per second against 4.0 to 6.0
-      without) and rejected: with weights partly on the SSD, batch
-      verification multiplies disk streaming instead of amortizing RAM
-      reads. And on the dense
-      <a href="../mistral-medium-35/">Mistral Medium 3.5</a>, the same
-      batch-verify idea with an external draft model pays about fourfold.
-      Speculative decoding is not a property of a model family. It is a
-      property of where the bytes live.</p>
-    </section>
-
-    <section>
-      <div class="secnum">05</div>
-      <h2>The speed, as measured</h2>
+      <h2>What we found</h2>
+      <p>Writing speed is how fast the answer comes out; prompt reading is how fast the prompt goes in. Both in tokens a second (t/s).</p>
       <div class="data-wrap">
         <table class="data">
           <thead><tr><th>What</th><th>122B</th><th>397B</th></tr></thead>
           <tbody>
             <tr><td class="t">Real thinking replies, sustained</td><td class="t">27 to 29 t/s (four long recorded generations)</td><td class="t">14 to 17 t/s (twelve recorded tasks)</td></tr>
-            <tr><td class="t">Structured probe, gated</td><td class="t">38.25 t/s</td><td class="t">19.5 t/s</td></tr>
+            <tr><td class="t">Structured test prompt, with the cutoff</td><td class="t">38.25 t/s</td><td class="t">19.5 t/s</td></tr>
             <tr><td class="t">No speculation at all</td><td class="t">24.5 t/s</td><td class="t">10.4 t/s</td></tr>
-            <tr><td class="t">Prompt reading (no-mmap profiles)</td><td class="t">865 t/s short, 717 t/s across a 29.7K prompt</td><td class="t">374 to 417 t/s</td></tr>
-            <tr><td class="t">Load, to answering</td><td class="t">20 to 24 s warm foreground; 99 to 107 s on a managed restart with a cooler cache</td><td class="t">160 to 215 s across all recorded starts</td></tr>
+            <tr><td class="t">Prompt reading (no memory mapping, August)</td><td class="t">865 t/s short, 717 t/s across a 29.7K prompt</td><td class="t">374 to 417 t/s</td></tr>
+            <tr><td class="t">Load, to answering</td><td class="t">20 to 24 s warm foreground; 99 to 107 s on a managed restart (restart by the service manager) with a cooler cache</td><td class="t">160 to 215 s across all recorded starts</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="tablenote">From the recorded ladders, the gated variant
-      logs, the battery server log, and the managed-start logs.
-      Speeds are end to end. Prompt reading declines with depth; both
-      quoted points are the no-mmap profiles. This is a field measurement
-      of one configuration per model, not a benchmark of the models.</p>
-      <p>Two notes the table compresses. First, memory mapping is the
-      pair's biggest single lever: turning it back on cost the 397B 29
-      percent of decode and <strong>82 percent of prompt reading</strong>
-      (396 down to 69.5 tokens per second) and slowed its load; the 122B's
-      prompt reading similarly fell from 865 to the 330-to-400 range on
-      mmap rungs. On models that fit in RAM, copy them in. Second, load
-      time is mostly cache state: the same 122B that answers 20 seconds
-      after a warm foreground start took about five times as long on a
-      managed restart with a cooler page cache (a fully cold cache was
-      never timed; section 09). Wait on the health endpoint, and do not
-      read a 100-second load as a failure.</p>
-      <div class="note">
-        <span class="label">Update, September 2026</span>
-        <p>A batch-size sweep on 2026-09-21, at a 131,072 context and with
-        no memory mapping, raised the batch from llama.cpp's defaults
-        (<code>-b 2048 -ub 512</code>) to <code>-b 4096 -ub 4096</code>. On
-        a 48,029-token read the 397B rose from 224.5 to
-        <strong>932.2</strong> tokens per second. On a 48,027-token read
-        the 122B rose from 520.2 to <strong>2,101.7</strong>. The
-        <a href="../batch-size/">batch-size study</a> carries the full
-        sweep, including the rungs between those two and the 8,192 rung
-        that did not load. The prompt-reading figures in the
-        table above are the August measurements at this page's own
-        no-mmap profiles, and they stay true as dated measurements of that
-        configuration; the batch-size change is a faster configuration,
-        not a correction of these numbers.</p>
+      <p class="tablenote">Speeds are end to end. Prompt reading declines with depth. One configuration per model, not a benchmark of the models.</p>
+
+      <h3>The guessing feature: faster with a cutoff, slower on creative text without one</h3>
+      <p>At identical placements (the same blocks on the card), the guessing head took the 397B from 10.35 to <strong>19.55 t/s</strong> on the structured test prompt, an 89 percent gain, and the 122B from 24.5 to 26.1 on prose and from 24.6 to <strong>38.25</strong> on structured output. The bigger model pays more per step, so saving steps pays more.</p>
+      <p>Without the cutoff, our placement tests (moving more or fewer blocks onto the card) accepted 82 to 90 percent of guesses and gave the fastest numbers. But on the 122B's set of fifteen test prompts, the two open-ended persona prompts accepted only 25 and 30 percent of drafted tokens, and writing fell to <strong>16.1 and 18.2 t/s, below the 24.5 with speculation switched off</strong>. When three quarters of guesses are thrown away, checking them is pure overhead. The same server was fine on reasoning, lists and code.</p>
+      <p>With the cutoff at 0.75, acceptance rose to 88 to 95 percent on every shape measured. On the 122B, speculation with the cutoff beat no speculation on prose as well as structured output; on the 397B that win is measured on the structured prompt only. The cutoff cost almost nothing on predictable text (the 397B: 20.4 without it, 19.5 with it, same prompt).</p>
+      <p>Where the weights live decides whether guessing pays. On these two models, whose weights fit in RAM, speculation paid 7 to 89 percent. On GLM-5.2, a 744B model on the same machine whose CPU-side weights exceed RAM, the same flags were <em>slower</em> (1.5 to 3.7 t/s against 4.0 to 6.0 without): with weights partly on the SSD, checking a batch multiplies disk reads. On the dense <a href="../mistral-medium-35/">Mistral Medium 3.5</a>, the same idea with a separate draft model pays about fourfold.</p>
+
+      <h3>Memory mapping and load time</h3>
+      <p>Turning memory mapping back on cost the 397B 29 percent of writing speed and <strong>82 percent of prompt reading</strong> (396 down to 69.5 t/s), and slowed its load. The 122B's prompt reading fell from 865 to the 330-to-400 range. A cooler cache made the 122B's load about five times as long.</p>
+
+      <h3>Graphics memory</h3>
+      <p>Only every fourth block keeps a key-value cache (the stored memory of past tokens), with 2 key-value heads, so a 65,536-token context costs <strong>1.50 GiB</strong> of cache on the 122B and <strong>1.88 GiB</strong> on the 397B, worked out from the file headers. The measured setups:</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Setup</th><th>VRAM used</th><th>Free</th></tr></thead>
+          <tbody>
+            <tr><td class="t">122B default (64K, with the guessing head)</td><td>25,215 MiB (24.62 GiB)</td><td>7.22 GiB</td></tr>
+            <tr><td class="t">122B max-GPU (most blocks on the card)</td><td>27,807 MiB (27.16 GiB)</td><td>4.69 GiB</td></tr>
+            <tr><td class="t">122B at 128K context</td><td>27,007 MiB (26.37 GiB)</td><td>5.47 GiB</td></tr>
+            <tr><td class="t">397B default (64K, with the guessing head)</td><td>24,070 MiB (23.51 GiB)</td><td>8.34 GiB</td></tr>
+            <tr><td class="t">397B max-GPU (most blocks on the card)</td><td>28,449 MiB (27.78 GiB)</td><td>4.06 GiB</td></tr>
+          </tbody>
+        </table>
       </div>
+      <p class="tablenote">Whole-card readings, including roughly 0.7 to 1.0 GiB of desktop. The GiB conversions are exact.</p>
+      <p>The file headers predict each block's cost on the card (1.27 GiB on the 122B, 2.16 on the 397B); the measured slopes were 1,296 and 2,313 MiB per block (1.27 and 2.26 GiB), within five percent. One more GPU block than our 397B maximum loaded all its weights, then died minutes in, failing to allocate a 1,862 MiB compute buffer.</p>
+
+      <h3 id="thinking">Thinking and empty answers</h3>
+      <p>Both models think before answering, and the thinking counts against the output-token cap the client sets. Overrun is not an error: the request succeeds and the visible answer is empty. The 122B hit a 700-token cap three times in one evening. The 397B used up a 4,096 cap on the puzzle below. In the 397B's installation check, a 2,500-token cap produced exactly 2,500 tokens of reasoning and an empty answer; the retry at 8,192 answered cleanly. In a separate, later measurement on a different hosted model (not one of these two), that model answered a short prompt from a 256-token budget and had produced nothing visible at 12,000 tokens on a harder prompt the same day: more than 46 times apart, and a lower bound, because the second floor was never located.</p>
+
+      <h3>The two models on one hard puzzle</h3>
+      <p>The puzzle: time 15 minutes with a 7-minute and an 11-minute hourglass (a 47-token prompt). The 397B failed at a 4,096-token cap and finished in 7,608 tokens under 8,192. The 122B failed at 8,192 and finished in 9,719 tokens under 16,384. <strong>The 397B's first workable cap was half the 122B's</strong>, and it used 7,608 tokens against 9,719 (a 0.78 ratio, not a clean half). The 122B writes about twice as fast (28.8 against 15.1 t/s on these runs), so the successful runs took 5.6 minutes on the 122B against 8.4. We judged both answers correct.</p>
+      <p>Neither model is our coding model. The 397B completed a hard coding test in a 7,704-token thinking reply, and we judged it a pass; a 32-billion-parameter local coding model passes the same kind of test without thinking and much faster, by an account with no saved file. Our roles: the 122B for fast daily deep conversation, the 397B for hard reasoning and synthesis.</p>
+
+      <h3>Other public results</h3>
+      <p>Unsloth's guide states the 397B reaches 25+ tokens a second on a single 24 GB GPU with 256 GB of RAM (their claim, their configuration); our 19.5 on a 32 GB card with 188 GiB is a result of the same kind, not a record. llama.cpp's <a href="https://github.com/ggml-org/llama.cpp/pull/22673">MTP support</a> landed in May. <a href="https://github.com/ggml-org/llama.cpp/discussions/25198">A 184-session report</a> found roughly +20 percent from tuned speculation on a sibling-family model. Earlier measurements of the creative-text slowdown are in <a href="#corrections">Corrections and updates</a>.</p>
     </section>
 
-    <section>
-      <div class="secnum">06</div>
-      <h2>Thinking has a price, and the price has a cliff</h2>
-      <p>Both models reason before answering, and the reasoning bills
-      against the same output-token cap the client sets (the "thinking
-      budget" in what follows). Overrun is not an error: the request
-      succeeds and the visible answer is simply empty. The recorded
-      evidence is unusually good because it includes the documenters
-      catching themselves: the 122B hit a 700-token cap three times in one
-      recorded evening; the 397B burned a 4,096 cap whole on the hard
-      puzzle section 07 tells in full; and during the 397B's own
-      installation proof, the very first
-      probe ran at a 2,500-token cap, generated exactly 2,500 tokens of
-      reasoning, and returned an empty answer, hours after the budget rule
-      had been written into the deployment notes by the same people. The
-      retry at 8,192 answered cleanly.</p>
-      <p>The working rule that came out of it: 2,000 to 4,096 output
-      tokens is a starting range that worked for our jobs on these two
-      models, and hard problems need far more (section 07 puts numbers on
-      "far more"). It is a starting range, not a safe number, because the
-      floor depends on the task. In a later recorded measurement, one
-      hosted model answered a short prompt from a 256-token budget and
-      had produced nothing visible at 12,000 tokens on a harder prompt
-      the same day: a spread of more than 46 times between two prompts to
-      the same model, and a lower bound, because the second floor was
-      never located. No universal safe number exists; measure the floor
-      for your own task (<a href="../empty-answer/">Empty Answer</a>
-      carries the method). Short factual replies with thinking toggled
-      off are fine small. The failure mode to design for is silence, not
-      an error code.</p>
-    </section>
-
-    <section>
-      <div class="secnum">07</div>
-      <h2>The pair, head to head, and what neither is for</h2>
-      <p>One recorded result justifies covering both models on a single
-      page. The same hard puzzle (timing 15 minutes with a 7-minute and an
-      11-minute hourglass, a 47-token prompt) went to both models at
-      matched budgets. The 397B failed at a 4,096-token cap and completed
-      in 7,608 tokens under an 8,192 cap. The 122B failed at 8,192 and
-      completed in 9,719 tokens under 16,384. The operators judged both
-      final answers correct; the response bodies were not archived, so the
-      correctness is their account while every token count is recorded.
-      Stated precisely: <strong>the 397B's first workable cap was half the
-      122B's, and its actual completion used 7,608 tokens against the
-      122B's 9,719</strong> (a 0.78 ratio, not a clean half). Per token
-      the small model is about twice as fast (28.8 against 15.1 tokens per
-      second on these exact runs), so on wall-clock the successful runs
-      favored the 122B, 5.6 minutes against 8.4. One more boundary: the
-      two models ran different compression tiers (a 4-bit-class 122B
-      against a 3-bit-class 397B), so this is a comparison of the two
-      deployments, not of the two models at matched precision. One puzzle,
-      run once per cap per model; a vivid recorded data point, not a
-      scaling law.</p>
-      <p>The boundary that keeps the page honest: neither model is the
-      house coding model. The 397B completed a hard coding probe (a cache
-      class with a fake clock, writing and running its own tests) in a
-      7,704-token thinking reply, judged a pass by the operators; a
-      32-billion-parameter local coding model passes the same probe shape
-      without thinking at all and much faster, per the session's account
-      (that comparison run left no artifact, and we grade it accordingly).
-      The roles the operators settled on: the 122B as the fast daily
-      deep-conversation model, the 397B as the senior generalist for hard
-      reasoning and synthesis, and code assigned elsewhere.</p>
-    </section>
-
-    <section>
-      <div class="secnum">08</div>
-      <h2>The traps, so you lose hours instead of days</h2>
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
       <ul class="plain">
-        <li><strong>Ungated speculation is a benchmark-passing brake.</strong>
-        The <code>--spec-draft-p-min</code> flag defaults to 0.00 in this
-        build; without the gate,
-        structured probes fly and creative prompts run slower than
-        no-speculation. Test speculative decoding on open-ended prose
-        before shipping flags.</li>
-        <li><strong>Small thinking budgets return empty answers</strong>,
-        silently, with an HTTP success. Thousands of tokens, or
-        silence.</li>
-        <li><strong>Do not memory-map models that fit in RAM.</strong> The
-        cost lands hardest on prompt reading (an 82 percent collapse on
-        the 397B), which is exactly what agent work lives on. The flag
-        that prevents it currently prints a deprecation warning pointing
-        at its replacement; the behavior still works.</li>
-        <li><strong>The speculation head costs VRAM:</strong> +2.6 GiB on
-        the 122B, +3.8 on the 397B, for the draft context and the extra
-        block.</li>
-        <li><strong>One block too many fails late.</strong> Weights load,
-        then a compute buffer fails minutes in. Leave headroom beyond the
-        weight arithmetic, which the file headers let you do before
-        loading anything.</li>
-        <li><strong>Serve this architecture from a current runtime.</strong>
-        Per the deployment session's account, the hybrid-attention
-        checkpoint fixes and a prompt-cache fix postdate July mainline
-        builds, and on an old build the model loads fine while multi-turn
-        caching misbehaves. With the fixes, recorded turn-two prompt reads
-        are 4 to 37 tokens instead of the whole history.</li>
-        <li><strong>"Started" is not "loaded", and cache state moves the
-        goalposts</strong> by a factor of five on the same model.</li>
-        <li><strong>VRAM readings are whole-card.</strong> Ours include
-        roughly a gigabyte of desktop.</li>
-        <li><strong>Keep the checksum output, not just the checksums.</strong>
-        One of our two verifications survives as an artifact; the other is
-        a claim with a truncated capture, and the difference is exactly
-        one saved file.</li>
-      </ul>
-      <p>The full serving flag sets, for anyone reproducing this class of
-      run (identical shape for both models; the values that differ are
-      shown):</p>
-      <pre class="log">llama-server --jinja --ctx-size 65536 --parallel 1 --n-gpu-layers 999 \
-  --no-mmap --spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 \
-  --threads 24 --threads-batch 24 --flash-attn on --min-p 0.0 --top-p 0.95 --top-k 20 \
-  --n-cpu-moe 38 --temp 0.6</pre>
-      <p>That is the 122B's command as shipped. The 397B's is identical
-      except <code>--n-cpu-moe 57</code> and <code>--temp 1.0</code>.</p>
-      <p>The two temperatures are deliberate but differently grounded:
-      both files bake a 0.6 suggestion, the 122B service follows it, and
-      the 397B service is set to 1.0 by operator choice, a departure from
-      both the file's suggestion and the maker's published thinking-mode
-      settings, which also say 0.6. The placement lever,
-      <code>--n-cpu-moe N</code>, keeps the first N blocks' routed experts
-      on the CPU.</p>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>What we ran, and what we have not</h2>
-      <p>The recorded evidence behind this page: two placement ladders
-      with a server log per rung; gated and ungated variant runs on the
-      122B; a fifteen-probe battery on each model whose server-side
-      shapes, token counts, caps, and speeds are all recorded (the
-      client-side verdicts, including "byte-perfect" and "needle found",
-      were not archived, and every such verdict on this page is the
-      session's account); the hourglass head-to-head on both sides; both
-      models' managed installation proofs,
-      including the self-caught budget trap; and a header-level
-      re-derivation of every parameter count, placement cost, and cache
-      size on 2026-08-08.</p>
-      <p>Still not verified, stated plainly:</p>
-      <ul class="plain">
-        <li><strong>Vision: never loaded</strong>, either model.</li>
-        <li><strong>Long context, honestly:</strong> the longest prompt
-        ever sent to the 122B is 29,737 tokens, and that ran on the 64K
-        profile (prefilled at 717 tokens per second, needle retrieved per
-        the session's account). The 128K profile starts and serves but has
-        never seen a prompt longer than 2,617 tokens. The 397B's longest
-        prompt is 4,367 tokens. Those were the limits of the August runs.
-        On 2026-09-21 a 48,027-token prompt was sent to the 122B and a
-        48,029-token prompt to the 397B, both at a 131,072 context. Speeds
-        are the dated note in section 05. The million-token claim is still
-        the vendor's, and it was still not attempted.</li>
-        <li><strong>The 397B's ungated creative case was never
-        measured</strong>; its gate rides the 122B's evidence.</li>
-        <li><strong>Coexistence with a speech engine</strong> is the
-        session's account for the 122B (no artifact survives) and pure
-        VRAM arithmetic for the 397B (never run together).</li>
-        <li><strong>One quant per model, one backend, one request at a
-        time.</strong> No concurrency, no other runtime, no quant
-        comparisons, no benchmarks of our own; any benchmark number near
-        these models is the vendor's.</li>
-        <li><strong>The head-to-head is one puzzle</strong> and the
-        "thinks cheaper" finding must not be generalized beyond it.</li>
-        <li><strong>No speculation output-equivalence diff was run</strong>;
-        losslessness rests on verify-then-accept, stated as mechanism, as
-        on our other cards.</li>
-        <li><strong>Cold-cache load times are stated, not measured</strong>;
-        every recorded load had a warm or partly warm cache.</li>
+        <li><strong>The creative-text slowdown was measured on the 122B only.</strong> The 397B's own creative case without the cutoff was never run. The 122B server's exact flags are not in its log, so the slowdown is put down to the missing cutoff from the build's zero default and the contrast with the runs that had it.</li>
+        <li><strong>One file per model, one runtime, one request at a time.</strong> No comparison of compressed versions and no benchmarks of our own; any benchmark number near these models is the vendor's. The files are different tiers (a 4-bit-class 122B, a 3-bit-class 397B), so the puzzle compares two setups, not two models at matched precision.</li>
+        <li><strong>The puzzle is one puzzle</strong>, run once per cap per model; do not generalize it. The replies were not saved, so their correctness is our account; every token count is recorded.</li>
+        <li><strong>Long context was tested only this far, and vision not at all.</strong> In August the longest prompts were 29,737 tokens on the 122B (64K setup; its 128K setup saw nothing over 2,617) and 4,367 on the 397B. On 2026-09-21 the 122B read a 48,027-token prompt and the 397B a 48,029-token prompt, at a 131,072 context. The maker's million-token claim was not attempted.</li>
+        <li><strong>Some points have no saved file:</strong> the 397B's checksum check, client-side verdicts such as "byte-perfect" and "needle found", running the 122B beside a speech engine (not run for the 397B at all), and the coding comparison. No check that speculation leaves output unchanged was run. Fully cold-cache loads were never timed.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">10</div>
-      <h2>Elsewhere in the field</h2>
-      <p>Running these models locally is established, and the quantizer's
-      own documentation brackets our numbers: Unsloth's guide states the
-      397B reaches 25+ tokens per second on a single 24 GB GPU with 256 GB
-      of RAM (their claim, their configuration), so our 19.5 on a 32 GB
-      card with 188 GiB is a fully specified confirmation in the same
-      family of results, not a record. The speculation machinery is
-      established too: the runtime's multi-token-prediction support and
-      its confidence gate are documented upstream
-      (<a href="https://github.com/ggml-org/llama.cpp/pull/22673">the MTP support</a>
-      landed in May; the gate flag's zero default is visible in the
-      source), and the community has measured gating's value on a sibling
-      family model
-      (<a href="https://github.com/ggml-org/llama.cpp/discussions/25198">a 184-session report</a>
-      of roughly +20 percent from tuned speculation). The closest prior
-      art we cited on publication was a community measurement of
-      <a href="https://github.com/NodeNestor/qwen3.5-27b-mtp-llamacpp">ungated MTP on a 27B Qwen3.5</a>
-      coming out net negative. Two sentences that followed it here were
-      <strong>wrong, and are superseded by the dated update below</strong>:
-      that as of 2026-08-08 we had found no published gated-versus-ungated
-      measurement on these two model sizes, and that we had found none
-      anywhere isolating creative-shaped text. We were not first, we did not search in
-      the language the measurement was published in, and the correction is
-      on the record rather than quietly edited out.</p>
-
+    <section id="corrections">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
+      <div class="note">
+        <span class="label">Update · September 2026 · prompt reading</span>
+        <p>A batch-size sweep on 2026-09-21 found the faster prompt-reading setting now in <a href="#what-to-do">What to do</a>. The speed table's prompt-reading figures are the August measurements at this page's own settings and stay true as dated measurements; the batch-size change is a faster configuration, not a correction.</p>
+      </div>
+      <div class="note">
+        <span class="label">Update · 2026-08-11</span>
+        <p>Budget advice revised.</p>
+      </div>
       <div class="note">
         <span class="label">Update · 2026-08-10 · prior art, corrected</span>
-        A Chinese-language search after publication found the measurement
-        first, and it is a better piece of work than our negative implied.
-        A benchmark published on 2026-05-12 measured this on a
-        <em>dense</em> Qwen3.6-27B: creative-writing throughput fell from
-        15.1 to 13.7 tokens per second with the guessing head enabled
-        (13.1 to 12.6 at the next quantization up), while coding rose 171
-        percent, with draft acceptance of 39 to 48 percent on creative
-        text against 79 to 89 percent on code
-        (<a href="https://juejin.cn/post/7638806086187057178">"MTP 加速不是玄学"</a>,
-        first posted to Zhihu, mirrored to juejin). The gated recovery is
-        published too: a 2026-05-22 write-up measured a Qwen3.6-27B on a
-        24 GB card at 29.0 tokens per second with no speculation, slower
-        than that with the head ungated, and 48.9 with the same 0.75
-        confidence gate we use, above its own no-speculation baseline
-        (<a href="https://neoteric.no/blog/llamacpp-spec-draft-p-min-mtp-qwen3">neoteric.no</a>).
-        Our numbers are the independent confirmation of both effects in a
-        different regime: the large mixture-of-experts models on this
-        page, with most of their expert blocks held on the CPU, where the
-        draft path crosses the bus that a 27B sitting entirely on a GPU
-        never touches. The absolute tokens per second and the mechanism
-        both differ. What section 04 above adds is that same split, measured
-        in this regime: prose and structured output separated on the same
-        model in the same sessions, where the effect changes sign. The
-        2026-05-12 report separates creative writing from coding and finds
-        the same opposition on a dense 27B; the 2026-05-22 write-up gives
-        one pooled figure per configuration, and a pooled figure cannot
-        show a reader that the regression lives in exactly the workload
-        they care about. Not first. Confirmation on different hardware,
-        with the split kept visible.
+        <p>On publication this page cited a community measurement of <a href="https://github.com/NodeNestor/qwen3.5-27b-mtp-llamacpp">MTP without a cutoff on a 27B Qwen3.5</a> coming out net negative, then said two things that were <strong>wrong</strong>: that as of 2026-08-08 we had found no published measurement with and without the cutoff on these two model sizes, and none anywhere isolating creative-shaped text. We were not first, and we did not search in the language the measurement was published in.</p>
+        <p>A benchmark published on 2026-05-12 measured this on a <em>dense</em> Qwen3.6-27B: creative writing fell from 15.1 to 13.7 tokens a second with the guessing head on (13.1 to 12.6 at the next quantization up), while coding rose 171 percent, with draft acceptance of 39 to 48 percent on creative text against 79 to 89 percent on code (<a href="https://juejin.cn/post/7638806086187057178">"MTP 加速不是玄学"</a>, first posted to Zhihu, mirrored to juejin). A 2026-05-22 write-up measured a Qwen3.6-27B on a 24 GB card at 29.0 tokens a second with no speculation, slower with the head and no cutoff, and 48.9 with the same 0.75 cutoff (<a href="https://neoteric.no/blog/llamacpp-spec-draft-p-min-mtp-qwen3">neoteric.no</a>).</p>
+        <p>Our numbers confirm both effects in a different setting: large mixture-of-experts models with most expert blocks on the CPU, with prose and structured output kept apart on the same model, where the effect changes sign.</p>
       </div>
     </section>
 
-    <section lang="zh-Hans"> <div class="secnum">11</div>
+    <section id="method">
+      <div class="secnum">05</div>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>Runs 2026-08-05 to 08-06. Files re-read 2026-08-08 from their headers, and sizes re-checked against the saved download manifests. Prompt-reading sweep 2026-09-21.</td></tr>
+        <tr><th scope="row">Machine</th><td>NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM, Intel Core Ultra 9 285K (24 cores), 188 GiB of RAM, weights on a consumer 4 TB NVMe SSD.</td></tr>
+        <tr><th scope="row">Runtime</th><td>Mainline llama.cpp at commit <span class="n">c8e03ce8</span>, CUDA 12.8, built 2026-08-05. Served at 65,536 tokens of context by default.</td></tr>
+        <tr><th scope="row">Files</th><td>Unsloth's MTP-enabled GGUF builds (quants: compressed, mixed-precision builds of the weights; we did not score their fidelity or reproduce Unsloth's quality claims). 122B: <code>UD-Q4_K_S</code>, revision <span class="n">907becb3</span>, 3 files, <strong>73.43 GB</strong> (68.38 GiB), SHA-256 verified on 4 of 4 files with the output kept. 397B: <code>UD-IQ3_XXS</code>, 4 files, <strong>149.84 GB</strong> (139.54 GiB), SHA-256 check by our account, only a truncated capture saved. Despite its name, the "IQ3_XXS" build contains no tensors of that type; the name is a tier label.</td></tr>
+        <tr><th scope="row">Evidence</th><td>Two placement ladders (moving more or fewer blocks onto the card) with a server log per step; runs with and without the cutoff on the 122B; fifteen test prompts per model; the puzzle on both; both installation checks.</td></tr>
+      </table>
+
+      <h3>The two models, read from the files</h3>
+      <table class="facts">
+        <tr><th scope="row">Maker</th><td>The Qwen team (Alibaba). Open weight under Apache 2.0, declared inside the files.</td></tr>
+        <tr><th scope="row">Design</th><td>Mixture-of-experts: huge in total, small per token, because only a few expert sub-networks fire for each token. Only every fourth block has full attention with a key-value cache (12 of 48 on the 122B, 15 of 60 on the 397B); the rest carry a compact running state.</td></tr>
+        <tr><th scope="row">Total parameters</th><td>122B: <span class="n">122,111,526,912</span>; 397B: <span class="n">396,346,350,336</span>. Plus the guessing head (2.5B and 6.6B) and a vision tower we never load.</td></tr>
+        <tr><th scope="row">Active per token</th><td>122B: 8 of 256 experts plus one shared, about 9.8 billion. 397B: 10 of 512 plus one shared, about 17.4 billion.</td></tr>
+        <tr><th scope="row">Context window</th><td><span class="asstated">Both files declare 262,144 tokens; the maker additionally claims 1M via context extension, a claim that is not in the files and that we never tested.</span></td></tr>
+        <tr><th scope="row">Other</th><td>Vocabulary 248,320 tokens. Both think by default, with a working thinking toggle. Multimodal per their cards; served here as text-only.</td></tr>
+      </table>
+      <p class="fineprint">Amber is the maker's claim, not our measurement.</p>
+    </section>
+
+    <section id="zh" lang="zh-Hans"> <div class="secnum">06</div>
       <h2>中文摘要：Qwen3.5 现场记录卡（122B 与 397B）</h2>
-      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10，预算建议修订于 2026-08-11）。<strong>本摘要同步日期：2026-08-11。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。英文页面第 05 节现有一条 2026-09-21 的读取速度更新说明，本摘要尚未收录；截至 2026-09-26，本摘要落后于英文页面。</p>
+      <p><strong>本文是英文原始记录的摘要，英文版为准（English is canonical）。</strong>对应英文记录：graphometer.ai/qwen35/，日期 2026-08-08（测试运行 2026-08-05 至 08-06，文件于 2026-08-08 复核，既有研究更正于 2026-08-10，预算建议修订于 2026-08-11）。<strong>本摘要同步日期：2026-08-11。</strong>英文页面若有任何改动，本摘要在重新同步之前即告失效。英文页面第 04 节现有一条 2026-09-21 的读取速度更新说明，本摘要尚未收录；截至 2026-09-26，本摘要落后于英文页面。</p>
       <p><strong>这是什么。</strong>Qwen3.5 是一组混合专家（MoE）模型：总参数量很大，但每个 token 只激活其中一小部分。我们在同一台工作站、同一张 32 GB 显卡上，用同一套方法，在两天里把其中两个模型分别投入使用：122B（26 到 38 tokens/秒）与 397B（14 到 20 tokens/秒）。本页的核心发现是速度旁边的那个陷阱（见下）。页面上的每个数字都可追溯到一份有日期的记录或模型文件本身；凡属厂商说法而非我们的测量，文中均已注明。</p>
       <p><strong>规格（读自文件头，而非引自模型卡）。</strong>参数总量由张量形状求和得出：122B 为 122,111,526,912，397B 为 396,346,350,336。每 token 激活量：122B 在 256 个专家中路由 8 个，另加 1 个常驻共享专家，约 9.8B；397B 在 512 中路由 10 个，另加 1 个共享专家，约 17.4B，与厂商 A10B / A17B 标签是同一套算术。架构在两个文件中一致：每第四个块为带 KV cache 的完整注意力块，其间为线性注意力块（122B 为 48 块中的 12 块，397B 为 60 块中的 15 块）。上下文：两个文件都声明 262,144，我们默认以 65,536 提供服务；厂商另称经扩展可达 1M，此项不在文件中，我们也从未测试。词表 248,320。两者默认都会先思考再回答。权重开放，许可证 Apache 2.0。</p>
       <p><strong>我们实际运行的东西。</strong>Unsloth 的 MTP-enabled GGUF 构建，版本已固定：unsloth/Qwen3.5-122B-A10B-MTP-GGUF 的 UD-Q4_K_S，pinned revision 907becb3，3 个文件，73.43 GB（68.38 GiB）；unsloth/Qwen3.5-397B-A17B-MTP-GGUF 的 UD-IQ3_XXS，4 个文件，149.84 GB（139.54 GiB）。一处诚实的标签说明：名为 IQ3_XXS 的构建中并不包含该类型的任何张量，这是量化档位标签，不是逐张量的描述。机器：一张 NVIDIA GeForce RTX 5090（32,607 MiB VRAM）、Intel Core Ultra 9 285K（24 核）、188 GiB 系统内存，权重存放在 4 TB NVMe SSD 上。本页最关键的一条事实：两个模型的权重都能完整装进系统内存（73 和 150 GB 对 188 GiB）。运行时：mainline llama.cpp，commit c8e03ce8，为这一对模型所需的架构修复而重新构建。</p>
       <p><strong>核心发现：猜测头（MTP）及其门限。</strong>两个文件都自带一个 multi-token-prediction 头：一个额外的块，用于低成本地起草接下来的几个 token，由完整模型一次性批量验证，只保留完整模型本来也会产生的 token。开启后的收益（在相同放置条件下测得）：397B 在结构化探针上从 10.35 提升到 19.55 tokens/秒，增幅 89%；122B 在结构化输出上从 24.6 提升到 38.25。</p>
       <p>陷阱在于配套的置信度门限。命令行参数 <code>--spec-draft-p-min</code> 在我们使用的构建中默认值为 0.00，即不设门限。不设门限时，可预测的文本一切看起来都很好：我们不带该参数的逐级阶梯测试接受了 82% 到 90% 的草稿 token，并跑出全场最快的数字。但换成开放式创作型提示后，122B 记录在案的两个人格探针只接受了 25% 和 30% 的草稿 token，解码速度掉到 16.1 和 18.2 tokens/秒，低于完全关闭推测解码时的 24.5。每一个猜测都必须被验证；当四分之三被丢弃时，推测解码就是纯粹的开销，而创作型文本恰恰是下一个 token 最难预测的地方。这个陷阱在基准测试型的提示上完全看不出来。</p>
       <p>修复只是一个参数：把门限设为 0.75，接受率在所测的每种形状上都回到 88% 到 95%。需要说明的不对称：创作型文本的崩塌只在 122B 上测过，397B 的门限沿用同族证据，它自己不设门限时的创作型表现从未测量。</p>
-      <p><strong>关于既有研究（2026-08-10 更正）。</strong>发表之后的中文检索找到了更早的公开测量：2026-05-12 的一篇中文评测在<em>稠密</em>的 Qwen3.6-27B 上先测得了这一效应；另有一篇 2026-05-22 的文章在 27B 上公布了加上 0.75 门限之后反超无推测基线的结果。我们不是最早的；我们的结果是在另一种部署条件下的独立复现：大型 MoE，且大部分专家块放在 CPU 上。英文页第 10 节列出全部出处与更正日期。</p>
+      <p><strong>关于既有研究（2026-08-10 更正）。</strong>发表之后的中文检索找到了更早的公开测量：2026-05-12 的一篇中文评测在<em>稠密</em>的 Qwen3.6-27B 上先测得了这一效应；另有一篇 2026-05-22 的文章在 27B 上公布了加上 0.75 门限之后反超无推测基线的结果。我们不是最早的；我们的结果是在另一种部署条件下的独立复现：大型 MoE，且大部分专家块放在 CPU 上。英文页第 04 节列出全部出处与更正日期。</p>
       <p><strong>这不是模型家族的属性，而是字节所在位置的属性。</strong>同一套参数在 GLM-5.2（744B MoE，同一台机器，但 CPU 侧权重超出内存）上被测得更慢（1.5 到 3.7 tokens/秒，对不开推测时的 4.0 到 6.0），因而弃用。权重部分留在 SSD 上时，批量验证放大的是磁盘读取，而不是摊薄内存读取。</p>
       <p><strong>思考的代价，以及静默失败。</strong>思考过程与可见答案共用客户端设定的同一个输出 token 上限。超出上限不会报错：请求成功，可见答案为空。工作规则：2,000 到 4,096 个输出 token 是在我们的任务上行之有效的起始范围，不是安全值，因为下限取决于任务本身；难题需要远高于此。在其后一次记录在案的测量中，同一个托管模型、同一天，对一个简短提示在 256 token 的预算内给出了可见回答，对另一个更难的提示在 12,000 token 时仍无任何可见输出：两个提示之间相差超过 46 倍，且这只是下界（第二个下限从未找到，我们在 12,000 处停止了测量）。不存在普适的安全数字；请为你自己的任务实测下限（方法见英文页 graphometer.ai/empty-answer/）。一次记录在案的对照（15 分钟沙漏难题，7 分钟与 11 分钟两个沙漏、47 token 的提示）：397B 在 4,096 上限下失败，在 8,192 上限下用 7,608 tokens 完成；122B 在 8,192 下失败，在 16,384 下用 9,719 tokens 完成（比值 0.78，不是干净的一半）。但按 wall-clock，成功的那两次运行是 122B 更快（28.8 对 15.1 tokens/秒，5.6 分钟对 8.4 分钟）。两个模型运行在不同的压缩档位上，因此这是两套部署的比较，不是两个模型在同等精度下的比较。一道题，每个上限每个模型各跑一次：一个生动的记录点，不是缩放定律。</p>
       <p><strong>其他要点。</strong>不要对能完整装进内存的模型使用 memory mapping：在 397B 上，开启后 prompt reading 损失 82%（从 396 降到 69.5 tokens/秒），解码损失 29%。VRAM 读数为整卡读数，含约 0.7 到 1.0 GiB 的桌面占用；我们的配置使用 32 GB 显卡中的 23 到 28 GiB。多放一个块不会立即报错，而是数分钟后才失败：权重全部载入之后数分钟才因计算缓冲区分配失败而退出，请在权重算术之外留出余量。</p>
@@ -659,41 +331,33 @@
   --n-cpu-moe 38 --temp 0.6</pre> <p>以上是 122B 的启动命令。397B 只有两处不同：<code>--n-cpu-moe 57</code> 与 <code>--temp 1.0</code>。放置参数 <code>--n-cpu-moe N</code> 的作用是把前 N 个块的路由专家留在 CPU 上。</p>
       <p class="fineprint">独立测量。与 Qwen 团队、阿里巴巴集团（Alibaba Group）或 Unsloth 无任何隶属、认可或关联关系。Qwen、Qwen3.5 与通义为阿里巴巴集团控股有限公司的商标，此处仅用于识别。<strong>再次说明：本文为英文记录的摘要，英文版为准。英文记录日期 2026-08-08，本摘要同步日期 2026-08-11。</strong></p> </section>
 
-    <section>
-      <div class="secnum">12</div>
-      <h2>Sources</h2>
+    <section id="sources">
+      <div class="secnum">07</div>
+      <h2>Data and sources</h2>
       <ul class="plain">
         <li>The models:
         <a href="https://huggingface.co/Qwen/Qwen3.5-122B-A10B">Qwen/Qwen3.5-122B-A10B</a>
         and
-        <a href="https://huggingface.co/Qwen/Qwen3.5-397B-A17B">Qwen/Qwen3.5-397B-A17B</a>
-        (cards, weights, Apache 2.0).</li>
-        <li>The artifacts we ran:
-        <a href="https://huggingface.co/unsloth/Qwen3.5-122B-A10B-MTP-GGUF">unsloth/Qwen3.5-122B-A10B-MTP-GGUF</a>,
-        the <code>UD-Q4_K_S</code> build at pinned revision
-        <span class="n">907becb3</span> (73.43 GB, 3 files; sizes and
-        SHA-256 both verified with artifacts kept), and
-        <a href="https://huggingface.co/unsloth/Qwen3.5-397B-A17B-MTP-GGUF">unsloth/Qwen3.5-397B-A17B-MTP-GGUF</a>,
-        the <code>UD-IQ3_XXS</code> build (149.84 GB, 4 files; sizes
-        re-checked against the saved manifest on 2026-08-08; the SHA
-        verification is the session's account).</li>
-        <li>The runtime: mainline llama.cpp at commit
-        <span class="n">c8e03ce8</span>, CUDA 12.8, built 2026-08-05 for
-        this pair's architecture fixes.</li>
-        <li>The measurements above this page's September 2026 note stand
-        on dated project records: the two
-        placement ladders and their per-rung server logs, the gated and
-        ungated variant logs, both battery server logs, the service
-        manager's log entries for both installation proofs, the
-        download manifests, and the 2026-08-08 header-scan results. These
-        are project records rather than public files today; they are named
-        here so that every number on this page has a dated, recorded home
-        that can be produced if questioned.</li>
-        <li>The 2026-09-21 readings in section 05's update note are the
-        four result lines behind it; the batch-size study publishes the
-        full sweep.</li>
+        <a href="https://huggingface.co/Qwen/Qwen3.5-397B-A17B">Qwen/Qwen3.5-397B-A17B</a>.</li>
+        <li>The files we ran:
+        <a href="https://huggingface.co/unsloth/Qwen3.5-122B-A10B-MTP-GGUF">unsloth/Qwen3.5-122B-A10B-MTP-GGUF</a> and
+        <a href="https://huggingface.co/unsloth/Qwen3.5-397B-A17B-MTP-GGUF">unsloth/Qwen3.5-397B-A17B-MTP-GGUF</a>.</li>
+        <li>The August measurements rest on dated logs and manifests that are not public files.</li>
       </ul>
     </section>
+
+    <section id="related">
+      <div class="secnum">08</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../batch-size/">llama.cpp's batch size</a>: the full prompt-reading sweep.</li>
+        <li><a href="../empty-answer/">Empty Answer</a>: finding the thinking budget for your task.</li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with,
+      endorsed by, or connected to the Qwen team, Alibaba Group, or
+      Unsloth.</div></div>
 
   </div>
 </main>
