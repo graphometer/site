@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Qwen3.8-27B at 256K context on one RTX 5090</title>
-<meta name="description" content="Three files were tested at a 262,144-token window. Compare speed, memory use and how closely the files’ results matched a reference.">
+<meta name="description" content="On one RTX 5090 at 256K, Q4_K_XL with MTP wrote faster than Q5_K_XL without it; Q5_K_XL matched an 8-bit reference more closely than Q4_K_XL on one text.">
 <link rel="canonical" href="https://graphometer.ai/qwen38-256k/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Qwen3.8-27B at 256K context on one RTX 5090">
-<meta property="og:description" content="Three files were tested at a 262,144-token window. Compare speed, memory use and how closely the files’ results matched a reference.">
+<meta property="og:description" content="On one RTX 5090 at 256K, Q4_K_XL with MTP wrote faster than Q5_K_XL without it; Q5_K_XL matched an 8-bit reference more closely than Q4_K_XL on one text.">
 <meta property="og:url" content="https://graphometer.ai/qwen38-256k/">
 <meta property="og:image" content="https://graphometer.ai/og/qwen38-256k.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Qwen3.8-27B at 256K context on one RTX 5090">
-<meta name="twitter:description" content="Three files were tested at a 262,144-token window. Compare speed, memory use and how closely the files’ results matched a reference.">
+<meta name="twitter:description" content="On one RTX 5090 at 256K, Q4_K_XL with MTP wrote faster than Q5_K_XL without it; Q5_K_XL matched an 8-bit reference more closely than Q4_K_XL on one text.">
 <meta name="twitter:image" content="https://graphometer.ai/og/qwen38-256k.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -135,6 +135,10 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -164,110 +168,132 @@
 
 <main itemscope itemtype="https://schema.org/Article"><div class="wrap">
 <div class="hero">
-<div class="eyebrow">Field card · measured 2026-09-26 · one NVIDIA RTX 5090 · one request at a time · thinking off</div>
-<h1 itemprop="headline">Qwen3.8-27B at <em>256K</em></h1>
-<p class="subtitle">Three files on one RTX 5090.</p>
-<p class="lead"><strong>Measured:</strong> a 262,144-token window fits on this 32,607 MiB card. The installed unsloth UD-Q5_K_XL file failed to load MTP beside a 256K q8_0 cache in the two recorded attempts. The smaller UD-Q4_K_XL with MTP was faster than installed Q5 without MTP, especially on tool-shaped replies; this comparison changes both the file and MTP. Q4 showed less agreement with the Q8_0 reference on one public text. Q5_K_S with MTP is the closer same-revision option, with 664 MiB spare at the observed peak. The installed Q5 is revision fe1e2a23; Q4, Q5_K_S and Q8_0 are 4ca72078. This is a choice between measured speed and measured fidelity, on one card and these exact files.</p>
-<p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-<div class="nonaff">Independent measurements; no affiliation with the Qwen team / Alibaba Group, unsloth, NVIDIA, the llama.cpp project, or Hugging Face.</div>
-<div class="note"><span class="label">Update, September 26, 2026</span><p>This follows the <a href="../qwen38-27b/">day-zero field card</a> with a new recorded probe from 26 September 2026. It does not recover the lost 17 September log. A 262,144-token window was served again with a retained log, including a deepest measured read of 229,152 tokens. The <a href="../context-256k/">full-window comparison</a> covers other long-read measurements. It does not claim a prompt filled every token of that window.</p></div>
-<div class="note"><span class="label">Update, 19 October 2026: a separate draft model</span><p>The installed setup changed. It still runs the UD-Q5_K_XL file with an 8-bit cache and the built-in draft head off. It now adds a separate draft model, DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB), plus n-gram drafting, on mainline llama.cpp with <code>-ub 256</code>. The window is 229,376 tokens, not 262,144. At 229,376 the card peaked at 30,647 MiB. At 262,144 it peaked at 31,992 MiB, about 600 MiB from full. With thinking on, 3,500 tokens of reasoning with no visible answer came out at 186.61 tokens a second about 20,000 tokens deep, against 60.39 without the draft model; with the draft model at 262,144 the same reasoning ran at 189.26. On a plain letter with thinking off the gain was 30 to 44 percent. Reading was 10 to 15 percent slower. We did not re-score the public text with the draft model loaded. The <a href="../roster-2026-10/">October roster</a> has the runs.</p></div>
+<div class="eyebrow">Model field card &middot; one RTX 5090 desktop</div>
+<h1 itemprop="headline">Qwen3.8-27B at <em>256K context</em> on one RTX 5090: Q4 with MTP wrote faster than Q5 without it, Q5 stayed closer to the reference</h1>
+<p class="subtitle">At a 262,144-token window on one RTX 5090, Q4_K_XL with MTP on wrote structured replies (thinking off) at 144.7 tokens a second about 20K tokens deep, against 60.7 for the larger Q5_K_XL with MTP off, which matched an 8-bit reference slightly more often on one text, in single runs.</p>
+<div class="note"><span class="label">In short</span>
+<ul class="plain">
+<li><strong>For speed, run Q4_K_XL with MTP on.</strong> MTP (multi-token prediction) is built into these files: it guesses tokens (word pieces) for the model to check. <a href="#settings">Settings</a></li>
+<li><strong>For the closest match to the 8-bit reference, run Q5_K_XL with MTP off.</strong> With MTP on, its MTP part would not start beside the 8-bit cache at this window, in both attempts. Q5_K_S with MTP sits in between, with only 664 MiB spare.</li>
+<li><strong>Or give Q5_K_XL a separate small draft model, at a slightly smaller window (229,376 tokens).</strong> Since October, in one reasoning test (thinking on) it wrote 186.61 tokens a second, against 60.39 without. <a href="#october">Results</a></li>
+</ul>
 </div>
-<section id="what"><div class="secnum">01</div><h2>What it is</h2>
-<p>Qwen3.8-27B is the Qwen team's model; unsloth supplies the compressed GGUF files tested here. MTP, or multi-token prediction, is a draft head built into these files. It proposes tokens for the main model to check. It needs additional GPU memory as well as room for the main model's context cache.</p>
-<p>Here, <strong>256K means 262,144 tokens of served context</strong>, shared by the prompt and answer. The cache stores information used to attend to earlier tokens. At this window all successful runs used <code>q8_0</code> for both cache keys and values. All serving measurements used llama.cpp, text only.</p>
-</section>
-<section id="settings"><div class="secnum">02</div><h2>What to set</h2>
-<p><strong>Measured choices, September 26.</strong> Since 19 October the installed setup also loads a separate draft model; the note above gives its window and speed. For these files and this card, use the installed Q5_K_XL without MTP if you want the closest tested copy to the Q8_0 reference on the one public text scored here. The installed Q5 is revision <code>fe1e2a23</code>; Q4, Q5_K_S and Q8_0 are <code>4ca72078</code>. Consider Q4_K_XL with MTP for reply speed: it was faster than installed Q5 without MTP, especially on tool-shaped replies, but both the file and MTP change. Q5_K_S with MTP is the closer same-revision copy to Q8_0, with 664 MiB spare at the observed peak. Its small prose-speed differences from Q4 are not a stable ranking.</p>
-<div class="data-wrap"><table class="data"><caption>Measured peak total card use; spare memory is arithmetic</caption><thead><tr><th>File / setting</th><th>Peak MiB</th><th>Spare MiB</th></tr></thead><tbody><tr><td class="t">Installed Q5_K_XL, 256K, MTP off</td><td>30,254</td><td>2,353</td></tr><tr><td class="t">Q4_K_XL, 256K, MTP on</td><td>30,722</td><td>1,885</td></tr><tr><td class="t">Q5_K_S, 256K, MTP on</td><td>31,943</td><td>664</td></tr><tr><td class="t">Installed Q5_K_XL, 128K, MTP on<br>default cache (no cache-type override in the recorded command), described as f16 in the launch comment</td><td>30,458</td><td>2,149</td></tr><tr><td>Installed Q5_K_XL, 229,376, DFlash 2 draft plus n-gram (installed since 19 October), thinking on</td><td>30,647</td><td>1,960</td></tr><tr><td>Installed Q5_K_XL, 262,144, DFlash 2 draft plus n-gram, thinking off</td><td>31,992</td><td>615</td></tr></tbody></table></div>
-<p class="tablenote">Peak is the largest total-card reading sampled during each probe run, including desktop use. Spare = 32,607 minus peak. These are not guaranteed loading margins. Q5_K_S has only 664 MiB spare at the observed peak.</p>
-<p>For the installed Q5_K_XL, the measured serving flags were:</p>
+<p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
+</div>
+
+<section id="settings"><div class="secnum">01</div><h2>What to do</h2>
+<p><strong>Closest to the reference: Q5_K_XL with MTP off.</strong> Measured command; <code>q8_0</code> is an 8-bit cache, the memory holding text read so far. Set your own local address:</p>
 <pre class="log">llama-server --model Qwen3.8-27B-UD-Q5_K_XL.gguf \
   --jinja --ctx-size 262144 --parallel 1 \
   --batch-size 2048 --ubatch-size 512 \
   --cache-type-k q8_0 --cache-type-v q8_0 \
   --n-gpu-layers 999 --threads 24 --threads-batch 24 \
   --flash-attn on --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0</pre>
-<p>This lists the model and inference settings from the recorded command; set your own local endpoint. There are no MTP flags on this configuration. For Q4_K_XL or Q5_K_S at the same window, change the model filename and add:</p>
+<p><strong>For speed: Q4_K_XL with MTP on.</strong> Change the model filename and add these flags. They also serve Q5_K_S: closer to the reference than Q4_K_XL, and the same revision as the reference.</p>
 <pre class="log">--spec-type draft-mtp --spec-draft-n-max 6 --spec-draft-p-min 0.75 \
 --cache-type-k-draft q8_0 --cache-type-v-draft q8_0</pre>
-<p>For the installed Q5_K_XL at <strong>128K (131,072 tokens)</strong>, the tested baseline uses MTP with the same draft length and confidence gate and default cache (no cache-type override in the recorded command), described as f16 in the launch comment. Omit the target and draft cache overrides and set <code>--ctx-size 131072</code>. This is the faster baseline to consider when the shorter window is enough, but its default cache, described as f16 in the launch comment, differs from the 256K q8_0 cache, so the comparison does not isolate window size or MTP; the tool-shaped test below is not a coding benchmark.</p>
-<p>Keep the confidence gate explicit. The <a href="../speculation-gate/">speculation-gate study</a> explains why output shape matters. The <a href="../batch-size/">batch-size study</a> explains the reading-side setting; this card measured <code>-b 2048 -ub 512</code> on the successful runs.</p>
+<p><strong>If 128K (131,072 tokens) is enough: Q5_K_XL with MTP on,</strong> the faster baseline. Use both blocks above minus every cache-type flag, and set <code>--ctx-size 131072</code>.</p>
+<p><strong>Since 19 October: Q5_K_XL with a separate draft model,</strong> DFlash 2 for Qwen3.8-27B (a Q4_K_M file of 1.1 GB) plus n-gram drafting (guessing from text already seen), on the main llama.cpp version with <code>-ub 256</code>, an 8-bit cache, built-in MTP off and a 229,376-token window.</p>
+<p>Keep the confidence gate (<code>--spec-draft-p-min</code>) explicit (<a href="../speculation-gate/">why</a>). <code>-ub</code> is the micro-batch, prompt tokens read at a time (<a href="../batch-size/">more</a>).</p>
 </section>
-<section id="setup"><div class="secnum">03</div><h2>What we ran, exactly</h2>
-<table class="facts">
-<tr><th scope="row">Machine and date</th><td>One NVIDIA RTX 5090, 32,607 MiB reported card capacity. Serving runs on 2026-09-26, one request at a time.</td></tr>
-<tr><th scope="row">Serving build</th><td>The launch script identifies llama.cpp mainline <code>c8e03ce</code>, built 2026-08-05, CUDA sm_120. This is script-recorded identity, not a fresh binary hash.</td></tr>
-<tr><th scope="row">Request settings</th><td>Thinking off via <code>chat_template_kwargs: {"enable_thinking": false}</code>. Real prose: temperature 0.7, seed 7, cap 900 tokens. Tool-shaped replies: temperature 0, seed 7, cap 1,600. Recall short answers: temperature 0, seed 1, cap 300.</td></tr>
-<tr><th scope="row">Input and output</th><td>A generated ledger at each depth, followed by a real prose letter or a JSON array of ledger entries. These are tool-shaped replies, not actual tool execution. The prose and JSON requests reuse the ledger prefix from the preceding cold read.</td></tr>
-<tr><th scope="row">Repetitions</th><td>One serving run per configuration; one observation per depth and reply type. No speed confidence intervals.</td></tr>
-</table>
-<p class="tablenote">The server command sets temperature 1.0, but the request overrides it. The retained probe and invocations specify 0.7 for prose. Small differences between sampled replies should not be treated as stable rankings.</p>
-<h3>The filename alone is not enough</h3>
-<p><strong>Recorded file identities:</strong> the installed UD-Q5_K_XL is the August 14 upload at revision <code>fe1e2a23</code>, 20,218,178,624 bytes. An expected-size list in this package names another UD-Q5_K_XL at <span style="color:var(--warn)">20,876,938,144 bytes (stated)</span>. That file was not tested. Do not apply the installed file's memory result to it.</p>
-<div class="data-wrap"><table class="data"><caption>Recorded tested files; GB (bytes/10^9) and GiB (bytes/2^30) are arithmetic, rounded</caption><thead><tr><th>File</th><th>Recorded revision</th><th>Bytes</th><th>GB (bytes/10^9)</th><th>GiB</th></tr></thead><tbody>
-<tr><td class="t">Installed UD-Q5_K_XL</td><td>fe1e2a23</td><td>20,218,178,624</td><td>20.2</td><td>18.83</td></tr>
-<tr><td class="t">UD-Q5_K_S</td><td>4ca72078</td><td>18,665,753,504</td><td>18.7</td><td>17.38</td></tr>
-<tr><td class="t">UD-Q4_K_XL</td><td>4ca72078</td><td>17,559,178,144</td><td>17.6</td><td>16.35</td></tr>
-</tbody></table></div>
-<p class="tablenote">Revisions are those named by the retained launch record. The package includes file hashes and the size-verification record. The comparison holds across these actual files, not just their quantization labels.</p>
-</section>
-<section id="observed"><div class="secnum">04</div><h2>Observed: speaking and reading</h2>
-<p><strong>Measured tokens per second.</strong> Depth columns name approximate ledger depths, not just the short new message. Real prose replies generated 414 to 504 tokens across these runs; tool-shaped replies generated 907 to 1,192. Reading rows time the whole cold prompt. Decode rates exclude the cold read.</p><div class="data-wrap"><table class="data"><caption>Measured: real prose replies, tokens/s</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Installed Q5_K_XL<br>256K, MTP off</td><td>60.7</td><td>55.2</td><td>49.1</td><td>34.9</td></tr><tr><td class="t">Q4_K_XL<br>256K, MTP on</td><td>75.2</td><td>64.8</td><td>54.9</td><td>38.4</td></tr><tr><td class="t">Q5_K_S<br>256K, MTP on</td><td>71.5</td><td>64.5</td><td>52.2</td><td>39.9</td></tr><tr><td class="t">Installed Q5_K_XL<br>128K, MTP on<br>default cache (no cache-type override in the recorded command), described as f16 in the launch comment</td><td>72.0</td><td>70.5</td><td>60.8</td><td>Not run</td></tr></tbody></table></div><div class="data-wrap"><table class="data"><caption>Measured: tool-shaped replies, tokens/s</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Installed Q5_K_XL<br>256K, MTP off</td><td>60.7</td><td>54.9</td><td>48.9</td><td>34.8</td></tr><tr><td class="t">Q4_K_XL<br>256K, MTP on</td><td>144.7</td><td>129.9</td><td>114.7</td><td>87.0</td></tr><tr><td class="t">Q5_K_S<br>256K, MTP on</td><td>137.4</td><td>126.0</td><td>110.2</td><td>82.8</td></tr><tr><td class="t">Installed Q5_K_XL<br>128K, MTP on<br>default cache (no cache-type override in the recorded command), described as f16 in the launch comment</td><td>141.5</td><td>136.9</td><td>127.0</td><td>Not run</td></tr></tbody></table></div><div class="data-wrap"><table class="data"><caption>Measured: cold prompt processing, tokens/s</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Installed Q5_K_XL<br>256K, MTP off</td><td>3,118</td><td>2,718</td><td>1,958</td><td>1,181</td></tr><tr><td class="t">Q4_K_XL<br>256K, MTP on</td><td>3,088</td><td>2,722</td><td>1,937</td><td>1,132</td></tr><tr><td class="t">Q5_K_S<br>256K, MTP on</td><td>3,001</td><td>2,667</td><td>1,905</td><td>1,124</td></tr><tr><td class="t">Installed Q5_K_XL<br>128K, MTP on<br>default cache (no cache-type override in the recorded command), described as f16 in the launch comment</td><td>2,896</td><td>2,608</td><td>1,973</td><td>Not run</td></tr></tbody></table></div><p class="tablenote">The 128K baseline stops at ~100K. Its default cache, described as f16 in the launch comment with no cache-type override in the recorded command, differs from the 256K runs' q8_0 cache, so these rows do not isolate the effect of window size or MTP alone.</p>
-<p>The largest observed speed difference is on the tool-shaped replies in this test. At ~20K, Q4_K_XL with MTP produces real prose at 75.2 tokens/s and tool-shaped replies at 144.7 tokens/s. At ~230K those rates are 38.4 and 87.0 respectively. Neither pair is a single general-purpose speaking speed.</p>
-</section>
-<section id="recall"><div class="secnum">05</div><h2>The long read and the crash check</h2>
-<p><strong>Measured:</strong> at a 262,144-token window, each of the three successful files read a 229,152-token prompt and returned all 3 sealed codes. The generator placed them at approximately 5%, 50% and 95% of ledger entries. These are positions in the generated document, not exact tokenizer offsets.</p>
-<div class="data-wrap"><table class="data"><caption>Measured: cold read followed by a short code answer</caption><thead><tr><th>File / setting</th><th>Read s</th><th>Whole request s</th><th>Codes</th></tr></thead><tbody>
-<tr><td class="t">Installed Q5_K_XL, MTP off</td><td>194.086</td><td>196.9</td><td>3 / 3</td></tr>
-<tr><td class="t">Q4_K_XL, MTP on</td><td>202.377</td><td>205.2</td><td>3 / 3</td></tr>
-<tr><td class="t">Q5_K_S, MTP on</td><td>203.831</td><td>206.6</td><td>3 / 3</td></tr>
-</tbody></table></div>
-<p class="tablenote">Read seconds = recorded prompt milliseconds ÷ 1,000 (arithmetic conversion). Whole-request time includes the short answer and other overhead. Recall is the dedicated all-codes question, not the later letter or JSON reply.</p>
-<p><strong>Measured crash checks:</strong> the installed Q5_K_XL without MTP and Q4_K_XL with MTP each completed 40 of 40 prompts with zero crashes and zero empty answers. Each prompt had an initial reply and a follow-up turn. These were shorter mixed-text prompts at the 256K serving setting, not repeated full-window reads. Q5_K_S has no corresponding crash-check result in this package.</p>
-</section>
-<section id="allocation"><div class="secnum">06</div><h2>Why the installed file loses the draft head</h2>
-<p><strong>Measured failures:</strong> the installed Q5_K_XL could not create the MTP context beside its 256K q8_0 target cache. Both recorded MTP-on attempts of the installed Q5 file used <code>--ubatch-size 256</code> (micro-batch size). The failed requests were:</p>
-<div class="data-wrap"><table class="data"><caption>Failed CUDA allocations during MTP context creation</caption><thead><tr><th>Draft cache</th><th>Failed buffer</th><th>Bytes</th></tr></thead><tbody>
-<tr><td class="t">f16</td><td>1,024.00 MiB, KV cache</td><td>1,073,741,824</td></tr>
-<tr><td class="t">q8_0</td><td>1,192.27 MiB, compute buffer</td><td>1,250,189,440</td></tr>
-</tbody></table></div>
-<p>Those are allocation sizes, <strong>not measured amounts by which the card was short</strong>. The logs show the requested buffers and the out-of-memory failures. They do not establish the smallest extra card capacity that would have made either load succeed.</p>
-<p>The smaller Q4_K_XL and Q5_K_S files did load with MTP and q8_0 draft caches with <code>--ubatch-size 512</code>. That is the practical route measured here. These attempts do not prove that every other possible Q5_K_XL configuration fails.</p>
-</section>
-<section id="fidelity"><div class="secnum">07</div><h2>What the smaller file changes</h2>
-<p><strong>Measured fidelity to a reference, not answer quality.</strong> Perplexity measures how well a file predicts a fixed text. Across 24 chunks of 4,096 tokens from public llama.cpp documentation, the three scores were too close to distinguish at the reported uncertainty.</p>
+
+<section id="observed"><div class="secnum">02</div><h2>What we found</h2>
+<h3>Writing speed</h3>
+<p>Each test read a generated ledger (a made-up list of entries), then wrote a prose letter (414 to 504 tokens) or a structured reply, a JSON list shaped like tool output (907 to 1,192 tokens; no tool ran). Rates leave out the read.</p>
+<div class="data-wrap"><table class="data"><caption>Measured: prose letters, tokens a second</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Q5_K_XL, 256K, MTP off</td><td>60.7</td><td>55.2</td><td>49.1</td><td>34.9</td></tr><tr><td class="t">Q4_K_XL, 256K, MTP on</td><td>75.2</td><td>64.8</td><td>54.9</td><td>38.4</td></tr><tr><td class="t">Q5_K_S, 256K, MTP on</td><td>71.5</td><td>64.5</td><td>52.2</td><td>39.9</td></tr><tr><td class="t">Q5_K_XL, 128K, MTP on*</td><td>72.0</td><td>70.5</td><td>60.8</td><td>Not run</td></tr></tbody></table></div>
+<div class="data-wrap"><table class="data"><caption>Measured: structured replies, tokens a second</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Q5_K_XL, 256K, MTP off</td><td>60.7</td><td>54.9</td><td>48.9</td><td>34.8</td></tr><tr><td class="t">Q4_K_XL, 256K, MTP on</td><td>144.7</td><td>129.9</td><td>114.7</td><td>87.0</td></tr><tr><td class="t">Q5_K_S, 256K, MTP on</td><td>137.4</td><td>126.0</td><td>110.2</td><td>82.8</td></tr><tr><td class="t">Q5_K_XL, 128K, MTP on*</td><td>141.5</td><td>136.9</td><td>127.0</td><td>Not run</td></tr></tbody></table></div>
+<div class="data-wrap"><table class="data"><caption>Measured: prompt reading from scratch, tokens a second</caption><thead><tr><th>File / setting</th><th>~20K</th><th>~48K</th><th>~100K</th><th>~230K</th></tr></thead><tbody><tr><td class="t">Q5_K_XL, 256K, MTP off</td><td>3,118</td><td>2,718</td><td>1,958</td><td>1,181</td></tr><tr><td class="t">Q4_K_XL, 256K, MTP on</td><td>3,088</td><td>2,722</td><td>1,937</td><td>1,132</td></tr><tr><td class="t">Q5_K_S, 256K, MTP on</td><td>3,001</td><td>2,667</td><td>1,905</td><td>1,124</td></tr><tr><td class="t">Q5_K_XL, 128K, MTP on*</td><td>2,896</td><td>2,608</td><td>1,973</td><td>Not run</td></tr></tbody></table></div>
+<p class="tablenote">Depths are approximate. *Default cache: the recorded command set no cache type; its launch comment calls it f16.</p>
+
+<h3 id="fidelity">How closely each file matches the reference</h3>
+<p>Perplexity (how well a file predicts a fixed text), over 24 chunks of 4,096 tokens of public llama.cpp documentation, was too close to tell apart at the reported uncertainty.</p>
 <div class="data-wrap"><table class="data"><caption>Measured perplexity; reported ± terms retained</caption><thead><tr><th>File</th><th>Perplexity</th></tr></thead><tbody>
-<tr><td class="t">Installed Q5_K_XL</td><td>2.7203 ± 0.02379</td></tr>
+<tr><td class="t">Q5_K_XL</td><td>2.7203 ± 0.02379</td></tr>
 <tr><td class="t">Q5_K_S</td><td>2.7186 ± 0.02375</td></tr>
 <tr><td class="t">Q4_K_XL</td><td>2.7206 ± 0.02379</td></tr>
 </tbody></table></div>
-<p>A second test compared next-token predictions against unsloth's plain Q8_0 reference at revision <code>4ca72078</code>, using 12 chunks of 4,096 tokens from the same text. Q5_K_S and Q4_K_XL carry that same recorded revision; the installed Q5_K_XL is the older upload. KL divergence measures how far the full predicted probability distribution moves from the reference; lower is closer.</p>
+<p>A second test compared next-token predictions with unsloth's 8-bit Q8_0 file on 12 chunks of the same text. KL divergence measures how far the whole spread of predictions moves from the reference; lower is closer.</p>
 <div class="data-wrap"><table class="data"><caption>Measured against Q8_0 on one public text</caption><thead><tr><th>File</th><th>Same top token</th><th>Mean KL divergence</th></tr></thead><tbody>
-<tr><td class="t">Installed Q5_K_XL</td><td>97.830 ± 0.093%</td><td>0.004369 ± 0.000153</td></tr>
+<tr><td class="t">Q5_K_XL</td><td>97.830 ± 0.093%</td><td>0.004369 ± 0.000153</td></tr>
 <tr><td class="t">Q5_K_S</td><td>97.675 ± 0.096%</td><td>0.005406 ± 0.000201</td></tr>
 <tr><td class="t">Q4_K_XL</td><td>97.240 ± 0.105%</td><td>0.007839 ± 0.000345</td></tr>
 </tbody></table></div>
-<p>In plain words, <strong>the smaller Q4 file picks the same most likely next token as the 8-bit reference about 97 times in 100</strong> on this text. The installed Q5 file is closer to 98 in 100. A token can be a word or part of one. This is not a percentage of correct answers, and it does not measure the effect of MTP on generated answers.</p>
-<p class="tablenote">The reference is Q8_0, not the original full-precision weights. Its recorded size is 29,047,086,048 bytes. The scoring scripts use a separate llama-perplexity executable recorded under build label b10453. All scores use the fixed 414,554-byte corpus identified by hash in the package. The logs' ± terms are reproduced as reported, without treating them as speed intervals or answer-quality guarantees.</p>
+<p><strong>Q4 picks the same most likely next token as the reference about 97 times in 100</strong> on this text; Q5_K_XL is closer to 98. This is not a share of correct answers, and it does not measure MTP's effect on answers.</p>
+
+<h3>Memory use</h3>
+<div class="data-wrap"><table class="data"><caption>Measured peak total card use; spare memory is arithmetic</caption><thead><tr><th>File / setting</th><th>Peak MiB</th><th>Spare MiB</th></tr></thead><tbody><tr><td class="t">Q5_K_XL, 256K, MTP off</td><td>30,254</td><td>2,353</td></tr><tr><td class="t">Q4_K_XL, 256K, MTP on</td><td>30,722</td><td>1,885</td></tr><tr><td class="t">Q5_K_S, 256K, MTP on</td><td>31,943</td><td>664</td></tr><tr><td class="t">Q5_K_XL, 128K, MTP on*</td><td>30,458</td><td>2,149</td></tr><tr><td class="t">Q5_K_XL, 229,376, DFlash 2 draft plus n-gram, thinking on</td><td>30,647</td><td>1,960</td></tr><tr><td class="t">Q5_K_XL, 262,144, DFlash 2 draft plus n-gram, thinking off</td><td>31,992</td><td>615</td></tr></tbody></table></div>
+<p class="tablenote">Peak is the largest total-card reading during each run, including desktop use. Spare = 32,607 minus peak; not a guaranteed loading margin. *Default cache (f16 per the launch comment). The 262,144 draft-model row is from letters with thinking off; the 189.26 reasoning rate below is a separate run with thinking on.</p>
+
+<h3 id="recall">The long read and the crash check</h3>
+<p>At the 262,144-token window, each of the three files read a 229,152-token prompt and returned all 3 hidden codes, placed at about 5%, 50% and 95% of the ledger (not exact positions).</p>
+<div class="data-wrap"><table class="data"><caption>Measured: reading from scratch, then a short code answer</caption><thead><tr><th>File / setting</th><th>Read s</th><th>Whole request s</th><th>Codes</th></tr></thead><tbody>
+<tr><td class="t">Q5_K_XL, MTP off</td><td>194.086</td><td>196.9</td><td>3 / 3</td></tr>
+<tr><td class="t">Q4_K_XL, MTP on</td><td>202.377</td><td>205.2</td><td>3 / 3</td></tr>
+<tr><td class="t">Q5_K_S, MTP on</td><td>203.831</td><td>206.6</td><td>3 / 3</td></tr>
+</tbody></table></div>
+<p class="tablenote">Whole request includes the answer and overhead.</p>
+<p><strong>Crash check:</strong> Q5_K_XL without MTP and Q4_K_XL with MTP each completed 40 of 40 shorter mixed-text prompts at the 256K setting, each with a follow-up turn, with no crashes or empty answers. Q5_K_S was not crash-checked.</p>
+
+<h3 id="allocation">Why Q5_K_XL could not use MTP at 256K</h3>
+<p>In both attempts (<code>--ubatch-size 256</code>), the card refused these memory requests while setting up MTP:</p>
+<div class="data-wrap"><table class="data"><caption>Failed CUDA allocations during MTP setup</caption><thead><tr><th>Draft cache</th><th>Failed buffer</th><th>Bytes</th></tr></thead><tbody>
+<tr><td class="t">f16</td><td>1,024.00 MiB, KV cache</td><td>1,073,741,824</td></tr>
+<tr><td class="t">q8_0</td><td>1,192.27 MiB, compute buffer</td><td>1,250,189,440</td></tr>
+</tbody></table></div>
+<p>These are the sizes requested, <strong>not how far short the card was</strong>. Q4_K_XL and Q5_K_S loaded MTP with 8-bit draft caches at <code>--ubatch-size 512</code>. Two failures do not show that every other Q5_K_XL setup fails.</p>
+
+<h3 id="october">Since October: a separate draft model</h3>
+<p>With thinking on, Q5_K_XL with DFlash 2 plus n-gram drafting wrote 3,500 tokens of reasoning at 186.61 tokens a second about 20,000 tokens deep, against 60.39 without the draft model; at 262,144 the same reasoning ran at 189.26. On a plain letter with thinking off the gain was 30 to 44 percent. Reading was 10 to 15 percent slower.</p>
 </section>
-<section id="limits"><div class="secnum">08</div><h2>What this does not show</h2>
+
+<section id="limits"><div class="secnum">03</div><h2>Limits</h2>
 <ul class="plain">
-<li>One card, one request at a time, one serving run per configuration. Concurrency, other GPUs and other builds were not tested.</li>
-<li>A served 262,144-token window and a successful 229,152-token read. Neither code recall nor a short crash check establishes reliable reasoning over every part of a full window.</li>
-<li>Speed is not quality of answers. The ledger letter and JSON array are controlled output shapes, not a representative coding or tool-use evaluation.</li>
-<li>Fidelity was measured on one public technical text against one quantized reference. Different upload revisions also limit attribution to quantization alone.</li>
-<li>The larger Q5_K_XL file named in the expected-size list has no serving result here. A matching filename is not evidence of matching memory use.</li>
+<li><strong>Single runs,</strong> no confidence intervals: small gaps, such as Q5_K_S against Q4_K_XL on prose, are not a stable ranking.</li>
+<li><strong>Speed is not answer quality.</strong> The letters and structured replies are controlled shapes, not a coding or tool-use test.</li>
+<li><strong>Two changes at once.</strong> Q4_K_XL with MTP against Q5_K_XL without changes both file and MTP. The 128K rows also differ in cache, so they isolate neither window size nor MTP.</li>
+<li><strong>Narrow fidelity test:</strong> one public technical text, against an 8-bit reference rather than full-precision weights. Q5_K_XL is an older upload, so differences cannot be credited to compression alone. The October setup was not re-scored.</li>
+<li><strong>Finding codes is not reasoning.</strong> One long read and a short crash check do not show reliable reasoning over a full window.</li>
+<li><strong>Same name, different file.</strong> The data package's expected-size list names another UD-Q5_K_XL of <span style="color:var(--warn)">20,876,938,144 bytes (stated)</span>, not tested; these memory results do not apply to it.</li>
 </ul>
 </section>
-<section id="related"><div class="secnum">09</div><h2>Related pages on this site</h2>
-<p>The <a href="../qwen38-27b/">day-zero Qwen3.8-27B card</a> covers the original release-day measurements. The <a href="../context-256k/">full-window table</a> compares long reads across models. The <a href="../batch-size/">batch-size study</a> covers prompt processing, and the <a href="../speculation-gate/">speculation-gate study</a> separates prose from structured output.</p>
+
+<section id="updates"><div class="secnum">04</div><h2>Corrections and updates</h2>
+<div class="note"><span class="label">Update, September 26, 2026</span><p>This card follows the <a href="../qwen38-27b/">day-zero field card</a> with a new test on 26 September 2026, served again at 262,144 tokens with a kept log and reading up to 229,152 tokens. It does not recover the lost 17 September log or claim a prompt filled every token.</p></div>
+<div class="note"><span class="label">Update, 19 October 2026: a separate draft model</span><p>This desktop now runs Q5_K_XL with the DFlash 2 draft model, at 229,376 tokens instead of 262,144.</p></div>
 </section>
-<section id="sources"><div class="secnum">10</div><h2>Sources and artifacts</h2>
-<p>The <a href="data/README.md">data package</a> contains the recorded probe rows, server logs, failed allocations, memory samples, crash-check records, scoring logs and redacted script excerpts. The <a href="data/NUMBERS.md">number map</a> identifies every printed figure. File revisions and build identity are the ones recorded in those scripts; the package does not contain an independent binary-hash audit.</p>
-<p>The fidelity corpus is identified by byte count and SHA-256; its text and the reference logits are not included. The scoring results are inspectable, but the package alone is not a complete rerun kit for that test.</p>
+
+<section id="setup"><div class="secnum">05</div><h2>How this was measured</h2>
+<table class="facts">
+<tr id="what"><th scope="row">Model</th><td>Qwen3.8-27B (Qwen team), compressed GGUF files from unsloth. Text only, llama.cpp.</td></tr>
+<tr><th scope="row">Machine</th><td>One NVIDIA RTX 5090, 32,607 MiB reported capacity. One request at a time.</td></tr>
+<tr><th scope="row">Dates</th><td>Serving runs 2026-09-26; draft-model results 19 October 2026.</td></tr>
+<tr><th scope="row">Build</th><td>llama.cpp mainline <code>c8e03ce</code>, built 2026-08-05, CUDA sm_120, as named by the launch script (no fresh binary hash). Scoring: llama-perplexity build label b10453.</td></tr>
+<tr><th scope="row">Requests</th><td>Thinking off via <code>chat_template_kwargs: {"enable_thinking": false}</code>. Prose: temperature 0.7, seed 7, cap 900 tokens. Structured: temperature 0, seed 7, cap 1,600. Codes: temperature 0, seed 1, cap 300. Requests override the server's temperature 1.0.</td></tr>
+<tr><th scope="row">Reference</th><td>Q8_0, revision <code>4ca72078</code>, 29,047,086,048 bytes. Fixed 414,554-byte corpus, identified by hash.</td></tr>
+</table>
+<div class="data-wrap"><table class="data"><caption>Tested files; GB (bytes/10^9) and GiB (bytes/2^30) are arithmetic, rounded</caption><thead><tr><th>File</th><th>Recorded revision</th><th>Bytes</th><th>GB (bytes/10^9)</th><th>GiB</th></tr></thead><tbody>
+<tr><td class="t">UD-Q5_K_XL (August 14 upload)</td><td>fe1e2a23</td><td>20,218,178,624</td><td>20.2</td><td>18.83</td></tr>
+<tr><td class="t">UD-Q5_K_S</td><td>4ca72078</td><td>18,665,753,504</td><td>18.7</td><td>17.38</td></tr>
+<tr><td class="t">UD-Q4_K_XL</td><td>4ca72078</td><td>17,559,178,144</td><td>17.6</td><td>16.35</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="sources"><div class="secnum">06</div><h2>Data and sources</h2>
+<p>The <a href="data/README.md">data package</a> holds the September test records, logs and file hashes; the <a href="data/NUMBERS.md">number map</a> traces every figure. It lacks the fidelity text and reference logits, so that test cannot be fully rerun.</p>
 <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong; tell us and we will fix the page.</p>
 </section>
+
+<section id="related"><div class="secnum">07</div><h2>Related pages</h2>
+<ul class="plain">
+<li><a href="../qwen38-27b/">Day-zero Qwen3.8-27B card</a></li>
+<li><a href="../context-256k/">Full-window table</a></li>
+<li><a href="../batch-size/">Batch-size study</a></li>
+<li><a href="../speculation-gate/">Speculation-gate study</a></li>
+<li><a href="../roster-2026-10/">October results page</a></li>
+</ul>
+</section>
+
+<div class="endnote"><div class="nonaff">Independent measurements; no affiliation with the Qwen team / Alibaba Group, unsloth, NVIDIA, the llama.cpp project, or Hugging Face.</div></div>
 </div></main>
 <footer>
   <div class="wrap">

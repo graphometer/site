@@ -1,5 +1,7 @@
 # The wrong flag: data package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the numbers on **https://graphometer.ai/l3-threads/**, as the
 files the runs actually produced: the pre-registered three-arm A/B of
 **2026-08-11** (the correction experiment), the tuning-ladder and smoke records

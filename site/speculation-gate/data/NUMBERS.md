@@ -1,5 +1,7 @@
 # Every number on the page, and the file it came from
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 One row per figure printed at https://graphometer.ai/speculation-gate/ . Paths
 are relative to this folder; `lowerarm/` rows belong to the follow-up run and
 are never pooled with the main run's. If a row and a file disagree, the file
@@ -105,7 +107,7 @@ treatment × subset.
 | the restart control: two baseline sessions 16/16 byte-identical | `records/none_cycle1_4574baed.jsonl`, `records/none_cycle2_8ac19fed.jsonl` | `output.sha256` per prompt, equal on all 16; sessions about 85 minutes apart per `observed_utc` |
 | truncation census, main run: 12 of 160, named prompts per treatment | `analysis/analysis.md` (Data-quality table, finish=length: none 4, ungated 4, 0.50 2, 0.90 2, 0.75 0), `analysis/measurements.csv` | `finish_reason` per observation names the prompts (baseline `prose_05`+`prose_07` both cycles; ungated `prose_01`+`prose_07` both cycles; 0.50 `prose_03`+`prose_07` cycle 2; 0.90 `prose_03` both cycles) |
 | pairs with a truncated member: 6 / 5 / 4 / 6 of 16; both-complete pairs 10 / 11 / 12 / 10, every one still differing | arithmetic on the two rows above | a pair is truncated if either member finished `length` |
-| all 160 structured outputs passed the strict validator, zero fenced | `analysis/analysis.md` | Structured-validator table, 16/16 every treatment |
+| all 80 structured outputs in the main run (16 in each of five settings) passed the strict validator, zero fenced; corrected 21 November 2026 from "all 160" | `analysis/analysis.md` | Structured-validator table, 16/16 every treatment |
 | no truncated row shows the empty-answer signature; healthy prose band 4.68–6.05 chars/token | `RUN_LOG.md` | row-1 shakedown block (prose_05 4.84, prose_07 5.17 chars/token, 0 hidden events); `hidden_delta_events` is 0 on every record |
 | follow-up: prose 0/16 at both low gates; its own baseline control 16/16 | `lowerarm/analysis/analysis.md` (equivalence table); `lowerarm/records/none_cycle1_49265197.jsonl` vs `none_cycle2_68bc387f.jsonl` | `output.sha256` equal on all 16 |
 | follow-up truncation: 9 of 96, all prose; gated arms truncate `prose_01`, baseline truncates `prose_05`/`prose_07` | `lowerarm/analysis/analysis.md` (finish=length 4 / 1 / 4), `lowerarm/RUN_LOG.md` row table | per-row length lists with prompt names |

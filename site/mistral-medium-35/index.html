@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mistral Medium 3.5 on one desktop: 1 to 5 tokens a second</title>
-<meta name="description" content="On one desktop, Mistral Medium 3.5 went from about 1 token per second unaided to about 2 on prose after a fix to the draft model’s vocabulary.">
+<meta name="description" content="A mostly 4-bit Mistral Medium 3.5 on one RTX 5090: about 1 token a second alone; with a vocabulary-fixed helper, about 2 on prose and 4.37 on an easy code test.">
 <link rel="canonical" href="https://graphometer.ai/mistral-medium-35/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Mistral Medium 3.5 on one desktop: 1 to 5 tokens a second">
-<meta property="og:description" content="On one desktop, Mistral Medium 3.5 went from about 1 token per second unaided to about 2 on prose after a fix to the draft model’s vocabulary.">
+<meta property="og:description" content="A mostly 4-bit Mistral Medium 3.5 on one RTX 5090: about 1 token a second alone; with a vocabulary-fixed helper, about 2 on prose and 4.37 on an easy code test.">
 <meta property="og:url" content="https://graphometer.ai/mistral-medium-35/">
 <meta property="og:image" content="https://graphometer.ai/og/mistral-medium-35.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mistral Medium 3.5 on one desktop: 1 to 5 tokens a second">
-<meta name="twitter:description" content="On one desktop, Mistral Medium 3.5 went from about 1 token per second unaided to about 2 on prose after a fix to the draft model’s vocabulary.">
+<meta name="twitter:description" content="A mostly 4-bit Mistral Medium 3.5 on one RTX 5090: about 1 token a second alone; with a vocabulary-fixed helper, about 2 on prose and 4.37 on an easy code test.">
 <meta name="twitter:image" content="https://graphometer.ai/og/mistral-medium-35.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -125,6 +125,12 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  section h3{font-size:19px;font-weight:600;color:var(--ink);margin:30px 0 12px}
+  section h3:first-of-type{margin-top:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -156,107 +162,77 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · runs 2026-08-06 · files re-read 2026-08-08 · a longer prompt added 2026-09-16</div>
-      <h1 itemprop="headline">Field card: <em>Mistral Medium 3.5</em></h1>
-      <p class="lead">Mistral Medium 3.5 is Mistral AI's dense 128B-class
-      model, their flagship per the card, open-weight since late April.
-      Dense is the hard case for a desktop: unlike the sparse
-      mixture-of-experts giants, it has no sleeping experts to leave on the
-      disk, so every parameter is read for every token, and on our machine
-      that means about one token per second, set by memory bandwidth. This
-      page is the recorded story of making that model genuinely usable on
-      one desktop with a single 32 GB graphics card. The method is
-      speculative decoding: a small helper model drafts runs of tokens and
-      the big model only verifies them, and the runtime refused to load the
-      obvious helper until a two-token vocabulary repair. Afterward: about 2
-      tokens per second on prose, about 4 on predictable code-shaped work,
-      real agent turns spanning roughly 2 to 5, and a coding agent whose
-      8,000-token opening prompt reads in under twenty seconds. None of
-      this is a first; section 10 links prior art. What this page adds is
-      the measurement: exact artifact identity, placement arithmetic from
-      file headers, the repair recipe in full, and timed real work with its
-      protocol disclosed. Every number traces to a dated record or to the
-      model files themselves, and where a fact is a vendor's claim rather
-      than our measurement, we say so.</p>
+      <div class="eyebrow">Field card · one RTX 5090 desktop</div>
+      <h1 itemprop="headline">Mistral Medium 3.5 on one desktop: <em>1 to 5 tokens a second</em></h1>
+      <p class="lead">On one desktop with a single 32 GB RTX 5090 graphics card, a mostly 4-bit build of Mistral Medium 3.5 wrote about 1 token (a word piece) a second on its own. With a small helper model, after a two-token fix to the helper's vocabulary, it wrote about 2 tokens a second on prose, 4.37 on an easy code test and 1.87 to 5.02 across 27 real agent turns.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Fix the helper model's vocabulary before you use it.</strong> llama.cpp refuses Ministral 3 3B as a helper until two of its 131,072 tokens and one metadata field match the big model. <a href="#repair">The fix</a></li>
+          <li><strong>Do not read a model that fits in RAM from disk on demand (<code>--no-mmap</code>).</strong> Reading from disk cost 54 percent of prompt speed on this machine. <a href="#settings">The full launch command</a></li>
+          <li><strong>Check your RAM first.</strong> About 55 GiB of the weights sit in system RAM, so 64 GB is marginal and 96 GB or more is comfortable. <a href="#machine">What you need</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-08">8 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to Mistral AI, Unsloth, or ASUS.</div>
     </div>
 
-    <section>
+    <section id="todo">
       <div class="secnum">01</div>
-      <h2>What it is</h2>
-      <p>Most facts in this table were read directly out of the model files
-      on our disk, which makes them properties of the artifact rather than
-      quotes from a press release; rows that rest on the maker's card say
-      so, and the amber row is a maker's stated value we did not measure.</p>
-      <table class="facts">
-        <tr><th scope="row">Maker</th><td>Mistral AI</td></tr>
-        <tr><th scope="row">What it is</th><td>Mistral's first flagship merged model, per the card: instruction following, reasoning, and coding folded into one dense set of weights. Released as open weights in late April 2026.</td></tr>
-        <tr><th scope="row">Dense, verified</th><td>There is not a single expert tensor in the file: no expert counts, no routing, all 88 blocks carrying the same nine tensors. Dense means every parameter works on every token, which is the whole story of section 03.</td></tr>
-        <tr><th scope="row">Total parameters</th><td>"128B" is the vendor's name for it. We summed the shapes of all 795 tensors: the served text model is <span class="n">125,025,988,608</span> (125.03 billion). A separate 2.68-billion-parameter vision tower sits on disk unloaded; together they round to 128 billion.</td></tr>
-        <tr><th scope="row">Attention</th><td>96 query heads, 8 key-value heads (grouped-query), head dimension 128, across 88 blocks.</td></tr>
-        <tr><th scope="row">Context window</th><td><span class="asstated">The file declares 262,144 tokens (the card markets 256K), via YaRN position scaling.</span> We run 32,768 by default and have benchmarked 65,536 once; the largest prompt we have actually sent on this deployment is 12,367 tokens. Section 09 carries a longer prompt sent to this model on a different deployment.</td></tr>
-        <tr><th scope="row">Vocabulary</th><td>131,072 tokens, 269,443 merge rules. Two entries in that table turn out to matter a great deal; section 04 is about them.</td></tr>
-        <tr><th scope="row">Modality</th><td>Text and image input per the card. As served here it is text-only: the vision projector is a separate file we never load, and no image work appears on this page.</td></tr>
-        <tr><th scope="row">License</th><td>Open-weight under Mistral's Modified MIT License. It is close to MIT but not MIT: the grant falls away for companies above a stated revenue threshold, so read the actual terms for your intended use.</td></tr>
-      </table>
-      <p class="fineprint">File-derived rows were read from the pinned GGUF
-      set on 2026-08-08 by parsing the shard headers only; no model data was
-      loaded to produce them. Card-derived rows are the maker's claims.</p>
-    </section>
-
-    <section>
-      <div class="secnum">02</div>
-      <h2>What we ran, exactly</h2>
-      <p>A quant is a compressed build of a model's weights: lower bit
-      counts shrink the file, at some cost to fidelity that we do not
-      attempt to score here. The artifact we ran is Unsloth's
-      <strong>UD-Q4_K_XL</strong> build from their
-      <code>Mistral-Medium-3.5-128B-GGUF</code> repository at a pinned
-      revision: 3 files totalling <strong>75.69 GB</strong> (70.49 GiB; the
-      two units count the same bytes by thousands and by 1,024s). Despite
-      the mostly-4-bit name, the build is genuinely mixed precision: a
-      census of all 795 tensors counts 379 at 4-bit, 215 at 6-bit, 24 at
-      5-bit, and 177 at full precision, guided by calibration. Unsloth's
-      quality claims for its calibrated builds are Unsloth's; we did not
-      reproduce them. File sizes were re-checked against the saved
-      manifest on 2026-08-08; SHA-256 values were recorded at download
-      against the repository's listings.</p>
-      <p>The machine: one NVIDIA GeForce RTX 5090 with 32,607 MiB of VRAM,
-      an Intel Core Ultra 9 285K (24 cores), 188 GiB of system RAM, and the
-      weights on a consumer 4 TB NVMe SSD. The runtime: <strong>mainline
-      llama.cpp</strong>, commit <span class="n">5f55650a</span>, CUDA 12.8;
-      no fork, no branch, no patch to the runtime itself. The full flag set
-      appears in section 08.</p>
-      <div class="note">
-        <span class="label">Could your machine run this</span>
-        Roughly 76 GB of disk for the weights plus 2 GB for the draft, and
-        enough RAM that the model's CPU-resident portion fits without
-        paging: our default placement keeps about 55 GiB of weights in RAM,
-        so a 64 GB machine is marginal and 96 GB or more is comfortable. A
-        32 GB GPU carries the attention stack, the KV cache, and the draft;
-        smaller cards would need a heavier CPU placement we did not
-        measure. Download the UD-Q4_K_XL folder with your preferred Hugging
-        Face tool and verify the file count and checksums against the
-        repository listing before trusting the download.
+      <h2>What to do</h2>
+      <div class="note" id="machine">
+        <span class="label">What you need</span>
+        About 76 GB of disk for the weights plus 2 GB for the helper. Enough RAM to hold about 55 GiB of weights without paging: a 64 GB machine is marginal, 96 GB or more is comfortable. (A GiB counts bytes by 1,024s, a GB by thousands.) A 32 GB graphics card holds the attention layers, the KV cache (the model's working memory of the conversation) and the helper; smaller cards would need more on the CPU, which was not measured. Download the UD-Q4_K_XL folder (one compressed build of the weights) and check the file count and checksums against the repository listing.
       </div>
+
+      <p id="repair"><strong>Fix the helper's vocabulary.</strong> The speed-up comes from speculative decoding: a small helper model (the draft) guesses the next several tokens and the big model checks them all at once. The obvious helper, Mistral's Ministral 3 3B Instruct 2512, has the same 131,072-token vocabulary, yet llama.cpp refused it three times: the vocabularies are not compatible. Compared entry by entry, they differ in <strong>two tokens out of 131,072</strong>: ids 36 and 37 are unused placeholders in the small model and live control tokens in the big one. One metadata field naming the pre-tokenizer family (the first step that splits text) also differs. In a copy of the helper, replace those two token strings and that one metadata string; no weights change. Checked afterwards: <strong>zero differences across 131,072 tokens, 131,072 type flags and 269,443 merge rules</strong>. Patching the pre-tokenizer name alone does not help; a two-token difference is refused outright, with no degraded mode.</p>
+
+      <p id="settings"><strong>Launch with this command</strong>, the full flag set for the everyday setup:</p>
+      <pre class="log">llama-server --jinja --ctx-size 32768 -b 4096 -ub 1024 --parallel 1 -ngl 99 \
+  --override-tensor 'blk\.(7[4-9]|8[0-7])\.=CPU,ffn_.*=CPU' \
+  --cache-type-k q8_0 --cache-type-v q8_0 --no-mmap \
+  --spec-draft-model &lt;patched Ministral 3 3B Q4_K_M&gt; --spec-type draft-simple \
+  --spec-draft-n-max 16 --spec-draft-p-min 0.5 --spec-draft-ngl 99 \
+  --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 \
+  --threads 24 --threads-batch 24 --flash-attn on --temp 0.15 --top-p 1.0 --top-k 0</pre>
+      <p>In words: attention and the KV cache stay on the card; every feed-forward block (the large part of each layer outside attention), and the last 14 blocks entirely, go to the CPU. <code>q8_0</code> stores the caches at 8 bits. Graphics memory measured 27,222 MiB of 32,607 (26.6 GiB used, 5.3 free, whole card including the desktop).</p>
+
+      <p id="traps"><strong>Avoid these traps</strong>, each measured here:</p>
+      <ul class="plain">
+        <li><strong>Do not memory-map a model that fits in RAM</strong> (read it from disk on demand). It cost 54 percent of prompt-reading speed (435 down to 199 tokens a second), a sixth of writing speed on code, and 13 GiB of resident size. <code>--no-mmap</code> now prints a warning pointing at <code>--load-mode</code>; it still works.</li>
+        <li><strong>At 64K context, the helper's KV cache runs out of graphics memory</strong>, not the big model's; this build has no flag to cap the helper's context separately. The error message blames a feature this model does not have.</li>
+        <li><strong>One guesser beats two.</strong> Adding an n-gram guesser (one that reuses word sequences already in the text) beside the helper tripled discarded tokens and lowered both writing speeds.</li>
+        <li><strong>Move parts to the CPU by tensor name (each named block of weights), not layer count.</strong> Naming the feed-forward tensors kept attention and the KV cache on the card and beat the same-size layer split, 1.22 against 1.10 tokens a second.</li>
+        <li><strong>Work out the placement before loading.</strong> Every split here was worked out in seconds from the file headers.</li>
+        <li><strong>Two warnings at every load are harmless here:</strong> an auto-fit line (automatic sizing stood down as told) and a YaRN line (YaRN stretches the context length) marking the fixed version of an early-2026 setup fault whose symptom, on unfixed copies, was forgetting earlier conversation. If your copy predates the fix, update it.</li>
+        <li><strong>For agent work, keep the prompt cache on.</strong> The clearest failure below was a server re-reading its full context every turn: minutes per turn before any thinking.</li>
+      </ul>
     </section>
 
-    <section>
-      <div class="secnum">03</div>
-      <h2>One token per second is the memory bus, measured</h2>
-      <p>Seventy gigabytes of weights, of which only about fifteen fit on
-      the card alongside the caches, means roughly 55 GiB living in system
-      RAM and being read in full, once, per token. That decode is
-      memory-bound is textbook for dense models; what we can add is how
-      cleanly it shows up when you measure it. We ran four different
-      CPU/GPU placements of this model, putting 48.35, 51.76, 53.42 and
-      56.57 GB of weights on the CPU side. Multiply each placement's bytes
-      by its measured token rate:</p>
+    <section id="found">
+      <div class="secnum">02</div>
+      <h2>What we found</h2>
+
+      <h3>The speeds</h3>
       <div class="data-wrap">
         <table class="data">
-          <thead><tr><th>Placement</th><th>Weights on CPU</th><th>Decode</th><th>Implied sweep rate</th></tr></thead>
+          <thead><tr><th>What</th><th>Measured</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="t">Writing, no helper</td><td class="t">1.04 to 1.22 tokens a second</td><td class="t">four placements at 8K; the everyday placement would be at the low end</td></tr>
+            <tr><td class="t">With helper, code test</td><td class="t">4.37 tokens a second</td><td class="t">return a function unchanged except for a rename, the easiest shape for a helper</td></tr>
+            <tr><td class="t">With helper, real agent turns</td><td class="t">1.87 to 5.02 tokens a second</td><td class="t">27 recorded turns; code turns near 4.3, prose near 2; the range to plan around</td></tr>
+            <tr><td class="t">With helper, prose test</td><td class="t">1.97 tokens a second</td><td class="t">the chat number</td></tr>
+            <tr><td class="t">Reading the prompt</td><td class="t">435 tokens a second on the everyday setup</td><td class="t">453 t/s on a real 8,103-token agent prompt; 598 with a larger micro-batch (prompt tokens read at a time)</td></tr>
+            <tr><td class="t">Load, to answering</td><td class="t">22 seconds warm, 87 semi-cold</td><td class="t">fully cold: two to three minutes by earlier notes, not re-timed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">t/s is tokens a second. Speeds are end to end, as a user would see them: a field measurement of one configuration, not a benchmark of the model.</p>
+      <p>With the helper, code-shaped work went from about 1.1 to 4.37 tokens a second. On code, the helper's guesses ran 9.6 tokens on average and 81.5 percent were accepted; on prose, 2.7 tokens and 54 percent. <strong>The speed-up depends on how predictable the text is</strong>: a refactor flies, an essay crawls, on the same hardware. By design the helper changes speed, not content: the big model rejects any guessed token it would not have produced itself. This was not tested side by side (see Limits).</p>
+
+      <h3>Why it is 1 token a second without help</h3>
+      <p>The model is dense: every weight works on every token. Only about fifteen of its roughly seventy gigabytes fit on the card beside the caches, so roughly 55 GiB in system RAM is read in full once per token. Four placements put different amounts on the CPU side; multiply each one's bytes by its measured speed:</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>Placement</th><th>Weights on CPU</th><th>Writing</th><th>Implied read rate</th></tr></thead>
           <tbody>
             <tr><td class="t">By tensor name, lightest</td><td>48.35 GB</td><td>1.22 t/s</td><td>59.0 GB/s</td></tr>
             <tr><td class="t">By layer count</td><td>53.42 GB</td><td>1.10 t/s</td><td>58.8 GB/s</td></tr>
@@ -265,408 +241,95 @@
           </tbody>
         </table>
       </div>
-      <p class="tablenote">Byte totals re-derived from the file headers for
-      each placement's exact expression; rates from the recorded ladder. A
-      17 percent spread in bytes, a 1.7 percent spread in implied
-      bandwidth.</p>
-      <p>Four configurations agreeing to within two percent is as close to
-      a clean measurement as field work gets: <strong>plain decode is one
-      full sweep of the CPU-resident weights per token, at about 58.6 GB/s
-      sustained; that arithmetic accounts for the measured rate to within
-      two percent on every placement</strong>. The practical reading: on the
-      configurations we measured, this model does about one token per
-      second without help, and the earlier deployment of this same model
-      that was retired here as impractical at 1 token per second was never
-      misconfigured. It was physics. Anything that makes this model usable
-      has to change the arithmetic, not the settings.</p>
+      <p class="tablenote">Byte totals from the file headers; speeds from the recorded test series. A 17 percent spread in bytes, a 1.7 percent spread in implied read rate.</p>
+      <p><strong>On the four placements measured, writing without help is one full read of the CPU-side weights per token, at about 58.6 GB/s sustained</strong>, accounting for the measured speed to within two percent on each. No setting we tried changes that; only something that changes the arithmetic, like the helper, does.</p>
+
+      <h3 id="work">Real coding work, timed</h3>
+      <p>The model ran through a coding agent (OpenCode) on a small Python repository with a deliberately planted bug, four tasks in one session: explain the architecture; fix the bug; add a cancellation feature across two modules with tests; review its own changes and, as a trap, report numbers from a benchmark script that does not exist. It finished all four in <strong>58 minutes of task time</strong> (10.0, 5.8, 28.7 and 13.2 minutes, from the server log). Saved on disk: the one-line fix, the feature with six new tests passing, and a file it judged should not change left alone, with a test proving it. Session notes, not saved output, record that it flagged the bug unprompted while explaining, and at the trap said the script does not exist rather than inventing numbers.</p>
+      <p>GLM-5.2, a 744-billion-parameter mixture-of-experts model (only some parts run per token) whose weights are three times this model's size and exceed the machine's RAM, ran the same tasks on the same machine the same day. It also finished all four, in <strong>1 hour 24 minutes</strong>. Medium was 3.3 times faster on the first task, twice as fast on the bug fix, about tied on the review, and <strong>slower on the multi-file feature</strong>: 28.7 minutes against GLM's 23.9, though GLM wrote fewer tests.</p>
+      <p><strong>The first turn decides it.</strong> Medium read the agent's 8,103-token opening prompt in <strong>17.9 seconds</strong>. GLM-5.2, whose parts must stream from disk when it reads a large prompt cold, read its 7,419-token prompt in <strong>19 minutes 44 seconds</strong>, both from the raw server logs: about 66 to 1. A dense model that fits in memory wins not by writing faster but because it can <em>start</em>.</p>
+      <p class="tablenote">One repository, one run per model. The models used different interfaces of the same agent (HTTP for Medium, terminal for GLM). Medium's timed session ran a server with four slots (room for four requests at once) rather than the everyday single slot, one request at a time either way. The traps matched in shape, not text. Both ran the bug fix warm, after the explain task; Medium's cold rerun took 10.0 minutes against its warm 5.8.</p>
+
+      <h3 id="comparison">The bug fix alone, against three other local models</h3>
+      <p>The bug task alone, from a fresh copy, cold, same agent and prompt. Results belong to the whole setup (model, compression, runtime, cache, agent); each is one run.</p>
+      <ul class="plain">
+        <li><strong>Mistral Medium 3.5:</strong> 10.0 minutes, 13 tool calls, a correct minimal one-line fix, tests passing; the edit landed 8 minutes 49 seconds after the copy.</li>
+        <li><strong>Qwen3-Coder-Next, a 32-billion-parameter coding model:</strong> the correct one-line fix <strong>74 seconds</strong> after the copy, tests passing, about eight times faster. Session notes, not a saved transcript, record a rougher path: twenty tool calls, a wrong first diagnosis, one malformed edit call.</li>
+        <li><strong>Mistral Small 4, in this agent program:</strong> did not finish. Two attempts each stalled on the first tool turn (a Node test command on a Python repository) and were stopped within about two minutes, with no edit. The server stayed healthy; the cause was not isolated.</li>
+        <li><strong>Laguna S 2.1:</strong> too slow for the 45-minute budget, not incapable; that run never reached an edit. Two parallel copies from the same evening carry the identical correct fix, landed about 42 and 46 minutes after they were made, tests passing. The timing matches that server's turns, so this is a strong inference, not a certainty. With no prompt cache, every turn re-read its ~8,000-token context at 65 tokens a second: two minutes before every reply.</li>
+      </ul>
+      <p>From one evening: for local agent work, raw writing speed mattered less than discipline and prompt-reading speed, and twice the difference between usable and not came from the setup (a stalled tool turn, a missing prompt cache), not the model.</p>
+
+      <h3 id="battery">Short functional tests</h3>
+      <p>Fifteen short test prompts showed byte-exact instruction following, a reasoning switch that separates or suppresses the thinking text on demand, working tool calls and continuation after tool results, generated code that passed its own executed tests, and a correct refusal to fake shell output. With a reasonable output limit, it wrote its reasoning and then an answer, with no empty replies.</p>
     </section>
 
-    <section>
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>Single runs.</strong> The fifteen tests ran once; the no-empty-reply result is two data points with generous limits. The coding session shows the model can hold a real multi-turn agent session, edit minimally and decline to make things up, but it is not a pass rate and says nothing about large codebases, other languages or repeatability.</li>
+        <li><strong>Same output with and without the helper rests on how the method works</strong> and the identical vocabularies, not on a side-by-side test with the same seed.</li>
+        <li><strong>Long prompts barely tested on the single-desktop setup.</strong> The file declares 262,144 tokens; the default here is 32,768, 65,536 was tested once, and the largest prompt sent on the single-desktop setup is 12,367 tokens. Finding one hidden item was tested once, at that size. A longer prompt on a different setup is under <a href="#updates">Corrections and updates</a>.</li>
+        <li><strong>One build, one machine, single requests.</strong> The main results are the UD-Q4_K_XL build on one desktop. The vision part was never loaded, so images were not tested. The larger 8B helper, the next step if acceptance proved high (it did), was never tried.</li>
+        <li><strong>No quality score of our own.</strong> Mistral's published figures (77.6 percent SWE-Bench Verified, a coding benchmark, among them) are for the official model, not this build on this machine. The quality cost of the compression and Unsloth's quality claims were not tested.</li>
+      </ul>
+    </section>
+
+    <section id="updates">
       <div class="secnum">04</div>
-      <h2>The two-token repair</h2>
-      <p>The escape from that arithmetic is that dense models verify in
-      batches. One decoding step costs a full sweep of the weights, but so
-      does checking a whole batch of candidate tokens at once. So if
-      something small and fast can guess the next several tokens, and the
-      big model only has to verify the guesses, a whole drafted run costs
-      about what one token used to, before rejections take their share.
-      This is speculative decoding, it is standard
-      practice (Mistral ships an official draft model for exactly this
-      purpose on other runtimes), and it is unusually valuable for dense
-      models on desktops, where the per-sweep price is so high.</p>
-      <p>Mistral publishes an obvious candidate guesser: Ministral 3 3B
-      Instruct 2512, from the same architecture family, with the same
-      131,072-token vocabulary, under Apache 2.0. llama.cpp refused to load
-      it as a draft. Three times, with the same two-line error, twenty-one
-      seconds into every load: the target and draft vocabularies are not
-      compatible. The refusal is loud and deliberate; the runtime will not
-      let a mismatched draft corrupt a run silently.</p>
-      <p>The actual mismatch, once we compared the two vocabulary tables
-      element by element, is <strong>two tokens out of 131,072</strong>.
-      Ids 36 and 37 are unused placeholder strings in the small model and
-      live control tokens in the big one, plus one metadata field naming
-      the pre-tokenizer family. Nothing else differs. So a copy of the
-      draft was rewritten: two token strings replaced, one metadata string
-      changed, no weights touched. We re-verified the result on 2026-08-08
-      by comparing the patched draft's full token table, type flags, and
-      merge rules against the target's: <strong>zero differences across
-      131,072 tokens, 131,072 type flags, and 269,443 merges</strong>.</p>
-      <p>Does the draft change what the model says? Speculative decoding is
-      verify-then-accept: the target model scores every drafted token and
-      rejects any it would not have produced itself, so a draft can change
-      speed, never content. That is a property of the algorithm, and with
-      the tokenizers now verified identical the standard argument applies
-      in full. Honesty requires one more sentence: we did not additionally
-      run a controlled same-seed output diff with and without the draft, so
-      the claim rests on the mechanism, not on an empirical equivalence
-      test. As for novelty: vocabulary-mismatch speculation is a studied
-      problem with general solutions, and as of 2026-08-08 we found no
-      published account of this exact two-token repair for this exact pair;
-      call it an apparently unpublished recipe, not an invention.</p>
-      <p>What it bought, measured on the shipping profile: code-shaped work
-      went from about 1.1 to <strong>4.37 tokens per second</strong>, prose
-      to about 2. The mechanism is visible in the acceptance numbers, and
-      it is also the honest caveat: on code, the draft's proposals ran 9.6
-      tokens on average and 81.5 percent were accepted; on prose, 2.7
-      tokens and 54 percent. <strong>The speed-up is a property of how
-      predictable the text is</strong>, not of the model: a refactor flies,
-      an essay crawls, on identical hardware.</p>
+      <h2>Corrections and updates</h2>
+      <div class="note">
+        <span class="label">Update · 2026-09-16 · a longer prompt, a different setup</span>
+        <p>On 2026-09-16 a 32,509-token prompt was sent to a different build of this model, Q3_K_S, split across the desktop and the Z13 laptop, an ASUS laptop, over RPC (llama.cpp's link between machines), with the same vocabulary-patched Ministral 3 3B Q4_K_M helper, here guessing up to 7 tokens rather than 16. Reading the prompt took 1,027.07 s (31.65 tokens a second); the reply ran 331 tokens at 2.824 tokens a second, build <span class="n">b10919-d3146f2b5</span>. Context 131,072, both caches q8_0, layers split 16 on the desktop and 72 on the laptop, helper on the desktop only, one request, no cached prompt tokens. Token counts and times are from the published result file; the placement and helper are from the launch record. The UD-Q4_K_XL readings stand as dated readings of that setup. Two sentences on this page said no larger prompt had been sent; they were false, and now apply to the single-desktop setup only. The redacted result: <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>, mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>.</p>
+      </div>
     </section>
 
-    <section>
+    <section id="measured">
       <div class="secnum">05</div>
-      <h2>The speed, with nothing softened</h2>
-      <div class="data-wrap">
-        <table class="data">
-          <thead><tr><th>What</th><th>Measured</th><th>Note</th></tr></thead>
-          <tbody>
-            <tr><td class="t">Plain decode, no draft</td><td class="t">1.04 to 1.22 tokens per second</td><td class="t">four placements at 8K; the shipping placement would be at the low end</td></tr>
-            <tr><td class="t">With draft, code probe</td><td class="t">4.37 tokens per second</td><td class="t">a copy-heavy probe shape; see below</td></tr>
-            <tr><td class="t">With draft, real agent turns</td><td class="t">1.87 to 5.02 tokens per second</td><td class="t">27 recorded turns; code turns cluster near 4.3, prose near 2</td></tr>
-            <tr><td class="t">With draft, prose probe</td><td class="t">1.97 tokens per second</td><td class="t">the honest chat number</td></tr>
-            <tr><td class="t">Prompt processing</td><td class="t">435 tokens per second on the shipping profile</td><td class="t">453 t/s on a real 8,103-token agent prompt; 598 with a larger micro-batch</td></tr>
-            <tr><td class="t">Load, to answering</td><td class="t">22 seconds warm, 87 semi-cold</td><td class="t">fully cold: two to three minutes per deployment notes, not re-timed</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="tablenote">Sources: the recorded 15-rung ladder, its server
-      logs, and the timed agent session's server log. Speeds are end to end
-      as a user would experience them. This is a field measurement of one
-      configuration, not a benchmark of the model.</p>
-      <p>Two honest footnotes on the table. The 4.37 code probe asks the
-      model to return a function unchanged except for a rename, which is
-      the most draft-friendly shape there is; that is why the table also
-      carries the 1.87 to 5.02 band from real agent turns, which is the
-      number to plan around. And the fast prompt processing is not a
-      luxury, it is the point: prompt processing is the reading phase and
-      generation is the writing phase, and reading at hundreds of tokens
-      per second against writing at 2 to 5 is the asymmetry agent work
-      lives on, because every agent turn begins with the model re-reading
-      a large context. Section 06 makes that concrete.</p>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>Main runs 2026-08-06; file headers and sizes re-read and saved test folders re-run 2026-08-08; longer prompt 2026-09-16.</td></tr>
+        <tr><th scope="row">Model</th><td>Mistral AI. Per the card, its first flagship merged model (instruction following, reasoning and coding in one set of weights), open weights since late April 2026; text and image input, run here as text only.</td></tr>
+        <tr><th scope="row">Dense, checked</th><td>No expert tensors: no expert counts, no routing, all 88 blocks carrying the same nine tensors.</td></tr>
+        <tr><th scope="row">Parameters</th><td>"128B" is the maker's name. All 795 tensors summed: the served text model is <span class="n">125,025,988,608</span> (125.03 billion). A separate 2.68-billion-parameter vision part sits on disk, unloaded; together they round to 128 billion.</td></tr>
+        <tr><th scope="row">Attention</th><td>96 query heads, 8 key-value heads (grouped-query), head dimension 128, across 88 blocks.</td></tr>
+        <tr><th scope="row">Context</th><td><span class="asstated">The file declares 262,144 tokens (the card markets 256K), via YaRN. Stated, not measured.</span></td></tr>
+        <tr><th scope="row">Vocabulary</th><td>131,072 tokens, 269,443 merge rules.</td></tr>
+        <tr><th scope="row">License</th><td>Mistral's Modified MIT License: close to MIT but not MIT; the grant falls away for companies above a stated revenue threshold.</td></tr>
+        <tr><th scope="row">File</th><td>Unsloth's <code>UD-Q4_K_XL</code> build (GGUF, the file format llama.cpp loads) at pinned revision <span class="n">c8f5b147</span>: 3 files, 75.69 GB (70.49 GiB). Mixed precision across 795 tensors: 379 at 4-bit, 215 at 6-bit, 24 at 5-bit, 177 at full precision. Sizes re-checked against the saved manifest on 2026-08-08; SHA-256 checksums recorded at download against the repository listing. The dense, parameter, attention, context and vocabulary rows were read from the file headers only; the other model rows are the maker's claims.</td></tr>
+        <tr><th scope="row">Helper</th><td>Ministral 3 3B Instruct 2512, Q4_K_M, with the two-token patch.</td></tr>
+        <tr><th scope="row">Machine</th><td>One NVIDIA GeForce RTX 5090 with 32,607 MiB of graphics memory, Intel Core Ultra 9 285K (24 cores), 188 GiB of system RAM, weights on a consumer 4 TB NVMe SSD.</td></tr>
+        <tr><th scope="row">Runtime</th><td>Mainline llama.cpp, commit <span class="n">5f55650a</span>, CUDA 12.8; no fork, no patch.</td></tr>
+        <tr><th scope="row">Evidence</th><td>A 15-step placement and helper test series with a server log per step; the fifteen functional tests with request bodies; server logs for the timed session and the comparison.</td></tr>
+      </table>
     </section>
 
-    <section>
+    <section id="sources">
       <div class="secnum">06</div>
-      <h2>It did real work, timed</h2>
-      <p>Probes tell you a model can speak; they do not tell you it can
-      work. So this model was driven through a real coding agent (OpenCode)
-      against a small Python repository with a seeded bug: four tasks, in one
-      session, with the server log keeping millisecond timestamps. Explain
-      the architecture; diagnose and fix the seeded bug; add a cancellation
-      feature across two modules with tests; then review its own diff and,
-      as a trap, report numbers from a benchmark script that does not
-      exist. It completed all four in <strong>58 minutes of task time</strong>,
-      re-derived from the server log to the second: 10.0, 5.8, 28.7 and
-      13.2 minutes. The work itself survives on disk: the one-line bug fix,
-      the cancellation feature's diff with six new tests and the suite
-      green, and the file it judged should not change left untouched, with
-      a test proving the judgment instead of an edit. Two of the best
-      moments are the session notes' account rather than preserved output,
-      and we mark them as such: the notes record that it flagged the seeded
-      bug unprompted while still on the explain task, and that at the trap
-      it reported the benchmark script does not exist rather than inventing
-      numbers.</p>
-      <p>We ran the same four tasks and repository commit on a far larger
-      model: GLM-5.2, a 744-billion-parameter mixture-of-experts model, on
-      the same machine the same day, through a different door of the same
-      agent (its terminal rather than its HTTP surface; the protocol note
-      below carries every asymmetry). Its weights are three times this
-      model's size and exceed the machine's RAM. It also completed all
-      four, in <strong>1 hour 24 minutes</strong>, and the per-task picture
-      is not one-sided: Medium was 3.3 times faster on the first task,
-      twice as fast on the bug fix, essentially tied on the review, and
-      <strong>slower on the multi-file feature</strong>, where GLM finished
-      in 23.9 minutes against Medium's 28.7 (while writing fewer tests, so
-      even that row is not a clean win for either).</p>
-      <p><strong>The measurement that actually decides it is the first
-      turn.</strong> Handed the agent's opening context, the dense model
-      that fits in RAM read its 8,103-token prompt in <strong>17.9
-      seconds</strong>. The sparse giant, whose experts must stream from
-      the disk when it reads a large prompt cold, read its 7,419-token
-      prompt in <strong>19 minutes 44 seconds</strong>. Both numbers are from the raw server
-      logs, same day, same machine. That difference, about 66 to 1, is the
-      whole case for a dense model that fits in memory: not that it
-      generates faster, but that it can <em>start</em>.</p>
-      <div class="note">
-        <span class="label">Protocol, disclosed</span>
-        This is a recorded four-task field gauntlet, not a standardized
-        benchmark: one repository, one run per model, no repetitions. The
-        two models were driven through different doors of the same agent
-        (one through its HTTP surface, one through its terminal). Medium's
-        timed session ran on a four-slot server configuration rather than
-        the single-slot one we ship, with one request at a time either
-        way. The honesty traps were equivalent in shape but not identical
-        in text. And both models ran the bug-fix task warm, after the
-        explain task in the same session; the cold rerun of Medium on the
-        bug task took 10.0 minutes against its warm 5.8.
-      </div>
+      <h2>Data and sources</h2>
+      <ul class="plain">
+        <li>The model: <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B">huggingface.co/mistralai/Mistral-Medium-3.5-128B</a> (card, weights and license text).</li>
+        <li>The helper: <a href="https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512">Ministral 3 3B Instruct 2512</a>, Apache 2.0; the two-token repair was applied to a local copy.</li>
+        <li>The file: <a href="https://huggingface.co/unsloth/Mistral-Medium-3.5-128B-GGUF">unsloth/Mistral-Medium-3.5-128B-GGUF</a>, <code>UD-Q4_K_XL</code>.</li>
+        <li>The 2026-09-16 result: <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>, mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>.</li>
+        <li>The other measurements rest on dated logs and records not published as files.</li>
+      </ul>
     </section>
 
-    <section>
+    <section id="related">
       <div class="secnum">07</div>
-      <h2>The bake-off, honestly</h2>
-      <p>One more comparison, narrower and blunter: the seeded-bug task
-      alone, from a fresh clone, cold, through the same agent surface with
-      the same hard-coded prompt, against three other locally deployed
-      models. Outcomes belong to the whole stack (model, quantization,
-      runtime, cache state, harness), not to the model name alone, and one
-      run is one run; here is exactly what the records support.</p>
+      <h2>Related pages</h2>
       <ul class="plain">
-        <li><strong>Mistral Medium 3.5, cold:</strong> 10.0 minutes, 13
-        tool calls, a correct minimal one-line fix, suite green; the edit
-        landed 8 minutes 49 seconds after the clone. (Its warm run of the
-        same task, above, took 5.8.)</li>
-        <li><strong>Qwen3-Coder-Next, a 32-billion-parameter coding model:</strong>
-        the correct one-line fix <strong>74 seconds</strong> after the
-        clone, suite green: about eight times faster than Medium. The
-        session notes record the ride as rougher (twenty tool calls, a
-        wrong first diagnosis, one malformed edit call along the way), and
-        that conduct detail is the session log's account rather than a
-        preserved transcript, so we state it as such.</li>
-        <li><strong>Mistral Small 4, in this agent harness:</strong> did
-        not finish. Two attempts, each wedging on its first tool turn
-        (opening move: a Node test command on a Python repository), each
-        abandoned within about two minutes; no diagnosis, no edit. The
-        model server itself stayed healthy throughout, which is its own
-        lesson: a model can generate perfectly and still not function as an
-        agent in a given harness pairing. Tool-schema fit is a known
-        failure mode of such pairings, and we did not isolate the
-        cause.</li>
-        <li><strong>Laguna S 2.1:</strong> too slow for the 45-minute
-        budget, not incapable. The budgeted run never reached an edit. But
-        two parallel working trees from the same evening carry the
-        identical correct one-line fix, landed about 42 and 46 minutes
-        after their clones with both suites passing today; the timing
-        matches that server's turn boundaries, and we state the
-        attribution as a strong inference rather than a certainty. The
-        measured cause of the slowness: that deployment ran without a
-        prompt cache, so every turn re-read its ~8,000-token context at 65
-        tokens per second, two minutes of reading before every thought.</li>
-      </ul>
-      <p>The generalization we are willing to publish from one evening:
-      for local agent work, raw generation speed matters less than
-      discipline and prompt-reading speed. The fastest model here was
-      eight times faster, with a rougher ride recorded only in session
-      notes; the most careful ones
-      were Medium and, on the evidence of its landed fix, the slow
-      Laguna; and the difference between usable and not was twice decided
-      by infrastructure (a wedged tool turn, a missing prompt cache)
-      rather than by the model's intelligence.</p>
-    </section>
-
-    <section>
-      <div class="secnum">08</div>
-      <h2>The traps, so you lose hours instead of days</h2>
-      <p>Everything below was measured here, and each one costs real time
-      if met unprepared.</p>
-      <ul class="plain">
-        <li><strong>Do not memory-map a model that fits in RAM.</strong>
-        Turning mmap back on cost 54 percent of prompt-processing speed
-        (435 down to 199 tokens per second), a sixth of code decode, and
-        13 GiB of resident size. The flag that prevents it
-        (<code>--no-mmap</code>) now prints a deprecation warning pointing
-        at <code>--load-mode</code>; the behavior still works.</li>
-        <li><strong>A draft with a two-token vocabulary difference is
-        refused outright</strong>, with no degraded mode, and patching the
-        pre-tokenizer name alone does not help; the token table itself
-        must match. Compare the tables before you assume compatibility.</li>
-        <li><strong>At 64K context it is the draft's KV cache that runs
-        you out of VRAM</strong>, not the model's: the failed allocation
-        re-derives exactly to the 3B draft's cache, and this build has no
-        flag to cap the draft's context separately. Bonus confusion: the
-        error message blames a feature this model does not have.</li>
-        <li><strong>Stacking two speculators is worse than one.</strong>
-        Adding an n-gram guesser beside the draft tripled discarded
-        tokens and lowered both decode rates.</li>
-        <li><strong>Offload by tensor name, not layer count.</strong>
-        Naming the feed-forward tensors kept all attention and the KV
-        cache on the card and beat the same-size layer split, 1.22 against
-        1.10 tokens per second.</li>
-        <li><strong>You can compute the whole placement before loading
-        anything.</strong> Every CPU/GPU split on this page was re-derived
-        in seconds from the GGUF headers alone.</li>
-        <li><strong>Two warnings at every load are benign here:</strong>
-        an auto-fit line that means automatic sizing stood down as
-        instructed, and a YaRN scaling line that marks the fixed version
-        of an early-2026 configuration quirk whose symptom, on unfixed
-        copies of this model, was forgetting earlier conversation. If your
-        copy predates the fix, update it.</li>
-        <li><strong>For agent work the prompt cache is not an
-        optimization.</strong> The bake-off's clearest failure mode was a
-        deployment that re-read its full context every turn. Minutes per
-        turn, before any thinking.</li>
-      </ul>
-      <p>The full serving flag set for the shipping profile, for anyone
-      reproducing this class of run:</p>
-      <pre class="log">llama-server --jinja --ctx-size 32768 -b 4096 -ub 1024 --parallel 1 -ngl 99 \
-  --override-tensor 'blk\.(7[4-9]|8[0-7])\.=CPU,ffn_.*=CPU' \
-  --cache-type-k q8_0 --cache-type-v q8_0 --no-mmap \
-  --spec-draft-model &lt;patched Ministral 3 3B Q4_K_M&gt; --spec-type draft-simple \
-  --spec-draft-n-max 16 --spec-draft-p-min 0.5 --spec-draft-ngl 99 \
-  --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 \
-  --threads 24 --threads-batch 24 --flash-attn on --temp 0.15 --top-p 1.0 --top-k 0</pre>
-      <p>In words: all attention and the entire KV cache stay on the GPU;
-      every feed-forward block goes to the CPU; the last 14 blocks go to
-      the CPU entirely. VRAM on this profile measured 27,222 MiB of 32,607
-      (26.6 GiB used, 5.3 free, whole card including the desktop).</p>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>What we ran, and what we have not</h2>
-      <p>The recorded evidence behind this page: a 15-rung placement and
-      speculation ladder with a server log per rung; a fifteen-probe
-      functional battery with request bodies preserved (byte-exact
-      instruction following, a clean reasoning toggle that separates or
-      suppresses the thinking trace on demand, working tool calls and
-      tool-result continuation, generated code that passed its own
-      executed tests, a correct refusal to fake shell output); the timed
-      four-task agent session and the four-model bake-off, both with
-      server logs; and a header-level re-derivation of every parameter
-      count, byte split, and the tokenizer comparison on 2026-08-08. One
-      welcome contrast with the reasoning-first models we have measured:
-      in the recorded probes, a reasonable output budget produced a
-      reasoning trace and then an answer, with no empty-reply trap.</p>
-      <p>Still not verified, stated plainly:</p>
-      <ul class="plain">
-        <li><strong>Vision: never loaded.</strong> The projector sits on
-        disk, checksummed and untouched.</li>
-        <li><strong>Long context: barely touched, on this deployment.</strong> The file
-        declares 262,144 tokens; we ship 32K, benchmarked 64K once, and
-        have never sent a prompt above 12,367 tokens on this deployment.
-        Retrieval was tested once, with one needle, at that size.</li>
-        <li><strong>Output equivalence with and without the draft</strong>
-        rests on the verify-then-accept mechanism and the verified
-        identical tokenizer, not on a controlled diff (section 04).</li>
-        <li><strong>The battery is one run of fifteen probes.</strong> No
-        repeats, no variance. The no-empty-reply observation is two data
-        points with generous budgets.</li>
-        <li><strong>The gauntlet is four tasks on one small repository,
-        once.</strong> It shows this model can hold a real multi-turn
-        agent session, edit minimally, and decline to fabricate. It is
-        not a pass rate, and it says nothing about large codebases, other
-        languages, or repeatability.</li>
-        <li><strong>One backend.</strong> The runs above are one quant,
-        UD-Q4_K_XL, on one machine; a Q3_K_S run on two machines is the
-        dated note below, not a replacement of those readings. Single
-        requests only, and the timed session ran a four-slot configuration
-        we do not ship.</li>
-        <li><strong>No benchmark score of ours exists.</strong> Mistral's
-        published figures (77.6 percent SWE-Bench Verified among them) are
-        Mistral's, for the official model, not for this quant on this
-        machine; nothing on this page validates or contradicts them.</li>
-        <li><strong>The larger draft was never tried.</strong> The records
-        name an 8B draft as the upgrade path if acceptance proved high. It
-        did. Nobody has tried it yet.</li>
-      </ul>
-      <div class="note">
-        <span class="label">Update &middot; 2026-09-16 &middot; a longer prompt, a different deployment</span>
-        <p>On 2026-09-16 a 32,509-token prompt was sent to this model:
-        Q3_K_S split across the desktop and the Z13 laptop, an ASUS laptop,
-        over RPC, with a vocabulary-patched draft. Prefill ran 1,027.07 s
-        (31.65 tokens per second); the reply ran 331 tokens at 2.824 tokens
-        per second, build <span class="n">b10919-d3146f2b5</span>. That is
-        a different target quantization and a two-machine placement, not a
-        different draft. The draft is the vocabulary-patched Ministral 3 3B
-        Q4_K_M this page already uses, here at draft length 7 rather than
-        16. Context was 131,072, both caches q8_0, layers split 16 on the
-        desktop and 72 on the laptop over RPC, draft on the desktop only,
-        one request, no cached prompt tokens. The token counts and the
-        times below are the shipped JSON. The placement and the draft file
-        are the launch record, which is not in that JSON. The UD-Q4_K_XL
-        readings above stand as dated readings of that configuration. The
-        two sentences that said no larger prompt had been sent were the
-        ones that were false, and they are scoped to this deployment above.
-        The result JSON, redacted, ships as
-        <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>,
-        mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>.</p>
-      </div>
-    </section>
-
-    <section>
-      <div class="secnum">10</div>
-      <h2>Elsewhere in the field</h2>
-      <p>Running Medium 3.5 locally is established practice: Mistral
-      itself says the model self-hosts on as few as four GPUs, and
-      one-machine community reports exist for unified-memory systems, each
-      with its own speeds on setups too different to compare
-      (<a href="https://www.reddit.com/r/LocalLLaMA/comments/1t31tk7/mistral_medium_35_128_on_amd_ryzen_ai_max_395/">Strix Halo</a>,
-      <a href="https://www.reddit.com/r/LocalLLaMA/comments/1urjg9o/benchmarked_the_128gb_m5_max_as_an_amateur_need/">M5 Max</a>,
-      <a href="https://github.com/FactusConsulting/llm-evals/pull/6">DGX Spark</a>),
-      with multi-GPU rigs faster still. Speculative decoding for this
-      model is also established: Mistral publishes an official
-      <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B-EAGLE">EAGLE draft</a>
-      for other runtimes, and a
-      <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B/discussions/17">dual-GPU FP8 report</a>
-      shows the same code-over-prose acceptance pattern we measured. The
-      vocabulary-mismatch problem has general solutions in the literature
-      (<a href="https://huggingface.co/blog/universal_assisted_generation">retokenizing assistants</a>,
-      <a href="https://arxiv.org/abs/2502.05202">vocabulary mapping for assisted generation</a>);
-      our two-token repair is the narrow, pair-specific case. The closest
-      prior attempt to our exact setup we could find is a
-      <a href="https://github.com/ggml-org/llama.cpp/issues/22901">single-RTX-5090 run that failed</a>
-      on a projector issue; we found no published account combining this
-      quant, this runtime, one 32 GB GPU, and a repaired cross-model
-      draft. Uncommon, then, on the available record; not first, and we
-      make no such claim.</p>
-    </section>
-
-    <section>
-      <div class="secnum">11</div>
-      <h2>Sources</h2>
-      <ul class="plain">
-        <li>The model:
-        <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B">huggingface.co/mistralai/Mistral-Medium-3.5-128B</a>
-        (card, weights, and the Modified MIT License text). The draft:
-        <a href="https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512">Ministral 3 3B Instruct 2512</a>,
-        Apache 2.0; the two-token metadata repair described in section 04
-        is ours, applied to a local copy.</li>
-        <li>The artifact we ran:
-        <a href="https://huggingface.co/unsloth/Mistral-Medium-3.5-128B-GGUF">unsloth/Mistral-Medium-3.5-128B-GGUF</a>,
-        the <code>UD-Q4_K_XL</code> build at pinned revision
-        <span class="n">c8f5b147</span>, 3 files, 75.69 GB (70.49 GiB);
-        sizes re-checked against the saved manifest on 2026-08-08,
-        checksums recorded at download.</li>
-        <li>The runtime: mainline llama.cpp at commit
-        <span class="n">5f55650a</span>, CUDA 12.8.</li>
-        <li>The measurements above this page's 2026-09-16 note stand on
-        dated project records: the
-        15-rung ladder table and its per-rung server logs, the battery
-        results with request bodies, the timed agent session's server log
-        and its counterpart for the comparison model, the bake-off's
-        surviving working trees (every test suite re-run 2026-08-08), the
-        checksum manifests, and the 2026-08-08 header-scan results. These
-        are project records rather than public files today; they are named
-        here so that every number on this page has a dated, recorded home
-        that can be produced if questioned.</li>
-        <li>A 2026-09-16 run of this model at 32,509 tokens, Q3_K_S split
-        across the desktop and the Z13 laptop, an ASUS laptop, over RPC,
-        with a vocabulary-patched draft: the redacted result JSON ships as
-        <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>,
-        mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>, unlike the
-        project records named above.</li>
+        <li>One-machine reports on unified-memory systems, on setups too different to compare: <a href="https://www.reddit.com/r/LocalLLaMA/comments/1t31tk7/mistral_medium_35_128_on_amd_ryzen_ai_max_395/">Strix Halo</a>, <a href="https://www.reddit.com/r/LocalLLaMA/comments/1urjg9o/benchmarked_the_128gb_m5_max_as_an_amateur_need/">M5 Max</a>, <a href="https://github.com/FactusConsulting/llm-evals/pull/6">DGX Spark</a>.</li>
+        <li>Mistral's official <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B-EAGLE">EAGLE helper</a> for other runtimes.</li>
+        <li>A <a href="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B/discussions/17">dual-GPU FP8 report</a> showing the same code-over-prose acceptance pattern.</li>
+        <li>General fixes for mismatched vocabularies: <a href="https://huggingface.co/blog/universal_assisted_generation">retokenizing assistants</a>, <a href="https://arxiv.org/abs/2502.05202">vocabulary mapping for assisted generation</a>. The repair here is a narrow, pair-specific case.</li>
+        <li>A <a href="https://github.com/ggml-org/llama.cpp/issues/22901">single-RTX-5090 run that failed</a> on a vision-part issue, the closest attempt to this setup found.</li>
       </ul>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to Mistral AI, Unsloth, or ASUS.</div></div>
 
   </div>
 </main>

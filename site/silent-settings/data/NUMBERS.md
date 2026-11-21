@@ -1,5 +1,7 @@
 # NUMBERS: every figure on the page, with its file and field
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 If a number on the page disagrees with a file in this package, the file is right and the page is wrong.
 
 **The one place a file will look like it contradicts the page:** `excerpts/glm-4.7-full-start-script-mtp.txt`

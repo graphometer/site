@@ -125,6 +125,13 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .hero p.subtitle{margin-top:14px;max-width:60ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  h3{font-size:17.5px;font-weight:650;letter-spacing:-.005em;margin:30px 0 10px;color:var(--ink)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .note p{color:var(--ink);margin:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -156,139 +163,39 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Field card · measured 2026-08-04 · updated 2026-08-07</div>
-      <h1 itemprop="headline">Field card: <em>LFM2.5-2.6B</em></h1>
-      <p class="lead">Liquid AI released a new small model just days before
-      the measurement date, 2026-08-04. This page
-      began as first notes on release day and has grown into a field card as
-      recorded runs accumulated: the context window as measured, which file to
-      download, how big an output budget it really needs, and which sampling
-      settings are actually in effect. Every number here traces to a dated,
-      recorded run in the project's evidence records. Where a fact comes from
-      the model's own card or configuration file rather than our measurement,
-      we say so.</p>
+      <div class="eyebrow">Model field card · one 32 GB graphics card · llama.cpp</div>
+      <h1 itemprop="headline"><em>LFM2.5-2.6B</em>: which file to download, how much context it can use, and how much room it needs to answer</h1>
+      <p class="subtitle">On one 32 GB graphics card running llama.cpp, Liquid AI's small LFM2.5-2.6B model found 15 of 15 facts hidden in a long document in a 16K-token window (tokens are pieces of text), given enough room to answer, but 0 of 15 at its 128,000-token maximum. Short answers came back in all three repeat runs only when the room for the answer reached 1,024 tokens.</p>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Give short prose answers at least 1,024 tokens of output budget (room to answer), and check <code>finish_reason</code>.</strong> Smaller budgets can return an empty reply with no error. <a href="#what-to-do">What to do</a></li>
+          <li><strong>For finding details in long input, stay near 16K.</strong> At 32K it found 12 of 15 with extra output room; at 65K, 1 of 15. Treat 128,000 as the server's hard maximum, not a working size.</li>
+          <li><strong>Download the mid-size 4-bit file (Q4_K_M).</strong> Of three official files tested, it matched the top score on a 90-run tool-use test (84 of 90) at ordinary size and speed.</li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-07">7 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent notes. Not affiliated with, endorsed by,
-      or connected to Liquid AI.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>What it is</h2>
-      <p>LFM2.5-2.6B is a small text model from Liquid AI, built to run on
-      your own hardware. As of 2026-08-04 it is the newest member of the
-      LFM2.5 family. Liquid's card presents it as a model for using software
-      tools, extracting data, and answering questions from documents supplied
-      alongside the question, with long inputs. The card also states what it
-      is not recommended for, in its own words: agentic coding and
-      knowledge-heavy tasks.</p>
-      <table class="facts">
-        <tr><th scope="row">Maker</th><td>Liquid AI</td></tr>
-        <tr><th scope="row">Family</th><td>LFM2.5</td></tr>
-        <tr><th scope="row">Size</th><td>2.69 billion parameters, per the card; a single network, not a mixture-of-experts design</td></tr>
-        <tr><th scope="row">Architecture</th><td>30 layers, per the card: 22 convolution-based blocks and 8 attention-based blocks (the card's terms: double-gated short convolution, GQA). The pinned configuration file's own layer list matches: 22 and 8.</td></tr>
-        <tr><th scope="row">Token vocabulary</th><td>128,000 entries (tokens are the pieces of text a model reads and writes)</td></tr>
-        <tr><th scope="row">Context window</th><td><span class="asstated">The card states 131,072 tokens. The configuration file at the same pinned revision states 128,000.</span> We have now measured this on one serving route: the runtime sides with the configuration file and caps the window at 128,000. How much of that window the model can actually use is a separate question. Section 04 has both results.</td></tr>
-        <tr><th scope="row">Languages</th><td>16 listed, English among them</td></tr>
-        <tr><th scope="row">License</th><td>LFM Open License v1.0, identified as <code>lfm1.0</code> in the card metadata; the full name is from Liquid's own documentation. It is Liquid's own license rather than one of the commonly used open-source licenses, so read its terms for your intended use.</td></tr>
-        <tr><th scope="row">Training</th><td>As stated by Liquid: about 34 trillion tokens of initial training, then additional training focused on tool use, including reinforcement learning inside real agent software</td></tr>
-        <tr><th scope="row">Downloads</th><td>The original model files, plus official GGUF, ONNX, and MLX versions for common local runtimes</td></tr>
-        <tr><th scope="row">Base model</th><td>LFM2.5-2.6B-Base, published alongside it for people who want to train the model further themselves</td></tr>
-        <tr><th scope="row">Exact source version</th><td><span class="n">dca1825886789bd40b94368f53b1d9ada4c94598</span> (the pinned repository revision every fact on this page was read at)</td></tr>
-      </table>
-      <p class="fineprint">The table was read from the pinned model card and
-      configuration file on 2026-08-04. Rows that say "per the card" or "as
-      stated" have only the card behind them; the license's full name is from
-      Liquid's own documentation.</p>
+      <h2>What to do</h2>
+      <p><strong>Set the output budget to at least 1,024 tokens for prose.</strong> The output budget caps how many tokens (pieces of text) one reply may use, and the model's hidden reasoning comes out of it. Client defaults of 256 or 512 are exactly where replies go blank or depend on luck. This is for short answers; for about 500 words no tested budget up to 4,096 was reliable. <a href="#budget">The budget map</a></p>
+      <p><strong>Always check <code>finish_reason</code>.</strong> An HTTP 200 can carry an empty string. An answer that finishes as <code>length</code> was cut off, even when it looks complete.</p>
+      <p><strong>Keep long-input work near 16K.</strong> The context window is how much text the server holds at once. For retrieving details from long input, 16K is the conservative choice; 32K is plausible if you accept some misses and allow output headroom; 65K and beyond are not supported by these results. <a href="#context">The retrieval tables</a></p>
+      <p><strong>Pick Q4_K_M.</strong> It is the best-supported file from these runs. <a href="#files">The file comparison</a></p>
+      <p><strong>Send the repetition penalty as <code>repeat_penalty</code>.</strong> This llama.cpp build silently ignores <code>repetition_penalty</code>, the name many OpenAI-style clients use. Its defaults also differ from the card's recommended settings; apply the card's on purpose if their trade-offs fit your use. <a href="#sampling">What each setting did</a></p>
     </section>
 
-    <section>
+    <section id="found">
       <div class="secnum">02</div>
-      <h2>How new it is</h2>
-      <p>The main repository was created on <strong>2026-07-28</strong> and
-      its content went public in the days after: the GGUF repository on
-      2026-08-01, the MLX repository on 2026-08-03, and the main repository's
-      single visible commit is dated 2026-08-04 (we saved the repository's
-      commit listing as evidence). The release is days old. That is read from
-      repository creation dates, which a documentation edit does not change.
-      When checked on 2026-08-04, Hugging Face displayed about 47,000
-      downloads for the main repository; that is the platform's reported
-      counter, not a count of distinct users.</p>
-      <p>One caution about what those dates mean: they date the release, not
-      the training. The configuration file records a library version
-      (<code>transformers</code> 5.2.0), but that metadata does not establish when training ended or
-      when the weights were produced, so these notes make no claim about a
-      training date.</p>
-    </section>
+      <h2>What we found</h2>
 
-    <section>
-      <div class="secnum">03</div>
-      <h2>The chat template preserves earlier tool calls</h2>
-      <p>A sentence of background first. When a model works through a
-      multi-step task with tools, it needs to be shown which tools it has
-      already asked to use. The chat template is the piece of plumbing that
-      prepares that conversation history for the model's next turn. In
-      pinned versions of three older Liquid models we studied, the shipped
-      template left the model's earlier tool calls out of that history, and
-      in our recorded runs multi-step tasks broke down on exactly those
-      routes. We measured it, built a
-      <a href="../droplet/">compatibility kit</a> around it, and submitted
-      template changes upstream for all three on 2026-08-03: the pull
-      requests are public
-      (<a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/discussions/19">1.2B-Instruct</a>,
-      <a href="https://huggingface.co/LiquidAI/LFM2-24B-A2B/discussions/19">24B</a>,
-      <a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/discussions/4">1.2B-Thinking</a>).
-      On 2026-08-05 the maintainers merged their own template fix in all
-      three repositories. We re-rendered our recorded failure cases against
-      the updated templates and they pass: earlier tool calls now render on
-      all three. That fix supersedes our pull requests, and it is the right
-      ending: the defect is fixed at the source. Copies downloaded before
-      the fix still carry the old template. The linked Droplet page is a
-      snapshot from before that merge.</p>
-      <p><strong>LFM2.5-2.6B's template includes earlier tool calls when it
-      prepares that history.</strong> That is the behavior we were checking
-      for, and we verified it two ways: by reading the pinned template text,
-      and on a live serving route once we had the model running (section
-      08).</p>
-      <p>Liquid's card says the model reasons before answering. Consistent
-      with that design, the pinned template begins each new assistant turn
-      with a <code>&lt;think&gt;</code> tag. We also measured what a user
-      actually receives when the model is served through a standard chat
-      interface: in the 90 recorded runs of our standard test battery
-      (90 scripted requests sent over the same interface a chat app would
-      use; section 08 describes it) the reasoning
-      arrived separated in its own field, and it never leaked into the answer
-      text. That reasoning habit has a practical cost, and section 06 maps
-      it.</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>The context window, measured</h2>
-      <p>The model card states a context window of 131,072 tokens. The
-      configuration file in the same pinned repository states 128,000. On our
-      serving route, the runtime settles the disagreement itself. Asked to
-      open a 131,072-token window, llama.cpp warns that the model was trained
-      for 128,000 and caps every serving slot. The exact startup lines:</p>
+      <h3 id="context">The context window: 128,000 at most, reliable far below that</h3>
+      <p>The model card states a context window of 131,072 tokens; the configuration file in the same repository states 128,000. llama.cpp sides with the configuration file. Asked for 128,000 it starts cleanly; asked for 131,072, it warns that the model was trained for 128,000 and caps every serving slot:</p>
       <pre class="log">llama_context: n_ctx_seq (131072) > n_ctx_train (128000) -- possible training context overflow
 load_model: the slot context (131072) exceeds the training context of the model (128000) - capping
 load_model: initializing, n_slots = 4, n_ctx_slot = 128000, kv_unified = 'true'</pre>
-      <p>Asked for 128,000 directly, the same server starts without the
-      warning. So for this official GGUF on this runtime, the configuration
-      file is accurate and the card's number is not:
-      <strong>128,000 tokens is the hard maximum.</strong> That settles
-      capacity. It says nothing about how much of that window the model can
-      actually use, so we measured that too.</p>
-      <p>We planted short coded facts in long filler documents and asked the
-      model to retrieve them. Each window size used three distinct sets of
-      planted facts; each set placed one valid codeword near 5, 25, 50, 75,
-      and 95 percent depth, and also planted two explicitly false, superseded
-      codewords as distractors, so the model has to tell truth from decoy,
-      not just spot a string. Prompts were sized with the live server's own
-      token counter and filled about 95 percent of each window. Three sets of
-      five depths makes fifteen tries per window size. The first
-      matrix is the controlled pass, with a fixed 512-token output allowance.
-      Each cell is exact retrievals out of three.</p>
+      <p>To see how much of the window the model can use, we hid short coded facts in filler documents filling about 95 percent of each window. Each window size got three sets; each set placed one true codeword near 5, 25, 50, 75 and 95 percent depth, plus two explicitly false, superseded codewords as decoys. That makes fifteen tries per size. This first table allowed 512 output tokens; each cell is exact retrievals out of three.</p>
       <div class="data-wrap">
         <table class="data">
           <thead><tr><th>Window</th><th>~5%</th><th>~25%</th><th>~50%</th><th>~75%</th><th>~95%</th><th>Total</th></tr></thead>
@@ -300,12 +207,7 @@ load_model: initializing, n_slots = 4, n_ctx_slot = 128000, kv_unified = 'true'<
           </tbody>
         </table>
       </div>
-      <p>Some of those misses are not retrieval failures at all. They are the
-      output-budget failure described in section 06: the model spends its
-      whole output allowance on hidden reasoning and returns nothing. To
-      separate the two, every failed cell was retried with the same prompt
-      and the same seed (the fixed random starting point that makes a run
-      repeatable) but more output room. This is the fair matrix:</p>
+      <p>Some misses were the model spending its whole output allowance on hidden reasoning, so every failed cell was retried with the same prompt and seed (the fixed random starting point that makes a run repeatable) but more output room:</p>
       <div class="data-wrap">
         <table class="data">
           <thead><tr><th>Window</th><th>~5%</th><th>~25%</th><th>~50%</th><th>~75%</th><th>~95%</th><th>Best total</th></tr></thead>
@@ -317,143 +219,13 @@ load_model: initializing, n_slots = 4, n_ctx_slot = 128000, kv_unified = 'true'<
           </tbody>
         </table>
       </div>
-      <p>At 16K, both misses were pure budget overruns and became exact with
-      more room: <strong>15 of 15</strong>. At 32K, one more cell recovered;
-      the remaining misses were substantive, including two cells that
-      repeatedly chose the explicitly marked wrong distractor. At 65K,
-      raising the allowance to 3,000 tokens produced no additional exact
-      answer, and at 128K, raising it to 4,096 produced zero: the model chose
-      distractors, claimed present facts were absent, or spent everything on
-      hidden reasoning. Some visible wrong answers at 128K were unrelated
-      filler terms. A separate probe that asked for two planted facts at once
-      agreed with this picture: it passed only at 16K.</p>
-      <p>The loss is not a gentle fade in the middle of the document. Every
-      tested depth is affected at 65K and 128K. The sharp change sits
-      somewhere between 32K and 65K, and these runs do not locate the exact
-      point.</p>
-      <p>One more detail, in the model's favor as far as it goes. At
-      128K the model does not produce gibberish. Asked to summarize the whole
-      128,000-token document, it completed a grammatical, on-topic summary in
-      878 output tokens, with no breakdown into repetitive tokens. The
-      summary also repeated its topics, described randomly ordered archive
-      entries as systematically organized, and gave a nonsensical numeric
-      range. Fluent output at this length is not evidence of reliable
-      reading.</p>
-      <p>What this test does and does not measure: planted-fact retrieval is
-      a narrow instrument. It checks whether facts can be found and told
-      apart from planted fakes; it does not measure every kind of
-      long-document reasoning, and passing it does not prove good synthesis.
-      Because our distractors make the task harder than simple
-      spot-the-string tests, these results should not be compared against
-      scores from the common needle-in-a-haystack tests, which plant no
-      competing statements.</p>
-      <p>Two practical notes from the same runs. Memory is not the obstacle:
-      on the 32 GB graphics card used for every run on this page, even the
-      full 128,000-token window fit in under 6 GiB of total observed GPU
-      memory (whole-board readings, desktop included: 3,967 MiB at 16K,
-      4,087 MiB at 32K, 4,590 MiB at 65K, 5,781 MiB at 128K, and 5,868 MiB
-      when 131,072 was requested and capped). And overflow fails loud rather
-      than silently: a prompt sized about five percent over the window came
-      back as an immediate HTTP 400 naming both counts,
-      <code>request (17239 tokens) exceeds the available context size (16384
-      tokens), try increasing it</code>, with no silent truncation and no
-      quiet dropping of the oldest text.</p>
-      <div class="note">
-        <span class="label">Practical guidance</span>
-        For work that depends on retrieving details from long input on this
-        route: 16K is the conservative choice; 32K is plausible if you accept
-        disclosed misses and give the model output headroom; 65K and beyond
-        are not supported by these results. Treat 128,000 as the server's
-        hard maximum, not as a working size.
-      </div>
-    </section>
+      <p>At 16K both misses were budget overruns: 15 of 15. At 32K one more cell recovered; the rest were real misses, two cells repeatedly choosing the marked wrong decoy. At 65K a 3,000-token allowance added no exact answer, and at 128K 4,096 added none: the model chose decoys, called present facts absent, gave unrelated filler terms, or spent everything on hidden reasoning. A test asking for two hidden facts at once passed only at 16K. Every tested depth is affected at 65K and 128K; the sharp change sits somewhere between 32K and 65K, not located by these runs.</p>
+      <p>Fluent output is not reliable reading. Asked to summarize the whole 128,000-token document, the model wrote a grammatical, on-topic summary in 878 output tokens, with no breakdown into repeated tokens, but it repeated topics, called randomly ordered archive entries systematically organized, and gave a nonsensical numeric range.</p>
+      <p>Memory is not the obstacle: the full 128,000-token window fit in under 6 GiB of observed GPU memory (whole-board readings, desktop included: 3,967 MiB at 16K, 4,087 MiB at 32K, 4,590 MiB at 65K, 5,781 MiB at 128K, and 5,868 MiB when 131,072 was requested and capped). Overflow fails loudly: a prompt about five percent over the window got an immediate HTTP 400 naming both counts, with no silent truncation:</p>
+      <pre class="log">request (17239 tokens) exceeds the available context size (16384 tokens), try increasing it</pre>
 
-    <section>
-      <div class="secnum">05</div>
-      <h2>Which file to download</h2>
-      <p>Liquid publishes official GGUF files at several compression levels
-      ("quants"): smaller files trade a little fidelity for less memory. We
-      tested three rungs of that ladder, all from the official GGUF
-      repository at its pinned revision, on the same llama.cpp build: the
-      smallest sensible official file (Q4_0), the ordinary middle choice
-      (Q4_K_M), and the largest quantized rung offered (Q8_0).</p>
-      <div class="data-wrap">
-        <table class="data">
-          <thead><tr><th>File</th><th>Size</th><th>Test battery</th><th>Blank-reply boundary</th><th>Median decode</th><th>Observed total GPU memory</th></tr></thead>
-          <tbody>
-            <tr><td class="t">Q4_0</td><td>1,593,894,720 B</td><td>84/90</td><td class="t">blank at 256, answers at 512</td><td>517.2 tok/s</td><td>3,855 MiB</td></tr>
-            <tr><td class="t">Q4_K_M</td><td>1,674,454,848 B</td><td>84/90</td><td class="t">blank at 256, answers at 512</td><td>489.8 tok/s</td><td>3,700 to 3,830 MiB</td></tr>
-            <tr><td class="t">Q8_0</td><td>2,874,779,456 B</td><td>78/90</td><td class="t">blank at 256, answers at 512</td><td>355.3 tok/s</td><td>5,102 MiB</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="tablenote">The battery is the 90-run test battery of section
-      08; it scores protocol and task structure, not answer quality. Decode
-      speeds are end-to-end medians (completion tokens divided by wall time,
-      nine fixed requests per file, request overhead included): a run
-      diagnostic, not a benchmark. Prompt processing on one 479-token prompt
-      ran roughly 23,950 to 26,520 tokens per second across the three files. Memory
-      values are whole-board readings that include the desktop; the Q4_K_M
-      value is the earlier ledger's observed range rather than a same-minute
-      reload.</p>
-      <p><strong>Q4_K_M is the best-supported choice from these runs.</strong>
-      It matched the top battery score at ordinary size and speed, and it is
-      the file every other number on this page was measured on unless a
-      section says otherwise.</p>
-      <p>Q4_0 ties the score and saves only 80.6 MB, and the equal score
-      hides a behavior change. In the scenario built around two lookalike
-      tools, Q4_0 repeated the same search to our test driver's six-round cap in
-      6 of 6 records, where Q4_K_M did so in 4 of 6 and twice stopped after
-      one call and answered. The scenario still passes because its checker
-      asks whether the right tool was called, not whether the model stopped
-      calling it. Same score, weaker discipline.</p>
-      <p>Q8_0 scored worse on this build, and the reason matters more than
-      the number. Its six added failures all sit in one scenario, the one
-      where the request insists the model call some tool of its own choosing
-      (<code>tool_choice: "required"</code>). That is a different request
-      shape from the name-this-exact-tool scenario behind the six misses all
-      three files share (section 08). In all six records Q8_0 made no
-      call and ran into its length cap, with each record that reports token
-      usage showing the entire 4,096-token allowance consumed; it repeated
-      greeting text and leaked control tags into visible output. Outside
-      those six records
-      its reasoning stayed cleanly separated. This llama.cpp build is known
-      not to robustly enforce that request shape. Q8_0 moved the model's
-      token choices just enough to expose that serving-software weakness,
-      which the two Q4 files happened to walk past. It is evidence of an
-      interaction between this quant and this backend, not evidence that Q8
-      generally damages the model.</p>
-      <p>The blank-reply boundary did not move across the three files: on
-      the same short question and seeds, every file returned an empty answer
-      at a 256-token output budget and a real answer at 512. That is the
-      same coarse boundary in the same place, not a promise about 512:
-      section 06's wider sweep shows 512 is luck-dependent across seeds, and
-      1,024 is the reliable floor.</p>
-      <p>Only official GGUF files served by llama.cpp were tested. The
-      official repository also offers BF16, F16, Q5_K_M, and Q6_K, which we
-      have not run.</p>
-    </section>
-
-    <section>
-      <div class="secnum">06</div>
-      <h2>The output budget: why a working model can return an empty reply</h2>
-      <p>This model reasons before it answers, by design. The card says so,
-      and in our runs the reasoning arrives separated in its own field
-      (section 03), so the user never sees it. The catch: that hidden
-      reasoning is paid for out of the same output-token budget the client
-      sets. In the recorded short-answer runs, the visible answer averaged
-      about 180 to 205 characters (means of 181 and 203 across the two
-      sampling arms) while the hidden reasoning averaged about
-      2,400 to 2,650 characters (means of 2,411 and 2,612), more than ten
-      times the answer.</p>
-      <p>When the budget runs out during the hidden reasoning, nothing breaks
-      loudly. The request succeeds: HTTP 200, no error, a
-      <code>finish_reason</code> of <code>length</code>, and message content
-      that is an empty string. A client that does not check
-      <code>finish_reason</code> shows the user a blank reply, and nothing
-      explains why. The thresholds below were measured at three seeds per
-      cell, under both the server's default sampling and the model card's
-      recommended settings (section 07 explains those two arms).</p>
+      <h3 id="budget">The output budget: why a working model can return an empty reply</h3>
+      <p>The card says the model reasons before answering, and the chat template opens each assistant turn with a <code>&lt;think&gt;</code> tag. In the recorded runs the reasoning arrived in its own field, unseen, but it is paid from the output budget. In short-answer runs the visible answer averaged 181 and 203 characters across the two sampling setups (server defaults and card settings), while the hidden reasoning averaged 2,411 and 2,612, more than ten times the answer. When the budget runs out mid-reasoning, the reply is HTTP 200, no error, <code>finish_reason</code> <code>length</code>, and empty content. Three seeds per cell:</p>
       <div class="data-wrap">
         <table class="data">
           <thead><tr><th>Request shape</th><th>Server defaults</th><th>Card settings</th></tr></thead>
@@ -465,42 +237,28 @@ load_model: initializing, n_slots = 4, n_ctx_slot = 128000, kv_unified = 'true'<
           </tbody>
         </table>
       </div>
-      <p>Three things stand out. First, <strong>short prose is reliable at a
-      1,024-token budget, not 512</strong>: 512 produced an answer on some
-      seeds and a blank on others, and 256 or less reliably produced blanks.
-      Second, tool calls are cheap. Every recorded tool call worked at a
-      128-token budget, because the model reasons far less before calling a
-      tool than before writing prose. Third, long answers are the open
-      problem: asked for about 500 words, the first complete answers appeared
-      at a 2,048 budget, and even at 4,096 at least one seed in each arm
-      still came back blank or cut off. No tested budget reliably completed
-      that request; the threshold lies above 4,096.</p>
-      <p>The last table row is the agent shape, and it reproduces the most
-      confusing failure directly. The model calls a tool, the tool works, and
-      then the follow-up sentence to the user comes back empty because the
-      whole budget of the second step went to hidden reasoning. From the
-      outside, the agent looks like it worked and then said nothing. Note
-      also that a nonempty reply can still be incomplete: several recorded
-      answers carried real text and a <code>finish_reason</code> of
-      <code>length</code>, meaning they were cut off mid-answer.</p>
-      <div class="note">
-        <span class="label">Two things every user can act on</span>
-        Set the output budget to at least 1,024 tokens whenever you expect a
-        prose answer; common client defaults of 256 or 512 are exactly the
-        range where replies go blank or become luck-dependent. And always
-        check <code>finish_reason</code>: an HTTP 200 can carry an empty
-        string, and an answer that finishes as <code>length</code> is
-        truncated even when it looks complete.
-      </div>
-    </section>
+      <p>For short prose, 512 answered on some seeds and not others; 256 or less reliably came back blank. Tool calls are cheap: the model reasons far less before calling a tool. For about 500 words, the first complete answers appeared at 2,048, and even at 4,096 at least one seed in each setup came back blank or cut off; the threshold lies above 4,096. The last row is the agent case: the tool works, then the sentence to the user comes back empty. Several other answers carried real text and a <code>finish_reason</code> of <code>length</code>: cut off mid-answer.</p>
 
-    <section>
-      <div class="secnum">07</div>
-      <h2>Sampling: what the server does versus what the card asks</h2>
-      <p>Sampling settings shape how the model picks each token. llama.cpp
-      hands its own defaults to any client that sends none, and most clients
-      send none. Those defaults, read from the running server, are not the
-      ones the model card recommends:</p>
+      <h3 id="files">Which file to download</h3>
+      <p>Liquid publishes official GGUF files (the format llama.cpp reads) at several compression levels: smaller files trade a little fidelity for less memory. Three were tested on the same build: the smallest sensible one, the ordinary middle choice and the largest compressed one offered.</p>
+      <div class="data-wrap">
+        <table class="data">
+          <thead><tr><th>File</th><th>Size</th><th>90-run test</th><th>Blank-reply boundary</th><th>Median writing speed</th><th>Observed total GPU memory</th></tr></thead>
+          <tbody>
+            <tr><td class="t">Q4_0</td><td>1,593,894,720 B</td><td>84/90</td><td class="t">blank at 256, answers at 512</td><td>517.2 tok/s</td><td>3,855 MiB</td></tr>
+            <tr><td class="t">Q4_K_M</td><td>1,674,454,848 B</td><td>84/90</td><td class="t">blank at 256, answers at 512</td><td>489.8 tok/s</td><td>3,700 to 3,830 MiB</td></tr>
+            <tr><td class="t">Q8_0</td><td>2,874,779,456 B</td><td>78/90</td><td class="t">blank at 256, answers at 512</td><td>355.3 tok/s</td><td>5,102 MiB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tablenote">The 90-run test is described <a href="#tools">below</a>. Writing speeds are tokens a second, end-to-end medians (completion tokens divided by wall time, nine fixed requests per file, request overhead included): a run diagnostic, not a benchmark. Reading one 479-token prompt ran roughly 23,950 to 26,520 tokens per second across the three files. Memory is whole-board, desktop included; the Q4_K_M range is from earlier runs, not a same-minute reload.</p>
+      <p><strong>Q4_K_M</strong> matched the top score at ordinary size and speed. Every other number on this page was measured on it unless stated.</p>
+      <p><strong>Q4_0</strong> ties the score and saves only 80.6 MB, but the equal score hides weaker discipline. In the scenario with two lookalike tools, it repeated the same search to the test program's six-round cap in 6 of 6 records; Q4_K_M did so in 4 of 6 and twice stopped after one call and answered. The scenario passes either way, because its checker asks only whether the right tool was called.</p>
+      <p><strong>Q8_0</strong> scored worse, and the reason matters more than the number. All six added failures sit in the scenario where the request insists the model call some tool of its own choosing (<code>tool_choice: "required"</code>), not the named-tool scenario behind the six misses all three files share. Each time Q8_0 made no call and hit its length cap (every record that reports token usage shows the whole 4,096-token allowance used), repeating greeting text and leaking control tags into visible output. This llama.cpp build is known not to enforce that request shape robustly; Q8_0 shifted the model's token choices just enough to expose it, and the two Q4 files happened to walk past it. That is an interaction between this file and this backend, not evidence that Q8 generally damages the model.</p>
+      <p>The blank-reply boundary (same short question and seeds) did not move across files. It is coarse, not a promise about 512: the budget map above shows 1,024 is the reliable floor.</p>
+
+      <h3 id="sampling">Sampling: what the server does versus what the card asks</h3>
+      <p>Sampling settings shape how the model picks each token. llama.cpp gives its own defaults to any client that sends none, as most do, and they are not the card's:</p>
       <div class="data-wrap">
         <table class="data">
           <thead><tr><th>Setting</th><th>Server default</th><th>Card recommends</th></tr></thead>
@@ -513,163 +271,80 @@ load_model: initializing, n_slots = 4, n_ctx_slot = 128000, kv_unified = 'true'<
           </tbody>
         </table>
       </div>
-      <p>So by default, the card's recommendations are simply not in effect.
-      And there is a trap in applying them that is worth knowing about
-      whatever model you run: on this llama.cpp route the repetition-penalty
-      request field is named <code>repeat_penalty</code>; the server's own
-      settings listing carries only that name. The similar name
-      many OpenAI-style clients use, <code>repetition_penalty</code>, is
-      accepted and silently ignored. No error, no warning; the penalty just
-      never applies. Our own first sweep fell into exactly this trap, which
-      is why every number in this section comes from the corrected re-run
-      with the field llama.cpp actually reads. A client sending the wrong
-      name believes it has enabled the card's settings and has not.</p>
-      <p>With the correct field, the card's settings measured like this
-      against the server defaults, on the same seeds:</p>
+      <p>The server's own settings listing carries only the name <code>repeat_penalty</code>. With that field, the card's settings against the server defaults, on the same seeds:</p>
       <ul class="plain">
-        <li><strong>Short-prose hidden reasoning fell about 7.7 percent</strong>
-        (a mean of 2,411 characters versus 2,612 at stable budgets). A real
-        but modest saving; our miskeyed first sweep had suggested about a
-        third, and the corrected measurement replaces that number.</li>
-        <li><strong>Search looping eased.</strong> In a test conversation
-        deliberately
-        built to invite repeated searching, the penalty at 1.1 produced a
-        final answer in 3 of 5 trials versus 1 of 5 with it off, with fewer
-        near-duplicate searches (28 of 45 versus 33 of 49). Both arms still
-        looped heavily. Five paired trials support a mitigation, not a
-        cure.</li>
-        <li><strong>One threshold got worse.</strong> Under the card's
-        settings, the prose step right after a tool result went blank at a
-        128-token budget where the server defaults completed it, raising that
-        reliable threshold from 128 to 256 (section 06's table).</li>
+        <li><strong>Hidden reasoning for short prose fell about 7.7 percent</strong> (a mean of 2,411 characters against 2,612 at stable budgets): real but modest.</li>
+        <li><strong>Search looping eased.</strong> In a test conversation built to invite repeated searching, the penalty at 1.1 gave a final answer in 3 of 5 trials against 1 of 5 with it off, with fewer near-duplicate searches (28 of 45 against 33 of 49). Both still looped heavily: a mitigation, not a cure.</li>
+        <li><strong>One threshold got worse.</strong> Prose right after a tool result went blank at 128 under the card's settings, raising that reliable threshold from 128 to 256.</li>
       </ul>
-      <p>The summary is not "use these settings." It is: know which
-      settings are actually in effect on your route, apply the card's
-      recommendations deliberately if their trade-offs fit your use, and
-      measure rather than trust folklore, ours included.</p>
+
+      <h3 id="tools">Tool calls and the chat template</h3>
+      <p><strong>The chat template keeps earlier tool calls.</strong> The chat template formats the conversation history for the model's next turn; in a multi-step tool task the model needs to see the tools it already called. This template includes them, checked in the pinned template text and on the running server. Three older Liquid models first shipped without that (see <a href="#corrections">Corrections and updates</a>).</p>
+      <p>Three checks on Q4_K_M:</p>
+      <ul class="plain">
+        <li><strong>An automated check of the serving setup found it healthy:</strong> no intervention needed, two advisory warnings, neither attributed to the model.</li>
+        <li><strong>84 of 90 runs passed</strong> a fixed set of 15 scripted tool-use scenarios (single calls, four-step chains, parallel calls, error recovery and more), each run three times in both streaming modes over the same interface a chat app would use. All six misses come from one scenario testing a known llama.cpp defect: it silently ignores a request to force one specific named tool, as measured with other models in the same family on the same build. No miss was attributed to the model. The reasoning always arrived in its own field, never in the answer text.</li>
+        <li><strong>A stricter three-task check passed when talking to the server directly</strong>, including a four-step tool chain completed in exact order with a correct, grounded final answer, with the shipped template and without any added fix-up code.</li>
+      </ul>
+      <p>The call-some-tool scenario that tripped Q8_0 was also run on a larger sibling, LFM2.5-8B-A1B, on the same build and settings. The 8B made no tool call in any of six cases, spending its full 4,096-token allowance each time; the 2.6B passed six of six, calling a tool immediately with 58 completion tokens. The same backend weakness is present in both; whether it bites depends on the model's habits. It is not a quality ranking.</p>
     </section>
 
-    <section>
-      <div class="secnum">08</div>
-      <h2>What we ran, and what we still have not</h2>
-      <p>On release day we served the official GGUF copy of the model (4-bit
-      Q4_K_M, from the official GGUF repository at its own pinned revision,
-      byte count and hash verified against the repository's records) with
-      llama.cpp, and put it through the same recorded battery we used on its
-      siblings. Three results, each with its run ledger on disk:</p>
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
       <ul class="plain">
-        <li><strong>Our automated route check-up (we call it the doctor)
-        found the route healthy.</strong> No
-        intervention needed, and two advisory warnings, neither attributed
-        to the model. The template observation in section 03 was also
-        confirmed on the live serving route, not just in the template
-        text.</li>
-        <li><strong>84 of 90 recorded runs passed</strong> across 15
-        scenarios: single calls, four-step chains, parallel calls, history
-        restore, argument types, error recovery, and more, each run three
-        times in both streaming modes. All six misses come from one scenario
-        that tests a known defect in the serving software itself (it silently
-        ignores a request to force one specific named tool), the same defect we
-        measured with sibling models on the same build. Not one miss in the
-        battery was attributed to the model. The battery scores protocol and
-        task structure, not answer quality.</li>
-        <li><strong>Our three-task verify suite passed on the direct
-        route</strong>, including a four-step tool chain completed in exact
-        order with a correct, grounded final answer. This is the first model
-        in this project to pass that strict gate with its shipped template
-        and no repair layer.</li>
-      </ul>
-      <p>Four more recorded sessions the same day grew those notes into this
-      card:</p>
-      <ul class="plain">
-        <li>The context runs of section 04: 131 recorded completion requests
-        across four served window sizes, every request and response kept.</li>
-        <li>The download-file comparison of section 05: the full 90-run
-        battery repeated on Q4_0 and Q8_0, with a budget sweep on each.</li>
-        <li>The budget map of section 06: a 144-cell recorded grid across
-        four request shapes, six budgets, two sampling arms, and three seeds,
-        plus a ten-trial search-looping fixture.</li>
-        <li>An earlier 54-call budget-and-sampling sweep, kept in the record
-        and corrected by the grid above on one point (the misnamed penalty
-        field described in section 07).</li>
-      </ul>
-      <p>One recorded contrast from those battery records is worth stating in
-      its exact terms. The call-some-tool scenario that Q8_0 tripped over in
-      section 05 (the shape that requires a tool call without naming one;
-      not the named-tool scenario behind this battery's six misses) has also
-      been run on a larger sibling, LFM2.5-8B-A1B, on
-      the same llama.cpp build, with the same driver and settings. In that
-      recorded run the 8B made no tool call in any of six cases and spent its
-      full 4,096-token allowance each time; the 2.6B passed the same scenario
-      six of six, calling a tool immediately and using 58 completion tokens.
-      The serving software's weak enforcement of that request shape is
-      present in both cases; whether it bites depends on the model's habits,
-      and this model's call-immediately habit walks past it. That is two
-      recorded measurements of one backend defect, not a quality ranking.</p>
-      <p>Still not verified, stated plainly:</p>
-      <ul class="plain">
-        <li>Everything on this page is one backend, one build, one machine:
-        llama.cpp build <code>b1-5f55650</code> on a single 32 GB graphics
-        card. There is no Ollama result, no vLLM or LM Studio result, no
-        concurrency result, and no full-precision (safetensors) result in
-        our records for this model.</li>
-        <li>The battery's 84 of 90 scores protocol and task structure, not
-        answer quality. A record can pass while its answer is poor; that
-        caveat travels with the number wherever it appears.</li>
-        <li>The exact retrieval breakpoint between 32K and 65K is unlocated.
-        These runs establish that the boundary lies in that range, and no
-        more.</li>
-        <li>No budget that reliably completes a roughly 500-word answer is
-        known; at three seeds it lies above 4,096 output tokens.</li>
-        <li>The card carries Liquid's own benchmark table and speed figures.
-        We have not reproduced any of them, so none of those numbers appear
-        here.</li>
-        <li>The card's 131,072-token context claim was tested only on this
-        runtime, which enforces the training limit recorded in the GGUF. A
-        runtime that ignores or overrides that limit was not tested.</li>
+        <li><strong>Other runtimes and files are untested:</strong> no Ollama, vLLM, LM Studio, several-requests-at-once or full-precision (safetensors) result, and the official BF16, F16, Q5_K_M and Q6_K files were not run. A runtime that ignores or overrides the 128,000 training limit recorded in the GGUF was not tested.</li>
+        <li><strong>84 of 90 is not a quality score.</strong> The 90-run test scores protocol and task structure; a run can pass with a poor answer.</li>
+        <li><strong>The retrieval test is narrow.</strong> It checks whether facts can be found and told apart from planted fakes, not every kind of long-document reasoning, and passing it does not prove good synthesis. Because of the decoys, do not compare it with common needle-in-a-haystack scores, which plant no competing statements.</li>
+        <li><strong>The maker's figures were not reproduced.</strong> None of Liquid's benchmark or speed figures from the card appear here.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">09</div>
-      <h2>Sources</h2>
-      <ul class="plain">
-        <li>The model repository:
-        <a href="https://huggingface.co/LiquidAI/LFM2.5-2.6B">huggingface.co/LiquidAI/LFM2.5-2.6B</a>,
-        read at pinned revision <code>dca18258</code> on 2026-08-04.</li>
-        <li>Repository dates, exact version identifiers, and the download
-        counter: retrieved directly from Hugging Face on 2026-08-04 and
-        saved with the project evidence.</li>
-        <li>The chat template and the configuration file: pinned copies
-        fetched from the repository at that same revision. Checksums
-        (sha256): template <code class="n">ea663864…3b1bef</code>,
-        configuration <code class="n">d0b71d2a…019947</code>. The repository's
-        commit listing was saved the same day.</li>
-        <li>The served files: the official GGUF repository at pinned revision
-        <code class="n">b22e29ebf6249a8c9fcdda36914743e9980595c4</code>, each
-        file verified byte-for-byte against the repository's declared sizes
-        and hashes (sha256: Q4_K_M <code class="n">79fdf003…bfee14</code>,
-        Q4_0 <code class="n">91ad0c31…7c3a2b</code>, Q8_0
-        <code class="n">36587fdf…bdb757</code>), served by llama.cpp build
-        <code>b1-5f55650</code> on loopback.</li>
-        <li>Every number on this page stands on a dated evidence document
-        with raw run records behind it: the run ledger
-        <code>LEDGER_2026-08-04.md</code> (sections 03 and 08: the pins, the
-        doctor run, the 90-run battery, the verify suite, and the recorded
-        8B contrast), <code>FINDINGS_context_truth_2026-08-04.md</code>
-        (section 04), <code>FINDINGS_quant_ladder_2026-08-04.md</code>
-        (section 05), and <code>FINDINGS_budget_extended_2026-08-04.md</code>
-        with its corrected predecessor
-        <code>FINDINGS_budget_and_sampling_2026-08-04.md</code> (sections 06
-        and 07). Each names the raw record files, which keep full requests,
-        responses, finish reasons, and timings.</li>
-      </ul>
-      <p class="fineprint">The project records retain the exact source copies
-      and checksums used for this page. The evidence documents named above
-      are project records rather than public files today; they are named
-      here so that every number on this page has a dated, recorded home
-      that can be produced if questioned.</p>
+    <section id="corrections">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
+      <div class="note"><span class="label">Correction: the penalty field (runs of 2026-08-04)</span>
+        <p>The first budget-and-sampling sweep, 54 calls, sent the penalty as <code>repetition_penalty</code>, which llama.cpp ignores, so it never applied. That sweep had suggested the card's settings cut hidden reasoning by about a third. The 144-cell re-run with <code>repeat_penalty</code> measured about 7.7 percent and replaces that number; every sampling number on this page comes from the corrected re-run.</p>
+      </div>
+      <div class="note"><span class="label">Update, 2026-08-05: older Liquid templates fixed at the source</span>
+        <p>In pinned versions of three older Liquid models, the shipped chat template left earlier tool calls out of the history, and multi-step tasks broke down on exactly those setups in recorded runs. We built a <a href="../droplet/">compatibility kit</a> around it and on 2026-08-03 submitted public template changes for all three (<a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/discussions/19">1.2B-Instruct</a>, <a href="https://huggingface.co/LiquidAI/LFM2-24B-A2B/discussions/19">24B</a>, <a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/discussions/4">1.2B-Thinking</a>). On 2026-08-05 the maintainers merged their own fix in all three repositories, which supersedes ours; our recorded failure cases, re-rendered against the updated templates, pass. Copies downloaded before the fix still carry the old template. The Droplet page is a snapshot from before that merge.</p>
+      </div>
     </section>
+
+    <section id="measured">
+      <div class="secnum">05</div>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>Measured 2026-08-04, release day; page updated 2026-08-07.</td></tr>
+        <tr><th scope="row">Machine and software</th><td>One 32 GB graphics card; llama.cpp build <code>b1-5f55650</code>.</td></tr>
+        <tr><th scope="row">Model, per the card</th><td>Liquid AI, LFM2.5 family. 2.69 billion parameters, a single network, not a mixture-of-experts design; 30 layers, 22 convolution-based and 8 attention-based (double-gated short convolution, GQA), matching the pinned configuration file. 128,000-token vocabulary; 16 languages listed, English among them. For tool use, data extraction and answering from supplied long documents; not recommended for agentic coding and knowledge-heavy tasks. Also offered as ONNX and MLX, with a Base model for further training.</td></tr>
+        <tr><th scope="row">License</th><td>LFM Open License v1.0 (<code>lfm1.0</code> in the card metadata; full name from Liquid's documentation). It is Liquid's own license, not a commonly used open-source one, so read its terms for your use.</td></tr>
+        <tr><th scope="row">Model revision</th><td><span class="n">dca1825886789bd40b94368f53b1d9ada4c94598</span>, the pinned repository revision every card fact was read at. Pinned copies, sha256: template <code class="n">ea663864…3b1bef</code>, configuration <code class="n">d0b71d2a…019947</code>.</td></tr>
+        <tr><th scope="row">Files served</th><td>Official GGUF repository at revision <code class="n">b22e29ebf6249a8c9fcdda36914743e9980595c4</code>, each file verified byte for byte against the repository's declared sizes and hashes (sha256: Q4_K_M <code class="n">79fdf003…bfee14</code>, Q4_0 <code class="n">91ad0c31…7c3a2b</code>, Q8_0 <code class="n">36587fdf…bdb757</code>).</td></tr>
+        <tr><th scope="row">Runs</th><td>Context: 131 recorded completion requests across four window sizes. Files: the 90-run test repeated on Q4_0 and Q8_0, with a budget sweep on each. Budget: a 144-cell grid (four request shapes, six budgets, two sampling setups, three seeds) plus a ten-trial search-looping test. Every request and response was kept.</td></tr>
+      </table>
+    </section>
+
+    <section id="sources">
+      <div class="secnum">06</div>
+      <h2>Data and sources</h2>
+      <ul class="plain">
+        <li>The model repository: <a href="https://huggingface.co/LiquidAI/LFM2.5-2.6B">huggingface.co/LiquidAI/LFM2.5-2.6B</a>, read at pinned revision <code>dca18258</code> on 2026-08-04.</li>
+        <li>Exact version identifiers: retrieved directly from Hugging Face on 2026-08-04, with the repository's commit listing saved the same day.</li>
+      </ul>
+      <p>The raw run records are not published on this site.</p>
+    </section>
+
+    <section id="related">
+      <div class="secnum">07</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../droplet/">The compatibility kit for older Liquid templates</a>: a snapshot from before the 2026-08-05 fix.</li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent notes. Not affiliated with, endorsed by,
+      or connected to Liquid AI.</div></div>
 
   </div>
 </main>

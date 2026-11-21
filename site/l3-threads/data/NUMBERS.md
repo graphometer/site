@@ -1,5 +1,7 @@
 # Every number on the page, and the file it came from
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 One row per figure printed at https://graphometer.ai/l3-threads/ . Paths are
 relative to this folder. If a row and a file disagree, the file wins.
 

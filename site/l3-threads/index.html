@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mistral Large 3 675B slow in llama.cpp: the thread default</title>
-<meta name="description" content="On the tested desktop, leaving llama.cpp to choose the thread count slowed replies. Turning off warmup alone left generation speed unchanged once warm.">
+<meta name="description" content="On one 24-core Core Ultra 9 285K desktop, llama.cpp's default chose 4 threads; setting 24 roughly doubled Mistral Large 3 675B's warm writing speed.">
 <link rel="canonical" href="https://graphometer.ai/l3-threads/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Mistral Large 3 675B slow in llama.cpp: the thread default">
-<meta property="og:description" content="On the tested desktop, leaving llama.cpp to choose the thread count slowed replies. Turning off warmup alone left generation speed unchanged once warm.">
+<meta property="og:description" content="On one 24-core Core Ultra 9 285K desktop, llama.cpp's default chose 4 threads; setting 24 roughly doubled Mistral Large 3 675B's warm writing speed.">
 <meta property="og:url" content="https://graphometer.ai/l3-threads/">
 <meta property="og:image" content="https://graphometer.ai/og/l3-threads.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mistral Large 3 675B slow in llama.cpp: the thread default">
-<meta name="twitter:description" content="On the tested desktop, leaving llama.cpp to choose the thread count slowed replies. Turning off warmup alone left generation speed unchanged once warm.">
+<meta name="twitter:description" content="On one 24-core Core Ultra 9 285K desktop, llama.cpp's default chose 4 threads; setting 24 roughly doubled Mistral Large 3 675B's warm writing speed.">
 <meta name="twitter:image" content="https://graphometer.ai/og/l3-threads.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -133,6 +133,10 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -164,581 +168,359 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Measured study &middot; pre-registered three-arm A/B, 2026-08-11 &middot; 4 probes per arm, 3 warm &middot; one CPU-offloaded 675B MoE, one machine</div>
-      <h1 itemprop="headline">The wrong <em>flag</em></h1>
-      <p class="subtitle">Six days of records blamed warmup for a
-      3.6-versus-6 tokens-per-second decode gap on Mistral Large 3 675B.
-      A three-arm A/B traced it to llama.cpp's default thread count
-      instead.</p>
-      <p class="lead">For six days the records on this machine said that
-      llama.cpp's warmup pass was the difference between about 6 tokens
-      per second and 3.6 on their largest model: Mistral Large 3, a
-      675-billion-parameter mixture-of-experts served from a
-      190.80&nbsp;GB quantized file on one desktop. It was the wrong
-      flag. Both speeds were measured; the sentence connecting them was
-      not. On 2026-08-11 a pre-registered three-arm A/B on the canonical
-      serving configuration refuted the attribution: turning warmup off,
-      alone, left warm decode unchanged (5.82 to 7.09 tokens per second
-      across the three warm probes, against 6.83 to 7.07 with warmup on),
-      while the arm that also removed one more line,
-      <code>--threads 24 --threads-batch 24</code>, landed back on the
-      slow number: 3.56 and 3.57 tokens per second, against the original
-      record's 3.58 to 3.61. For this tested configuration the supported
-      explanation is llama.cpp's default thread heuristic, which on
-      hybrid Intel CPUs excludes efficiency cores and skips alternate
-      logical CPUs even where there is no hyperthreading, resolving to 4
-      compute threads on this 24-core Core Ultra 9 285K: roughly half
-      this deployment's warm decode speed, left on the table by an
-      invisible default, and misattributed in our own records to a warmup
-      flag. Warmup does something real, just not this: this run's
-      observations are consistent with warmup moving expert page-fault
-      cost from the first answer into load time, and on a truly cold
-      cache it did not protect the first answer. With warmup on, the
-      first answer after a cold start still took 897 seconds; the
-      process-state and I/O readings are consistent with memory pressure,
-      since the 177.7&nbsp;GiB weight file plus the process's own memory
-      exceeds this machine's 188&nbsp;GiB of RAM. Everything below is one
-      model, one quantization, one placement, one machine, with four
-      probes per arm of which three are warm; section 11 says so
-      plainly.</p>
+      <div class="eyebrow">Measured study &middot; one desktop, one model file, Intel Core Ultra 9 285K</div>
+      <h1 itemprop="headline">Mistral Large 3 675B slow in llama.cpp: the <em>thread default</em></h1>
+      <p class="subtitle">On one desktop with a 24-core Intel Core Ultra 9
+      285K, llama.cpp's default chose 4 compute threads, and Mistral Large 3
+      675B wrote 3.56 and 3.57 tokens a second in two of three warm requests
+      (the third dipped to 1.70), against 5.82 to 7.09 with 24 threads set
+      by hand.</p>
+      <div class="note"><span class="label">In short</span>
+      <ul class="plain">
+        <li><strong>Check how many threads llama.cpp really uses.</strong>
+        <code>llama-server --help</code> shows only <code>(default: -1)</code>,
+        not the number it picks. <a href="#check">How to check</a></li>
+        <li><strong>Set the thread count yourself, then measure</strong>
+        (<code>--threads</code> and <code>--threads-batch</code>). Here 24
+        roughly doubled warm writing speed; 24 is this machine's number, not
+        advice. <a href="#what-to-do">What to do</a></li>
+        <li><strong>Keep the server running between chats if the model nearly
+        fills your RAM.</strong> Turning warmup off alone did not change warm speed.
+        On this machine, with warmup on, the first answer after a cold start
+        still took 897 seconds.</li>
+      </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-11">11 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements; no affiliation with
-      Mistral AI, the llama.cpp project, ggml-org, or Unsloth.</div>
     </div>
 
-    <section>
+    <section id="what-to-do">
       <div class="secnum">01</div>
-      <h2>Summary</h2>
-      <p>On 2026-08-05 this machine's records began carrying a claim
-      about Mistral Large 3 675B (Unsloth's <code>UD-IQ1_S</code>
-      quantization, experts CPU-offloaded behind one RTX&nbsp;5090): warm
-      decode is about 6 tokens per second and llama.cpp's warmup pass
-      &ldquo;is what unlocks&rdquo; it; with <code>--no-warmup</code> the
-      same model reads 3.6. Four separate records repeated the claim. On
-      2026-08-11 a paper audit graded the attribution confounded: the two
-      measurements behind it differed not only in warmup but in thread
-      count and server slot layout. The same night, a supervised
-      three-arm A/B on the canonical serving script settled it.</p>
-      <p>Three results:</p>
+      <h2>What to do</h2>
+      <p>For a very large mixture-of-experts model (only some parts, called
+      experts, run for each token) with most of its weights in system RAM
+      rather than on the graphics card:</p>
       <ol class="plain">
-        <li><strong>Warmup is innocent of the speed claim.</strong>
-        Adding <code>--no-warmup</code> to the canonical configuration
-        and changing nothing else left warm decode unchanged: 5.82 / 6.96
-        / 7.09 tokens per second across the three warm probes, against
-        6.83 / 7.07 / 6.96 with warmup on.</li>
-        <li><strong>The thread default reproduces the slow
-        number.</strong> Removing the
-        <code>--threads 24 --threads-batch 24</code> line and letting
-        llama.cpp pick its own thread count read 3.56 / 3.57 tokens per
-        second warm, against 3.58&ndash;3.61 in the original 2026-08-05
-        record. The build's heuristic resolves to 4 compute threads on
-        this 24-core CPU (a process-thread cross-check: 33 threads versus
-        53 with the pin present, a difference of 20, which is 24 minus
-        4). That makes the thread default the supported explanation for
-        the recorded 3.6-versus-6 gap in this tested configuration; it
-        does not quantify every contributor to the historical comparison,
-        which also differed in slot count (section 05).</li>
-        <li><strong>What warmup did in this run is move pain, not remove
-        it.</strong> With warmup on, load took 6&nbsp;m&nbsp;51&nbsp;s
-        and the first answer still took 897&nbsp;s on a cold page cache;
-        with warmup off, load took 2&nbsp;m&nbsp;06&nbsp;s and the fault
-        cost reappeared in the first generation (970&nbsp;s). The
-        177.7&nbsp;GiB file plus process memory exceeds 188&nbsp;GiB of
-        RAM, and the observations are consistent with warmup partially
-        evicting itself; the hot expert set settles only through use.
-        Keeping the server resident between chats remains the real
-        fix.</li>
-      </ol>
-      <p>Also corrected while we were in there: the true 1-slot service
-      VRAM is 24,420&nbsp;MiB, which is 23.85&nbsp;GiB used, with
-      8,187&nbsp;MiB, which is 8.00&nbsp;GiB, free, and every earlier
-      figure recorded as &ldquo;GiB&rdquo; was a raw MiB reading divided
-      by 1000. Section 08 owns both mistakes in detail.</p>
-    </section>
-
-    <section>
-      <div class="secnum">02</div>
-      <h2>Environment</h2>
-      <p>Everything below is a property of one model file, one runtime
-      build, one placement, and one probe shape, measured 2026-08-11
-      (with the prior record's runs dated 2026-08-04/05), on one
-      workstation. Nothing here measures the model's intelligence or
-      benchmark standing, and no such claim appears on this page.</p>
-      <table class="facts">
-        <tr><th scope="row">Model</th><td>Mistral Large 3 675B Instruct 2512 (Mistral AI, announced 2025-12-02), Unsloth <code>UD-IQ1_S</code> GGUF, 4 shards, 190.80&nbsp;GB on disk (177.7&nbsp;GiB). Apache 2.0.</td></tr>
-        <tr><th scope="row">Architecture</th><td>675B mixture-of-experts; GGUF arch <code>deepseek2</code>: 61 blocks (first 3 dense), 128 experts (4 routed + 1 shared), 1 KV head. Header values re-verified from shard bytes during the audit. 41B active parameters per the release.</td></tr>
-        <tr><th scope="row">Hardware</th><td>Intel Core Ultra 9 285K: 24 cores, 8 performance + 16 efficiency, no hyperthreading. 188&nbsp;GiB RAM. One NVIDIA GeForce RTX&nbsp;5090 (32,607&nbsp;MiB as nvidia-smi reports it).</td></tr>
-        <tr><th scope="row">Runtime</th><td>llama.cpp mainline, build <span class="n">5f55650</span>, CUDA sm_120.</td></tr>
-        <tr><th scope="row">Placement</th><td><code>--n-cpu-moe 59</code>: the experts of 59 of the 61 blocks live in CPU RAM, roughly 154&nbsp;GiB CPU-side (derived: the 177.7&nbsp;GiB file minus about 24&nbsp;GiB GPU-resident; arithmetic, not instrumented). Attention and shared weights on the GPU.</td></tr>
-        <tr><th scope="row">Server config</th><td><code>-c 32768 -b 4096 -ub 2048 --parallel 1 --threads 24 --threads-batch 24</code>, warmup at its default (on), sampling pinned at launch (<code>--temp 0.15 --top-p 1.0 --top-k 0</code>). The A/B ran scratch copies of the canonical script on loopback; the canonical script was never edited (SHA-256 recorded before and after, unchanged).</td></tr>
-        <tr><th scope="row">Probes</th><td>Temperature 0, <code>max_tokens</code> 200, one fixed prompt (the 2026-08-05 ladder's own probe prompt), which the chat template expands to a 557-token prefill. Four probes per arm: probe 1 is the first generation after health (reported separately), probes 2&ndash;4 are the warm readings.</td></tr>
-      </table>
-    </section>
-
-    <section>
-      <div class="secnum">03</div>
-      <h2>The record before the test</h2>
-      <p>The claim under test was born as a two-point comparison. On
-      2026-08-04/05 a tuning ladder established the serving profile;
-      every ladder rung ran with <code>--no-warmup</code> baked into its
-      base arguments and no <code>--threads</code> flag, and the winning
-      rung decoded at 3.58&ndash;3.61 tokens per second. The same night,
-      a smoke test of the canonical serving script, which has warmup on
-      and pins <code>--threads 24 --threads-batch 24</code>, read
-      5.98&ndash;6.28. Two real measurements, three variables apart:</p>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th class="t" style="text-align:left">Variable</th><th class="t" style="text-align:left">Ladder (3.6 t/s)</th><th class="t" style="text-align:left">Canonical smoke (6.0 t/s)</th></tr></thead>
-        <tbody>
-          <tr><td class="t">warmup</td><td class="t"><code>--no-warmup</code></td><td class="t">default on</td></tr>
-          <tr><td class="t">threads</td><td class="t">not set: build default</td><td class="t"><code>--threads 24 --threads-batch 24</code></td></tr>
-          <tr><td class="t">server slots</td><td class="t">4 (llama-server's default)</td><td class="t"><code>--parallel 1</code></td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p>The records kept the numbers and picked one variable:
-      &ldquo;warmup pre-faults every expert and is load-bearing for
-      speed.&rdquo; That sentence propagated into four documents. The
-      2026-08-11 audit graded both speeds measured and the attribution
-      confounded, and specified the experiment below, verdict logic
-      first.</p>
-    </section>
-
-    <section>
-      <div class="secnum">04</div>
-      <h2>The experiment</h2>
-      <p>Three arms, all scratch copies of the canonical serving script
-      differing only in declared flags (diffs and SHA-256 hashes
-      preserved in the data package), run one at a time the same night,
-      each stopped and its VRAM release verified before the next:
-      (a)&nbsp;the canonical configuration as-is, warmup on, threads
-      pinned to 24; (b)&nbsp;as-is plus <code>--no-warmup</code>, nothing
-      else changed; (c)&nbsp;as-is plus <code>--no-warmup</code> with the
-      threads line removed, so the build's own default decides. There is
-      no fourth arm (warmup on, threads unset): the thread reading below
-      rests on arm (b) clearing warmup plus arm (c) reproducing the slow
-      number, not on a single-variable contrast against arm (a).</p>
-      <p>The verdict logic was written down before the first arm loaded.
-      If (b) collapses to about 3.6 while (a) reads about 6, warmup is
-      the cause and the record stands. If (b) stays about 6 and (c)
-      collapses to about 3.6, the finding is real but it is a threads
-      finding wearing warmup's name. Anything else: report what is seen,
-      no forced story. Pre-declared bands: &ldquo;about 3.6&rdquo; means
-      3.2&ndash;4.2, &ldquo;about 6&rdquo; means 5.5&ndash;6.7.</p>
-      <p>Honesty about size: this is a three-arm experiment with four
-      probes per arm, of which three are warm. The observed stable
-      readings show an approximately twofold separation under this run's
-      conditions; with three warm probes per arm and no intervals, the
-      experiment is not designed to estimate uncertainty or smaller
-      effects. There are no confidence intervals here; there are
-      individual probe readings, all published. Identical repeat prompts hit slot prefix reuse, so
-      repeat-probe prefill numbers are not meaningful and decode is the
-      metric; that too was pre-declared.</p>
-    </section>
-
-    <section>
-      <div class="secnum">05</div>
-      <h2>Observed: removing warmup did not move warm decode; removing the thread pin did</h2>
-      <div class="data-wrap">
-      <table class="data">
-        <thead><tr><th class="t" style="text-align:left">Arm</th><th class="t" style="text-align:left">Delta from canonical</th><th>Load to healthy</th><th>First generation</th><th>Warm decode (probes 2/3/4, t/s)</th><th>VRAM (raw MiB)</th></tr></thead>
-        <tbody>
-          <tr><td class="t">(a)</td><td class="t">none (warmup on, threads 24)</td><td>6 m 50.9 s</td><td>3.46 t/s (897.0 s wall)</td><td><strong>6.83 / 7.07 / 6.96</strong></td><td>24,420</td></tr>
-          <tr><td class="t">(b)</td><td class="t">+ <code>--no-warmup</code> only</td><td>2 m 06.1 s</td><td>2.07 t/s (969.8 s wall)</td><td><strong>5.82 / 6.96 / 7.09</strong></td><td>24,420</td></tr>
-          <tr><td class="t">(c)</td><td class="t">+ <code>--no-warmup</code>, threads unset</td><td>1 m 59.7 s</td><td>3.14 t/s (130.5 s wall)</td><td class="neg"><strong>1.70 / 3.56 / 3.57</strong></td><td>24,375</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="tablenote">Two of the twelve probes are transient dips,
-      one each in arms (b) and (c): arm (b)'s probe 2 read 5.82 with a
-      mid-run sag, and arm (c)'s probe 2 read 1.70; in both cases the
-      flanking probes agree with each other and with the wall clocks (200
-      tokens in ~28.5&nbsp;s is 7.0 t/s; in ~56.3&nbsp;s is 3.56 t/s). We
-      publish the dips rather than smooth them. First-generation numbers
-      are cache-history-dependent and are not an arm contrast (sections
-      06 and 11).</p>
-      <p>Against the pre-registered logic this is branch 2, read
-      directly: removing warmup alone did not move warm decode
-      (5.82&ndash;7.09 against 6.83&ndash;7.07), and removing the thread
-      pin reproduced the ladder's slow band to within 0.05 tokens per
-      second (3.56&ndash;3.57 tonight against 3.58&ndash;3.61 on
-      2026-08-05). On slots: the thread change alone was sufficient to
-      reproduce the historical 3.6 range at one slot, but no arm varied
-      <code>--parallel</code>, so the 4-versus-1-slot contribution to the
-      historical comparison remains unmeasured (section 11). One
-      pre-registration footnote for the record: two warm probes (7.07,
-      7.09) landed slightly above the declared &ldquo;about 6&rdquo;
-      band's top edge of 6.7; the branch verdict does not depend on that
-      edge, because the branch question is whether (b) collapsed into the
-      3.2&ndash;4.2 band, and it did not.</p>
-      <p><strong>The thread-count witness:</strong> the arm (c) server
-      process ran 33 threads where arms (a) and (b) ran 53. The
-      difference is 20, which is 24 minus 4: the pinned 24-thread compute
-      pool replaced by a 4-thread default, with the server's non-compute
-      threads unchanged.</p>
-    </section>
-
-    <section>
-      <div class="secnum">06</div>
-      <h2>What warmup did in this run</h2>
-      <p>Warmup is not fake. It is a real llama.cpp behavior doing a real
-      thing: it touches the weights at load time so the first generation
-      does not have to page them in. On this machine's memory budget,
-      this run suggests that repositioning is the most it can deliver,
-      and sometimes not even that:</p>
-      <ul class="plain">
-        <li><strong>With warmup on</strong> (arm a, cold page cache):
-        load took 6&nbsp;m&nbsp;50.9&nbsp;s, and the first answer still
-        took 897&nbsp;s of wall clock. During that first generation the
-        server sat in uninterruptible sleep major-faulting expert pages
-        at roughly 67&nbsp;MB/s, and cumulative reads passed
-        237&nbsp;GB against a 190.80&nbsp;GB file: cache thrash, not a
-        single pass. The file plus the process's anonymous memory plus
-        the desktop exceeds the machine's RAM, a budget consistent with
-        warmup's own tail evicting its head.</li>
-        <li><strong>With warmup off</strong> (arm b, warm-ish cache):
-        load took 2&nbsp;m&nbsp;06.1&nbsp;s and the fault cost reappeared
-        where warmup would have absorbed it, in the first generation
-        (969.8&nbsp;s).</li>
-        <li><strong>By the third load of the night</strong> (arm c) the
-        first answer was fine: 130.5&nbsp;s wall, prefill at 8.35 t/s,
-        consistent with the hot expert set having settled in the page
-        cache.</li>
-      </ul>
-      <p>In this run, warmup-on cold loading took longer, and the
-      no-warmup arm's first generation was slow instead. The
-      process-state observations are consistent with warmup shifting some
-      of the faulting from the first answer into load time; cache history
-      was not controlled across arms, so this experiment does not isolate
-      that effect. What the run does show is that warmup did not set warm
-      decode speed on this machine. The durable operational advice
-      survives the correction: <strong>keep the server resident between
-      chats</strong>, because every fresh start risks a multi-minute
-      first answer while roughly 154&nbsp;GiB of experts re-settle,
-      warmup or not.</p>
-    </section>
-
-    <section>
-      <div class="secnum">07</div>
-      <h2>The heuristic, in the code we ran</h2>
-      <p>llama.cpp resolves <code>--threads -1</code> (the default)
-      through <code>common_cpu_get_num_math()</code>. On x86-64 Linux
-      with a hybrid CPU, that walks every logical CPU, pins itself to
-      each in turn, and asks the CPU what it is running on. Two rules,
-      quoted from the build we ran (<code>common/common.cpp</code>,
-      <code>cpu_count_math_cpus</code>): efficiency cores are skipped
-      with the comment &ldquo;efficiency cores harm lockstep
-      threading&rdquo;, and the counter additionally advances two logical
-      CPUs at a time with the comment &ldquo;hyperthreading isn't useful
-      for linear algebra&rdquo;.</p>
-      <p>On this CPU the two rules compound: the 16 E-cores are excluded,
-      and the skip-by-two halves the remaining 8 P-cores even though the
-      285K has no hyperthreading. (Logical CPUs are the operating
-      system's enumeration; on a chip without hyperthreading every
-      logical CPU is a physical core, which is exactly why the skip is
-      costly here.) Result: 4 compute threads on a 24-core machine,
-      confirmed at runtime by the process-thread delta in section 05. And
-      the resolved value is invisible where you would first look:
-      <code>llama-server --help</code> prints <code>(default: -1)</code>,
-      not the number the heuristic will pick on your machine (verified on
-      this build).</p>
-      <p>Read as a rule, from this build's code: on hybrid Intel under
-      x86-64 Linux, expect the default to land near your P-core count if
-      the chip has hyperthreading, and near half your P-core count if it
-      does not. On a non-hybrid x86-64 CPU, AMD included, the hybrid path
-      never runs at all: <code>common_cpu_get_num_math()</code> falls
-      back to the physical core count, so SMT siblings are excluded but
-      nothing is halved. Both statements are read from this build's
-      source, not measured on other machines; treat them as what to
-      expect, and verify with the checks in section 10.</p>
-      <p><strong>Provenance, for fairness: this heuristic is not an
-      accident.</strong> It arrived in llama.cpp in April 2024 as part of
-      Justine Tunney's llamafile performance work (PR #6414, &ldquo;ggml
-      : add llamafile sgemm&rdquo;, merged 2024-04-16), and it encodes a
-      finding that was real and public in 2023: on hybrid Intel CPUs
-      running dense models fully on CPU, threads scheduled onto E-cores
-      dragged the whole lockstep pool down, and pinning to P-cores was
-      measured up to 3x faster (section 09). The heuristic is a
-      reasonable answer to that problem. This page's regime is a
-      different workload: decode on a CPU-offloaded 675B MoE, which on
-      this machine wants more threads than the heuristic provides.
-      Whether the optimum here is 8, 16, or 24 threads is unmeasured;
-      what is measured is that 24 roughly doubles the heuristic's 4.</p>
-    </section>
-
-    <section>
-      <div class="secnum">08</div>
-      <h2>What we got wrong</h2>
-      <p>This site publishes corrections of our own records as a genre,
-      and this page is one. The instrument was right and the prose was
-      wrong, in two ways.</p>
-      <h3>The misattribution</h3>
-      <p>From 2026-08-05 to 2026-08-11, four records on this machine (the
-      model's spec card, its serving-knobs file, the model reference, and
-      the machine's state ledger) said warmup &ldquo;is what unlocks ~6
-      t/s&rdquo;. The numbers those records carried were all real, and
-      all reproduced this week. The causal sentence connecting them was a
-      two-point comparison across three uncontrolled variables, and it
-      survived six days because it was plausible: warmup genuinely does
-      pre-fault experts, the smoke test's first generation genuinely was
-      fast, and the mechanism story wrote itself. Nobody ran the third
-      arm until the audit forced it. The corrected records now carry the
-      thread attribution, and the old entries are annotated as superseded
-      rather than rewritten.</p>
-      <h3>The unit slip</h3>
-      <p>Every VRAM figure in those records written as &ldquo;GiB&rdquo;
-      was a raw nvidia-smi MiB reading divided by 1000: the recorded
-      &ldquo;24.6&nbsp;GiB&rdquo; default profile is 24,627&nbsp;MiB,
-      which is 24.05&nbsp;GiB; &ldquo;27.6&rdquo; is 27,624&nbsp;MiB,
-      which is 26.98&nbsp;GiB; &ldquo;15.1&rdquo; is 15,082&nbsp;MiB,
-      which is 14.73&nbsp;GiB. The same slip family had already been
-      caught on three other models' records on this machine, which is
-      exactly why the audit checked. The corrected service figure,
-      measured this week on the 1-slot canonical configuration:
-      <strong>24,420&nbsp;MiB, which is 23.85&nbsp;GiB used, and
-      8,187&nbsp;MiB, which is 8.00&nbsp;GiB free</strong> (a desktop
-      baseline of roughly 830&ndash;900&nbsp;MiB is inside the reading).
-      The operational ceiling this machine runs under (at least
-      6&nbsp;GiB of VRAM kept free) holds with more margin than the old
-      records claimed, so the slip was conservative in effect here; it
-      does not always have to be.</p>
-    </section>
-
-    <section>
-      <div class="secnum">09</div>
-      <h2>Prior art: the E-core effect is old news, and we claim none of it</h2>
-      <p>The interaction between llama.cpp threading and hybrid Intel
-      cores has been public since early 2023, and the record we could
-      retrieve is consistent:</p>
-      <ul class="plain">
-        <li><strong>llama.cpp discussion #572</strong> (2023-03-28, user
-        delock, i7-12700H): restricting to performance cores only ran
-        2.4x&ndash;3x faster than using all cores on 7B and 65B dense
-        models; an early public observation, the earliest we
-        located.</li>
-        <li><strong>llama.cpp issue #842</strong> (2023-04-08, 13900K):
-        only ~50% CPU utilization at high thread counts, E-cores
-        saturated while P-cores idle.</li>
-        <li><strong>Justine Tunney, &ldquo;LLaMA Now Goes Faster on
-        CPUs&rdquo;</strong> (justine.lol/matmul, 2024-03-31) and
-        <strong>llama.cpp PR #6414</strong> (merged 2024-04-16): the
-        E-core-excluding default heuristic itself, upstreamed from
-        llamafile, with its rationale in the code comments quoted in
-        section 07.</li>
-        <li><strong>Downstream surprise reports</strong> exist too, for
-        example ramalama issue #934 (2025-03-10), a user asking why CPU
-        inference uses &ldquo;only 4 cores&rdquo;; the low invisible
-        default surprises people on non-Intel hardware as well.</li>
-        <li><strong>Current CPU-MoE offload guides</strong> we checked
-        (for example the widely shared January 2026 MoE offload guide on
-        Hugging Face) pass an explicit <code>-t</code> in their example
-        commands but do not discuss the default heuristic or hybrid-CPU
-        thread selection at all.</li>
-      </ul>
-      <p>What this page adds is scoped and small: a controlled
-      measurement of the default-versus-pinned contrast on a regime not
-      represented in the sources we reviewed above (a
-      675-billion-parameter CPU-offloaded MoE, where decode is CPU-side
-      and memory-bound), the close reproduction (3.56&ndash;3.57 against
-      3.58&ndash;3.61) tying a previously misattributed two-point
-      comparison to the thread default, and the misattribution case study
-      itself. We
-      claim no firstness on the E-core effect, the heuristic's behavior,
-      or thread tuning in general. Note the direction, too: the 2023
-      findings were &ldquo;all cores can be slower than P-cores
-      only&rdquo; on dense CPU-only models; our finding is &ldquo;4
-      threads is roughly half the speed of 24&rdquo; on a CPU-offloaded
-      MoE. Both
-      can be true; they are different workloads, and we did not measure
-      a P-cores-only arm (section 11).</p>
-    </section>
-
-    <section>
-      <div class="secnum">10</div>
-      <h2>If you run a big CPU-offloaded MoE</h2>
-      <p>Four narrow things, each scoped to a stated regime; none is a
-      universal number:</p>
-      <ol class="plain">
-        <li><strong>See your effective thread count; do not assume you
-        know it.</strong> <code>llama-server --help</code> prints
-        <code>(default: -1)</code> and will not tell you what the
-        heuristic resolves to, and on this build's default logging the
-        resolved count did not appear in the server log either (grep
-        yours for <code>n_threads</code>; if your build prints it, that
-        is the cheapest check). Two routes that need no log: watch
-        per-thread CPU during a decode (<code>top -H -p
-        &lt;pid&gt;</code>, or htop with threads shown); the threads that
-        go busy while tokens stream are the compute pool. Or read
-        <code>Threads:</code> from <code>/proc/&lt;pid&gt;/status</code>
-        (or <code>ps -o nlwp &lt;pid&gt;</code>) and compare against a
-        run with <code>--threads</code> pinned: on this machine the
-        pinned-24 server ran 53 threads and the default server ran 33, a
-        difference of 20, exactly 24 minus 4. The raw count alone proves
-        nothing, because it includes the server's non-compute threads;
-        the comparison, or the busy-thread view, is the witness.</li>
-        <li><strong>Know the heuristic's shape.</strong> On hybrid Intel,
-        the default picker excludes E-cores outright and skips alternate
-        logical CPUs even on chips without hyperthreading; expect about
-        your P-core count with hyperthreading, about half of it without
-        (on a 24-core 285K: 4). On non-hybrid x86, AMD included, this
-        build falls back to your physical core count instead: SMT
-        excluded, nothing halved. The code is
-        <code>cpu_count_math_cpus</code> in
-        <code>common/common.cpp</code>, there since April 2024; read it
-        on your build rather than trusting our summary.</li>
-        <li><strong>Pin <code>--threads</code> explicitly and measure; do
-        not copy our 24, which is this machine's number, not
-        advice.</strong> On this machine, this model, this placement,
-        <code>--threads 24 --threads-batch 24</code> roughly doubles warm
-        decode against the default. (<code>--threads</code> governs
-        generation; <code>--threads-batch</code> governs batch and prompt
-        processing. This page measured decode only; we pin both to the
-        same value, and the batch half is unmeasured here.) Whether your
-        optimum includes E-cores, or stops at your P-core count, depends
-        on your memory bandwidth and your model; the 2023 record shows
-        regimes where fewer threads win. A cheap screen first: watch the
-        per-thread view from item 1 during a decode; if the compute
-        threads are not saturated, thread count is unlikely to be your
-        bottleneck, and if they are all pegged while the rest of the
-        machine idles, the sweep is worth the evening. The sweep itself
-        is cheap: same prompt, same server, two thread settings, three
-        warm probes each, compare decode tokens per second.</li>
-        <li><strong>Keep the server resident if your weights approach
-        your RAM.</strong> Warmup cannot pin a hot set your RAM cannot
-        hold; on this machine the first answer after a cold start took
-        897&nbsp;s with warmup on. Load-then-idle costs you nothing but
+        <li id="check"><strong>See the thread count llama.cpp actually
+        uses.</strong> <code>llama-server --help</code> prints
+        <code>(default: -1)</code>, not the number the default will pick on
+        your machine (checked on this build), and on this build's default logging the chosen count
+        did not appear in the server log either. If your build logs it,
+        search for <code>n_threads</code>. Without the log: watch each
+        thread's CPU use while the model writes (<code>top -H -p &lt;pid&gt;</code>, or htop
+        with threads shown); the threads that go busy while tokens stream
+        are the compute threads. Or read the process's thread count
+        (<code>Threads:</code> in <code>/proc/&lt;pid&gt;/status</code>, or
+        <code>ps -o nlwp &lt;pid&gt;</code>) and compare it with a run that
+        has <code>--threads</code> set (here 53 with 24 set, 33 with the
+        default). The raw count alone proves nothing, because it includes the
+        server's other threads.</li>
+        <li><strong>Know what the default picks.</strong> On hybrid Intel
+        CPUs (fast performance cores, or P-cores, plus small efficiency
+        cores, or E-cores) under x86-64 Linux, expect about your P-core count
+        if the chip has hyperthreading (two logical CPUs sharing one core) and
+        about half of it if not: 4 on the 285K. On other x86-64 CPUs, AMD
+        included, this build uses the physical core count, with nothing
+        halved. This is read from this build's source, not measured on other
+        machines (<a href="#why">why</a>); read
+        <code>cpu_count_math_cpus</code> in <code>common/common.cpp</code> on
+        your build.</li>
+        <li><strong>Set the thread count yourself, then measure.</strong>
+        Here <code>--threads 24 --threads-batch 24</code> roughly doubled
+        warm writing speed against the default. <code>--threads</code>
+        covers writing; <code>--threads-batch</code> covers prompt reading
+        and batches. Only writing was measured, with both set to the same
+        value. Your best count depends on your memory bandwidth and your
+        model; earlier reports show setups where fewer threads win. If the
+        compute threads are not all busy while the model writes, threads are
+        probably not your bottleneck. If they are, test: same prompt, same
+        server, two thread settings, three warm requests each, compare
+        writing speed in tokens a second.</li>
+        <li><strong>Keep the server running if the model nearly fills your
+        RAM.</strong> Warmup cannot keep in memory a set of experts your RAM
+        cannot hold. Loading once and leaving the server idle costs only
         memory you were already spending.</li>
       </ol>
     </section>
 
-    <section>
-      <div class="secnum">11</div>
-      <h2>What this does not show</h2>
+    <section id="found">
+      <div class="secnum">02</div>
+      <h2>What we found</h2>
+      <h3>Three setups, one change at a time</h3>
+      <p>Three versions of the standard serving setup ran one at a time on
+      the same night, each with four test requests: the first answer after
+      loading, then three warm ones. Writing speed (how fast the model
+      produces its answer) is the measure.</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Setup</th><th class="t" style="text-align:left">Change from standard</th><th>Load until ready</th><th>First answer</th><th>Warm writing speed (requests 2/3/4, t/s)</th><th>Graphics memory (raw MiB)</th></tr></thead>
+        <tbody>
+          <tr><td class="t">A</td><td class="t">none (warmup on, threads 24)</td><td>6 m 50.9 s</td><td>3.46 t/s (897.0 s wall)</td><td><strong>6.83 / 7.07 / 6.96</strong></td><td>24,420</td></tr>
+          <tr><td class="t">B</td><td class="t">+ <code>--no-warmup</code> only</td><td>2 m 06.1 s</td><td>2.07 t/s (969.8 s wall)</td><td><strong>5.82 / 6.96 / 7.09</strong></td><td>24,420</td></tr>
+          <tr><td class="t">C</td><td class="t">+ <code>--no-warmup</code>, threads left to the default</td><td>1 m 59.7 s</td><td>3.14 t/s (130.5 s wall)</td><td class="neg"><strong>1.70 / 3.56 / 3.57</strong></td><td>24,375</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">t/s is tokens a second. Wall is the whole request.
+      Two of the twelve requests are brief dips, published as they are: B's
+      request 2 read 5.82 with a sag partway through, and C's request 2 read
+      1.70. In both, the requests either side agree with each other and with
+      the clocks (200 tokens in ~28.5&nbsp;s is 7.0 t/s; in ~56.3&nbsp;s is
+      3.56 t/s).</p>
+      <p><strong>Warmup did not set the speed.</strong> Turning warmup off
+      alone left warm writing at 5.82&ndash;7.09 tokens a second, against
+      6.83&ndash;7.07 with it on. <strong>The thread default is the supported explanation in this setup.</strong>
+      Leaving the thread count to llama.cpp reproduced the earlier slow
+      reading to within 0.05 tokens a second: 3.56&ndash;3.57, against
+      3.58&ndash;3.61 on 2026-08-05.</p>
+      <p>The outcomes were written down before the first setup loaded: if B
+      fell to about 3.6 (3.2&ndash;4.2) while A read about 6
+      (5.5&ndash;6.7), warmup was the cause; if B stayed about 6 and C fell
+      to about 3.6, threads were. The result was the second. Two warm
+      readings (7.07, 7.09) landed slightly above 6.7; that does not change
+      the verdict, which turned on whether B fell into 3.2&ndash;4.2, and it
+      did not.</p>
+      <p><strong>The thread count, confirmed:</strong> setup C's server
+      process ran 33 threads where A and B ran 53. The difference is 20,
+      which is 24 minus 4: the 24 compute threads replaced by the default's
+      4, with the server's other threads unchanged.</p>
+      <p>The current measured warm range on the standard setup is
+      5.8&ndash;7.1 tokens a second across A and B; the 2026-08-05 test
+      recorded 5.98&ndash;6.28. The two are compatible; with three warm
+      requests per setup and no intervals, the difference is not a
+      finding.</p>
+
+      <h3 id="why">Why the default picks 4</h3>
+      <p>llama.cpp turns <code>--threads -1</code> (the default) into a
+      number through <code>common_cpu_get_num_math()</code>. On x86-64
+      Linux with a hybrid CPU, that visits every logical CPU in turn and
+      asks what kind of core it is. Two rules, quoted from the build we ran
+      (<code>common/common.cpp</code>, <code>cpu_count_math_cpus</code>):
+      E-cores are skipped, with the comment &ldquo;efficiency cores harm
+      lockstep threading&rdquo;, and the counter moves two logical CPUs at a
+      time, with the comment &ldquo;hyperthreading isn't useful for linear
+      algebra&rdquo;.</p>
+      <p>On this CPU the two rules add up: the 16 E-cores are left out, and
+      the skip halves the 8 P-cores even though the 285K has no
+      hyperthreading, so every logical CPU is a physical core. The result is
+      4 compute threads on a 24-core machine. On a non-hybrid x86-64 CPU
+      this path never runs: <code>common_cpu_get_num_math()</code> falls
+      back to the physical core count, leaving out the second logical CPU on
+      each core.</p>
+      <p>The rule has a sound origin. It arrived in April 2024
+      with the llamafile speed work (PR #6414, &ldquo;ggml : add llamafile
+      sgemm&rdquo;, merged 2024-04-16), and answers a real finding from
+      2023: on hybrid Intel CPUs running dense models fully on the CPU,
+      threads on E-cores slowed the whole group, and using P-cores only was
+      measured up to 3x faster. This page's workload, a 675B
+      mixture-of-experts held mostly in system RAM, wants more threads on
+      this machine than the rule gives. Whether 8, 16 or 24 is best here was
+      not measured; 24 roughly doubles the default's 4.</p>
+
+      <h3>What warmup did</h3>
+      <p>Warmup is a real llama.cpp step: at load time it touches the
+      weights so the first answer does not have to read them from disk. Here
+      it moved that cost at most:</p>
       <ul class="plain">
-        <li><strong>One regime, one machine.</strong> One model (Mistral
-        Large 3 675B), one quantization (<code>UD-IQ1_S</code>), one
-        placement (<code>--n-cpu-moe 59</code>, ctx 32768), one build
-        (<span class="n">5f55650</span>), one CPU (285K), one prompt
-        shape. Nothing here generalizes to a different placement, and the
-        2023 record already shows dense CPU-only regimes where the thread
-        answer has the opposite shape. Measure your own lane.</li>
-        <li><strong>Four probes per arm, three warm, no
-        intervals.</strong> This experiment resolves a factor of two; it
-        would not resolve ten percent. Two of twelve probes were
-        transient dips, published as-is, with wall clocks corroborating
-        the stable readings.</li>
-        <li><strong>The thread axis has two measured points, 4 and
-        24.</strong> No sweep. A P-cores-only arm (8 threads) was not
-        run, so this page cannot say whether E-cores help or hurt at the
-        margin here, only that the default's 4 is about half of 24's
-        speed on this regime. There is also no warmup-on, default-threads
-        arm (section 04).</li>
-        <li><strong>The slot axis was not varied.</strong> All three arms
-        ran <code>--parallel 1</code>; the historical ladder ran 4 slots.
+        <li><strong>Warmup on</strong> (A, nothing yet in the page cache,
+        the RAM that holds recently read files): load took
+        6&nbsp;m&nbsp;50.9&nbsp;s, and the first answer still took
+        897&nbsp;s, the server waiting on the disk,
+        reading expert pages at roughly 67&nbsp;MB/s, and total reads passed
+        237&nbsp;GB against a 190.80&nbsp;GB file: the same data read more
+        than once. The file plus the process's own memory plus the desktop
+        exceeds the machine's RAM, consistent with the end of warmup pushing
+        its start back out of memory.</li>
+        <li><strong>Warmup off</strong> (B, some of the file already in
+        memory): load took 2&nbsp;m&nbsp;06.1&nbsp;s, and the disk cost
+        reappeared in the first answer (969.8&nbsp;s).</li>
+        <li><strong>Third load of the night</strong> (C): the first answer
+        took 130.5&nbsp;s, with prompt reading at 8.35 t/s, consistent with
+        the often-used experts having settled in memory.</li>
+      </ul>
+      <p>The readings are consistent with warmup shifting some disk reading
+      from the first answer into load time. Cache history was not controlled
+      across the setups, so this does not isolate that effect. Warmup did
+      not set warm writing speed. Each fresh start risks a first answer of several minutes while
+      roughly 154&nbsp;GiB of experts settle, warmup or not.</p>
+
+      <h3>The earlier explanation</h3>
+      <p>From 2026-08-05, this machine's notes said warmup was what lifted
+      writing from about 3.6 tokens a second to about 6. Both speeds were
+      real: 3.58&ndash;3.61 from the 2026-08-04/05 tuning runs, and
+      5.98&ndash;6.28 from a test of the standard serving script the same
+      night. But the two runs differed in three settings, not one:</p>
+      <div class="data-wrap">
+      <table class="data">
+        <thead><tr><th class="t" style="text-align:left">Setting</th><th class="t" style="text-align:left">Tuning runs (3.6 t/s)</th><th class="t" style="text-align:left">Standard script (6.0 t/s)</th></tr></thead>
+        <tbody>
+          <tr><td class="t">warmup</td><td class="t"><code>--no-warmup</code></td><td class="t">default on</td></tr>
+          <tr><td class="t">threads</td><td class="t">not set: build default</td><td class="t"><code>--threads 24 --threads-batch 24</code></td></tr>
+          <tr><td class="t">server slots (requests served at once)</td><td class="t">4 (llama-server's default)</td><td class="t"><code>--parallel 1</code></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+    </section>
+
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
+      <ul class="plain">
+        <li><strong>Few readings.</strong> Four requests per setup, three
+        warm, no confidence intervals. The test can show a factor of two; it
+        would not show ten percent.</li>
+        <li><strong>Two thread counts only, 4 and 24.</strong> No 8-thread
+        P-cores-only setup was run, so whether E-cores help or hurt here is
+        unknown. There was also no setup with warmup on and default threads:
+        the thread finding rests on B clearing warmup and C reproducing the
+        slow number.</li>
+        <li><strong>Server slots were not varied.</strong> All three setups
+        ran <code>--parallel 1</code>; the earlier tuning runs used 4 slots.
         The thread change alone reproduced the slow number at one slot,
-        which shows it is sufficient, not that slots contributed nothing
-        to the historical 4-slot comparison. That contribution remains
-        unmeasured.</li>
-        <li><strong>The mechanism beyond thread count is
-        uninstrumented.</strong> No memory-bandwidth counters, no
-        per-core utilization capture, no accounting of why 24 lands where
-        it lands. The page-fault story in section 06 is read from process
-        state, I/O counters, and wall clocks, which is evidence of
-        faulting, not a full accounting.</li>
-        <li><strong>Warm-band compatibility, stated plainly.</strong>
-        This week's warm band on the canonical configuration is
-        5.8&ndash;7.1 t/s across arms (a) and (b); the 2026-08-05 smoke
-        recorded 5.98&ndash;6.28. The two are compatible, and that is the
-        whole claim: with three warm probes per arm and no intervals, the
-        difference between the bands is not a finding, and no sentence on
-        this page treats it as one. Two probes exceeded the
-        pre-registered &ldquo;about 6&rdquo; band's 6.7 top edge
-        (section 05). We treat 5.8&ndash;7.1 as the current measured
-        band.</li>
-        <li><strong>First-generation numbers are not comparable across
-        arms.</strong> Arm (a) ran on a cold page cache, arm (c) on the
-        night's third load; the 897&nbsp;s / 970&nbsp;s / 130&nbsp;s
-        first answers measure cache history as much as configuration, and
-        are reported for the warmup story, not as an arm contrast.
-        Repeat-probe prefill is contaminated by prefix reuse and was
-        pre-declared non-reportable.</li>
-        <li><strong>VRAM readings include the desktop.</strong> Roughly
-        830&ndash;900&nbsp;MiB of desktop baseline is inside the
-        24,420&nbsp;MiB figure, as it was in every earlier reading.</li>
+        which shows it is enough, not that slots added nothing to the
+        earlier gap. That part is unmeasured.</li>
+        <li><strong>First answers are not a fair comparison.</strong> A ran
+        on a cold page cache, C on the night's third load; the
+        897&nbsp;s / 970&nbsp;s / 130&nbsp;s first answers measure what was
+        already in memory as much as the setup. The disk-reading account
+        comes from process state, disk counters and clocks, with no
+        memory-bandwidth or per-core capture, and no account of why 24
+        threads lands where it does.</li>
+        <li><strong>One model file (the <code>UD-IQ1_S</code> compressed
+        version), one placement, one prompt, one CPU, one build.</strong>
+        Nothing here carries over to a different placement; 2023 reports on dense CPU-only models
+        show the thread answer with the opposite shape. What the default
+        picks on other CPUs is read from this build's source, not measured,
+        and a default like this one can change in later builds.</li>
       </ul>
     </section>
 
-    <section>
-      <div class="secnum">12</div>
-      <h2>Artifacts</h2>
-      <p>The complete evidence for this page ships as a data package:
-      the files the runs actually produced, not a summary. If a number
-      on this page disagrees with a file in the package, the file is
-      right and the page is wrong; tell us and we will fix the page.
-      <a href="data/README.md">data/README.md</a> maps every file,
-      states its provenance, and states the package's redactions
-      plainly; <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every
-      figure on this page to its file.</p>
+    <section id="corrections">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
+      <div class="note"><span class="label">Correction, 11 August 2026: warmup was the wrong explanation</span>
+      <p>From 2026-08-05 to 2026-08-11, four of this site's own notes (a model
+      summary card, a settings file, a model list and a machine status file)
+      said warmup &ldquo;is what unlocks ~6
+      t/s&rdquo;. The numbers were real and were reproduced; the cause
+      rested on two runs that differed in three settings. The thread default
+      is the supported explanation for this tested setup. The old entries
+      are marked as replaced rather than rewritten.</p></div>
+      <div class="note"><span class="label">Correction, August 2026: graphics memory units</span>
+      <p>Every graphics-memory figure in those records written as
+      &ldquo;GiB&rdquo; was a raw nvidia-smi MiB reading divided by 1000:
+      the recorded &ldquo;24.6&nbsp;GiB&rdquo; default profile is
+      24,627&nbsp;MiB, which is 24.05&nbsp;GiB; &ldquo;27.6&rdquo; is
+      27,624&nbsp;MiB, which is 26.98&nbsp;GiB; &ldquo;15.1&rdquo; is
+      15,082&nbsp;MiB, which is 14.73&nbsp;GiB. The same slip had been
+      found in three other models' records on this machine. The corrected
+      figure, measured on the one-slot standard setup: <strong>24,420&nbsp;MiB,
+      which is 23.85&nbsp;GiB used, and 8,187&nbsp;MiB, which is
+      8.00&nbsp;GiB free</strong>. The machine's rule of keeping at least
+      6&nbsp;GiB of graphics memory free holds with more margin than the old
+      figures said, so the slip erred on the safe side here; it does not
+      always have to.</p></div>
+    </section>
+
+    <section id="setup">
+      <div class="secnum">05</div>
+      <h2>How this was measured</h2>
+      <table class="facts">
+        <tr><th scope="row">Dates</th><td>Tuning runs and the first standard-script test: 2026-08-04/05. Three-setup test: 2026-08-11, 01:15 to 02:10 EDT, after a re-check of every recorded claim.</td></tr>
+        <tr><th scope="row">Model</th><td>Mistral Large 3 675B Instruct 2512 (Mistral AI, announced 2025-12-02), Apache 2.0. Unsloth <code>UD-IQ1_S</code> compressed version (quantization), GGUF format, 4 shards, 190.80&nbsp;GB on disk (177.7&nbsp;GiB).</td></tr>
+        <tr><th scope="row">Architecture</th><td>675B mixture-of-experts, 41B active parameters per the release. GGUF arch <code>deepseek2</code>: 61 blocks (first 3 dense), 128 experts (4 routed + 1 shared), 1 KV head; header values read from the files.</td></tr>
+        <tr><th scope="row">Hardware</th><td>Intel Core Ultra 9 285K: 24 cores, 8 performance + 16 efficiency, no hyperthreading. 188&nbsp;GiB RAM. One NVIDIA GeForce RTX&nbsp;5090 (32,607&nbsp;MiB as nvidia-smi reports it).</td></tr>
+        <tr><th scope="row">Runtime</th><td>llama.cpp mainline, build <span class="n">5f55650</span>, CUDA sm_120.</td></tr>
+        <tr><th scope="row">Placement</th><td><code>--n-cpu-moe 59</code>: the experts of 59 of the 61 blocks in system RAM, roughly 154&nbsp;GiB (the 177.7&nbsp;GiB file minus about 24&nbsp;GiB on the graphics card; arithmetic, not measured). Attention and shared weights on the graphics card.</td></tr>
+        <tr><th scope="row">Server settings</th><td><code>-c 32768 -b 4096 -ub 2048 --parallel 1 --threads 24 --threads-batch 24</code>, warmup at its default (on), sampling set at launch (<code>--temp 0.15 --top-p 1.0 --top-k 0</code>).</td></tr>
+        <tr><th scope="row">The three setups</th><td>Copies of the standard serving script, differing only in their stated flags, run one at a time on the local machine only, each stopped and its graphics memory checked as released before the next. A: as is. B: plus <code>--no-warmup</code>. C: plus <code>--no-warmup</code>, with the threads line removed. The standard script itself was not changed (SHA-256 unchanged). The data files name the setups a, b and c.</td></tr>
+        <tr><th scope="row">Test requests</th><td>Temperature 0, <code>max_tokens</code> 200, one fixed prompt (the 2026-08-05 tuning runs' own prompt), which the chat template expands to 557 prompt tokens. Four per setup: request 1 is the first answer after the server reported ready, reported separately; requests 2&ndash;4 are the warm readings. Repeating the same prompt reuses what the server already read, so repeat prompt-reading figures are not meaningful; writing speed is the measure, decided in advance.</td></tr>
+        <tr><th scope="row">Graphics memory</th><td>Raw MiB from nvidia-smi. Roughly 830&ndash;900&nbsp;MiB of desktop use is inside every reading, including the 24,420&nbsp;MiB figure.</td></tr>
+      </table>
+    </section>
+
+    <section id="sources">
+      <div class="secnum">06</div>
+      <h2>Data and sources</h2>
+      <p>The data package holds the files the runs produced.
+      <a href="data/README.md">data/README.md</a> maps every file, its
+      origin and the package's redactions;
+      <a href="data/NUMBERS.md">data/NUMBERS.md</a> maps every figure on
+      this page to its file.</p>
       <ul class="plain">
-        <li><strong>The pre-registered run log</strong>
-        (<a href="data/ab_run/RUN_LOG.md">data/ab_run/RUN_LOG.md</a>):
-        arms, probe protocol, verdict logic and bands, all written before
-        the first arm loaded, with per-arm records appended live.</li>
-        <li><strong>The three arm configurations</strong>: the
-        <code>llama-server</code> invocation each arm ran
+        <li><strong>The run log</strong>
+        (<a href="data/ab_run/RUN_LOG.md">data/ab_run/RUN_LOG.md</a>): setups,
+        request plan and expected outcomes, written before the first setup
+        loaded, with results added as each ran.</li>
+        <li><strong>The three setups</strong>: the
+        <code>llama-server</code> command each ran
         (<a href="data/ab_run/arm_exec_blocks.txt">data/ab_run/arm_exec_blocks.txt</a>),
-        the diffs proving each scratch script differs from the
-        canonical serving script only in its declared flags
-        (<a href="data/ab_run/arm_scripts.diff">arm_scripts.diff</a>),
-        and SHA-256 hashes proving the canonical script was never
-        edited
+        the diffs showing each copy differs from the standard script only in
+        its stated flags
+        (<a href="data/ab_run/arm_scripts.diff">arm_scripts.diff</a>), and
+        SHA-256 hashes showing the standard script was not changed
         (<a href="data/ab_run/arm_scripts.sha256">arm_scripts.sha256</a>).
-        The full launcher scripts are project records and are not in
-        the package; the README says so and says why.</li>
-        <li><strong>All twelve probe JSONs, the probe harness, and the
-        per-arm summaries</strong>
+        The full launcher scripts are not in the package; the README says
+        why.</li>
+        <li><strong>All twelve test-request JSONs, the script that sent them,
+        and per-setup summaries</strong>
         (<code>data/ab_run/arm_*_probe*.json</code>,
         <a href="data/ab_run/run_probes.sh">run_probes.sh</a>,
-        <code>arm_*_probes_summary.txt</code>): every decode figure on
-        this page, with llama.cpp's own timings fields.</li>
-        <li><strong>Per-arm server logs and nvidia-smi captures</strong>
+        <code>arm_*_probes_summary.txt</code>), with llama.cpp's own timing
+        fields.</li>
+        <li><strong>Server logs and nvidia-smi captures per setup</strong>
         (<code>data/ab_run/arm_*_server.log</code>,
-        <code>arm_*_nvidia_smi.txt</code>): load times, slot counts, and
-        the raw-MiB VRAM readings.</li>
-        <li><strong>The 2026-08-05 ladder record</strong> the old claim
-        was built from
-        (<a href="data/ladder/l3_ladder_results.tsv">data/ladder/l3_ladder_results.tsv</a>
-        and the <code>ladder_R*.log</code> rung logs; the TSV's VRAM
-        column is raw MiB), plus the canonical smoke log
+        <code>arm_*_nvidia_smi.txt</code>): load times, slot counts and raw
+        MiB readings.</li>
+        <li><strong>The 2026-08-05 tuning runs</strong>
+        (<a href="data/ladder/l3_ladder_results.tsv">data/ladder/l3_ladder_results.tsv</a>,
+        whose graphics-memory column is raw MiB, and the
+        <code>ladder_R*.log</code> logs), plus the standard-script test log
         (<a href="data/ladder/l3_canonical_smoke.log">l3_canonical_smoke.log</a>).</li>
-        <li><strong>The claims audit</strong> that graded the old record
-        and specified this experiment
-        (<a href="data/REPORT_l3_claims_dossier.md">data/REPORT_l3_claims_dossier.md</a>),
+        <li><strong>The claims check</strong> that set up this test
+        (<a href="data/REPORT_l3_claims_dossier.md">data/REPORT_l3_claims_dossier.md</a>)
         and the findings memo
         (<a href="data/FINDINGS_l3_warmup_ab.md">data/FINDINGS_l3_warmup_ab.md</a>).</li>
       </ul>
-      <table class="facts">
-        <tr><th scope="row">2026-08-04/05</th><td>Tuning ladder (with <code>--no-warmup</code>, default threads, 4 slots) sets the serving profile; decode 3.58&ndash;3.61 t/s. Canonical smoke (warmup on, threads 24, 1 slot) reads 5.98&ndash;6.28. The two-point comparison enters the records as a warmup finding.</td></tr>
-        <tr><th scope="row">2026-08-11</th><td>Paper audit of every recorded claim against surviving artifacts grades the speeds measured and the warmup attribution confounded, and pre-specifies the A/B.</td></tr>
-        <tr><th scope="row">2026-08-11</th><td>Supervised three-arm A/B, 01:15&ndash;02:10 EDT, verdict logic fixed before the first load: branch 2. The warmup claim is refuted as stated; the thread default is the supported explanation for the gap in the tested configuration. GPU released clean; canonical script SHA-256 unchanged.</td></tr>
-      </table>
-      <p class="fineprint">Every claim on this page is dated. If today is
-      much later than the rows above, treat build-specific findings as
-      unverified since that date: a default, like the one this page is
-      about, can change.</p>
+      <h3>Earlier public reports</h3>
+      <p>The E-core effect has been public since early 2023. llama.cpp
+      discussion #572 (2023-03-28, i7-12700H) found P-cores only ran
+      2.4x&ndash;3x faster than all cores on 7B and 65B dense models, the
+      earliest report we located; issue #842 (2023-04-08, 13900K) saw only
+      ~50% CPU use at high thread counts, E-cores busy while P-cores idled.
+      The default rule itself came from llamafile: &ldquo;LLaMA Now Goes
+      Faster on CPUs&rdquo; (2024-03-31) and PR #6414 (merged 2024-04-16).
+      ramalama issue #934 (2025-03-10) is a user asking why CPU inference
+      uses &ldquo;only 4 cores&rdquo;. The widely shared January 2026 MoE
+      offload guide on Hugging Face passes an explicit <code>-t</code> in
+      its example commands but does not discuss the default.</p>
+      <p>This page adds a controlled measurement of the default against a
+      set thread count on a 675-billion-parameter mixture-of-experts held
+      mostly in system RAM, a workload not covered by the sources we
+      reviewed. The 2023 reports found all cores slower than P-cores only on
+      dense CPU-only models; this page found 4 threads about half the speed
+      of 24. Both can be true.</p>
+      <p class="fineprint">If a number on this page disagrees with a file in
+      the package, the file is right and the page is wrong; tell us and we
+      will fix the page.</p>
     </section>
 
-    <section>
-      <div class="secnum">13</div>
-      <h2>Related pages on this site</h2>
-      <p><a href="../speculation-gate/">Slower by default</a> is the same
-      editorial thesis on the same workstation: a shipped llama.cpp
-      default that costs a specific regime real speed, measured, with its
-      provenance traced. The <a href="../qwen35/">Qwen3.5 pair field
-      card</a> is the local models' measured record on this machine, and
-      the <a href="../qwen/">Qwen hub page</a> carries downloadable
-      serving profiles.</p>
+    <section id="related">
+      <div class="secnum">07</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../speculation-gate/">Slower by default</a>: another
+        llama.cpp default that cost speed on this same desktop, measured,
+        with its origin traced.</li>
+        <li>The <a href="../qwen35/">Qwen3.5 pair field card</a>: measured
+        speeds of local models on this machine.</li>
+        <li>The <a href="../qwen/">Qwen hub page</a>: downloadable serving
+        settings.</li>
+      </ul>
     </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements; no affiliation with
+    Mistral AI, the llama.cpp project, ggml-org, or Unsloth.</div></div>
 
   </div>
 </main>

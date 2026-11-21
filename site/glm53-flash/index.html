@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GLM-5.3-Flash on one RTX 5090 desktop: measured speeds</title>
-<meta name="description" content="September tests used a GLM-specific llama.cpp fork; since 11 October the model runs on mainline. See measured prompt speeds by prompt length.">
+<meta name="description" content="GLM-5.3-Flash on one RTX 5090 read 230,039 tokens in 870.5 seconds and found all 3 hidden codes, in one run at -ub 2048. Also batch settings and blank replies.">
 <link rel="canonical" href="https://graphometer.ai/glm53-flash/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="GLM-5.3-Flash on one RTX 5090 desktop: measured speeds">
-<meta property="og:description" content="September tests used a GLM-specific llama.cpp fork; since 11 October the model runs on mainline. See measured prompt speeds by prompt length.">
+<meta property="og:description" content="GLM-5.3-Flash on one RTX 5090 read 230,039 tokens in 870.5 seconds and found all 3 hidden codes, in one run at -ub 2048. Also batch settings and blank replies.">
 <meta property="og:url" content="https://graphometer.ai/glm53-flash/">
 <meta property="og:image" content="https://graphometer.ai/og/glm53-flash.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="GLM-5.3-Flash on one RTX 5090 desktop: measured speeds">
-<meta name="twitter:description" content="September tests used a GLM-specific llama.cpp fork; since 11 October the model runs on mainline. See measured prompt speeds by prompt length.">
+<meta name="twitter:description" content="GLM-5.3-Flash on one RTX 5090 read 230,039 tokens in 870.5 seconds and found all 3 hidden codes, in one run at -ub 2048. Also batch settings and blank replies.">
 <meta name="twitter:image" content="https://graphometer.ai/og/glm53-flash.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -89,6 +89,10 @@
   .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -102,126 +106,119 @@
 
 <main itemscope itemtype="https://schema.org/Article"><div class="wrap">
 <div class="hero">
-  <div class="eyebrow">Field card &middot; measured 2026-09-16 to 2026-09-26, updated 2026-10-25 &middot; one desktop &middot; one NVIDIA RTX 5090 &middot; one request at a time</div>
-  <h1 itemprop="headline">GLM-5.3-Flash on <em>one desktop</em></h1>
-  <p class="subtitle">At 262,144 tokens, the installed micro-batch setting was measured through 47,992 tokens at 142.6 t/s. A guarded fixture passed only in isolation.</p>
-  <p class="lead"><strong>Measured:</strong> Unsloth's four-shard UD-Q3_K_XL file runs through a pinned GLM-specific llama.cpp fork. The installed launcher and the 21 and 26 September runs place 42 blocks' experts in system memory. The 16 September <code>-cmoe</code> launch passed no explicit expert-block count; its finished 181-token answer decoded at 9.58 tokens per second. On 21 September, the published comparison was a first request at 24,008 tokens and 80.7 tokens per second, with 62 generated tokens at 9.22 tokens per second, against a third request on the tuned load at 20,333 tokens and 446.0 tokens per second, with 60 generated tokens at 9.35 tokens per second. The fourth request on that tuned load read 48,168 tokens at 425.1 tokens per second and generated 310 tokens at 9.12 tokens per second. The prompt lengths still differ, so the 5.5 times ratio is descriptive. On 26 September, <code>-ub 1024</code> at 262,144, the setting that ships, was measured only through 47,992 tokens at 142.6 tokens per second. A separate <code>-ub 2048</code> run read 230,039 tokens and returned all three planted codes; that is not the installed setting. <code>-ub 4096</code> failed to load when a 13,281.37 MiB allocation was refused. On 17 September, one synthetic high-effort request put more reasoning and a literal <code>&lt;/think&gt;</code> in the visible answer. An isolated guard passed later that day, but the installed launcher does not carry it.</p>
+  <div class="eyebrow">Model field card &middot; one RTX 5090 desktop &middot; one request at a time</div>
+  <h1 itemprop="headline">GLM-5.3-Flash on one RTX 5090 desktop: <em>measured speeds</em></h1>
+  <p class="subtitle">We hid three codes in a document of 230,039 tokens (word pieces) and GLM-5.3-Flash found all three after 870.5 seconds of reading (about 14 and a half minutes), on one RTX 5090 desktop with 188 GiB of system RAM, in a single run at the largest window tested.</p>
+  <div class="note"><span class="label">In short</span>
+    <ul class="plain">
+      <li><strong>Long documents can work, but blank replies were frequent in one check.</strong> The 230,039-token read worked once, on current standard llama.cpp at its largest window (262,144 tokens), using a batch setting that has a known risk (<code>-ub 2048</code>, see What to do). A separate 40-prompt check on the earlier setup at the same window size (with <code>-ub 1024</code>) got 36 blank replies. <a href="#output">Details</a></li>
+      <li><strong>Ask for low or high reasoning effort</strong> (<code>low</code>, <code>high</code>). Any other word, including <code>none</code>, gives maximum effort. <a href="#settings">What to do</a></li>
+      <li><strong>Read the prompt in bigger chunks</strong> at a 131,072-token window (<code>-b 4096 -ub 4096</code>). In September, on the modified llama.cpp, that read 48,168 tokens at 425.1 tokens a second. <code>-ub 8192</code> did not load.</li>
+    </ul>
+  </div>
   <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-27">27 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-  <div class="nonaff">Independent measurements; no affiliation with Z.ai, Unsloth, NVIDIA, Intel, or the llama.cpp project.</div>
-  <div class="note"><span class="label">Correction, September 2026</span><p>The audition table calls 20.5 seconds a first-word time. Its client was non-streaming and measured the whole HTTP request. This page calls it request wall time. There is no measured time to first token for that answer.</p></div>
-  <div class="note"><span class="label">Correction, October 2026: there is no effort none</span><p>This card says the long-window runs used reasoning effort <code>none</code>. The model's own chat template accepts only two words, <code>low</code> and <code>high</code>. It turns every other word into <code>max</code>. So those runs were at maximum effort. The audition request asked for <code>low</code>, which the template accepts. The speeds below are what we measured; read the long-window ones as maximum-effort speeds.</p></div>
-  <div class="note"><span class="label">Update, 25 October 2026: what changed</span><p>Three things changed. On 29 September we ran it with a thread-pinning bundle. The bundle: cores 0 to 7 with taskset, 8 threads, and the OpenMP spin setting GOMP_SPINCOUNT=10000000; the spin setting was not run on its own. A letter 48,109 tokens deep came out at 12.18 tokens a second, against 9.77 without it. On 8 October the default window went from 262,144 to 131,072. On 11 October the model moved from the GLM-specific fork to mainline llama.cpp build b11552. At 131,072 on mainline, an answer of 707 tokens came out at 12.59 tokens a second after a 16,160-token read at 394.3 tokens a second, and the card peaked at 27,100 MiB, against 30,619 on the fork. At 262,144 with <code>-ub 2048</code>, mainline read 230,039 tokens at 264.3 tokens a second in 870.5 seconds and quoted all 3 planted codes. The fork had taken 1,085.7 seconds at 211.9. A 339-word letter on that cached document followed at 12.46 tokens a second; on the fork the same request returned no visible words. These are single runs, and we have not tested why the letter changed. <code>-ub 4096</code> at 262,144 still fails to load: an 8,215.05 MiB allocation was refused. The <a href="../roster-2026-10/">October roster</a> has the runs.</p></div>
 </div>
 
-<section id="what"><div class="secnum">01</div><h2>What it is</h2>
-  <p>GLM-5.3-Flash is a Z.ai mixture-of-experts model. The tested GGUF is Unsloth <code>UD-Q3_K_XL</code> in four shards. The header names architecture <code>glm5next</code>, 46 blocks, 288 experts with 8 selected, and a native context length of 1,048,576 tokens. Those are file metadata, not measurements of useful context.</p>
-  <p>The four recorded shard sizes sum to <span class="n">147,535,921,955</span> bytes, or 137.404 GiB by division by 2<sup>30</sup> (arithmetic). The first shard is metadata only. Its header names Unsloth as the quantizer and MIT as the license.</p>
-</section>
-
-<section id="settings"><div class="secnum">02</div><h2>What to set</h2>
-  <p><strong>At 131,072 tokens:</strong> start with <code>-b 4096 -ub 4096</code>. That profile read 48,168 tokens at 425.1 tokens per second and peaked at 29,872 MiB. <code>-ub 8192</code> failed to load.</p>
-  <p><strong>At 262,144 tokens:</strong> use <code>-b 4096 -ub 1024</code> for the measured headroom choice. It read 47,992 tokens at 142.6 tokens per second and peaked at 29,261 MiB. Only <code>-ub 2048</code> was read beyond 47,992 tokens: it reached 230,039 tokens at 211.9 tokens per second, returned 3 of 3 codes, and peaked at 31,951 MiB. <code>-ub 4096</code> failed to load at this window when a 13,281.37 MiB compute allocation failed.</p>
-  <p>The <a href="../batch-size/">batch-size study</a> explains the risk around the <code>-ub 2048</code> shape and upstream llama.cpp issue 28282. The <a href="../context-256k/">full-window study</a> carries the cross-model comparison. This card does not generalize one setting across windows.</p>
+<section id="settings"><div class="secnum">01</div><h2>What to do</h2>
+  <p><strong>The current setup</strong> is standard (mainline) llama.cpp build b11552 with a 131,072-token default window. Older results ran in September on a modified copy (a GLM-specific fork).</p>
+  <p><strong>Ask for low or high reasoning effort.</strong> The model's chat template (the format that turns a request into model input) turns every other word, including <code>none</code>, into <code>max</code>.</p>
+  <p><strong>At a 131,072-token window</strong> (how much text the server holds at once), <strong>read the prompt in bigger chunks</strong> (<code>-b 4096 -ub 4096</code>). The micro-batch (<code>-ub</code>) is how many prompt tokens are read at a time. <code>-ub 8192</code> failed to load.</p>
+  <p><strong>At 262,144 tokens, use a smaller micro-batch</strong> (<code>-ub 1024</code> or <code>-ub 2048</code>); <code>-ub 4096</code> does not load. <code>-ub 1024</code> leaves more memory free but was read only to 47,992 tokens. <code>-ub 2048</code> made the 230,039-token read; the <a href="../batch-size/">batch-size study</a> explains a risk with it (llama.cpp issue 28282). The older September command at 262,144:</p>
   <pre class="log">llama-server --ctx-size 262144 --parallel 1 \
   --batch-size 4096 --ubatch-size 1024 \
   --n-gpu-layers 999 --n-cpu-moe 42 \
   --threads 24 --threads-batch 24 --flash-attn auto</pre>
-  <p class="tablenote">The command shows the measured serving shape without machine paths, bind addresses or operator-specific configuration.</p>
+  <p><strong>To stop stray reasoning text, try stop strings</strong> (text that ends a reply when it appears: <code>--special</code> plus these four). This passed one synthetic test and one tool call on one quantization and the September fork; it is not qualified for production use.</p>
+  <pre class="log">&lt;|assistant|&gt;
+&lt;|endoftext|&gt;
+&lt;|user|&gt;
+&lt;|observation|&gt;</pre>
 </section>
 
-<section id="setup"><div class="secnum">03</div><h2>What we ran, exactly</h2>
-  <table class="facts">
-    <tr><th scope="row">Model file</th><td>GLM-5.3-Flash, Unsloth UD-Q3_K_XL, four GGUF shards, 147,535,921,955 bytes total. The header reports file type 12.</td></tr>
-    <tr><th scope="row">Machine</th><td>Intel Core Ultra 9 285K, 188 GiB RAM, one NVIDIA GeForce RTX 5090 with 32,607 MiB reported card capacity.</td></tr>
-    <tr><th scope="row">Runtime</th><td>September runs: a GLM-specific, non-mainline llama.cpp fork pinned at <code>d94f44e79aa219d8057e8de21f95360a187ebf41</code>. Since 11 October 2026: mainline llama.cpp build b11552.</td></tr>
-    <tr><th scope="row">16 September placement</th><td><code>--n-gpu-layers 999 -cmoe</code>, with no batch or micro-batch flags passed, so llama.cpp used its defaults. The 75.48 tokens per second read and 9.58 tokens per second answer are from this launch.</td></tr>
-    <tr><th scope="row">21 and 26 September placement</th><td><code>--n-gpu-layers 999 --n-cpu-moe 42</code>, memory mapped weights, one slot and one request at a time. Batch settings are scoped to each measured row below.</td></tr>
-    <tr><th scope="row">Windows</th><td>131,072 tokens on 16 and 21 September; 131,072 and 262,144 on 26 September.</td></tr>
-    <tr><th scope="row">Audition request</th><td>Temperature 0, low reasoning effort, 400-token cap. The answer stopped normally after 181 generated tokens.</td></tr>
-    <tr><th scope="row">Long-window requests</th><td>Code reads used temperature 0, seed 1 and a 1,024-token cap. Letters used temperature 0.7, seed 7 and a 1,200-token cap. The server was launched with reasoning effort <code>none</code>. The chat template treats any word other than <code>low</code> or <code>high</code> as <code>max</code>, so these requests ran at maximum effort, and the returned records contain reasoning.</td></tr>
-    <tr><th scope="row">Repetitions</th><td>One run per serving configuration. No confidence intervals.</td></tr>
-  </table>
-</section>
+<section id="observed"><div class="secnum">02</div><h2>What we found</h2>
+  <h3>Current setup: standard llama.cpp, since October</h3>
+  <p>On mainline build b11552, at 131,072 it read 16,160 tokens at 394.3 tokens a second and wrote a 707-token answer at 12.59 tokens a second; graphics memory peaked at 27,100 MiB, against 30,619 on the fork. At 262,144 with <code>-ub 2048</code>, it read 230,039 tokens at 264.3 tokens a second in 870.5 seconds and quoted all 3 hidden codes. A 339-word letter on that cached document followed at 12.46 tokens a second, where the fork returned no visible words.</p>
 
-<section id="observed"><div class="secnum">04</div><h2>Observed</h2>
-  <div class="data-wrap"><table class="data"><caption>Selected measured answers and long reads</caption><thead><tr><th>Run and request</th><th>Prompt evaluated</th><th>Prompt processing</th><th>Generated</th><th>Decode</th><th>Visible words</th><th class="t">What came back</th></tr></thead><tbody>
-    <tr><td class="t">16 Sep, 131,072, short answer</td><td>29 of 38 tokens, 9 cached</td><td>18.89 t/s</td><td>181</td><td>9.58 t/s</td><td>not counted</td><td class="t">A finished one-paragraph explanation. Whole-request wall time was 20.5 s.</td></tr>
-    <tr><td class="t">16 Sep, 131,072, deep read</td><td>120,979 tokens</td><td>75.48 t/s</td><td>58</td><td>8.71 t/s</td><td>3 codes</td><td class="t">A finished answer with all 3 planted codes.</td></tr>
-    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, code at 48,000 depth</td><td>47,992 tokens</td><td>404.9 t/s</td><td>98</td><td>9.84 t/s</td><td>1</td><td class="t">The planted code.</td></tr>
-    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 20,000-token document</td><td>4,148 tokens</td><td>312.1 t/s</td><td>1,200</td><td>10.09 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
-    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 48,000-token document</td><td>4,148 tokens</td><td>294.8 t/s</td><td>1,200</td><td>9.85 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
-    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, letter on the cached 100,000-token document</td><td>4,148 tokens</td><td>260.9 t/s</td><td>1,200</td><td>9.51 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
-    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, code at 48,000 depth</td><td>47,992 tokens</td><td>142.6 t/s</td><td>125</td><td>10.02 t/s</td><td>1</td><td class="t">The planted code.</td></tr>
-    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, letter on the cached 20,000-token document</td><td>1,080 tokens</td><td>97.0 t/s</td><td>1,200</td><td>10.22 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
-    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, letter on the cached 48,000-token document</td><td>1,080 tokens</td><td>95.3 t/s</td><td>729</td><td>9.98 t/s</td><td>351</td><td class="t">A finished letter.</td></tr>
-    <tr><td class="t">26 Sep, 262,144, <code>-ub 2048</code>, code at 230,000 depth</td><td>230,039 tokens</td><td>211.9 t/s</td><td>231</td><td>8.88 t/s</td><td>3</td><td class="t">All 3 codes. Prompt processing took 1,085.744 s; whole-request wall time was 1,112.9 s.</td></tr>
-    <tr><td class="t">26 Sep, 262,144, <code>-ub 2048</code>, letter on the cached 230,000-token document</td><td>2,088 tokens</td><td>131.6 t/s</td><td>1,200</td><td>9.04 t/s</td><td>0</td><td class="t">No visible words.</td></tr>
+  <h3>Older runs: September, modified llama.cpp</h3>
+  <p>Code reads asked the model to find codes hidden in a long document; letters were about a document held in memory (cached).</p>
+  <p><strong>Thread pinning, one run, 29 September.</strong> <code>taskset</code> to cores 0 to 7, 8 threads and <code>GOMP_SPINCOUNT=10000000</code> gave a letter 48,109 tokens deep at 12.18 tokens a second, against 9.77 without; the spin setting was not tested alone.</p>
+  <div class="data-wrap"><table class="data"><caption>Selected measured answers and long reads</caption><thead><tr><th>Run and request</th><th>Prompt read</th><th>Prompt speed</th><th>Written</th><th>Writing speed</th><th>Visible words</th><th class="t">What came back</th></tr></thead><tbody>
+    <tr><td class="t">16 Sep, 131,072, short answer</td><td>29 of 38 tokens, 9 cached</td><td>18.89 t/s</td><td>181</td><td>9.58 t/s</td><td>not counted</td><td class="t">A finished answer; wall time 20.5 s.</td></tr>
+    <tr><td class="t">16 Sep, 131,072, deep read</td><td>120,979 tokens</td><td>75.48 t/s</td><td>58</td><td>8.71 t/s</td><td>3 codes</td><td class="t">All 3 codes.</td></tr>
+    <tr><td class="t">26 Sep, 131,072, <code>-ub 4096</code>, code at 48,000</td><td>47,992 tokens</td><td>404.9 t/s</td><td>98</td><td>9.84 t/s</td><td>1</td><td class="t">The code.</td></tr>
+    <tr><td class="t">same, letter, 20,000 cached</td><td>4,148 tokens</td><td>312.1 t/s</td><td>1,200</td><td>10.09 t/s</td><td>0</td><td class="t">None.</td></tr>
+    <tr><td class="t">same, letter, 48,000 cached</td><td>4,148 tokens</td><td>294.8 t/s</td><td>1,200</td><td>9.85 t/s</td><td>0</td><td class="t">None.</td></tr>
+    <tr><td class="t">same, letter, 100,000 cached</td><td>4,148 tokens</td><td>260.9 t/s</td><td>1,200</td><td>9.51 t/s</td><td>0</td><td class="t">None.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 1024</code>, code at 48,000</td><td>47,992 tokens</td><td>142.6 t/s</td><td>125</td><td>10.02 t/s</td><td>1</td><td class="t">The code.</td></tr>
+    <tr><td class="t">same, letter, 20,000 cached</td><td>1,080 tokens</td><td>97.0 t/s</td><td>1,200</td><td>10.22 t/s</td><td>0</td><td class="t">None.</td></tr>
+    <tr><td class="t">same, letter, 48,000 cached</td><td>1,080 tokens</td><td>95.3 t/s</td><td>729</td><td>9.98 t/s</td><td>351</td><td class="t">A finished letter.</td></tr>
+    <tr><td class="t">26 Sep, 262,144, <code>-ub 2048</code>, code at 230,000</td><td>230,039 tokens</td><td>211.9 t/s</td><td>231</td><td>8.88 t/s</td><td>3</td><td class="t">All 3 codes; reading took 1,085.744 s, wall time 1,112.9 s.</td></tr>
+    <tr><td class="t">same, letter, 230,000 cached</td><td>2,088 tokens</td><td>131.6 t/s</td><td>1,200</td><td>9.04 t/s</td><td>0</td><td class="t">None.</td></tr>
   </tbody></table></div>
-  <p class="tablenote">Prompt processing is the server's prompt-eval timing. Each letter reused the cached document from the paired read at that target depth. The paired reads evaluated 20,065, 47,992, 100,003, or 230,039 tokens. On a letter row, Prompt evaluated is only the uncached tail, and the prompt-processing rate is the rate for that tail. Decode includes reasoning tokens. Whole-request wall time includes prompt processing, generation and client overhead.</p>
-  <p>This table is not every 26 September request. On <code>-ub 2048</code>, the letters at target depths 20,000, 48,000, and 100,000 returned 102, 119, and 337 visible words; only the 230,000-depth letter returned none. The 102-word and 119-word replies reached the 1,200-token cap; the 337-word reply finished. Across the displayed 26 September rows, decode stayed near 10 tokens per second, while reading moved sharply with window and micro-batch. A short visible answer can hide far more generation. At 230,039 prompt tokens, the visible answer was three codes but the server generated 231 tokens, including 617 reasoning characters. A separate 40-prompt check on the shipped 262,144, <code>-ub 1024</code> setting recorded 36 empty answers and 0 crashes.</p>
-</section>
+  <p class="tablenote">t/s: tokens a second. Cached reads evaluated 20,065, 47,992, 100,003 or 230,039 tokens; Prompt read and Prompt speed on a letter row cover only the new tail. Written and Writing speed include hidden reasoning.</p>
+  <p>Across the 26 September rows, writing stayed near 10 tokens a second while prompt speed varied widely. A short answer can hide more writing: the three codes at 230,039 tokens took 231 generated tokens, including 617 reasoning characters. Not shown: on <code>-ub 2048</code>, letters at 20,000, 48,000 and 100,000 returned 102, 119 and 337 visible words; the first two hit the 1,200-token cap; the third finished.</p>
 
-<section id="batch"><div class="secnum">05</div><h2>The reading-side lever</h2>
-  <p>The 21 September sweep used a 131,072-token window and one request at a time. Every successful read returned the planted code in the visible answer. The default-setting and tuned rows used different prompt lengths, so their rate ratio is descriptive, not a same-prompt A/B.</p>
-  <div class="data-wrap"><table class="data"><caption>Measured 21 September batch sweep</caption><thead><tr><th>Batch and micro-batch</th><th>Request</th><th>Prompt tokens</th><th>Read t/s</th><th>Generated</th><th>Decode t/s</th><th>Peak MiB</th></tr></thead><tbody>
+  <h3 id="batch">Older runs: batch settings changed prompt speed most</h3>
+  <p>21 September, 131,072-token window. Every read that loaded found the code.</p>
+  <div class="data-wrap"><table class="data"><caption>Measured 21 September batch sweep</caption><thead><tr><th>Batch and micro-batch</th><th>Request</th><th>Prompt tokens</th><th>Read t/s</th><th>Generated</th><th>Writing t/s</th><th>Peak MiB</th></tr></thead><tbody>
     <tr><td class="t">llama.cpp defaults, 2048 / 512</td><td>first</td><td>24,008</td><td>80.7</td><td>62</td><td>9.22</td><td>24,352</td></tr>
     <tr><td class="t">4096 / 2048</td><td>recorded long read</td><td>48,168</td><td>252.0</td><td></td><td>9.21</td><td>26,763</td></tr>
     <tr><td class="t">4096 / 4096</td><td>third</td><td>20,333</td><td>446.0</td><td>60</td><td>9.35</td><td>29,872</td></tr>
     <tr><td class="t">4096 / 4096</td><td>fourth</td><td>48,168</td><td>425.1</td><td>310</td><td>9.12</td><td>29,872</td></tr>
     <tr><td class="t">8192 / 8192</td><td class="neg">Did not load</td><td></td><td></td><td></td><td></td><td></td></tr>
   </tbody></table></div>
-  <p>The published comparison, 446.0 divided by 80.7, differs by 5.5 times after rounding to one decimal place. The prompt lengths differ, so this is descriptive rather than a same-prompt comparison. The longer 48,168-token result at 425.1 tokens per second was the fourth request on the tuned load. Its 310 generated tokens decoded at 9.12 tokens per second; the default first request generated 62 tokens at 9.22 tokens per second.</p>
+  <p>At 262,144 on 26 September, <code>-ub 2048</code> peaked at 31,951 MiB and <code>-ub 1024</code> at 29,261 MiB. <code>-ub 4096</code> did not load: a 13,281.37 MiB allocation was refused on the fork, 8,215.05 MiB on mainline.</p>
+
+  <h3 id="output">Older setup: blank and messy answers</h3>
+  <p><strong>Blank replies.</strong> A 40-prompt check on the shipped 262,144-token, <code>-ub 1024</code> setting recorded 36 empty answers and 0 crashes: frequent empty output in that check, not a quality verdict. Hidden reasoning can use up the reply budget (<a href="../empty-answer/">Empty Answer</a>).</p>
+  <p><strong>Leaked reasoning, 17 September.</strong> One synthetic high-effort streaming request wrote a correct three-sentence answer, then more reasoning, a literal <code>&lt;/think&gt;</code> tag and a second answer, all visible (689 tokens, finished normally). A second assistant control token came before the restarted reasoning. The tag was in the server's own <code>delta.content</code>, so the test client did not add it. The cause (model file, quantization or runtime) is not known, nor whether the installed launch script still reproduces it.</p>
+  <p><strong>The guard.</strong> With the <a href="#settings">stop strings</a>, the same test, a tool call and its result passed: one clean 254-character answer stopped on <code>&lt;|assistant|&gt;</code>, and the tool cycle returned the expected call and a visible result. The 26 September launch script used neither <code>--special</code> nor stop strings.</p>
+
+  <h3 id="coding">Coding scores</h3>
+  <p>In the <a href="../coding-trial/">local coding trial</a>, it scored 387 of 400 on four single-run tasks in 6,058 seconds of task wall time: 60 of 60 mechanical points each, blind judgment scores 34, 39, 37 and 37 of 40. A one-question judgment test scored 39 of 40 in 423 seconds from question to answer.</p>
 </section>
 
-<section id="output"><div class="secnum">06</div><h2>The visible-output boundary</h2>
-  <p><strong>Measured failure, 17 September:</strong> one synthetic high-effort streaming request generated a correct three-sentence answer, then more reasoning, a literal <code>&lt;/think&gt;</code>, and a second final answer in the visible field. It finished normally after 689 generated tokens. The raw generation contained a second assistant control token before the restarted reasoning. Independent parsing of the saved wire bytes found the closing marker in server <code>delta.content</code>. That rules out the test client as the source of the extra visible text. It does not prove whether the checkpoint, quantization or runtime caused the generation.</p>
-  <p><strong>Measured isolated guard:</strong> the same synthetic smoke, a tool call and its tool result all passed when the server used <code>--special</code> and each request stopped on four strings:</p>
-  <pre class="log">&lt;|assistant|&gt;
-&lt;|endoftext|&gt;
-&lt;|user|&gt;
-&lt;|observation|&gt;</pre>
-  <p>The smoke returned one clean 254-character answer; its stop matched <code>&lt;|assistant|&gt;</code>. The tool cycle finished with the expected call and a visible result. This was one isolated fixture. Its own comparison record says the exact profile passed and was not production-qualified.</p>
-  <p><strong>The installed launcher is different.</strong> On 26 September it set neither <code>--special</code> nor request stop strings. It set <code>reasoning_effort</code>, with <code>high</code> as the code fallback, plus temperature 1.0 and top-p 0.95. It selected <code>-b 4096 -ub 4096</code> at windows up to 131,072 and <code>-b 4096 -ub 1024</code> above that. The launcher accepts 131,072 and 262,144, but its code fallback is 131,072 even though its comment calls 262,144 the new default. It sources an optional operator configuration first, so the deployed value can differ. The record does not establish whether the installed profile still reproduces the 17 September failure.</p>
-</section>
-
-<section id="coding"><div class="secnum">07</div><h2>One coding snapshot</h2>
-  <p>The <a href="../coding-trial/">local coding trial</a> gives this speed a little context. Across four single-run tasks, GLM-5.3-Flash scored 387 of 400 in 6,058 seconds of task wall time. Each task received 60 of 60 mechanical points; the four blind judgment scores were 34, 39, 37 and 37 of 40. A separate one-question judgment probe scored 39 of 40 in 423 seconds from question to answer.</p>
-  <p>Those are measured scores from that exercise, not a general coding rank. The coding page owns the tasks, rubric, other models and limits. This card does not duplicate them.</p>
-</section>
-
-<section id="wrong"><div class="secnum">08</div><h2>What we got wrong</h2>
-  <p>Our audition record labelled a non-streaming request's 20.5-second wall time as <code>first_word_s</code>. The client started a clock, waited for the complete JSON response, and stopped it after parsing. It never observed the first token. The 9.58 tokens-per-second decode rate remains a server timing for the finished 181-token answer. Only the latency label changes.</p>
-  <p>We also avoid calling the isolated output guard a deployed fix. The exact guarded profile passed its three-part test, but the installed launcher does not set that profile.</p>
-</section>
-
-<section id="limits"><div class="secnum">09</div><h2>What this does not show</h2>
+<section id="limits"><div class="secnum">03</div><h2>Limits</h2>
   <ul class="plain">
-    <li><strong>No full native window.</strong> The header states 1,048,576 tokens. The deepest measured prompt here is 230,039 tokens on the separate <code>-ub 2048</code> run, not on the installed <code>-ub 1024</code> setting.</li>
-    <li><strong>Recall is not reasoning.</strong> Returning three planted codes once does not establish reliable reasoning across the window.</li>
-    <li><strong>No stable quality ranking.</strong> The coding scores are one run per task, and the judgment probe is one question.</li>
-    <li><strong>No general output verdict.</strong> The failure and guarded pass each use one synthetic fixture on one quantization and one pinned fork. Separately, a 40-prompt check on the shipped 262,144, <code>-ub 1024</code> setting recorded 36 empty answers and 0 crashes. That is evidence of frequent empty output in that check, not a quality verdict.</li>
-    <li><strong>No measured RAM floor.</strong> The launcher carries a 150 GB availability check. The package records that figure as inferred from another deployment, not measured for this model. This page makes no claim that 150 GB is necessary or sufficient for this model.</li>
-    <li><strong>No concurrency result.</strong> Every serving measurement was one request at a time on one desktop.</li>
-    <li><strong>No long-window result at low effort.</strong> Every long-window run on this card was at maximum effort. We have not measured how much faster, or how much shorter, the replies are at <code>low</code>.</li>
+    <li><strong>Single runs.</strong> One run per setup, no confidence intervals; the coding scores are no stable ranking.</li>
+    <li><strong>Maximum effort only.</strong> Every long-window run, and so every long-window speed here, was at maximum effort. None was measured at <code>low</code>.</li>
+    <li><strong>Not the full window.</strong> The file states 1,048,576 tokens; the deepest prompt measured is 230,039, and not on the <code>-ub 1024</code> setting the September launch script used. Finding three codes once does not show reliable reasoning at that length.</li>
+    <li><strong>No measured RAM floor.</strong> The launch script carries a 150 GB RAM availability check, a figure taken from another deployment, not measured for this model.</li>
   </ul>
 </section>
 
-<section id="related"><div class="secnum">10</div><h2>Related pages on this site</h2>
-  <ul class="plain">
-    <li><a href="../batch-size/">The batch-size study</a>: the tuning method, failure boundary and upstream issue.</li>
-    <li><a href="../context-256k/">What a full window costs</a>: the 262,144-token comparison and exact scoping across models.</li>
-    <li><a href="../roster-2026-09/">The September roster</a>: the installed endpoint among the full local set.</li>
-    <li><a href="../coding-trial/">The local coding trial</a>: the four tasks, rubric and model comparison.</li>
-    <li><a href="../empty-answer/">Empty Answer</a>: why reasoning can consume a reply budget before visible text appears.</li>
-    <li><a href="../method/">Method</a>: the site's labels and evidence rule.</li>
-  </ul>
+<section id="wrong"><div class="secnum">04</div><h2>Corrections and updates</h2>
+  <div class="note"><span class="label">Correction, September 2026</span><p>The short-answer test called its 20.5 seconds a first-word time (<code>first_word_s</code>). The client did not stream, so this is whole-request time; no time to first token was measured. The 9.58 tokens a second server timing stands.</p></div>
+  <div class="note"><span class="label">Correction, October 2026: there is no effort none</span><p>This card said the long-window runs used effort <code>none</code>. The template turns every word but <code>low</code> and <code>high</code> into <code>max</code>, so they ran at maximum effort; the short-answer request used <code>low</code>.</p></div>
+  <div class="note"><span class="label">Update, 25 October 2026: what changed</span><p>29 September: the thread-pinning run. 8 October: the default window went from 262,144 to 131,072. 11 October: the model moved to mainline llama.cpp build b11552. The <a href="../roster-2026-10/">October list of local models tested</a> has the runs.</p></div>
 </section>
 
-<section id="sources"><div class="secnum">11</div><h2>Sources and artifacts</h2>
-  <p>The <a href="data/README.md">data package</a> contains redacted extracts from the audition, the batch sweep, the 26 September long-window rows, the shipped-profile stress check, the output diagnostic and combined guard, the installed launch profile, the GGUF header, and the coding totals. The <a href="data/NUMBERS.md">number map</a> identifies every printed figure and derivation.</p>
-  <p>Machine paths, bind addresses, request identifiers, fingerprints, service names and internal harness names are removed or replaced. The raw private coding prompts and hosted grader text are not included. The public <a href="../coding-trial/data/README.md">coding-trial package</a> holds that exercise's releasable records.</p>
+<section id="setup"><div class="secnum">05</div><h2>How this was measured</h2>
+  <table class="facts">
+    <tr id="what"><th scope="row">Model</th><td>Z.ai mixture-of-experts model (only some parts, called experts, run per token). Header: architecture <code>glm5next</code>, 46 blocks, 288 experts with 8 selected, native context 1,048,576 tokens (file metadata, not measured).</td></tr>
+    <tr><th scope="row">File</th><td>Unsloth <code>UD-Q3_K_XL</code> (a compressed version), four GGUF shards, <span class="n">147,535,921,955</span> bytes or 137.404 GiB. Header names Unsloth as quantizer, MIT license, file type 12.</td></tr>
+    <tr><th scope="row">Machine</th><td>Intel Core Ultra 9 285K, 188 GiB RAM, one NVIDIA GeForce RTX 5090 with 32,607 MiB of memory.</td></tr>
+    <tr><th scope="row">Runtime</th><td>September: a GLM-specific llama.cpp fork pinned at <code>d94f44e79aa219d8057e8de21f95360a187ebf41</code>. Since 11 October 2026: mainline build b11552.</td></tr>
+    <tr><th scope="row">Placement</th><td>16 September: <code>--n-gpu-layers 999 -cmoe</code>, no expert-block count or batch flags (llama.cpp defaults). 21 and 26 September, and the installed launch script: <code>--n-cpu-moe 42</code> (experts of 42 blocks in system memory), one request at a time.</td></tr>
+    <tr><th scope="row">Requests</th><td>Short answer: temperature 0, low effort, 400-token cap. Code reads: temperature 0, seed 1, 1,024-token cap. Letters: temperature 0.7, seed 7, 1,200-token cap. Temperature sets randomness; the seed makes it repeatable.</td></tr>
+    <tr><th scope="row">Launch script, 26 September</th><td>Temperature 1.0, top-p 0.95 (how much of the likely-word list is sampled), and <code>high</code> as the reasoning-effort fallback.</td></tr>
+  </table>
+</section>
+
+<section id="sources"><div class="secnum">06</div><h2>Data and sources</h2>
+  <p>The <a href="data/README.md">data package</a> holds redacted records; its <a href="data/NUMBERS.md">number map</a> traces every figure. The <a href="../coding-trial/data/README.md">coding-trial package</a> holds that exercise's records.</p>
   <p class="fineprint">If a number on this page disagrees with a file in its package, the file is right and the page is wrong. Tell us at <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a> and the correction goes on the page with its date.</p>
 </section>
+
+<section id="related"><div class="secnum">07</div><h2>Related pages</h2>
+  <ul class="plain">
+    <li><a href="../context-256k/">What a full window costs</a></li>
+    <li><a href="../roster-2026-09/">The September list of local models tested</a></li>
+    <li><a href="../method/">Method</a></li>
+  </ul>
+</section>
+
+<div class="endnote"><div class="nonaff">Independent measurements; no affiliation with Z.ai, Unsloth, NVIDIA, Intel, or the llama.cpp project.</div></div>
 </div></main>
 
 <footer><div class="wrap">

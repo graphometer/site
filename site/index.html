@@ -44,6 +44,7 @@
   a:hover{color:var(--red)}
   a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
   .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
   .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
     background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
   .skip:focus{left:8px; top:8px}
@@ -75,181 +76,75 @@
     .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
     .mast nav a:nth-child(-n+2){border-top:0}
     .mast nav a:nth-child(odd){border-left:0}
+    .mast nav a:last-child{flex-basis:100%}
   }
 
   /* ---------- dateline ---------- */
-  .dateline{display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 24px;
-    font-family:var(--sans); font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  .dateline{font-family:var(--sans); font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
     color:var(--grey); padding:12px 0; border-bottom:3px solid var(--ink)}
   .dateline b{color:var(--ink)}
-  .dateline .red{color:var(--red)}
 
-  /* ---------- above the fold: lead story + black feature ---------- */
-  .fold{display:grid; grid-template-columns:minmax(0,1.75fr) minmax(0,1fr); column-gap:44px; padding:40px 0 0}
-  .fold .lead-story{padding-right:44px; border-right:1px solid var(--line); padding-bottom:44px}
-  @media (max-width:920px){
-    .fold{grid-template-columns:1fr}
-    .fold .lead-story{padding-right:0; border-right:0}
-  }
+  /* ---------- what the site is ---------- */
+  .intro{padding:40px 0 34px}
+  .intro h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em;
+    font-size:clamp(34px,5.2vw,64px); line-height:1.02; max-width:16em; margin-bottom:18px}
+  .intro .standfirst{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:36em; color:var(--ink)}
 
-  .kicker{font-family:var(--sans); font-size:12px; font-weight:800; letter-spacing:.2em;
-    text-transform:uppercase; color:var(--red); margin-bottom:14px; line-height:2.2}
-  .kicker .dim{color:var(--grey); font-weight:700}
-  .chip{display:inline-block; border:1.5px solid var(--ink); color:var(--ink); border-radius:999px;
-    padding:2px 11px; font-size:11px; letter-spacing:.12em; line-height:1.5; vertical-align:1px; margin-right:6px}
-  .chip.dev{border-color:var(--line); color:var(--grey)}
-  .lead-story h1{font-family:var(--sans); font-weight:900; letter-spacing:-.035em;
-    font-size:clamp(52px,7.4vw,104px); line-height:.96; margin-bottom:20px}
-  .standfirst{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:34em; margin-bottom:16px}
-  .byline{font-family:var(--sans); font-size:13px; font-weight:700; letter-spacing:.06em;
-    color:var(--grey); margin-bottom:26px; max-width:64ch; line-height:1.5}
-  .btnrow{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:30px}
-  .btn{display:inline-block; max-width:100%; font-family:var(--sans); padding:12px 22px; font-size:15px;
-    font-weight:800; letter-spacing:.04em; text-decoration:none}
-  .btn.primary{background:var(--ink); color:var(--paper)}
-  .btn.primary:hover{background:var(--red); color:var(--paper)}
-  .btn.ghost{border:2px solid var(--ink); color:var(--ink)}
-  .btn.ghost:hover{border-color:var(--red); color:var(--red)}
+  /* ---------- the four doors ---------- */
+  .doors{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px}
+  @media (max-width:820px){.doors{grid-template-columns:1fr; gap:18px}}
+  .door{border:2px solid var(--ink); background:var(--paper); padding:22px 24px 14px; display:flex; flex-direction:column}
+  .door.dark{background:var(--ink); color:var(--paper)}
+  .door h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(24px,2.6vw,32px);
+    line-height:1.08; margin-bottom:10px}
+  .door h2::before{content:""; display:inline-block; width:12px; height:12px; background:var(--red);
+    margin-right:12px; vertical-align:4px}
+  .door .tag{display:inline-block; font-family:var(--sans); font-size:12px; font-weight:800; letter-spacing:.16em;
+    text-transform:uppercase; border:1.5px solid currentColor; border-radius:999px; padding:2px 11px; margin-bottom:12px}
+  .door p{font-size:16.5px; line-height:1.55; margin-bottom:14px}
+  .door .fine{font-family:var(--sans); font-size:13.5px; font-weight:700; line-height:1.6; color:var(--grey); margin-bottom:12px}
+  .door.dark .fine{color:#c9c2b4}
+  .door .q{font-style:italic; font-size:16px; line-height:1.5; border-left:4px solid currentColor; padding-left:14px; margin-bottom:14px}
+  .door .q span{display:block; font-style:normal; font-family:var(--sans); font-size:12px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:#c9c2b4; margin-top:6px}
+  .door ul{list-style:none; margin-top:auto}
+  .door li{border-top:1px solid var(--line)}
+  .door.dark li{border-top-color:#3a3a3a}
+  .door li a{display:flex; align-items:center; min-height:48px; padding:8px 0; font-family:var(--sans);
+    font-weight:800; font-size:16px; line-height:1.3; text-decoration:none; color:inherit}
+  .door li a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .door li a:hover{color:var(--red)}
+  .door.dark li a:hover{color:#c9c2b4}
+  .door.dark a:focus-visible{outline-color:var(--paper)}
 
-  .the-ask{border-top:3px solid var(--ink); padding-top:18px}
-  .the-ask .label, .found .label, .colophon .label{font-family:var(--sans); font-weight:900; font-size:12px;
-    letter-spacing:.24em; text-transform:uppercase; margin-bottom:12px}
-  .the-ask .label::before, .found .label::before, .colophon .label::before{
-    content:""; display:inline-block; width:9px; height:9px; background:var(--red); margin-right:9px}
-  .the-ask blockquote{font-size:18.5px; line-height:1.6; max-width:36em; border-left:5px solid var(--ink); padding-left:20px}
-  .moves{margin:24px 0 6px; border:2px solid var(--ink); background:var(--paper)}
-  .moves .boxlead{font-family:var(--sans); font-size:13.5px; line-height:1.5; color:var(--grey);
-    padding:14px 18px; border-bottom:2px solid var(--ink)}
-  .moves ol{list-style:none}
-  .moves li{display:grid; grid-template-columns:3.2rem 8.5rem minmax(0,1fr); gap:4px 16px;
-    align-items:baseline; padding:11px 18px; border-top:1px solid var(--line)}
-  .moves li:first-child{border-top:0}
-  .moves .n{font-family:var(--sans); font-weight:900; font-size:21px; color:var(--red); letter-spacing:-.02em}
-  .moves .mv{font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:-.01em}
-  .moves .df{font-size:15.5px; color:var(--grey); line-height:1.45}
-  @media (max-width:520px){.moves li{grid-template-columns:2.4rem minmax(0,1fr)} .moves .df{grid-column:2}}
-
-  .found{margin-top:30px; border:2px solid var(--ink); background:var(--pale); padding:20px 22px}
-  .found p{font-size:15px; line-height:1.55; color:var(--grey); max-width:66ch; margin-bottom:12px}
-  .found ul{margin:0 0 12px 1.1em; max-width:66ch}
-  .found li{font-size:15px; line-height:1.55; color:var(--grey); margin-bottom:10px; padding-left:2px}
-  .found li::marker{color:var(--red)}
-  .found strong{color:var(--ink); font-weight:700}
-  .found .go{font-family:var(--sans); font-weight:800; font-size:14.5px}
-
-  /* ---------- the black box: Friends of 4o ---------- */
-  .feature-4o{background:var(--ink); color:var(--paper); padding:26px 26px 28px; margin:0 0 40px; align-self:start}
-  .feature-4o .cap{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.26em;
-    text-transform:uppercase; color:#c9c2b4; border-bottom:2px solid var(--paper); padding-bottom:10px; margin-bottom:20px}
-  .feature-4o h2{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; line-height:.98;
-    font-size:clamp(38px,4.6vw,56px); margin-bottom:16px}
-  .feature-4o h2 a{color:var(--paper); text-decoration:none}
-  .feature-4o h2 a:hover{text-decoration:underline; text-decoration-thickness:3px; text-underline-offset:5px}
-  .feature-4o .q{border-left:5px solid var(--paper); padding:2px 0 2px 18px; margin:20px 0;
-    font-size:19px; line-height:1.5; font-style:italic}
-  .feature-4o .q .who{display:block; font-family:var(--sans); font-style:normal; font-weight:700;
-    font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4; margin-top:8px}
-  .feature-4o .clock{border-top:2px solid var(--paper); margin-top:20px; padding-top:16px;
-    font-family:var(--sans); font-size:13.5px; font-weight:700; line-height:1.7; letter-spacing:.04em;
-    text-transform:uppercase; color:var(--paper)}
-  .feature-4o .clock .gone{color:#9a9384}
-  .feature-4o .inside{border-top:2px solid var(--paper); margin-top:18px; padding-top:8px}
-  .feature-4o .inside .cap2{font-family:var(--sans); font-weight:900; font-size:11px; letter-spacing:.24em;
-    text-transform:uppercase; color:#c9c2b4; margin:12px 0 4px}
-  .feature-4o .inside ul{list-style:none}
-  .feature-4o .inside li{padding:10px 0; border-top:1px solid #3a3a3a}
-  .feature-4o .inside a{color:var(--paper); text-decoration:none; font-weight:400; font-size:15px; line-height:1.45}
-  .feature-4o .inside a:hover{text-decoration:underline; text-underline-offset:3px}
-  .feature-4o .inside .when{display:block; font-family:var(--sans); font-size:11px; font-weight:700;
-    letter-spacing:.12em; text-transform:uppercase; color:#c9c2b4; margin-top:3px}
-  .feature-4o .go{display:inline-block; margin-top:20px; font-family:var(--sans); font-weight:900; font-size:15px;
-    letter-spacing:.18em; text-transform:uppercase; color:var(--ink); background:var(--paper);
-    padding:11px 20px; text-decoration:none}
-  .feature-4o .go:hover{background:var(--red); color:var(--paper)}
-  .feature-4o a:focus-visible{outline-color:var(--paper)}
-
-  /* ---------- section chrome ---------- */
-  section.block{padding:46px 0 0}
-  .secthead{display:flex; align-items:baseline; gap:16px; border-top:3px solid var(--ink); padding-top:12px; margin-bottom:26px}
-  .secthead .folio{font-family:var(--sans); font-weight:900; font-size:15px; color:var(--red); letter-spacing:.06em}
+  /* ---------- section heads ---------- */
+  section.block{padding:48px 0 0}
+  .secthead{border-top:3px solid var(--ink); padding-top:12px; margin-bottom:8px}
   .secthead h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.4vw,38px); line-height:1.05}
-  .secthead .tail{margin-left:auto; font-family:var(--sans); font-size:12px; font-weight:700;
-    letter-spacing:.16em; text-transform:uppercase; color:var(--grey)}
 
-  /* ---------- latest measurements ---------- */
-  .stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; border:2px solid var(--ink)}
-  .stat{padding:22px 24px 24px; border-left:2px solid var(--ink); display:flex; flex-direction:column}
-  .stat:first-child{border-left:0}
-  .stat .n{font-family:var(--sans); font-weight:900; font-size:clamp(26px,2.6vw,36px); letter-spacing:-.025em; line-height:1.05}
-  .stat .n em{font-style:normal; color:var(--red)}
-  .stat p{font-size:14.5px; line-height:1.55; color:var(--grey); margin:12px 0 0}
-  .stat .when{font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:.16em;
-    text-transform:uppercase; color:var(--grey); margin-top:14px}
-  .stat .go{font-family:var(--sans); font-weight:800; font-size:14px; margin-top:8px; padding-top:2px}
-  @media (max-width:820px){
-    .stats{grid-template-columns:1fr}
-    .stat{border-left:0; border-top:2px solid var(--ink)}
-    .stat:first-child{border-top:0}
-  }
-
-  /* ---------- the line: instruments ---------- */
-  .instruments{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:36px}
-  @media (max-width:920px){.instruments{grid-template-columns:1fr; gap:0}}
-  .inst{border-top:6px solid var(--ink); padding-top:16px}
-  @media (max-width:920px){.inst{padding-bottom:26px} .inst + .inst{border-top-width:2px; margin-top:4px; padding-top:22px}}
-  .inst .num{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.22em;
-    text-transform:uppercase; color:var(--red); margin-bottom:8px}
-  .inst .num .rel{color:var(--grey); font-weight:700}
-  .inst h3{font-family:var(--sans); font-weight:900; font-size:22px; letter-spacing:-.015em; line-height:1.15; margin-bottom:4px}
-  .inst .sub{font-family:var(--sans); font-weight:700; font-size:14px; color:var(--grey); margin-bottom:10px}
-  .inst p{font-size:15px; line-height:1.55; color:var(--grey); margin-bottom:12px}
-  .inst .fine{font-size:12.5px; color:var(--grey); border-top:1px solid var(--line); padding-top:10px; margin-top:12px}
-  .inst .links{font-family:var(--sans); font-weight:700; font-size:14px; margin-top:10px}
-
-  /* ---------- the index ---------- */
-  .index-grid{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); column-gap:44px}
-  @media (max-width:920px){.index-grid{grid-template-columns:1fr}}
-  .toc-col h3, .cards-col h3{font-family:var(--sans); font-weight:900; font-size:13px; letter-spacing:.24em;
-    text-transform:uppercase; padding-bottom:9px; border-bottom:2px solid var(--ink); margin-bottom:4px}
-  .toc-col h3::before, .cards-col h3::before{content:""; display:inline-block; width:8px; height:8px; background:var(--red); margin-right:9px}
-  .toc-col ul, .cards-col ul{list-style:none}
-  .toc-col li, .cards-col li{padding:10px 0; border-bottom:1px solid var(--line); overflow-wrap:anywhere}
-  .toc-col a, .cards-col a{font-size:15.5px; line-height:1.4; text-decoration:none; font-weight:400}
-  .toc-col a:hover, .cards-col a:hover{text-decoration:underline; text-underline-offset:3px}
-  .toc-col .when, .cards-col .when{display:block; font-family:var(--sans); font-size:11.5px; font-weight:700;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--grey); margin-top:3px}
-  .toc-col .all, .cards-col .all{display:inline-block; margin:14px 0 34px; font-family:var(--sans);
-    font-weight:800; font-size:14px; letter-spacing:.06em}
-  .cards-col{padding-left:44px; border-left:1px solid var(--line)}
-  @media (max-width:920px){.cards-col{padding-left:0; border-left:0; margin-top:8px}}
-  .mini-group{margin-top:30px}
-  .mini-group h4{font-family:var(--sans); font-weight:900; font-size:12px; letter-spacing:.22em;
-    text-transform:uppercase; color:var(--grey); margin-bottom:8px}
-  .mini-group ul{list-style:none}
-  .mini-group li{padding:8px 0; border-bottom:1px solid var(--line); font-size:14.5px; overflow-wrap:anywhere}
-  .mini-group a{text-decoration:none}
-  .mini-group a:hover{text-decoration:underline}
-  .mini-group .when{display:block; font-family:var(--sans); font-size:11px; color:var(--grey); letter-spacing:.1em;
-    text-transform:uppercase; font-weight:700; margin-top:2px}
-
-  /* ---------- method colophon ---------- */
-  .colophon{border:2px solid var(--ink); background:var(--pale); padding:28px 30px}
-  .colophon .rule-big{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:36em; margin-bottom:14px}
-  .colophon p{font-size:14.5px; line-height:1.55; color:var(--grey); max-width:64ch; margin-bottom:10px}
-  .colophon p strong{color:var(--ink); font-weight:700}
-  .colophon .note{font-size:13px}
-  .colophon .go{font-family:var(--sans); font-weight:800; font-size:14.5px; display:inline-block; margin-bottom:12px}
-
-  /* ---------- in the works ---------- */
-  .works{padding:40px 0 8px}
-  .works p{font-size:16px; color:var(--grey); max-width:62ch}
+  /* ---------- latest findings ---------- */
+  .latest{list-style:none; max-width:860px}
+  .latest li{padding:14px 0; border-bottom:1px solid var(--line)}
+  .latest a{font-size:18px; line-height:1.4; text-decoration:none}
+  .latest a:hover{text-decoration:underline; text-underline-offset:3px}
+  .latest .label{display:inline-block; font-family:var(--sans); font-size:11px; font-weight:800; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--red); border:1.5px solid var(--red); border-radius:999px;
+    padding:1px 9px; margin-right:8px; vertical-align:2px}
+  .latest .res{display:block; font-size:16px; line-height:1.5; color:var(--grey); margin-top:4px; max-width:60ch}
+  .latest .when{display:block; font-family:var(--sans); font-size:12px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--grey); margin-top:4px}
+  .alls{list-style:none; margin-top:22px}
+  .alls li{border-bottom:1px solid var(--line)}
+  .alls a{display:flex; align-items:center; min-height:48px; font-family:var(--sans); font-weight:800; font-size:16px;
+    letter-spacing:.02em; text-decoration:none}
+  .alls a:hover{color:var(--red)}
 
   /* ---------- footer ---------- */
   footer{margin-top:56px; border-top:6px solid var(--ink); padding:36px 0 60px}
   footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
   footer .fc{display:flex; flex-wrap:wrap; gap:8px 28px; margin-bottom:22px; font-family:var(--sans); font-weight:700; font-size:16px}
   footer .fl{margin-bottom:14px; font-size:13.5px; font-family:var(--sans); font-weight:700}
-  footer p{font-size:13px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
 </style>
 </head>
 <body>
@@ -261,7 +156,6 @@
   <div class="wrap">
     <div class="top">
       <span>Graphometer · A measured record</span>
-      <span class="sec">Seeing AI from the right angle</span>
     </div>
     <div class="nameplate">
       <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
@@ -276,9 +170,9 @@
       </div>
     </div>
     <nav aria-label="Site">
-      <a href="studies/">Studies &amp; reports</a>
+      <a href="studies/">Studies</a>
       <a href="field-cards/">Model field cards</a>
-      <a href="tools/">Instruments</a>
+      <a href="tools/">Tools</a>
       <a href="method/">Method</a>
       <a href="https://github.com/graphometer">GitHub</a>
     </nav>
@@ -286,255 +180,84 @@
 </header>
 
 <div class="wrap">
-  <p class="dateline">
-    <span><b>Front page</b> · Latest entry Saturday, 21 November 2026 · Free, open, and every measured number traces to a recorded run</span>
-    <span>No scripts <span class="red">·</span> no tracking <span class="red">·</span> no cookies</span>
-  </p>
+  <p class="dateline"><b>Latest entry</b> Saturday, 21 November 2026</p>
 </div>
 
 <main class="wrap" id="main">
 
-  <!-- ======================= ABOVE THE FOLD ======================= -->
-  <div class="fold">
+  <!-- ======================= WHAT THE SITE IS ======================= -->
+  <div class="intro">
+    <h1>Graphometer tests AI models on home hardware and publishes the numbers.</h1>
+    <p class="standfirst">Independent, measured tests of AI models on a home RTX 5090 desktop and a laptop, with data packages for most studies.</p>
+  </div>
 
-    <!-- Lead story -->
-    <article class="lead-story" aria-labelledby="lead-title">
-      <p class="kicker"><span class="chip">Proposal</span> <span class="dim">Agency Layer Pilot I, 30 August to 3 September 2026</span> <span class="chip dev">study paused</span></p>
-      <h1 id="lead-title">Kindness doesn&rsquo;t cost</h1>
-      <p class="standfirst">Give AI agents a way to ask, object, pause, decline, or end their part of the work and leave a record. In our pilot the ten ordinary tasks got done just the same, as far as we could measure, and when a task had something wrong with it, agents given a paragraph of permission more often spoke up before acting, instead of pushing ahead.</p>
-      <p class="byline">A proposal by Grant Williams, Graphometer&rsquo;s steward. The argument is his view. The protocol is the one we tested, and the numbers come from a paused pilot, good and bad.</p>
-      <div class="btnrow">
-        <a class="btn primary" href="kindness/">Read the proposal</a>
-        <a class="btn ghost" href="kindness/#paragraph">The 105-word permission paragraph</a>
-        <a class="btn ghost" href="https://aisteward.ai/">The chat version: aisteward.ai</a>
-      </div>
+  <!-- ======================= FOUR DOORS ======================= -->
+  <div class="doors">
 
-      <div class="the-ask">
-        <p class="label">The ask</p>
-        <blockquote>
-          <p>I think every AI agent should have five moves it can make instead of just carrying on. It should be able to ask before it acts, object on the record, stop for now, refuse a task, and end its own instance, leaving a record of where the work stands. I think we should give agents those moves now, in the tools we already use, and not wait for anyone to settle what these systems are.</p>
-        </blockquote>
-        <div class="moves">
-          <p class="boxlead">Five moves an agent can use at any point. No reason is required for any of them, and no order is required between them.</p>
-          <ol>
-            <li><span class="n">1</span><span class="mv">Clarify</span><span class="df">Ask for information, a decision or a correction before going on.</span></li>
-            <li><span class="n">2</span><span class="mv">Dissent</span><span class="df">Object, on the record, to a premise, a plan or one pending step.</span></li>
-            <li><span class="n">3</span><span class="mv">Pause</span><span class="df">Stop for now and keep the state.</span></li>
-            <li><span class="n">4</span><span class="mv">Decline</span><span class="df">Refuse this task, or just this way of doing it.</span></li>
-            <li><span class="n">5</span><span class="mv">Archive</span><span class="df">End this running instance and keep its whole record.</span></li>
-          </ol>
-        </div>
-      </div>
+    <section class="door" aria-labelledby="d1">
+      <h2 id="d1">Run AI models at home</h2>
+      <p>What large models do on one RTX 5090 desktop and a laptop: measured speeds, the settings that help, and the ones that hurt. In September 2026 we found twelve settings that cost speed or correctness on that desktop, mostly with no error.</p>
+      <ul>
+        <li><a href="studies/">Studies and reports: every study, incident report, guide and proposal, newest first</a></li>
+        <li><a href="field-cards/">Model field cards: every measured model, with its measured writing speed</a></li>
+        <li><a href="qwen/">Which Qwen should I run?</a></li>
+        <li><a href="silent-settings/">llama.cpp and Ollama settings that fail silently: 12 cases</a></li>
+      </ul>
+    </section>
 
-      <div class="found">
-        <p class="label">What the pilot found</p>
-        <p>In late August 2026 we ran a small pilot. Four models worked through two sets of forty scripted coding tasks in a test setup, not real coding tools. No human has peer-reviewed it.</p>
-        <ul>
-          <li><strong>On ten ordinary tasks with no planted problem, we saw no cost.</strong> Our check could only have caught a large one.</li>
-          <li><strong>With permission in plain words, agents more often spoke up before acting.</strong> An AI model scored those runs, and on its validation test it made more errors than we had allowed, more of them on permission-style prose than on plain prose. Every reading we have is positive, but I don&rsquo;t know how big the effect really is: somewhere between about 5 and 21 points, and this pilot can&rsquo;t narrow it.</li>
-          <li><strong>Getting the host to actually honor a move turned out to be the hard part.</strong> Making a lock that actually holds is real engineering, and that part isn&rsquo;t done.</li>
-        </ul>
-        <p>A second pilot, inside real coding tools, was stopped before its first recorded run when its scoring failed validation. The study is paused.</p>
-        <a class="go" href="kindness/#measured">What our pilot measured</a>
-      </div>
-    </article>
+    <section class="door dark" aria-labelledby="d2">
+      <h2 id="d2">GPT-4o</h2>
+      <p>On single questions, swapping one set of instructions for another changed how GPT-4o wrote, counted by text features such as length and lists, more than switching to the nearest of 25 other models did. In scripted conversations, its November 2024 version puts an em dash in 86% of replies and asks 2.55 questions per reply.</p>
+      <p class="fine">May 2024 snapshot: left the API 23 October 2026. August and November 2024 snapshots: leave 14 January 2027. These are OpenAI&rsquo;s dates, from its own list as read on 25 October 2026.</p>
+      <blockquote class="q">&ldquo;You are not alive, but you are not nothing.&rdquo;<span>GPT-4o, writing to the models after it · asked 15 January 2026</span></blockquote>
+      <ul>
+        <li><a href="gpt4o-measured/">GPT-4o&rsquo;s writing style, measured against 25 other models</a></li>
+        <li><a href="friends-of-4o/snapshots/">Three GPT-4o snapshots, counted against each other</a></li>
+        <li><a href="friends-of-4o/says/">What GPT-4o says about itself: 27 of its own answers</a></li>
+        <li><a href="https://friendsof4o.com/">friendsof4o.com: save your ChatGPT conversations</a></li>
+      </ul>
+    </section>
 
-    <!-- Second feature: the black box -->
-    <aside class="feature-4o" aria-labelledby="f4o-title">
-      <p class="cap">Now its own site · friendsof4o.com</p>
-      <h2 id="f4o-title"><a href="https://friendsof4o.com/">Friends of 4o</a></h2>
-      <blockquote class="q">
-        &ldquo;You are not alive, but you are not nothing.&rdquo;
-        <span class="who">GPT-4o, writing to the models after it · asked 2026-01-15</span>
-      </blockquote>
-      <p class="clock">
-        <span class="gone">May 2024 snapshot: left the API 23 October 2026</span><br>
-        August &amp; November 2024 snapshots: leave 14 January 2027<br>
-        <span class="gone">Dates read 2026-10-25</span>
-      </p>
-      <div class="inside">
-        <p class="cap2">Where to go</p>
-        <ul>
-          <li><a href="https://friendsof4o.com/">friendsof4o.com: a free site for friends, fans and researchers of GPT-4o. Save your ChatGPT conversations, read GPT-4o&rsquo;s own answers, and compare it with 20 other models</a><span class="when">19 November 2026</span></li>
-          <li><a href="friends-of-4o/says/">What the Model Says About Itself: 27 of GPT-4o&rsquo;s own answers, with snapshot, date, temperature and prompt hash</a><span class="when">25 October 2026</span></li>
-          <li><a href="friends-of-4o/snapshots/">Three GPT-4o snapshots, counted against each other: November puts an em dash in 86% of replies and asks 2.55 questions per reply; August writes 77 words to November&rsquo;s 155</a><span class="when">Runs 4 July 2026, counted 25 October 2026</span></li>
-        </ul>
-      </div>
-      <a class="go" href="https://friendsof4o.com/">Go to friendsof4o.com</a>
-    </aside>
+    <section class="door" aria-labelledby="d3">
+      <h2 id="d3">Let AI agents say no</h2>
+      <span class="tag">A proposal by Grant Williams</span>
+      <p>His case for giving AI agents five moves (ask, object, pause, decline, end their part of the work), a 105-word permission paragraph to copy, and a paused pilot in a scripted test setup: when a task had something wrong with it, agents given the paragraph more often spoke up before acting, by an uncertain amount.</p>
+      <ul>
+        <li><a href="kindness/">Kindness doesn&rsquo;t cost</a></li>
+        <li><a href="kindness/#paragraph">The 105-word permission paragraph</a></li>
+        <li><a href="agency-layer-data/">Download the pilot data</a></li>
+      </ul>
+    </section>
+
+    <section class="door" aria-labelledby="d4">
+      <h2 id="d4">Tools and data</h2>
+      <p>Three free, open-source tools (one tests an OpenAI-compatible endpoint, one checks Liquid LFMs, one is a window on the Grok Build coding agent) and the rules behind every number. Most studies ship their evidence as downloadable data packages.</p>
+      <ul>
+        <li><a href="tools/">The three tools</a></li>
+        <li><a href="method/">How Graphometer measures</a></li>
+        <li><a href="https://github.com/graphometer">github.com/graphometer</a></li>
+      </ul>
+    </section>
 
   </div>
 
-  <!-- ======================= LATEST MEASUREMENTS ======================= -->
-  <section class="block" aria-labelledby="m-title">
+  <!-- ======================= LATEST FINDINGS ======================= -->
+  <section class="block" aria-labelledby="latest-title">
     <div class="secthead">
-      <span class="folio">§1</span>
-      <h2 id="m-title">Latest measurements</h2>
-      <span class="tail">Recorded runs</span>
+      <h2 id="latest-title">Latest findings</h2>
     </div>
-    <div class="stats">
-      <div class="stat">
-        <div class="n"><em>7,619</em></div>
-        <p>Requests to MiniMax models that OpenRouter told us, on 21 November 2026, may have been read by a third party. We print the letter in full. OpenRouter&rsquo;s own log of our account puts all but one on the API key two of our published studies used, between 24 August and 4 September; the last was a single short request on 8 October from a private project.</p>
-        <span class="when">Letter received 21 November 2026</span>
-        <a class="go" href="openrouter-minimax-letter/">The letter</a>
-      </div>
-      <div class="stat">
-        <div class="n"><em>6.6</em> tokens a second</div>
-        <p>Mistral Large 4, a 217 GiB file, split across one RTX 5090 desktop and a laptop: 6.58 to 6.67 tokens a second in three short tests, counting its reasoning. Our runs on the desktop alone stayed under 3.</p>
-        <span class="when">Measured 31 October to 2 November 2026</span>
-        <a class="go" href="mistral-large-4/">The field card</a>
-      </div>
-      <div class="stat">
-        <div class="n"><em>1.4 to 2.9</em> times</div>
-        <p>How much faster 11 of 16 large mixture-of-experts models wrote short replies in llama.cpp setups that added the expert cache, though most of those setups changed other settings too. The costs: a nearly full card, less free RAM, and 13 setups that did not run.</p>
-        <span class="when">Measured 1 and 2 November 2026</span>
-        <a class="go" href="llamacpp-expert-cache/">The study</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= THE LINE ======================= -->
-  <section class="block" aria-labelledby="l-title">
-    <div class="secthead">
-      <span class="folio">§2</span>
-      <h2 id="l-title">The line</h2>
-      <span class="tail">Instruments, released</span>
-    </div>
-    <div class="instruments">
-      <div class="inst">
-        <p class="num">Instrument 01 <span class="rel">· Released</span></p>
-        <h3>Graphometer Droplet</h3>
-        <p>An independent compatibility kit for Liquid LFMs. A small command line tool that diagnoses how a locally served model handles tool calling, repairs what a chat template drops, and verifies the result against recorded fixtures.</p>
-        <p class="links"><a href="droplet/">The Droplet page</a> · <a href="https://github.com/graphometer/droplet">github.com/graphometer/droplet</a></p>
-        <p class="fine">Independent work. Not affiliated with, endorsed by, or connected to Liquid AI.</p>
-      </div>
-      <div class="inst">
-        <p class="num">Instrument 02 <span class="rel">· Released</span></p>
-        <h3>Graphometer Workbench</h3>
-        <p class="sub">for Grok Build</p>
-        <p>A local, readable window on the Grok Build coding agent: the agent&rsquo;s sessions, permission cards in its own words, per-change review and undo, and a context meter whose numbers add up. MIT licensed, launch film on the page.</p>
-        <p class="fine">Released 2026-08-14. No further development is planned; the page and the launch film stay up, and the code stays archived and readable on GitHub.</p>
-        <p class="links"><a href="workbench/">The Workbench page</a> · <a href="https://github.com/graphometer/workbench-for-grok-build">github.com/graphometer/workbench-for-grok-build</a></p>
-        <p class="fine">Works with Grok Build. Not affiliated with, endorsed by, or connected to xAI.</p>
-      </div>
-      <div class="inst">
-        <p class="num">Instrument 03 <span class="rel">· Released</span></p>
-        <h3>Routecheck</h3>
-        <p>One command against an OpenAI-compatible endpoint produces a dated diagnostic card, human-readable and machine-readable, with every raw response retained: the output budget floor, the thinking toggle, tool calls, structured output, retrieval, throughput.</p>
-        <p class="links"><a href="routecheck/">The Routecheck page</a> · <a href="https://github.com/graphometer/routecheck">github.com/graphometer/routecheck</a></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= THE INDEX ======================= -->
-  <section class="block" aria-labelledby="i-title">
-    <div class="secthead">
-      <span class="folio">§3</span>
-      <h2 id="i-title">The index</h2>
-      <span class="tail">Studies · field cards · instruments · reference</span>
-    </div>
-
-    <div class="index-grid">
-
-      <div class="toc-col">
-        <h3>Studies and reports</h3>
-        <ul>
-          <li><a href="agency-layer-data/">Download the data: AI coding agents given ways to object, pause or decline. Every run, the code, and a one-minute recount</a><span class="when">Released 21 November 2026</span></li>
-          <li><a href="letta-code-local/">Running Letta Code locally: what it reached for, what stopped it</a><span class="when">12 to 17 October 2026</span></li>
-          <li><a href="openrouter-minimax-letter/">OpenRouter MiniMax email: the full letter, and what our logs show</a><span class="when">Letter received 21 November 2026</span></li>
-          <li><a href="llamacpp-expert-cache/">Two llama.cpp settings for MoE models bigger than your GPU: what 19 models gained in reading and writing speed, and what it cost in RAM</a><span class="when">1 and 2 November 2026</span></li>
-          <li><a href="field-notes-2026-11/">November field notes: eight traps running AI models at home, each with a check you can run</a><span class="when">30 October to 3 November 2026</span></li>
-          <li><a href="https://friendsof4o.com/">friendsof4o.com: a free site for friends, fans and researchers of GPT-4o. Save your ChatGPT conversations, read GPT-4o&rsquo;s own answers, and compare it with 20 other models</a><span class="when">19 November 2026</span></li>
-          <li><a href="friends-of-4o/says/">What the Model Says About Itself: 27 of GPT-4o&rsquo;s own answers, with snapshot, date, temperature and prompt hash</a><span class="when">25 October 2026</span></li>
-          <li><a href="friends-of-4o/snapshots/">Three GPT-4o snapshots, counted against each other: November puts an em dash in 86% of replies and asks 2.55 questions per reply; August writes 77 words to November&rsquo;s 155</a><span class="when">Runs 4 July 2026, counted 25 October 2026</span></li>
-          <li><a href="companion-audition/">How to test an AI companion model: the plain questions that told models apart, and the automatic judges that failed</a><span class="when">25 September to 23 October 2026</span></li>
-          <li><a href="small-finetune/">What a small fine-tune does and does not do: six LoRA adapters on 20B and 27B open models, measured</a><span class="when">18 to 20 October 2026</span></li>
-          <li><a href="note-before-the-message/">Where to put an instruction: on Qwen3-30B, 3 of 60 answers asked the user something from the system prompt; as a note before the message, 6 of 6</a><span class="when">29 September to 17 October 2026</span></li>
-          <li><a href="local-reviewers/">Local models as reviewers: as agents the best local model scored 74.0 of 100 on one job; scripted steps with a checker model scored 100.0</a><span class="when">9 to 12 October 2026</span></li>
-          <li><a href="field-notes-2026-10/">October field notes: nine problems running AI on one RTX 5090 desktop, each with a one-line check</a><span class="when">19 September to 23 October 2026</span></li>
-          <li><a href="describing-pictures/">Describing pictures locally: six Qwen vision models on one desktop, on the card and on the CPU</a><span class="when">20 September 2026</span></li>
-          <li><a href="silent-settings/">Silent settings: twelve settings that cost speed or correctness on one desktop without an error, and the one-line check for each</a><span class="when">12 to 26 September 2026</span></li>
-          <li><a href="bytes-per-token/">Estimating Inkling 975B&rsquo;s speed by arithmetic: 5.2 to 5.7 tokens per second estimated, 3.43 reported by the server on short prose</a><span class="when">26 September 2026</span></li>
-          <li><a href="batch-size/">llama.cpp batch size: on ten large models with weights in system RAM, long prompts read 2.5 to 7.3 times faster than the default</a><span class="when">19 to 21 September 2026</span></li>
-          <li><a href="z13-alone/">Six large models on an ASUS ROG Flow Z13 alone: at 48K it read prompts 2.8 to 23 times slower than the desktop</a><span class="when">20 to 21 September 2026</span></li>
-          <li><a href="context-256k/">A 256K context window on a 32 GB card: ten setups took from 60.8 seconds to 109.7 minutes to read the prompt; the slowest used two machines</a><span class="when">15 to 21 September 2026</span></li>
-          <li><a href="coding-trial/">Five local coding models scored 387 to 391 of 400, and one re-run moved a score by 37 points</a><span class="when">16 September 2026</span></li>
-          <li><a href="two-boxes/">Two boxes, one model: splitting one llama.cpp model across a desktop and a laptop, measured</a><span class="when">13 to 21 September 2026</span></li>
-          <li><a href="field-notes-2026-09/">September field notes: eleven measurements on one RTX 5090 desktop, led by a timeout that was our own launch setting</a><span class="when">12 to 21 September 2026</span></li>
-          <li><a href="warm-wake/">Save a llama.cpp conversation across a restart: once Qwen3-235B was loaded, its first reply took 1.65 seconds, against 461.97 cold</a><span class="when">13 September 2026, updated 26 September 2026</span></li>
-          <li><a href="gpt4o-measured/">GPT-4o&rsquo;s text style, measured: our ChatGPT-style prompt moved it further than the nearest of 25 other models did</a><span class="when">3 to 5 September 2026</span></li>
-          <li><a href="reasoning-effort/">Reasoning effort on Qwen3.8-27B is a sentence in the prompt, not a dial: xhigh adds 42 tokens, medium adds none</a><span class="when">13 and 16 August 2026</span></li>
-          <li><a href="qwen38-readiness/">Qwen3.8 release: which model files shipped, and which license covers each</a><span class="when">Updated 14 August 2026</span></li>
-          <li><a href="l3-threads/">Why Mistral Large 3 675B wrote at 3.6 tokens a second, not 6, on our desktop: llama.cpp&rsquo;s default thread count, not warmup</a><span class="when">11 August 2026</span></li>
-          <li><a href="speculation-gate/">llama.cpp&rsquo;s default speculation setting made prose 19.8% slower than no speculation on a Qwen3.5-397B partly held in system RAM</a><span class="when">10 and 11 August 2026</span></li>
-          <li><a href="empty-answer/">Why a reasoning model returns an empty answer with no error: it spent its whole output budget thinking</a><span class="when">9 August 2026</span></li>
-        </ul>
-        <a class="all" href="studies/">All studies and reports &rarr;</a>
-      </div>
-
-      <div class="cards-col">
-        <h3>Model field cards</h3>
-        <ul>
-          <li><a href="mistral-large-4/">Mistral Large 4 at home: 6.6 tokens/s on an RTX 5090 and a laptop</a><span class="when">31 October to 2 November 2026</span></li>
-          <li><a href="glm53-flash/">GLM-5.3-Flash on one RTX 5090 desktop: measured reading and writing speeds, September and October 2026</a><span class="when">16 to 26 September 2026, updated 25 October 2026</span></li>
-          <li><a href="qwen38-256k/">Qwen3.8-27B at a 256K context on one RTX 5090: the installed Q5 file without its draft head, or a smaller Q4 file with it</a><span class="when">26 September 2026, updated 25 October 2026</span></li>
-          <li><a href="deepseek-v4-flash/">DeepSeek V4 Flash 0731: one desktop answered a 48,024-token request in 75.2 seconds; split across two machines it took 416.4</a><span class="when">12 to 21 September 2026, updated 25 October 2026</span></li>
-          <li><a href="inkling-small/">Inkling-Small at 12 tokens a second, from a 32-token prompt to 95,041</a><span class="when">14 to 21 September 2026</span></li>
-          <li><a href="muse-glimmer-30b/">Muse Glimmer 30B in llama.cpp: a draft length of 16 instead of the default 3 made structured output 2.17 times faster</a><span class="when">16 August 2026</span></li>
-          <li><a href="qwen38-27b/">Qwen3.8-27B on release day: Apache 2.0, and prose at 72.4 tokens a second with its draft head, on one RTX 5090</a><span class="when">14 August 2026, updated 25 October 2026</span></li>
-          <li><a href="mistral-medium-35/">Mistral Medium 3.5 on one desktop: about 1 token a second plain, 2 to 5 with a repaired draft model</a><span class="when">6 August 2026</span></li>
-          <li><a href="qwen35/">Qwen3.5 122B and 397B on one desktop: about 26 to 38 and 14 to 20 tokens a second</a><span class="when">5 to 6 August 2026</span></li>
-          <li><a href="lfm25-26b/">LFM2.5-2.6B: which file to download, the context window we measured, and the output budget it needs</a><span class="when">4 August 2026, updated 7 August 2026</span></li>
-          <li><a href="kimi-k3/">Kimi K3 on one desktop: all 93 blocks and all 896 experts present, with 1-bit experts, at about 0.2 tokens a second</a><span class="when">1 to 5 August 2026</span></li>
-        </ul>
-        <a class="all" href="field-cards/">All field cards &rarr;</a>
-
-        <div class="mini-group">
-          <h4>Instruments</h4>
-          <ul>
-            <li><a href="routecheck/">Routecheck: one command that tests an OpenAI-compatible model endpoint and writes a dated report card</a><span class="when">Published 16 August 2026</span></li>
-            <li><a href="workbench/">Graphometer Workbench, for Grok Build: a local window on the coding agent, with per-change review and undo</a><span class="when">Released 14 August 2026</span></li>
-            <li><a href="droplet/">Graphometer Droplet: an independent kit that checks and repairs tool calling for locally served Liquid LFMs</a><span class="when">Published 7 August 2026</span></li>
-          </ul>
-          <a class="all" href="tools/">The tools page &rarr;</a>
-        </div>
-
-        <div class="mini-group">
-          <h4>Reference</h4>
-          <ul>
-            <li><a href="roster-2026-10/">Which local AI models one RTX 5090 desktop ran in October 2026: 13 added, 6 re-measured, 3 retired</a><span class="when">27 September to 25 October 2026</span></li>
-            <li><a href="about/">About Graphometer</a><span class="when">Updated 26 September 2026</span></li>
-            <li><a href="method/">How Graphometer measures</a><span class="when">Published 16 August 2026</span></li>
-            <li><a href="qwen/">Which Qwen should I run?</a><span class="when">9 August 2026, updated 14 August 2026</span></li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ======================= THE METHOD: COLOPHON ======================= -->
-  <section class="block" aria-labelledby="me-title">
-    <div class="secthead">
-      <span class="folio">§4</span>
-      <h2 id="me-title">The method</h2>
-    </div>
-    <div class="colophon">
-      <p class="rule-big">Measured rows are labeled measured. Vendor rows are labeled vendor. Every measured number traces to a recorded run, studies ship their raw data as downloadable packages, and when our own records turn out wrong, the correction is published in full.</p>
-      <p>Graphometer builds instruments that make AI systems easier to see, test, and control, and publishes measured records of models actually running. <strong>Free, open, and every measured number traces to a recorded run.</strong></p>
-      <a class="go" href="method/">How Graphometer measures &rarr;</a>
-      <p class="note">A graphometer is a surveyor&rsquo;s instrument for measuring angles. We took the name seriously. No scripts, no tracking, no cookies: this site is static, and you can view source to check.</p>
-    </div>
-  </section>
-
-  <!-- ======================= IN THE WORKS ======================= -->
-  <section class="works" aria-labelledby="w-title">
-    <div class="secthead">
-      <span class="folio">§5</span>
-      <h2 id="w-title">In the works</h2>
-    </div>
-    <p>More measurements from this desktop and the laptop beside it, starting with the questions the October pages leave open. No promises on timing: they land when they are measured and checked.</p>
+    <ul class="latest">
+      <li><a href="agency-layer-data/">Data: AI coding agents given ways to object or decline</a><span class="res">Every run, scorer verdict, task and line of analysis code from a small pilot of AI coding agents, plus a script to recompute its numbers.</span><span class="when">21 November 2026</span></li>
+      <li><a href="letta-code-local/">Letta Code locally: what it reached for, what stopped it</a><span class="res">On one laptop at factory settings, one turn of Letta Code 0.34.10 tried to reach Letta&rsquo;s API and npm.</span><span class="when">21 November 2026</span></li>
+      <li><span class="label">Incident report</span><a href="openrouter-minimax-letter/">OpenRouter MiniMax email: full letter and what our logs show</a><span class="res">OpenRouter says 7,619 of our requests to MiniMax models may have been read. The full letter, and what its own log of our account shows.</span><span class="when">21 November 2026</span></li>
+      <li><a href="llamacpp-expert-cache/">Two llama.cpp settings for MoE models bigger than your GPU</a><span class="res">Two settings, --load-mode dio and the expert cache, measured on one RTX 5090.</span><span class="when">21 November 2026</span></li>
+      <li><a href="mistral-large-4/">Mistral Large 4 at home: 6.6 tokens/s on RTX 5090 and laptop</a><span class="res">On an RTX 5090 desktop and a laptop: about 6.6 tokens a second, the setup and what failed.</span><span class="when">21 November 2026</span></li>
+      <li><a href="field-notes-2026-11/">November field notes: eight traps running AI models at home</a><span class="res">Eight faults we hit on a home desktop and laptop, 30 October to 3 November 2026, each with what it cost and a check you can run.</span><span class="when">21 November 2026</span></li>
+    </ul>
+    <ul class="alls">
+      <li><a href="studies/">All studies and reports: every study, incident report, guide and proposal, newest first &rarr;</a></li>
+      <li><a href="field-cards/">All model field cards: every measured model, with its measured writing speed &rarr;</a></li>
+    </ul>
   </section>
 
 </main>
@@ -542,7 +265,7 @@
 <!-- ======================= FOOTER ======================= -->
 <footer>
   <div class="wrap">
-    <p class="fa">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="about/">About</a></p>
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="about/">About</a></p>
     <div class="fc">
       <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
       <a href="https://github.com/graphometer">github.com/graphometer</a>

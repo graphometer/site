@@ -1,5 +1,7 @@
 # Muse Glimmer 30B, trained at 16 and asked for 3: data package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the numbers on **https://graphometer.ai/muse-glimmer-30b/**,
 as the files the evening of **2026-08-16** actually produced: five server loads
 on one RTX 5090, a six-load context ladder, a probe battery, two template

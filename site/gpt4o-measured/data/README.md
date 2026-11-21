@@ -1,5 +1,7 @@
 # GPT-4o, measured against itself: data package
 
+> Note, 21 November 2026: the page this file belongs to was rewritten in plain language on this date and its sections were reordered. Section numbers in this file refer to the page as it stood before. The figures and the files are unchanged.
+
 Everything behind the tables on **https://graphometer.ai/gpt4o-measured/**, as
 the derived statistics the runs actually produced: 121 profiles (65 one-shot,
 56 conversation) built from captures made **3 to 5 September 2026** and rebuilt

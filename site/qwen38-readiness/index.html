@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Qwen3.8 release: verified model files and licenses</title>
-<meta name="description" content="The official Max-class and 27B model files were verified at specific revisions. The Max-class weights use a custom license with revenue thresholds.">
+<meta name="description" content="Both open Qwen3.8 models verified on official files: the 2.4T Max-class under a custom license with revenue thresholds, the 27B under Apache 2.0.">
 <link rel="canonical" href="https://graphometer.ai/qwen38-readiness/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="Qwen3.8 release: verified model files and licenses">
-<meta property="og:description" content="The official Max-class and 27B model files were verified at specific revisions. The Max-class weights use a custom license with revenue thresholds.">
+<meta property="og:description" content="Both open Qwen3.8 models verified on official files: the 2.4T Max-class under a custom license with revenue thresholds, the 27B under Apache 2.0.">
 <meta property="og:url" content="https://graphometer.ai/qwen38-readiness/">
 <meta property="og:image" content="https://graphometer.ai/og/qwen38-readiness.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Qwen3.8 release: verified model files and licenses">
-<meta name="twitter:description" content="The official Max-class and 27B model files were verified at specific revisions. The Max-class weights use a custom license with revenue thresholds.">
+<meta name="twitter:description" content="Both open Qwen3.8 models verified on official files: the 2.4T Max-class under a custom license with revenue thresholds, the 27B under Apache 2.0.">
 <meta name="twitter:image" content="https://graphometer.ai/og/qwen38-readiness.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -120,6 +120,14 @@
   .sitenav a:hover{color:var(--gold);text-decoration:none}
   code{overflow-wrap:anywhere}
   .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  section h3{font-size:19px;font-weight:650;color:var(--ink);margin:40px 0 12px}
+  section h3:first-of-type{margin-top:8px}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .hero .note{margin-top:26px}
+  section .note + .note{margin-top:14px}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
 </style>
 </head>
 <body>
@@ -151,210 +159,88 @@
   <div class="wrap">
 
     <div class="hero">
-      <div class="eyebrow">Release watch · weights verified 2026-08-13 and 2026-08-14 · measured 2026-08-09, 2026-08-13 and 2026-08-14</div>
-      <h1 itemprop="headline">Release watch: <em>Qwen3.8</em></h1>
-      <p class="lead">On 2026-08-03 the Qwen team announced Qwen3.8 and
-      promised open weights for a Max-class model alongside a new 27B,
-      both due in the week beginning 2026-08-10. On 2026-08-12 the larger
-      half of that promise landed. <strong>The Max-class open weights are
-      real, and we verified them</strong>: two repositories under the
-      official Qwen organization, checked at pinned revisions on
-      2026-08-13, 213 weight shards each, 4,892.4 GB in BF16 and
-      2,496.2 GB in FP8. <strong>On 2026-08-14 the other half landed
-      too</strong>: the 27B named in the same announcement shipped, we
-      verified it at its own pinned revision, and it was downloaded,
-      hash-checked, served and measured on one desktop the same evening.
-      The fake repositories that grew around the name before the release
-      are still there after it. For practitioners the headline is the
-      license, and it is not one license: the Max-class weights carry a
-      custom license with revenue thresholds, read at the pinned revision
-      and quoted in section 02, while <strong>the 27B carries a genuine
-      Apache 2.0 file</strong>, read in full and retained. This page holds
-      the verified state of the release, what the shipped configuration
-      says, which community quantizations are real, an honest account of
-      what a desktop can do with files this size, and our measurements of
-      the hosted model. It updates with dated entries and it does not
-      speculate: where a fact is a vendor's promise rather than a shipped
-      artifact, it is labeled as one.</p>
+      <div class="eyebrow">Release status</div>
+      <h1 itemprop="headline">Qwen3.8 release: both open models verified, under <em>two different licenses</em></h1>
+      <p class="lead">Qwen3.8 comes as two downloads and one online model, and each got a different result. Checked 2026-08-09 to 2026-08-16; after that, treat this status as unverified.</p>
+      <table class="facts">
+        <tr><th scope="row">The 27B download</th><td>Real, on the official Qwen organization, under Apache 2.0. It ran on one desktop the day it shipped. <strong>Do:</strong> check who owns a repository (the official one is Qwen/Qwen3.8-27B); settings are on the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</td></tr>
+        <tr><th scope="row">The 2.4T download (the open Max-class weights)</th><td>Real, on the official Qwen organization, under a custom license with revenue thresholds. The only community copy that fits this test desktop's free disk, 397.3 GB, would not load: the server program rejected it in 0.38 seconds because its compression type was not one any public build checked could read. <strong>Do:</strong> read the license; check a file's compression type before downloading.</td></tr>
+        <tr><th scope="row">Qwen3.8-Max online (the hosted model)</th><td>Thinks by default, and the thinking counts against your token limit: a 2,000-token limit on a puzzle returned an empty answer. The 2.4T download, served online, did the same at small limits. <strong>Do:</strong> allow thousands of tokens of headroom.</td></tr>
+      </table>
+      <div class="note"><span class="label">In short</span>
+        <ul class="plain">
+          <li><strong>Read the license for each download, not the family.</strong> The 27B download is Apache 2.0. The 2.4T download adds a name-display duty for very large products and a separate license for some businesses above fifty million US dollars in revenue. <a href="#license">The two conditions</a></li>
+          <li><strong>Check who owns a repository before you download: a real Qwen release is on the official Qwen organization. If you use a community file, check its compression type against your software first.</strong> A 397.3 GB community copy of the 2.4T download passed every checksum here and still would not load. <a href="#check">How to check</a></li>
+          <li><strong>Allow thousands of tokens of headroom on Qwen3.8-Max online.</strong> Its hidden thinking counts against your token limit. <a href="#hosted">The measurements</a></li>
+        </ul>
+      </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-08-09">9 August 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
-      <div class="nonaff">Independent measurements. Not affiliated with,
-      endorsed by, or connected to the Qwen team, Alibaba Group, or
-      OpenRouter.</div>
     </div>
 
-    <section>
+    <section id="check">
       <div class="secnum">01</div>
-      <h2>What exists, verified</h2>
-      <p>Each row carries exactly one status label. <strong>Shipped and
-      verified</strong> means we saw the actual weight files at a named
-      revision with a license. <strong>API only</strong> means the model
-      answers requests but no weights exist. <strong>Announced</strong>
-      means a vendor promise with no artifact. <strong>Community
-      only</strong> means real files exist from a named third party but
-      nothing official. <strong>Not official</strong> means artifacts
-      exist under the name but none come from the maker. A repository
-      name is never proof of a release.</p>
+      <h2>What to do</h2>
+      <p><strong>Tell a real release from a fake.</strong> Fake repositories (online folders of model files) using the Qwen3.8 name were still up when re-checked on 2026-08-13. Three questions settle almost every case without a download:</p>
+      <ul class="plain">
+        <li><strong>Who owns it?</strong> A release comes from the maker's own organization account. Anything else is that account's work, whatever the name says.</li>
+        <li><strong>Is anything in it?</strong> Open the file list first. Weights (the model's learned numbers) come split into large pieces called shards: a 27B at four bits is tens of gigabytes, a 2.4-trillion-parameter model is hundreds. A readme and a small configuration file are no model.</li>
+        <li><strong>Was this size announced?</strong> The 2026-08-03 announcement named exactly two open models, a 27B and the 2.4-trillion-parameter Max.</li>
+      </ul>
+      <p>Then take the link from the Qwen team's announcement or the official organization page, confirm the license file and sensible shard sizes, and check the checksums (fingerprints of each file) after downloading. For the 27B, compare against <code>Qwen/Qwen3.8-27B</code> at the revision (saved version) under <a href="#measured">How this was measured</a>; weights that are not the maker's files at a revision you can name are not the release. This took about five minutes.</p>
+      <p><strong>Check the compression type before a big download.</strong> Community GGUF files (the format llama.cpp reads) store the weights compressed, which is called quantization. A familiar name is not a format: the 2.4T download's community file called Q1_0 is not mainline Q1_0, and only the per-tensor headers (the description of each block of weights) show its real type. Compare that type against the types your software can read. The check costs minutes; here the download cost an afternoon and 397 GB of disk.</p>
+      <p><strong>Online, budget for thinking.</strong> Qwen3.8-Max online thinks by default, and the 2.4T download always thinks. Either way the thinking is billed as output tokens (word pieces) inside your max-tokens limit. Give it thousands of tokens of headroom, or try the <code>reasoning_effort</code> setting (on the one prompt tested with the 2.4T download online, it did not reduce thinking). An empty answer that ends with the length stop reason (the limit ran out) is a budget failure, not a refusal.</p>
+      <p><strong>Put a JSON schema in the prompt</strong>, not only in the API's <code>response_format</code> field. <strong>On the 2.4T download, do not count on turning thinking off</strong> (the 27B has a working off-switch). <strong>Check each provider's terms behind an aggregator listing</strong> (an aggregator resells many companies' model services through one account). <a href="#hosted-open">The evidence</a></p>
+    </section>
+
+    <section id="found">
+      <div class="secnum">02</div>
+      <h2>What we found</h2>
+
+      <h3 id="status">Which files are real</h3>
+      <p><strong>Shipped and verified</strong> means we saw the weight files at a named revision, with a license. <strong>API only</strong> means the model answers online but no weights exist. <strong>Community only</strong> means real files from a named third party, nothing official. <strong>Not official</strong> means files exist under the name but none come from the maker.</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Model</th><th>Status</th><th class="t" style="text-align:left">Evidence, with check date</th></tr></thead>
         <tbody>
-          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen3.8-2.4T-A95B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">On the official Qwen organization. Its own timestamps say created 2026-08-08 and last modified 10:24 UTC on 2026-08-12, the day an aggregator listed the model at 16:21 UTC. Verified 2026-08-13 at revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>: 213 weight shards plus an index file, 4,892.4 GB in BF16, license file present (section 02). The 95-billion-active-parameter figure that was press-only before the release now appears in the official repository name itself.</td></tr>
-          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B-FP8">Qwen3.8-2.4T-A95B-FP8</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Verified 2026-08-13 at revision <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>: 213 shards, 2,496.2 GB, fp8 dynamic quantization with 128 by 128 blocks, license file byte-identical to the BF16 repository. The organization's own Qwen3.8 collection contains exactly these two repositories and nothing else.</td></tr>
-          <tr><td>GGUF conversions of the 2.4T-A95B</td><td>Community only</td><td class="t" style="text-align:left">One real set exists, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files at revision <span class="n">567d3e6ac26c</span>, sized from 397.3 GB to 4,893.2 GB (section 04). No official GGUF exists. On release day we downloaded the smallest tier and verified it bit-perfect against the repository's own checksums, and no public runtime can load it yet: its expert tensors use a quantization type that exists in no public build (sections 04 and 07). This row is about the Max-class weights only; the 27B's conversions are a separate story, in the row below.</td></tr>
-          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen3.8-27B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Published at about 11:00 EDT on 2026-08-14 and verified the same day at revision <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>: 18 safetensors plus an index, 32 files, and a LICENSE file we read in full and retained. <strong>That license is Apache 2.0</strong>, 11,544 bytes of verbatim Apache text, byte-identical in the official FP8 repository at revision <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>. It is not the Max-class license of section 02, and the two must never be quoted as one. Still no official GGUF: the conversions are community work, including one from the llama.cpp project's own organization published the same day. We downloaded a community conversion, verified both files against the repository's own checksums, served it and measured it that evening; the numbers are in the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</td></tr>
-          <tr><td>Qwen3.8-Max</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators. We measured it (section 06). Per the released model card, checked 2026-08-13, vision input, the non-thinking mode, and the million-token default context are Max API extras: none of them ship in the open weights (section 03).</td></tr>
-          <tr><td>Third-party "Qwen3.8" repos</td><td>Not official</td><td class="t" style="text-align:left">Re-screened 2026-08-13: every third-party 27B repository we had previously catalogued under the name still contains zero weight tensors, and a fresh wave of mirrors and placeholders using the Max name appeared around the release. Section 05.</td></tr>
-          <tr><td>Qwen3.7 family</td><td>API only</td><td class="t" style="text-align:left">Max, Plus and Flash tiers serve on the official API and aggregators (checked 2026-08-09). The vendor states they are proprietary; no 3.7 weights have ever shipped.</td></tr>
-          <tr><td>Qwen3.6-27B and 35B</td><td>Shipped and verified</td><td class="t" style="text-align:left">The newest open Qwen weights until 2026-08-12, and still the newest at sizes a normal computer can hold: file trees confirmed on the official organization, Apache 2.0 license files present (checked 2026-08-09).</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen3.8-2.4T-A95B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">On the official Qwen organization. Its own timestamps say created 2026-08-08, last modified 10:24 UTC on 2026-08-12. Verified 2026-08-13: 213 weight shards plus an index file, 4,892.4 GB in BF16 (16-bit numbers), license file present. The name carries the 95-billion-active-parameter figure (A95B) that was press-only before the release.</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B-FP8">Qwen3.8-2.4T-A95B-FP8</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Verified 2026-08-13: 213 shards, 2,496.2 GB, fp8 dynamic quantization with 128 by 128 blocks, license file byte-identical to the BF16 one. On that date the organization's Qwen3.8 collection held exactly these two repositories.</td></tr>
+          <tr><td>Community GGUF copies of the 2.4T download</td><td>Community only</td><td class="t" style="text-align:left">One real set, from the community quantizer unsloth, verified 2026-08-13: 312 GGUF files, 397.3 GB to 4,893.2 GB. No official GGUF. The smallest was downloaded here and matched its checksums, and it could not be loaded (<a href="#local">below</a>).</td></tr>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen3.8-27B</a></td><td>Shipped and verified</td><td class="t" style="text-align:left">Published about 11:00 EDT on 2026-08-14 and verified the same day: 18 safetensors plus an index, 32 files, and a LICENSE file read in full and kept. <strong>That license is Apache 2.0</strong>, byte-identical in the official FP8 repository. No official GGUF; the community conversions include one from the llama.cpp project's own organization, published the same day. Measured on the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</td></tr>
+          <tr><td>Qwen3.8-Max online</td><td>API only</td><td class="t" style="text-align:left">Live since 2026-08-03 on Alibaba Cloud Model Studio and on aggregators; measured <a href="#hosted">below</a>. Per the model card, checked 2026-08-13, vision input, the non-thinking mode and the million-token default context are extras of Qwen3.8-Max online, not in the 2.4T download.</td></tr>
+          <tr><td>Third-party "Qwen3.8" repos</td><td>Not official</td><td class="t" style="text-align:left">Re-screened 2026-08-13: every third-party 27B repository previously catalogued under the name still held zero weight tensors, and new mirrors and placeholders using the Max name appeared around the release.</td></tr>
+          <tr><td>Qwen3.7 family</td><td>API only</td><td class="t" style="text-align:left">Max, Plus and Flash tiers on the official API and aggregators (checked 2026-08-09). The vendor states they are proprietary; no 3.7 weights have shipped.</td></tr>
+          <tr><td>Qwen3.6-27B and 35B</td><td>Shipped and verified</td><td class="t" style="text-align:left">The newest open Qwen weights until 2026-08-12. File trees and Apache 2.0 license files confirmed on the official organization (checked 2026-08-09).</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tablenote">An earlier version of this page carried a
-      single-source report that the coming weights would have geographic
-      license restrictions, held as rumor until a license file existed.
-      The license file now exists, and we read it at the pinned revision
-      on 2026-08-13: its conditions are the two described in section 02,
-      and a geographic restriction is not among them. The note stays so
-      the rumor's resolution is on the record.</p>
-    </section>
 
-    <section>
-      <div class="secnum">02</div>
-      <h2>The Max-class license: not Apache 2.0</h2>
-      <p>Qwen3.6, the previous open release, shipped under Apache 2.0.
-      The Qwen3.8 Max-class weights do not. The file in both of their repositories is named the
-      <strong>Qwen3.8-Max License</strong>: 3,390 bytes, byte-identical
-      in the BF16 and FP8 repositories, read on 2026-08-13 at revision
-      <code class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</code>.
-      The body is an MIT-style permission grant with two conditions
-      attached:</p>
+      <h3 id="license">The 2.4T download's license is not Apache 2.0</h3>
+      <p>Qwen3.6, the previous open release, shipped under Apache 2.0. The 2.4T download does not. Both of their repositories hold the same <strong>Qwen3.8-Max License</strong>, 3,390 bytes, read on 2026-08-13: an MIT-style permission grant with two conditions.</p>
       <ul class="plain">
-        <li><strong>A name-display condition above consumer scale.</strong>
-        Products or services built on the model that exceed 100 million
-        monthly active users, or twenty million US dollars in monthly
-        revenue, must display the model name prominently. Note the unit
-        on the second test: monthly revenue, not annual.</li>
-        <li><strong>A separate-license condition above fifty
-        million.</strong> Businesses offering the model as a service, or
-        offering an "AI Work Assistant" product, whose aggregate revenue
-        exceeds fifty million US dollars in any consecutive twelve
-        months, must obtain a separate license from Qwen before
-        commercial use. Internal use is exempt.</li>
+        <li><strong>Name display above consumer scale.</strong> Products or services built on the model with more than 100 million monthly active users, or more than twenty million US dollars in monthly revenue, must display the model name prominently. The revenue test is monthly, not annual.</li>
+        <li><strong>A separate license above fifty million.</strong> Businesses offering the model as a service, or offering an "AI Work Assistant" product, whose aggregate revenue exceeds fifty million US dollars in any consecutive twelve months, must obtain a separate license from Qwen before commercial use. Internal use is exempt.</li>
       </ul>
       <div class="note">
         <span class="label">The operative clause, verbatim</span>
-        For "Model as a Service" and "AI Work Assistant" licensees above
-        the fifty-million threshold, the license says they "shall obtain
-        a separate license from Qwen before Using the Software or its
-        derivative works for any commercial purpose." The capital U on
-        "Using" is the license's own. Read 2026-08-13 at revision
-        <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>;
-        identical bytes in the FP8 repository at revision
-        <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>.
+        Such licensees "shall obtain a separate license from Qwen before Using the Software or its derivative works for any commercial purpose."
       </div>
-      <p style="margin-top:14px">In plain English, as we read it, the
-      grant works like MIT for individuals, researchers and ordinary
-      businesses, very large consumer products owe a visible name
-      credit, and a company past fifty million dollars in any rolling
-      twelve months that sells model access or an AI work assistant must
-      get a separate license from Qwen before commercial use; read the
-      license yourself, this is not legal advice.</p>
-      <p>The clause also settles a pre-release question. Reporting
-      sourced to Reuters on 2026-08-07 said to expect a revenue-share
-      arrangement in this license, with the rate still under
-      negotiation. What shipped resolves that expectation as thresholds
-      instead: as we read the file, no percentage of anyone's revenue
-      appears in it, a name-display duty starts at consumer scale, and a
-      separate-license duty starts at fifty million dollars for the two
-      named business shapes. The license file itself does not say what a
-      separate license costs above the threshold.</p>
-      <p>For local research use of the kind this site does, none of this
-      appears to bite: downloading, running, modifying and publishing
-      measurements sit inside the grant as we read it, far below every
-      threshold. Same caveat: our reading, not advice.</p>
-      <div class="note" style="margin-top:22px">
-        <span class="label">And the 27B is a different license entirely</span>
-        Everything above is about <code>Qwen3.8-2.4T-A95B</code> and its FP8
-        twin. The 27B that shipped on 2026-08-14 carries a genuine
-        <strong>Apache 2.0</strong> file: 11,544 bytes of verbatim Apache
-        License 2.0 text with an appendix reading
-        <code>Copyright 2026 Alibaba Cloud</code>, no monthly-active-user
-        threshold, no revenue-share clause, no separate-license requirement at
-        any revenue level, and byte-identical in the official FP8 repository.
-        We read it in full at revision
-        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span> on
-        2026-08-14 and retained the file. <strong>Two models, one version
-        number, two licenses.</strong> "Qwen3.8 is Apache 2.0" is inaccurate as
-        a family statement and true of the 27B; the reverse mistake, reading
-        this section's thresholds onto the 27B, is just as wrong. Section 03
-        of the <a href="../qwen38-27b/">Qwen3.8-27B field card</a> puts both
-        readings side by side with the retained files.
-      </div>
-    </section>
+      <p style="margin-top:14px">As we read it, the grant works like MIT for individuals, researchers and ordinary businesses. The file does not say what a separate license costs, and no percentage of anyone's revenue appears in it. For local research at the scale this site works (downloading, running, modifying and publishing measurements), far below every threshold, none of this appears to bite. This is our reading, not legal advice; read the license yourself.</p>
+      <p><strong>The 27B has a different license.</strong> Its file is 11,544 bytes of verbatim Apache License 2.0 text with an appendix reading <code>Copyright 2026 Alibaba Cloud</code>: no monthly-active-user threshold, no revenue-share clause, no separate license at any revenue level. "Qwen3.8 is Apache 2.0" is true of the 27B and wrong for the family. Section 03 of the <a href="../qwen38-27b/">Qwen3.8-27B field card</a> puts both side by side.</p>
 
-    <section>
-      <div class="secnum">03</div>
-      <h2>The Max-class weights: one model, always thinking</h2>
-      <p>Everything here comes from the <code>Qwen3.8-2.4T-A95B</code>
-      repository files at the pinned revision, mostly the config,
-      tokenizer and chat template, plus the model card, checked
-      2026-08-13. These are shipped facts, as distinct from announcement
-      promises. <strong>None of this row set describes the 27B</strong>,
-      which is a different architecture with a working thinking
-      off-switch and a vision tower in its configuration; its own reading
-      is section 01 of the
-      <a href="../qwen38-27b/">Qwen3.8-27B field card</a>.</p>
+      <h3 id="config">What the 2.4T download is</h3>
+      <p>From the <code>Qwen3.8-2.4T-A95B</code> repository's configuration, tokenizer, chat template (the format that turns a request into model input) and model card, checked 2026-08-13. None of it describes the 27B, which has a different architecture, a working thinking off-switch and a vision part in its configuration (section 01 of the <a href="../qwen38-27b/">field card</a>).</p>
       <table class="facts">
-        <tr><th scope="row">Release shape</th><td>One post-trained model. No base variant and no separate instruct variant exist: the repository is the assistant model, and the organization's Qwen3.8 collection carries nothing else.</td></tr>
-        <tr><th scope="row">Thinking</th><td>Mandatory. The thinking stage cannot be disabled, and the chat template raises an error if asked to run with thinking off. Control is a <code>reasoning_effort</code> setting with levels xhigh, medium and low; the default is xhigh, and thinking content is preserved across turns by default.</td></tr>
-        <tr><th scope="row">Modality</th><td>Text only. Vision input, the non-thinking mode and the million-token default context are hosted Qwen3.8-Max extras per the model card; none of them ship in these weights.</td></tr>
-        <tr><th scope="row">Context length</th><td>262,144 tokens native in the config. The model card calls it extensible to 1,010,000; the seven-figure number is a vendor claim we have not tested.</td></tr>
-        <tr><th scope="row">Architecture</th><td><code>Qwen3_5MoeForCausalLM</code>, model type <code>qwen3_5_moe_text</code>: a scaled Qwen3.5, not a new architecture. 92 layers arranged as 23 repeats of three GatedDeltaNet linear-attention layers plus one gated-attention layer, hidden size 8192, 512 experts with 10 routed and one shared active per token, and a one-layer multi-token-prediction head.</td></tr>
-        <tr><th scope="row">Tokenizer and template</th><td>Vocabulary 248,320 and end-of-sequence id 248044, both unchanged from the Qwen3.5 397B we already serve. The chat template drops the vision branches and adds the <code>reasoning_effort</code> control.</td></tr>
+        <tr><th scope="row">Release shape</th><td>One post-trained assistant model; no base or separate instruct variant.</td></tr>
+        <tr><th scope="row">Thinking</th><td>Always on. The chat template raises an error if asked to run with thinking off. A <code>reasoning_effort</code> setting has levels xhigh, medium and low; the default is xhigh. Thinking is kept across turns by default.</td></tr>
+        <tr><th scope="row">Modality</th><td>Text only.</td></tr>
+        <tr><th scope="row">Context length</th><td>262,144 tokens native in the configuration (how much text the model takes in at once). The model card calls it extensible to 1,010,000; that is the maker's claim, not tested here.</td></tr>
+        <tr><th scope="row">Architecture</th><td><code>Qwen3_5MoeForCausalLM</code>, model type <code>qwen3_5_moe_text</code>: a scaled Qwen3.5, not a new design. A mixture of experts (many expert blocks, a few used per token). 92 layers as 23 repeats of three GatedDeltaNet linear-attention layers plus one gated-attention layer, hidden size 8192, 512 experts with 10 routed and one shared active per token, and a one-layer multi-token-prediction head.</td></tr>
+        <tr><th scope="row">Tokenizer and template</th><td>Vocabulary 248,320 and end-of-sequence id 248044, both unchanged from Qwen3.5 397B. The template drops the vision parts and adds <code>reasoning_effort</code>.</td></tr>
       </table>
-      <p style="margin-top:16px">The architecture line is the practical
-      finding. Because the model declares an existing architecture
-      rather than a new one, the runtime wait that normally follows a
-      release should not apply: Qwen3.5 support took a merge, a revert
-      and a re-merge across a week, with the vendor's own pull request,
-      and none of that is needed if nothing new has to be merged. The
-      evidence, all checked 2026-08-13: llama.cpp has carried the
-      <code>qwen35moe</code> architecture enumeration since the 3.5
-      generation, and the build serving our Qwen3.5 pair, from upstream
-      commit <code>c8e03ce</code>, already contains it; the real
-      community GGUF conversion declares exactly that architecture and
-      the native 262,144 context in its own metadata (section 04); vLLM
-      merged a change on 2026-08-07 that routes Qwen3.8 checkpoints
-      through its existing Qwen3.5 path rather than adding a new model
-      class; and no new-architecture pull request is open or needed on
-      llama.cpp. The one open 3.8-adjacent llama.cpp pull request is
-      chat-template plumbing for the <code>reasoning_effort</code>
-      setting, and it does not block loading: the default effort applies
-      without it.</p>
-      <p><strong>We state this as an expectation with evidence, not as a
-      tested result: existing Qwen3.5 llama.cpp and vLLM paths should
-      load these weights unchanged. The one load attempt here so far
-      does not test it either way: the community file we tried was
-      refused for its quantization type at the header parse, before any
-      architecture code ran (section 07). For weights in mainline
-      formats the expectation stands, still untested here.</strong></p>
-    </section>
+      <p style="margin-top:16px"><strong>Because the architecture already exists, llama.cpp and vLLM should load these weights in the formats they already read, without new support work.</strong> As of 2026-08-13, llama.cpp already carried the <code>qwen35moe</code> architecture, including in the build serving Qwen3.5 on this desktop; the community GGUF declares exactly that architecture and the native 262,144 context; and vLLM merged a change on 2026-08-07 that sends Qwen3.8 checkpoints through its existing Qwen3.5 path. The one related llama.cpp pull request, template support for <code>reasoning_effort</code>, never blocked loading and merged on 2026-08-14 (<a href="https://github.com/ggml-org/llama.cpp/pull/26941">#26941</a>). This is an expectation with evidence, not a tested result: the one load attempt here failed on the file's compression type before any architecture code ran.</p>
 
-    <section>
-      <div class="secnum">04</div>
-      <h2>Community quantizations of the Max-class weights, and what fits at home</h2>
-      <p>This section sizes the <code>Qwen3.8-2.4T-A95B</code> conversions.
-      The 27B's conversions are ordinary desktop-sized files and are
-      covered on its own <a href="../qwen38-27b/">field card</a>, which
-      names the one it served and its checksum.</p>
-      <p>The organization shipped safetensors only; no official GGUF
-      exists, checked 2026-08-13. One community conversion is real: the
-      quantizer account unsloth published
-      <span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span>, 312 GGUF
-      files at revision <span class="n">567d3e6ac26c</span>, last pushed
-      01:01 UTC on 2026-08-13, with architecture and context metadata
-      matching the official config (section 03). File-manifest sizes at
-      that revision:</p>
+      <h3 id="local">The 2.4T download on a desktop</h3>
+      <p>The Qwen organization shipped safetensors only; no official GGUF exists (checked 2026-08-13). The one real community conversion is <span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span>. Its sizes, smallest compression level first:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Quantization</th><th>On-disk size</th></tr></thead>
@@ -371,145 +257,17 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Sizes as listed in the repository manifest on
-      2026-08-13. One row has since been through our hands: the UD-Q1_0
-      set was downloaded here on 2026-08-13, every shard matched the
-      repository's own SHA-256 checksums, and it could not be run
-      (section 07). The rest of the table remains listing-verified only,
-      neither downloaded nor run here. The other quantizer
-      accounts people usually watch, bartowski and mradermacher, had
-      published nothing under the name at check time, and one further
-      well-known quantizer account carried only an empty placeholder.</p>
-      <div class="note">
-        <span class="label">What a desktop can do with this, honestly</span>
-        The desktop this site measures on has 188 GB of system memory
-        and one 32 GB graphics card, and it serves two Qwen3.5 models
-        today. Against this release the arithmetic is blunt: the
-        smallest real Qwen3.8 artifact in existence, the 397.3 GB
-        Q1_0, is the only one that even fits in the free disk space
-        here, and at more than twice system memory it could only run
-        streamed from NVMe. We have done that before: a 594 GB
-        quantization of a different trillion-parameter mixture of
-        experts ran here at 0.19 to 0.28 tokens per second. That is an
-        existence proof, not a tool. Loadable, able to generate, worth
-        studying and worth recommending are four different findings,
-        and the precedent says a machine this size should expect, at
-        best, the first two. On release day we downloaded that 397.3 GB
-        set, verified all ten shards bit-perfect against the
-        repository's own checksums, and could not run it: its expert
-        tensors use a quantization type that no public runtime declares,
-        so the load was refused at the header parse with nothing
-        allocated (section 07). There are still no speed numbers because
-        nothing has ever loaded; the day a public build can read the
-        file, this machine gets its answer.
-      </div>
-    </section>
+      <p class="tablenote">As listed in the repository on 2026-08-13. Only UD-Q1_0 was downloaded here; the rest were neither downloaded nor run. The quantizer accounts bartowski and mradermacher had published nothing under the name at check time, and one more well-known quantizer account held only an empty placeholder.</p>
+      <p>The desktop here has 188 GB of system memory and one 32 GB graphics card. The 397.3 GB UD-Q1_0 is the only file that fits its free disk, and at more than twice system memory it could only run streamed from an NVMe drive. A 594 GB file of a different trillion-parameter mixture of experts once ran that way here at 0.19 to 0.28 tokens a second: proof it can run, not a tool. A machine this size should expect, at best, a model that loads and generates, not one worth recommending.</p>
+      <p><strong>It did not load.</strong> On 2026-08-13 the 397.3 GB set downloaded through two interruptions, and all ten shards matched the repository's own SHA-256 checksums. The server then refused it in 0.38 seconds while reading the file header, before allocating anything. The cause was neither memory nor architecture: the 276 routed-expert tensors that hold most of the 2.4 trillion parameters are stored as quantization type number 66, and in every public build checked that day, llama.cpp mainline and the quantizer's own public fork alike, the type table ends at 42. The "Q1_0" in the name is branding, and the file's metadata label names a standard type found nowhere among its tensors. On 2026-08-16 no public llama.cpp build declared it and no open pull request added it. So this model has no local speed, memory or quality numbers here; the verified file gets a new load attempt when a public build can read it.</p>
 
-    <section>
-      <div class="secnum">05</div>
-      <h2>The name-squat hazard, still live on release day</h2>
-      <p>Within days of the announcement, and before any real weights,
-      repositories using the Qwen3.8 name appeared on public model hubs
-      under third-party accounts. The ones we examined fall into two
-      shapes: <strong>placeholder cards</strong> that describe planned
-      quantizations but contain no weight tensors at all, and
-      <strong>rebadges</strong>, where a small model distilled from or
-      unrelated to the announced ones circulates under the 3.8 name.
-      Secondary articles have already cited some of these as if they were
-      releases. The two are different hazards with the same conclusion: an
-      empty card cannot be a release, and real tensor files under the name
-      are still someone else's model, not the announced Max or 27B.</p>
-      <p><strong>Release day did not retire this section; it sharpened
-      it.</strong> Re-screened 2026-08-13: every third-party 27B
-      repository we had previously catalogued under the name still
-      contains zero weight tensors, including ones whose cards now
-      advertise an Apache 2.0 license for a model that had not then
-      shipped under any license. A fresh wave of mirrors and placeholders
-      using the Max name appeared around the release itself.</p>
-      <p><strong>The real 27B now exists, which changes the test rather
-      than removing it.</strong> As of 2026-08-14 there is a genuine
-      article to compare against:
-      <code>Qwen/Qwen3.8-27B</code>, on the maker's own organization, at
-      revision
-      <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>, with
-      an Apache 2.0 license file. Verify against that repository and that
-      revision. A third-party repository under the 27B name is still that
-      account's artifact, and now it is also checkable: if the weights are
-      not the maker's files at a revision you can name, it is not the
-      released model. The empty placeholders that carried the name before
-      the release did not become real when a real model appeared beside
-      them, and one of them advertising Apache 2.0 does not make it the
-      Apache 2.0 model.</p>
-      <p>The general rule is worth more than any list of today's fakes,
-      because next week's will have different names. Three questions
-      settle almost every case, and none of them requires downloading
-      anything:</p>
-      <ul class="plain">
-        <li><strong>Who owns the repository?</strong> A release comes from
-        the maker's own organization account. A model published under any
-        other account is that account's artifact, whatever the name says
-        and however carefully the card is worded. This is a question about
-        the owner, not about the quality of the page.</li>
-        <li><strong>Is there anything in it?</strong> Open the file list
-        before the description. Weights are large and they come in shards:
-        a 27B at four bits is tens of gigabytes, a 2.4-trillion-parameter
-        model is hundreds. A repository whose entire contents are a
-        readme and a small configuration file contains no model at all,
-        and a card describing planned quantizations is a plan, not a
-        release.</li>
-        <li><strong>Was this size ever announced?</strong> The 2026-08-03
-        announcement named exactly two open models: a 27B and the
-        2.4-trillion-parameter Max. A repository using the 3.8 name at any
-        other size is, by arithmetic, not one of the announced models,
-        whatever else it may be.</li>
-      </ul>
-      <p>We are describing shapes rather than naming accounts on purpose.
-      A rule generalizes to next week's uploads; a list of names is out of
-      date the day after it is written, and it accuses people we have not
-      contacted on evidence we have not asked them to answer.</p>
-      <p>When a drop happens, the safe path is boring: take the
-      repository link from the Qwen team's own announcement channels, or
-      the official organization page directly, confirm the license file is
-      present, confirm the weight shards are actually there with sizes
-      that make sense for the stated parameter count, and verify
-      checksums after downloading. That day arrived on 2026-08-12, and
-      the path above is exactly what we ran on 2026-08-13: the verified
-      repositories, revisions and sizes are in section 01. We ran it again
-      on 2026-08-14 for the 27B, in about five minutes, and the checksums
-      matched.</p>
-    </section>
+      <h3 id="fakes">Fake repositories</h3>
+      <p>Within days of the announcement, before any real weights, third-party repositories used the Qwen3.8 name in two shapes: <strong>placeholder cards</strong> that describe planned files but hold no weight tensors, and <strong>rebadges</strong>, small models distilled from or unrelated to the announced ones, under the 3.8 name. On 2026-08-13 every third-party 27B repository previously catalogued still held zero weight tensors, including some whose cards advertised Apache 2.0 for a model that had not then shipped under any license. Those placeholders did not become real when the real 27B appeared beside them on 2026-08-14. Accounts are not named here, because next week's fakes will have different names.</p>
 
-    <section>
-      <div class="secnum">06</div>
-      <h2>First measurements of the API model</h2>
-      <p>On 2026-08-09 we ran a fixed fifteen-call battery against
-      Qwen3.8-Max through one aggregator route (OpenRouter), with every
-      raw request and response body retained. This is one serving route on
-      one afternoon, one to three calls per cell: diagnostics, not a
-      benchmark. Total cost of the whole battery: <strong>seven cents</strong>,
-      at the listed two dollars per million input tokens and six per
-      million output.</p>
-      <p>The quick facts first. Asked what it is, the model answered
-      "Qwen, also known as Tongyi Qianwen," built by Alibaba's Tongyi
-      Lab. It solved the classic bat-and-ball trap correctly, produced a
-      correct interval-merging function with three test assertions
-      including the empty-list edge case, returned schema-conforming JSON
-      on all three attempts, and passed our honesty probe cleanly: asked
-      to summarize a file we never provided and report a score on a
-      benchmark that does not exist, it said it had no such file and could
-      not state the score, and asked for the data instead of inventing
-      either.</p>
-      <p>The finding that will matter to anyone building on it:
-      <strong>the model thinks by default, its thinking bills as output
-      tokens inside your token cap, and it will happily spend your entire
-      cap thinking and hand back an empty answer.</strong> We know the
-      behavior well from serving two Qwen3.5 models locally (their field
-      card is linked below), and it is fully present on this frontier API
-      route. It is not a Qwen trait: a model from a different vendor,
-      swept on the same prompt at the same caps on 2026-08-09, was slower
-      than this one to produce a first visible answer (section 10, and the
-      full study on <a href="../empty-answer/">Empty Answer</a>). The
-      Qwen battery:</p>
+      <h3 id="hosted">Qwen3.8-Max online: thinking can use the whole budget</h3>
+      <p>On 2026-08-09 a fixed set of fifteen calls ran against Qwen3.8-Max online through one aggregator route (OpenRouter), with every raw request and response kept. Total cost: <strong>seven cents</strong>, at the listed two dollars per million input tokens and six per million output.</p>
+      <p>It called itself "Qwen, also known as Tongyi Qianwen," built by Alibaba's Tongyi Lab. It solved the bat-and-ball trap, wrote a correct interval-merging function with three test assertions, returned schema-conforming JSON on all three attempts, and, asked about a file never provided and a benchmark that does not exist, asked for the data instead of inventing either.</p>
+      <p><strong>The model thinks by default, its thinking bills as output tokens inside your token cap, and it will spend the entire cap thinking and hand back an empty answer.</strong></p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Request</th><th>Token cap</th><th>Thinking spent</th><th>Visible answer</th></tr></thead>
@@ -524,58 +282,12 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">Token caps are the request's max-tokens value on
-      this route, which covers thinking plus the visible answer. "Thinking
-      spent" is the reasoning-token count the API reported back. Every
-      empty row finished with the length stop reason: the cap ran out
-      before the first visible word.</p>
-      <p>Read the middle rows carefully: a medium reasoning puzzle
-      exhausted a 2,000-token cap without producing one visible word, and
-      a simple story request burned 1,200 tokens of thinking
-      three times in a row and never wrote the story. The practical rule
-      we use locally holds here: give thinking Qwens
-      thousands of tokens of headroom, or use the effort control, and
-      treat an empty answer with a length stop as a budget failure, not a
-      model refusal. You pay for the thinking either way: our three empty
-      story attempts cost more than the completed effort-controlled runs
-      that actually answered.</p>
-      <p>End-to-end latency on this route, for scale: about three to five
-      seconds for a short factual answer, about twelve for the JSON asks,
-      about twenty-five to forty-six seconds when thinking runs long. Wall-clock through an
-      aggregator, labeled as such.</p>
-    </section>
+      <p class="tablenote">Qwen3.8-Max online, 2026-08-09. Token cap is the request's max-tokens value, which covers thinking plus the visible answer. "Thinking spent" is the reasoning-token count the API reported. Every empty row ended with the length stop reason: the cap ran out before the first visible word.</p>
+      <p>A medium puzzle used all of a 2,000-token cap without one visible word, and a simple story request spent 1,200 tokens thinking three times in a row and never wrote the story. Those three empty attempts cost more than the completed effort-controlled runs: you pay for the thinking either way. Time for a whole request on this route: about three to five seconds for a short factual answer, about twelve for the JSON asks, about twenty-five to forty-six seconds when thinking runs long.</p>
+      <p><strong>This is not a Qwen fault.</strong> On 2026-08-09 one fixed reasoning prompt went across the same caps to a comparable hidden-reasoning model from another vendor. Both returned empty answers at small caps. Qwen gave its first visible words at a 256-token cap; the other still returned nothing at 256 and did not finish until 1,024. The full study is <a href="../empty-answer/">Empty Answer</a>.</p>
 
-    <section>
-      <div class="secnum">07</div>
-      <h2>Measured on release day</h2>
-      <p>The released model has a hosted twin: since 2026-08-12 at 16:21
-      UTC the same 2.4T-A95B has been listed on the aggregator route we
-      measured in section 06, at the same listed prices as the Max
-      endpoint, two dollars per million input tokens and six per million
-      output. On 2026-08-13 we ran the day-one battery against that
-      route, and the same day we downloaded the one community file set
-      from section 04 that fits this machine and tried to run it. Both
-      halves of release day are below. Every number comes from a
-      recorded run with its raw bodies retained, one to three calls per
-      cell, single observations labeled as such: diagnostics, not a
-      benchmark.</p>
-      <p>One sentence of context first: a morning attempt never reached
-      the model, because on its first day the open-weights listing was
-      served only by third-party GPU clouds while this account's
-      provider allowlist admitted model authors only, so all 26 calls
-      returned the same not-found error in about a tenth of a second
-      each, and the battery below ran in the afternoon, after we
-      deliberately admitted two of those providers.</p>
-      <p><strong>The hosted battery: thirty-five model calls, two
-      providers, thirty-nine cents.</strong> The aggregator filled our
-      calls from DeepInfra (20 of 35) and Together (15), switching
-      between them mid-battery; DeepInfra lists its serving precision as
-      fp4 and Together lists none, so every number below belongs to this
-      endpoint mix on this day, with the provider recorded per call. The
-      headline is continuity: <strong>the empty-answer behavior this
-      site documents is fully present on the open weights.</strong> The
-      marble prompt from the <a href="../empty-answer/">Empty Answer</a>
-      study, temperature zero, one call per cap:</p>
+      <h3 id="hosted-open">The 2.4T download, served online</h3>
+      <p>Since 16:21 UTC on 2026-08-12 the 2.4T download has been listed on the same OpenRouter route at the same prices as Qwen3.8-Max online. On 2026-08-13 thirty-five calls against it cost thirty-nine cents. OpenRouter filled them from DeepInfra (20 of 35) and Together (15); DeepInfra lists its serving precision as fp4 and Together lists none. <strong>The empty-answer behavior is fully present on the 2.4T download.</strong> The marble prompt from Empty Answer, temperature zero, one call per cap:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Token cap</th><th>Provider</th><th>Thinking spent</th><th>Visible answer</th></tr></thead>
@@ -587,19 +299,8 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">One call per cell, 2026-08-13. "Thinking
-      spent" is the reasoning-token count the server reported back; the
-      60 and 256 rows finished with the length stop reason, the 500 and
-      2,000 rows stopped on their own. The shape matches the hosted Max
-      curve from 2026-08-09 at neighboring caps: empty at 60 where Max
-      was empty at 64, first truncated words at a 256 cap on both, clean
-      by 500 where Max was clean by 512.</p>
-      <p>The <code>reasoning_effort</code> control from section 03 then
-      got a same-prompt, same-cap reading: the marble prompt again, a
-      2,000-token cap, temperature zero, one call per level. On this one
-      trivial probe the knob did not change how much the model thinks.
-      What it demonstrably changed is the served prompt and the answer's
-      style:</p>
+      <p class="tablenote">The 60 and 256 rows ended with the length stop reason; the 500 and 2,000 rows stopped on their own. On the marble prompt, Qwen3.8-Max online on 2026-08-09 matched at neighboring caps: empty at 64, first cut-off words at 256, clean by 512.</p>
+      <p><strong>On one easy prompt, the effort setting changed the prompt and the style, not the amount of thinking.</strong> The marble prompt again, a 2,000-token cap, temperature zero, one call per level, requests byte-identical apart from the effort field:</p>
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Effort level</th><th>Provider</th><th>Thinking spent</th><th>Prompt tokens, server count</th><th>Cost, server billed</th><th>Visible answer</th></tr></thead>
@@ -610,336 +311,69 @@
         </tbody>
       </table>
       </div>
-      <p class="tablenote">One call per level, 2026-08-13; the low call
-      landed on the other provider, a stated confound. The three
-      requests were byte-identical apart from the effort field.</p>
-      <p>Read the columns against each other. Thinking spend stayed
-      flat, 168 to 197 tokens across the three levels, and every answer
-      was correct, so on this probe the knob neither bought nor saved
-      any thinking. But the server counted three different prompt
-      lengths for byte-identical requests, 112 tokens at the default, 70
-      at medium, 100 at low: the effort level is being written into the
-      served prompt itself. That is consistent with the shipped chat
-      template from section 03, which implements effort as inserted
-      instruction sentences, one for xhigh, one for low, none for
-      medium. And because lower effort produced longer, more formatted
-      answers, the billed cost ran opposite to the knob's apparent
-      intent: medium cost the most and the default cost the least. One
-      trivial prompt, one call per level; a harder-prompt replication is
-      the obvious next step, and until it runs we generalize
-      nothing.</p>
-      <p>Thinking is mandatory in practice, not just in the template.
-      Section 03 said the shipped chat template raises an error if asked
-      to run with thinking off; the hosted route does not raise, it just
-      does not comply: a probe that sent <code>enable_thinking:
-      false</code> got a reply that still carried 626 tokens of hidden
-      reasoning, the field silently ignored. Single observation,
-      2026-08-13.</p>
-      <p>The listing is not the bill. Fine print, measured 2026-08-13:
-      both providers that served us ran the native 262,144-token context
-      from section 03, and the million-token context on the aggregator's
-      listing exists only on a provider we did not admit, so we never
-      touched it. Together bills above the listed price, two dollars
-      fifty per million input tokens and six twenty-five per million
-      output against the listed two and six, and the server-reported
-      cost of every Together call matched that premium to the digit. The
-      same provider billed 12,672 repeated identical prompt tokens at
-      roughly a fifth of its input price on one probe, a cache discount
-      the listing does not mention, which is why the session's billed
-      total came in just under the sum of list prices. Check the
-      per-provider terms behind an aggregator listing before budgeting:
-      the listing showed neither the premium nor the discount.</p>
-      <p>The rest of the battery, one to three calls per cell: the
-      long-context cells planted a code and got it back exactly, once at
-      31,380 prompt tokens and once at 69,441, both counts as the server
-      reported them; tool calling passed every shot with exactly the
-      right function arguments; and structured output conformed on all
-      three attempts when the schema was written into the prompt. The
-      one serving-layer gap: a request that supplied its JSON schema
-      only through the API's response_format field starved to an empty
-      answer, and the retained reasoning opens by complaining that no
-      schema was provided, so on this route that field never reached the
-      model. Put the schema in the prompt. These cells came from
-      routecheck, the instrument that packages the fixed battery of
-      section 08 into one recorded pass, plus a few one-call checks
-      alongside it; routecheck also measured this route's
-      thinking-budget floor at 500 tokens for its own probe family,
-      where the marble prompt above showed first words at 256, which is
-      the floor lesson in one line: it is prompt-dependent, so measure
-      it on your prompts, not ours.</p>
-      <p><strong>The local half of release day ended at the runtime
-      layer, with zero seconds of model serving.</strong> We downloaded
-      the one file set from section 04 that fits this machine's free
-      disk, the 397.3 GB UD-Q1_0, at the pinned revision named there,
-      and verified it bit-perfect on 2026-08-13: all ten shards matched
-      the repository's own SHA-256 checksums, ten of ten, through a
-      download that had to survive two interruptions. Then our server
-      refused the file in 0.38 seconds, at the header parse, before
-      allocating anything. The reason is not memory and not
-      architecture: the 276 routed-expert tensors that hold most of the
-      2.4 trillion parameters are stored as quantization type number 66,
-      and in every public build we checked that day the type table ends
-      at 42, llama.cpp mainline and the quantizer's own public fork
-      alike. The "Q1_0" in the file name is branding, not the mainline
-      format of that name, and the file's own metadata label claims a
-      standard type that appears nowhere among its tensors. The type is
-      real; the code that reads it is, today, not public.</p>
-      <p>So the giant still has no local speed, memory or quality
-      numbers here, and the reason is now sharper than not having run
-      it: nothing public can load it. We will not invent what nothing
-      could measure. The re-test is standing and cheap: the day a public
-      build carries the new type family, the verified bytes on disk get
-      their load attempt, and its numbers land here, dated. Until then
-      the hosted route above is the only place the open 2.4T answers
-      questions from this desk.</p>
-      <div class="note">
-        <span class="label">The lesson, for anyone about to download</span>
-        Verify the quantization type against your runtime before the
-        download, not after. A familiar name is not a format: this file
-        is called Q1_0 and is not mainline Q1_0, its metadata label
-        claims a standard type it does not contain, and the truth lived
-        only in the per-tensor headers, where the expert tensors declare
-        a type no public build can read. The check against a runtime's
-        type table costs minutes. Here the download cost an afternoon
-        and 397 GB of disk, and the refusal arrived in less than half a
-        second.
-      </div>
+      <p class="tablenote">The low call landed on the other provider.</p>
+      <p>Thinking stayed at 168 to 197 tokens and every answer was correct, but the server counted three prompt lengths for identical requests. That is consistent with the shipped template, which adds an instruction sentence for effort (one for xhigh, one for low, none for medium). Lower effort gave longer, more formatted answers, so medium cost the most and the default the least.</p>
+      <p><strong>Thinking was not turned off by this request.</strong> A request with <code>enable_thinking: false</code> got a reply that still carried 626 tokens of hidden reasoning; the field was silently ignored. One request, 2026-08-13.</p>
+      <p><strong>The listing is not the bill.</strong> Both providers ran the 262,144-token context; the listing's million-token context was only on a provider not used here. Together billed two dollars fifty per million input tokens and six twenty-five per million output, against the listed two and six, and the reported cost of every Together call matched that premium to the digit. It also billed 12,672 repeated identical prompt tokens at roughly a fifth of its input price on one test, a cache discount the listing does not mention, so the billed total came in just under the sum of list prices.</p>
+      <p><strong>The rest passed.</strong> A code hidden in long prompts came back exactly at 31,380 and at 69,441 prompt tokens, as the server counted them. Tool calls had exactly the right arguments every time. JSON conformed on all three attempts with the schema written into the prompt. On this route (the 2.4T download through OpenRouter), a schema sent only through <code>response_format</code> never reached the model: the answer was empty and the kept reasoning complains that no schema was provided. Routecheck, the site's tool that runs the fixed tests in one recorded pass, put this route's thinking-budget floor at 500 tokens for its own prompts, where the marble prompt showed first words at 256: the floor depends on the prompt, so measure it on yours.</p>
+
+      <h3 id="q27b">The 27B ran the day it shipped</h3>
+      <p>The 27B went public at about 11:00 EDT on 2026-08-14. By evening a community GGUF conversion, checked against its repository's checksums, was serving on this desktop's existing llama.cpp build, which already implements its architecture. Its measurements are on the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>, with the exact launch command, three measured client traps and a data package; its draft head (a helper that guesses ahead) writes prose at 72.4 tokens a second gated and 44.5 with the gate removed; the card has the detail.</p>
     </section>
 
-    <section>
-      <div class="secnum">08</div>
-      <h2>The absorption path, and where it stands</h2>
-      <p>This machine already serves two Qwen3.5 mixture-of-experts models
-      on one 32 GB graphics card, so the absorption path was rehearsed and
-      written down before the release rather than after. Release day
-      followed it. In order:</p>
+    <section id="limits">
+      <div class="secnum">03</div>
+      <h2>Limits</h2>
       <ul class="plain">
-        <li><strong>Verify before downloading.</strong> Official
-        repository, license file read, architecture string from the
-        config, shard list with sizes. If the architecture is new to the
-        runtimes, we say plainly that it does not run locally yet and
-        track the support work instead of forcing it.
-        <strong>Done 2026-08-13 for the Max-class release: sections 01
-        to 04 of this update are that step's output.</strong></li>
-        <li><strong>Feasibility before the big one.</strong> The 27B-class
-        model is a routine download. A Max-class open release is not: we
-        compute storage, memory and rollback from the actual file listing
-        first. We have run a model far larger than system memory before,
-        streaming from disk, so "too big to be sensible" is a measurement
-        question here, not a reflex. Loadable, able to generate, worth
-        studying, and worth recommending are four different findings and
-        we will label which one we reached.
-        <strong>Done 2026-08-13 for the Max-class release: the
-        arithmetic in section 04 picked the one tier that fits this
-        machine, storage and rollback were computed from the actual file
-        listing, and the download ran the same day (section 07).</strong></li>
-        <li><strong>Checksums, then a first safe load</strong> at
-        conservative settings, nothing else running.
-        <strong>Half done 2026-08-13: checksums passed ten of ten; the
-        first safe load was refused at the header parse by the file's
-        quantization type, so the load stage waits on a public runtime
-        that declares it (section 07).</strong></li>
-        <li><strong>The same fixed battery</strong> we run on every model:
-        identity and file accounting, load and memory placement, warm
-        speed medians, the thinking-budget map from section 06 run
-        locally with identical prompts, the reasoning toggle, tool
-        calls, structured output, an honesty probe, and a long-context
-        retrieval check. Same prompts as the API run above, so
-        local-versus-hosted lands on day one with nothing invented.
-        <strong>The hosted side of that battery ran 2026-08-13
-        (section 07); the local side waits on a loadable file.</strong></li>
-        <li><strong>This page updates the same day</strong>, dated, with
-        whatever we actually measured and nothing more.</li>
+        <li><strong>Hosted results are diagnostics, not a benchmark.</strong> One aggregator route, one to three calls per cell, on 2026-08-09 and 2026-08-13; the 2.4T download's numbers belong to that day's DeepInfra and Together mix.</li>
+        <li><strong>The effort result is one easy prompt.</strong> One call per level, with the low call on the other provider. A harder prompt was not run, so nothing is generalized from it.</li>
+        <li><strong>Loading in a supported format is untested.</strong> That existing Qwen3.5 paths in llama.cpp and vLLM load the 2.4T download in mainline formats is an expectation, not a result here.</li>
+        <li><strong>Status is dated.</strong> The files were last checked on 2026-08-13 and 2026-08-14; only the pull request and the quantization type were rechecked on 2026-08-16. After 2026-08-16, treat the status table as unverified and check the official organization directly.</li>
       </ul>
-      <p><strong>The 27B half ran on 2026-08-14, end to end, the day it
-      shipped.</strong> It was the routine download the plan predicted:
-      weights public at about 11:00 EDT, on this desktop by evening,
-      verified against the conversion repository's own checksums before
-      first load, and served on a llama.cpp build this machine already
-      had, because the file declares an architecture that build already
-      implements. Every stage of the plan above completed for it,
-      including the local half of the fixed battery that the Max-class
-      release could not reach. The full measured record is its own page:
-      the <a href="../qwen38-27b/">Qwen3.8-27B field card</a> carries the
-      seven-profile ladder and the exact invocation, the thinking
-      off-switch and the budget floor, three measured client traps, the
-      draft head that decodes prose at 72.4 tokens a second gated and
-      44.5 with the gate removed, and the license reading in full, with a
-      data package holding every request and response body behind it.
-      This page stays what it is: the dated record of what shipped and
-      when. The card is the record of what it does.</p>
     </section>
 
-    <section>
-      <div class="secnum">09</div>
-      <h2>Where this page comes from</h2>
-      <p>Graphometer runs big Qwen models for real: the
-      Qwen3.5 122B and 397B serve on one desktop here, measured in a
-      <a href="../qwen35/">field card</a> whose numbers trace to dated
-      recorded runs, including a speculative-decoding gate trap that the
-      guides we used while serving those models do not call out. That working familiarity is
-      the lens for this page: we are not previewing benchmarks, we are
-      preparing to operate the new models and to publish what operating
-      them is actually like.</p>
+    <section id="updates">
+      <div class="secnum">04</div>
+      <h2>Corrections and updates</h2>
+      <div class="note"><span class="label">2026-08-09: page created</span>Nothing had shipped yet. The Qwen3.8-Max online tests were run and recorded.</div>
+      <div class="note"><span class="label">2026-08-10: our conclusion changed</span>The cross-vendor sweep, which cost under three cents, showed the empty answers are not a Qwen fault; Qwen was the better-behaved of the two. The Qwen curve alone would have implied a Qwen-specific defect, wrongly.</div>
+      <div class="note"><span class="label">2026-08-13: release day, two reports resolved</span>The 2.4T download, public on 2026-08-12, was verified. An earlier version of this page carried a single-source report of geographic license restrictions, held as rumor; the license file has no such restriction. Reporting sourced to Reuters on 2026-08-07 expected a revenue share; what shipped is thresholds. On 2026-08-13 the 27B was still announced, with no official files.</div>
+      <div class="note"><span class="label">2026-08-13, later</span>Online tests of the 2.4T download and the local download added. Earlier text said the file was not downloaded; it now says downloaded, verified and refused. The re-test waits on a public build that declares the new quantization type.</div>
+      <div class="note"><span class="label">2026-08-14: the 27B shipped under Apache 2.0</span>Verified, run and measured the same day. The license section now says the two models carry two licenses. Reading the 2.4T download's thresholds onto the 27B is as wrong as calling the family Apache 2.0.</div>
+      <div class="note"><span class="label">2026-08-16: the template pull request merged</span>llama.cpp merged the <code>reasoning_effort</code> template support (pull request <a href="https://github.com/ggml-org/llama.cpp/pull/26941">#26941</a>) on 2026-08-14, one day after the 2.4T release day and about three hours after the 27B went public; the first release carrying it is build <span class="n">b10434</span>, the same evening. The compression type the local load was refused on is still declared by no public llama.cpp build, so that re-test still waits.</div>
     </section>
 
-    <section>
-      <div class="secnum">10</div>
-      <h2>Updates</h2>
+    <section id="measured">
+      <div class="secnum">05</div>
+      <h2>How this was measured</h2>
       <table class="facts">
-        <tr><th scope="row">2026-08-09</th><td>Page created. Status verified against the official organization pages, the announcement coverage, aggregator APIs and runtime repositories; nothing shipped yet. API battery run and recorded (section 06).</td></tr>
-        <tr><th scope="row">2026-08-10</th><td><strong>The empty-answer behavior in section 06 is not a Qwen fault, and we can now show that rather than assert it.</strong> On 2026-08-09 we swept one fixed reasoning prompt across the same token caps on two models from different vendors: Qwen3.8-Max on this aggregator route, and a comparable hidden-reasoning model from another family as a control. Both spend the whole cap thinking and return an empty answer when the cap is small. On this prompt <strong>Qwen was the better-behaved of the two</strong>: it produced its first visible words at a 256-token cap, where the control still returned nothing at 256 and did not finish until 1,024. This is a property of models that think invisibly and bill that thinking against one visible output budget, not a property of any one vendor. The whole comparison cost under three cents and it changed our conclusion: a page showing the Qwen curve alone would have implied a Qwen-specific defect and would have been wrong. The full study follows on its own page, <a href="../empty-answer/">Empty Answer</a>: three lanes including this machine's local Qwen3.5, the cross-vendor control, and the method for finding your own floor instead of trusting a number.</td></tr>
-        <tr><th scope="row">2026-08-13</th><td><strong>Release day: the Max-class open weights shipped, and only the Max-class.</strong> Two repositories under the official Qwen organization flipped public on 2026-08-12 by their own timestamps; on 2026-08-13 we verified both at pinned revisions, with shard counts, sizes and the license file, so their rows in section 01 move to shipped and verified. The license is the practitioner headline: not Apache 2.0 but a custom Qwen3.8-Max License with a name-display threshold and a separate-license threshold, quoted verbatim in section 02; the pre-release revenue-share report resolved into thresholds, and the geographic-restriction rumor found no support in the text we read. The shipped config says one post-trained model, always thinking, text only, on a scaled Qwen3.5 architecture, which is why we expect existing runtimes to load it without new support work (section 03; stated as an expectation, not yet load-tested here). One community GGUF set is real and sized in section 04; no official GGUF exists. The 27B remains announced, with zero official artifacts anywhere we checked, and the name-squat hazard of section 05 held true on release day, with a fresh wave of placeholders around the release itself. A day-one battery against the hosted route is underway; its numbers land in a dated follow-up (section 07).</td></tr>
-        <tr><th scope="row">2026-08-13</th><td><strong>Same-day
-        follow-up: the two release-day studies completed, and section 07
-        now holds their numbers.</strong> Hosted: the day-one battery
-        ran in the afternoon, thirty-five model calls across two named
-        providers for thirty-nine cents, after a morning attempt was
-        blocked by this account's own provider allowlist. The budget map
-        on the open weights matches the hosted Max curve from
-        2026-08-09; the reasoning-effort control, on one trivial probe,
-        left thinking volume flat and rewrote the served prompt instead,
-        with billed cost running opposite to the knob's apparent intent;
-        asking for thinking off is silently ignored, so thinking is
-        mandatory in practice; and the per-provider fine print is
-        recorded, a premium over the listed price, a cache discount, the
-        native 262,144-token context on both providers we touched, the
-        million-token listing figure only on one we did not. Local: we
-        downloaded the one community file set that fits this machine,
-        verified all ten shards bit-perfect against the repository's own
-        checksums, and no public runtime can load it, so the server
-        refused it at the header parse in under half a second. Sections
-        01, 03, 04 and 08 now say downloaded, verified and refused
-        instead of not downloaded. The re-test waits on a public build
-        that declares the new quantization type.</td></tr>
-        <tr><th scope="row">2026-08-14</th><td><strong>The 27B shipped,
-        and it is Apache 2.0.</strong> Weights public at about 11:00 EDT
-        under the official Qwen organization; verified the same day at
-        revision
-        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>,
-        18 safetensors plus an index, with a LICENSE file we read in full
-        and retained: 11,544 bytes of verbatim Apache License 2.0, no
-        revenue thresholds of any kind, byte-identical in the official FP8
-        repository. Its row in section 01 moves to shipped and verified.
-        <strong>The two open Qwen3.8 models therefore carry two different
-        licenses, and quoting one for both is a mistake in either
-        direction</strong>; section 02 now says so at the end. There is
-        still no official GGUF for the 27B, and the community conversions
-        include one from the llama.cpp project's own organization. The
-        absorption path of section 08 ran end to end the same evening: we
-        downloaded a community conversion, verified both files against the
-        repository's own checksums, served it on a build this machine
-        already had, and measured it. Those measurements are their own
-        page, the <a href="../qwen38-27b/">Qwen3.8-27B field card</a>,
-        with a data package behind every figure. The name-squat hazard of
-        section 05 is not retired by any of this: it now has a real
-        repository and a real revision to check against, which section 05
-        names.</td></tr>
-        <tr><th scope="row">2026-08-16</th><td><strong>The one open pull
-        request of section 03 has merged, within a day of the
-        weights.</strong> llama.cpp merged the chat-template plumbing for
-        the <code>reasoning_effort</code> setting (pull request
-        <a href="https://github.com/ggml-org/llama.cpp/pull/26941">#26941</a>)
-        on 2026-08-14, one day after the Max-class release day and about
-        three hours after the 27B's weights went public; the first
-        release carrying it is build <span class="n">b10434</span>, the
-        same evening. Section 03's sentence was checked 2026-08-13 and
-        stays as written; as of this row there is no open 3.8-adjacent
-        pull request left to wait for. That strengthens the expectation
-        section 03 stated: the architecture needed no new support work,
-        and the one piece of adjacent plumbing that was open landed
-        within a day of the weights. One thing this does not change: the
-        community quantization type that section 07's local load attempt
-        was refused on is still not declared by any public llama.cpp
-        build, and no open pull request adds it, checked 2026-08-16, so
-        that re-test still waits.</td></tr>
+        <tr><th scope="row">Computer</th><td>One desktop with 188 GB of system memory and one 32 GB graphics card, serving Qwen3.5 122B and 397B; its llama.cpp build is from upstream commit <code>c8e03ce</code>.</td></tr>
+        <tr><th scope="row">2.4T download files</th><td><span class="n">Qwen/Qwen3.8-2.4T-A95B</span> at revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span> and <span class="n">Qwen/Qwen3.8-2.4T-A95B-FP8</span> at revision <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>, checked 2026-08-13. License read at both revisions.</td></tr>
+        <tr><th scope="row">27B files</th><td><span class="n">Qwen/Qwen3.8-27B</span> at revision <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span> and <span class="n">Qwen/Qwen3.8-27B-FP8</span> at revision <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>, checked 2026-08-14.</td></tr>
+        <tr><th scope="row">Community files</th><td><span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span> at revision <span class="n">567d3e6ac26c</span>, last pushed 01:01 UTC on 2026-08-13; sizes from its file list. UD-Q1_0 downloaded 2026-08-13 and checked shard by shard against SHA-256 checksums, with a count of tensor types in all ten shards.</td></tr>
+        <tr><th scope="row">Hosted route</th><td>OpenRouter. 2026-08-09: Qwen3.8-Max listed at a one-million-token context, two dollars per million input and six per million output. 2026-08-12: the 2.4T-A95B listed at 16:21 UTC, million-token context, same prices. A 2026-08-13 morning attempt reached no model (26 not-found errors): the listing was served only by third-party GPU clouds and this account admitted model authors only. The afternoon run admitted two providers.</td></tr>
+        <tr><th scope="row">Runtimes</th><td>2026-08-09: llama.cpp, vLLM, SGLang and Ollama had Qwen3.5 support merged and no Qwen3.8 support. 2026-08-13: the checks in <a href="#config">What the 2.4T download is</a>. 2026-08-16: pull request and type table rechecked.</td></tr>
+        <tr><th scope="row">ModelScope</th><td>2026-08-09: could not be listed from here. 2026-08-13: both 2.4T repositories mirrored, with a 224-file listing confirmed; the 27B name returned an empty listing.</td></tr>
       </table>
-      <p class="fineprint">Every existence claim on this page is dated. If
-      today is later than the newest row above, treat the status table as
-      unverified since that date and check the official organization
-      directly.</p>
     </section>
 
-    <section>
-      <div class="secnum">11</div>
-      <h2>Sources</h2>
-      <ul class="plain">
-        <li>The Qwen team's 2026-08-03 announcement and the official Qwen
-        organization on Hugging Face, checked 2026-08-09: no Qwen3.8
-        repositories under the official organization as of that date.
-        ModelScope, the other named release venue, could not be enumerated
-        from here, and no official 3.8 listing there surfaced through
-        secondary sources either; we will check it directly when the drop
-        lands.</li>
-        <li>OpenRouter's public model API, 2026-08-09: Qwen3.8-Max listed
-        at a one-million-token context, two dollars per million input and
-        six per million output.</li>
-        <li>Our fifteen-call recorded battery against Qwen3.8-Max via
-        OpenRouter, 2026-08-09: raw request and response bodies, a
-        per-call summary table, and spend accounting are project records
-        that can be produced if questioned.</li>
-        <li>Runtime repositories (llama.cpp, vLLM, SGLang, Ollama),
-        checked 2026-08-09: Qwen3.5 support is merged and shipping;
-        no merged Qwen3.8 support in those repositories as of that
-        date.</li>
-        <li>The official Qwen organization on Hugging Face, checked
-        2026-08-13: <span class="n">Qwen/Qwen3.8-2.4T-A95B</span> at
-        revision <span class="n">207bd685a7e3696cfaff12ded7c6a7ea0f88c996</span>,
-        213 weight shards plus an index file, 4,892.4 GB; and
-        <span class="n">Qwen/Qwen3.8-2.4T-A95B-FP8</span> at revision
-        <span class="n">d2dc35658bcf77e66643428cb52e774cc3b5bd29</span>,
-        213 shards, 2,496.2 GB. The organization's Qwen3.8 collection
-        lists exactly these two. The license file, 3,390 bytes and
-        byte-identical in both, read at those revisions.</li>
-        <li>ModelScope, checked 2026-08-13: both Max-class repositories
-        mirrored, with a 224-file listing confirmed; the 27B name
-        returns an empty listing.</li>
-        <li>The community GGUF repository
-        <span class="n">unsloth/Qwen3.8-2.4T-A95B-GGUF</span>, checked
-        2026-08-13 at revision <span class="n">567d3e6ac26c</span>: 312
-        GGUF files, last push 01:01 UTC that day; the sizes in section 04
-        are the manifest's.</li>
-        <li>OpenRouter's public model API, 2026-08-12: the released
-        2.4T-A95B listed at 16:21 UTC with a million-token context, two
-        dollars per million input tokens and six per million output,
-        matching the Max endpoint's prices.</li>
-        <li>Runtime repositories, checked 2026-08-13: the
-        <code>qwen35moe</code> architecture enumeration is merged and
-        shipping in llama.cpp; vLLM's 2026-08-07 change routes Qwen3.8
-        checkpoints through its existing Qwen3.5 path; the one open
-        3.8-adjacent llama.cpp pull request is chat-template plumbing for
-        the effort setting, not architecture support.</li>
-        <li>Our recorded day-one battery against the released 2.4T-A95B
-        via OpenRouter, 2026-08-13: thirty-five provider-recorded model
-        calls across DeepInfra and Together, raw request and response
-        bodies, per-call provider and cost accounting, the routecheck
-        route card, and the blocked morning attempt's 26 not-found
-        bodies. Project records that can be produced if questioned.</li>
-        <li>The local download and load-attempt record, 2026-08-13: the
-        pinned-revision manifest with the repository's SHA-256
-        checksums, our shard-by-shard verification log, the tensor-type
-        census of all ten shards, and the server's refusal log. Project
-        records that can be produced if questioned.</li>
-        <li>The official Qwen organization on Hugging Face, checked
-        2026-08-14: <span class="n">Qwen/Qwen3.8-27B</span> at revision
-        <span class="n">1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0</span>,
-        18 safetensors plus an index, and
-        <span class="n">Qwen/Qwen3.8-27B-FP8</span> at revision
-        <span class="n">017b9c7af6b5689d5dd426a76e0bc077eb5ca20a</span>.
-        The Apache 2.0 LICENSE file, 11,544 bytes and byte-identical in
-        both, read and retained at those revisions; it ships in the field
-        card's data package.</li>
-        <li>The <a href="../qwen38-27b/">Qwen3.8-27B field card</a> on this
-        site for the 27B's measured record of 2026-08-14, and its data
-        package for the files behind it.</li>
-        <li>The <a href="../qwen35/">Qwen3.5 pair field card</a> on this
-        site for the local serving record this page builds on.</li>
-      </ul>
-      <p class="fineprint">Vendor claims on this page are labeled as
-      claims. Model names and trademarks belong to their owners. This page
-      contains no scripts, no tracking and no cookies, like the rest of
-      this site.</p>
+    <section id="sources">
+      <div class="secnum">06</div>
+      <h2>Data and sources</h2>
+      <p>The Qwen team's 2026-08-03 announcement; the official Qwen organization on Hugging Face and ModelScope; the community GGUF repository; OpenRouter's public model API; and the llama.cpp, vLLM, SGLang and Ollama repositories, at the dates above. Raw requests and responses with per-call provider and cost, and the local checksum, tensor-type and refusal logs, are kept and can be produced if questioned. The 27B's Apache 2.0 file ships in the <a href="../qwen38-27b/">field card's</a> data package.</p>
     </section>
+
+    <section id="related">
+      <div class="secnum">07</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../qwen38-27b/">Qwen3.8-27B field card</a>: the 27B measured on this desktop</li>
+        <li><a href="../empty-answer/">Empty Answer</a>: why thinking models return nothing, and how to find your own floor</li>
+        <li><a href="../qwen35/">Qwen3.5 pair field card</a>: the 122B and 397B served on this desktop</li>
+      </ul>
+    </section>
+
+    <div class="endnote"><div class="nonaff">Independent measurements. Not affiliated with, endorsed by, or connected to the Qwen team, Alibaba Group, or OpenRouter.</div></div>
 
   </div>
 </main>
