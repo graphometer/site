@@ -543,15 +543,6 @@
     <section>
       <div class="secnum">07</div>
       <h2>Measured on release day</h2>
-      <!-- Claims trace for this section, follow-up pass 2026-08-13.
-           Every figure maps to one of three dated project records, the
-           ones section 11 promises on request: the hosted battery, route
-           card and cost accounting = FINDINGS_2026-08-13b_day1-hosted.md;
-           the blocked morning attempt = FINDINGS_2026-08-13_day1-hosted.md;
-           the local download, hash verification, tensor census and load
-           refusal = FINDINGS_2026-08-13_giant-local.md plus the model's
-           spec card. Raw request and response bodies retained for every
-           call. Per-figure traces sit next to each block below. -->
       <p>The released model has a hosted twin: since 2026-08-12 at 16:21
       UTC the same 2.4T-A95B has been listed on the aggregator route we
       measured in section 06, at the same listed prices as the Max
@@ -570,10 +561,6 @@
       returned the same not-found error in about a tenth of a second
       each, and the battery below ran in the afternoon, after we
       deliberately admitted two of those providers.</p>
-      <!-- trace: morning wall = FINDINGS_2026-08-13_day1-hosted.md F1
-           (26 identical not-found bodies, ~0.1 s each, unbilled;
-           allowlist-by-design, resolved by an explicit settings
-           decision before the afternoon re-run). -->
       <p><strong>The hosted battery: thirty-five model calls, two
       providers, thirty-nine cents.</strong> The aggregator filled our
       calls from DeepInfra (20 of 35) and Together (15), switching
@@ -584,12 +571,6 @@
       site documents is fully present on the open weights.</strong> The
       marble prompt from the <a href="../empty-answer/">Empty Answer</a>
       study, temperature zero, one call per cap:</p>
-      <!-- trace: provider split, fp4 listing = FINDINGS_2026-08-13b_day1-hosted.md
-           F1; billed total $0.38966 = F6. Budget table = F3: 60 DeepInfra
-           length 0 chars 73 rtok; 256 DeepInfra length 146 chars 179 rtok;
-           500 Together stop correct 223 rtok; 2000 DeepInfra stop correct
-           188 rtok. Max comparator = the 2026-08-09 curve on the
-           empty-answer page. -->
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Token cap</th><th>Provider</th><th>Thinking spent</th><th>Visible answer</th></tr></thead>
@@ -614,13 +595,6 @@
       trivial probe the knob did not change how much the model thinks.
       What it demonstrably changed is the served prompt and the answer's
       style:</p>
-      <!-- trace: effort sweep = FINDINGS_2026-08-13b_day1-hosted.md F4.
-           Request message bytes byte-identical across the three calls
-           (verified from retained request bodies); server-reported
-           prompt_tokens 112/70/100; costs are the server's own usage.cost
-           fields. Template consistency = FINDINGS_2026-08-13_giant-local.md
-           section 5 (the shipped chat template implements effort as
-           inserted instruction sentences: xhigh one, low one, medium none). -->
       <div class="data-wrap">
       <table class="data">
         <thead><tr><th>Effort level</th><th>Provider</th><th>Thinking spent</th><th>Prompt tokens, server count</th><th>Cost, server billed</th><th>Visible answer</th></tr></thead>
@@ -656,9 +630,6 @@
       false</code> got a reply that still carried 626 tokens of hidden
       reasoning, the field silently ignored. Single observation,
       2026-08-13.</p>
-      <!-- trace: enable_thinking probe = FINDINGS_2026-08-13b_day1-hosted.md
-           F2, routecheck card test C6 (disabled call, 626 reasoning
-           tokens with the field set). -->
       <p>The listing is not the bill. Fine print, measured 2026-08-13:
       both providers that served us ran the native 262,144-token context
       from section 03, and the million-token context on the aggregator's
@@ -673,12 +644,6 @@
       total came in just under the sum of list prices. Check the
       per-provider terms behind an aggregator listing before budgeting:
       the listing showed neither the premium nor the discount.</p>
-      <!-- trace: per-provider prices, contexts, million-token window =
-           FINDINGS_2026-08-13b_day1-hosted.md F1 (endpoints listing:
-           Together $2.5/$6.25 vs the $2/$6 aggregate listing; ctx 262,144
-           on both admitted providers). Cache discount and billed total =
-           F6 (12,672 cached prompt tokens at ~0.2x input rate; billed
-           $0.38966 vs $0.415006 computed without cache). -->
       <p>The rest of the battery, one to three calls per cell: the
       long-context cells planted a code and got it back exactly, once at
       31,380 prompt tokens and once at 69,441, both counts as the server
@@ -697,16 +662,6 @@
       where the marble prompt above showed first words at 256, which is
       the floor lesson in one line: it is prompt-dependent, so measure
       it on your prompts, not ours.</p>
-      <!-- trace: needles = routecheck card C10 (found at 31,380
-           server-reported prompt tokens) + the one-call ~69K cell
-           (FINDINGS_2026-08-13b_day1-hosted.md F5, 69,441 prompt tokens,
-           code returned exactly). Tools = card C7 two of two + a one-call
-           tool-shape cell with exact arguments (F5). Inline-schema JSON =
-           card C8, 3/3 conformant. response_format starvation = F5
-           (2,491 reasoning tokens, finish length, 0 visible chars;
-           retained reasoning complains no schema was provided). Floor
-           500 = card C5, measured on this endpoint and config, this
-           run. -->
       <p><strong>The local half of release day ended at the runtime
       layer, with zero seconds of model serving.</strong> We downloaded
       the one file set from section 04 that fits this machine's free
@@ -724,15 +679,6 @@
       format of that name, and the file's own metadata label claims a
       standard type that appears nowhere among its tensors. The type is
       real; the code that reads it is, today, not public.</p>
-      <!-- trace: local half = FINDINGS_2026-08-13_giant-local.md and the
-           model's spec card. Shard hashes 10/10 vs the repository's own
-           LFS checksums at pinned revision 567d3e6a. Tensor census:
-           1,702/1,702 tensors parsed, 276 routed-expert tensors type 66.
-           Refusal log: "invalid ggml type 66. should be in [0, 43)",
-           0.38 s, zero graphics-memory allocation. Mainline and the
-           quantizer's public fork type tables end at 42, fetched
-           2026-08-13. Metadata label names a standard type of which the
-           file contains zero tensors. -->
       <p>So the giant still has no local speed, memory or quality
       numbers here, and the reason is now sharper than not having run
       it: nothing public can load it. We will not invent what nothing
