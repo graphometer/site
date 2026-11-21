@@ -1,0 +1,55 @@
+# blocked-hosts.txt : names a CONNECTED window turns away.
+# The connected launcher writes each of these into the sandbox's own /etc/hosts as 0.0.0.0 and :: .
+# Those two addresses mean THIS COMPUTER: a call to a blocked name lands on the laptop's own port (443 or 80),
+# where nothing answers, and fails at once. (If a web server were ever run on this laptop, it would receive
+# such calls.) One name per line. Lines starting with # are notes. The launcher refuses to open the connected
+# window if letta.com or api.letta.com is missing from this list.
+#
+# THE LIMITS, plainly: this blocks NAMES, not addresses, and only the names listed (a hosts file has no
+# wildcards: "anything.letta.com" is not covered by "letta.com"). A program that already knows one of Letta's
+# numeric addresses, or that asks a name server directly, is not stopped. It keeps the engine's own calls home
+# from leaving; it is not a wall around what an agent's command can do. The keys are the real gate.
+#
+# --- Letta's own hosts: every letta.com / letta.ai name found in engine 0.34.10 (grep, 2026-10-13) ---
+letta.com
+api.letta.com
+app.letta.com
+chat.letta.com
+docs.letta.com
+letta.ai
+# --- named in the brief, or the usual front names (not found in the engine, blocked all the same) ---
+www.letta.com
+cloud.letta.com
+www.letta.ai
+api.letta.ai
+app.letta.ai
+# --- telemetry: the only telemetry-vendor names found in engine 0.34.10 are Datadog's site names ---
+# (no Sentry, PostHog, Segment, Statsig, Amplitude or Mixpanel name is in the engine; the engine's own
+#  telemetry posts to api.letta.com, blocked above)
+datadoghq.com
+app.datadoghq.com
+us3.datadoghq.com
+us5.datadoghq.com
+ap1.datadoghq.com
+ap2.datadoghq.com
+uk1.datadoghq.com
+datadoghq.eu
+# --- Sentry: the old 0.33.6 desktop app sent Sentry reports; not in this engine or window, blocked as a precaution ---
+# (a hosts file cannot block "anything.ingest.sentry.io"; a project's own ingest name would have to be listed)
+sentry.io
+ingest.sentry.io
+ingest.us.sentry.io
+# --- PostHog: precaution only (not found) ---
+posthog.com
+app.posthog.com
+us.i.posthog.com
+eu.i.posthog.com
+us.posthog.com
+eu.posthog.com
+app.datadoghq.eu
+# --- added 2026-10-14 after the engine review (<REDACTED_PATH>) ---
+# OpenCode's service (the engine's OpenCode worker and its opencode model provider; the owner uses neither),
+# the "letta mcp connect" browser hand-off, and the model behind Workflow decide() (today sent via api.letta.com).
+opencode.ai
+cloud.comfy.org
+api.typesafe.ai

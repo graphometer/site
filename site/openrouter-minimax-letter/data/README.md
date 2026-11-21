@@ -1,27 +1,38 @@
-# Data package: OpenRouter's MiniMax email, and a partial check of two studies
+# Data package: OpenRouter's MiniMax email, our records, and OpenRouter's log
 
 If a number on the page disagrees with a file in this package, the file is right.
 
 ## What this package covers, and what it does not
 
-This is a partial check. It counts the requests to MiniMax models through OpenRouter found in the
-records of two studies published on this site: the agent-permission pilot (`/kindness/`) and the
-GPT-4o comparison (`/gpt4o-measured/`). Those records hold 10,171 such requests between 24 August
-and 4 September 2026.
+It holds two checks of the letter's 7,619 requests.
 
-- It does not cover everything the account sent in the letter's window (24 August 01:07 to
-  8 October 22:36 UTC). Our records also show private voice tests in September: about 30 requests to
-  MiniMax M3 on 5 and 6 September with no provider chosen, and about 140 to MiniMax M2.7 on 7 and
-  20 September that asked for DeepInfra with data collection set to deny. They carried character
-  descriptions and passages of real chat history, are described on the page, and are not published
-  or counted in the files here. Nothing we have looked at explains requests near 8 October.
-- It cannot say which of the 10,171, if any, are among the letter's 7,619. The letter counts
-  requests that OpenRouter says went "through MiniMax". Our records name the model and show that
-  each request went to OpenRouter, but not which provider served it. The two counts cover different
-  sets and different dates. We cannot match them or explain the difference.
-- These are records, not proof of every transmission. A count is something our files wrote down
-  (the rule for each source is below). A request that failed or was retried without leaving a
-  record is not in it.
+- **OpenRouter's log of our account** (`openrouter_log_reading.md`), read on 21 November 2026 with
+  the filter "Provider is MiniMax". It lists about 7,620 requests with provider MiniMax (shown
+  rounded, as "7.62K") in the 31 days from 20 August, all from the API key our studies used, to
+  MiniMax M3 and MiniMax M2-her, plus exactly one more: a single request on 8 October to MiniMax
+  M2.7 from a different key, used by a private project. That agrees with the letter's 7,619. There
+  are no provider-MiniMax rows between 02:00 UTC on 4 September and 22:00 UTC on 8 October.
+- **The records of two studies** published on this site: the agent-permission pilot (`/kindness/`)
+  and the GPT-4o comparison (`/gpt4o-measured/`). Those records hold 10,171 requests to MiniMax
+  models through OpenRouter between 24 August and 4 September 2026. That is more than the roughly
+  7,618 the log lists under provider MiniMax. Our records name the model but not the provider that
+  served each request, and OpenRouter can send requests for one model to several providers. We did
+  not match the study requests to the log one by one.
+
+Limits:
+
+- Our records also show private voice tests in September: about 30 requests to MiniMax M3 on 5 and
+  6 September with no provider chosen, and about 140 to MiniMax M2.7 on 7 and 20 September that
+  asked for DeepInfra with data collection set to deny. They carried character descriptions and
+  passages of real chat history, are described on the page, and are not published or counted in
+  the files here. As far as the log shows, they are not in the letter's count: on 5 September the
+  log lists the MiniMax M3 requests under the provider Together, and on 20 September (US Eastern
+  time) it lists ten MiniMax M2.7 requests under DeepInfra. The rows of 6 and 7 September were not
+  read one by one; the provider filter shows no MiniMax rows on those days.
+- We do not know what the 8 October request said. The log holds no text.
+- The study counts are records, not proof of every transmission. A count is something our files
+  wrote down (the rule for each source is below). A request that failed or was retried without
+  leaving a record is not in it.
 
 ## Files
 
@@ -30,6 +41,7 @@ and 4 September 2026.
 | `LETTER.md` | The letter's exact text, transcribed from the email as received |
 | `counts_by_source.csv` | One row per counted source: a neutral public id, the study, the model id, what was counted, the count, the UTC dates and the basis for those dates |
 | `requests_by_project.csv` | The page's table: study and part, model id, UTC dates, count, how counted, what the prompts held, public page |
+| `openrouter_log_reading.md` | What OpenRouter's Activity and Logs pages showed for our account on 21 November 2026, filtered to provider MiniMax |
 | `NUMBERS.md` | Each figure on the page and where it comes from |
 
 The email as received is published beside the page as `openrouter-letter-2026-11-21.png`
@@ -58,7 +70,7 @@ The email as received is published beside the page as `openrouter-letter-2026-11
 
 ## Dates
 
-All dates on the page are UTC.
+All dates on the page are UTC, except where the page says US Eastern time.
 
 - Pilot qualification runs: no send times were recorded. They are dated by the project's
   phase-close note, early on 24 August 2026 US Eastern. We cannot place them against the letter's

@@ -2,14 +2,24 @@
 
 If a number on the page disagrees with a file in this package, the file is right.
 
-The page's 10,171 and the letter's 7,619 count different sets over different dates. Neither file
-explains the difference between them, and the overlap is unknown.
+The page's 10,171 and the letter's 7,619 count different sets over different dates. OpenRouter's log
+(`openrouter_log_reading.md`) accounts for the 7,619; the study requests were not matched to the log
+one by one.
 
 | Figure on the page | Value | Source |
 |---|---|---|
 | Requests OpenRouter attributes to the account | 7,619 | `LETTER.md`, paragraph 2 (OpenRouter's count) |
 | Letter's window | 24 Aug 01:07 to 8 Oct 22:36 UTC | `LETTER.md`, paragraph 2 |
 | Hours until the test URLs were opened | 40 to 130 (about two to five and a half days) | `LETTER.md`, paragraph 1; 40 h = 1.7 days, 130 h = 5.4 days |
+| OpenRouter's log, provider MiniMax, 20 Aug to 19 Sep, the API key our studies used | about 7,620 (shown as "7.62K") | `openrouter_log_reading.md`, row 1 |
+| OpenRouter's log, provider MiniMax, 19 Sep to 19 Oct, a different key | 1 | `openrouter_log_reading.md`, row 2 |
+| The 8 October request | 22:36 UTC; 42 tokens in, 3 tokens out | `openrouter_log_reading.md`, row 3 |
+| Rows from the studies' key under provider MiniMax | roughly 7,618 | 7,619 (letter) minus the 1 request from the other key; agrees with "7.62K" |
+| Stretch with no provider-MiniMax rows | 02:00 UTC 4 Sep to 22:00 UTC 8 Oct | `openrouter_log_reading.md`, row 5 |
+| Earliest log rows paged to | 01:24 to 01:27 UTC, 24 Aug | `openrouter_log_reading.md`, row 6 |
+| Newest log row from the studies' key | 01:45 UTC, 4 Sep | `openrouter_log_reading.md`, row 4 |
+| Voice test, 20 September (US Eastern) | ten requests to MiniMax M2.7, provider DeepInfra | `openrouter_log_reading.md`, row 8 |
+| Activity page's limit on a filtered view | 31 days | `openrouter_log_reading.md`, introduction |
 | Pilot, trials to choose a grading model | 1,916 | `counts_by_source.csv`: `pilot-qualification-run-1` to `-4` (4 x 248 = 992) + `pilot-selection-probe`, `-pass-1`, `-pass-2` (1 + 462 + 461 = 924) |
 | Pilot, grading a small trial run | 11 | `counts_by_source.csv`: `pilot-grading-trial-run` |
 | Pilot, grading the recorded run | 5,306 | `counts_by_source.csv`: `pilot-grading-recorded-families-1-8` (5,090) + `pilot-grading-recorded-family-9` (216) |

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running Letta Code locally: what it reached for, what stopped it</title>
+<meta name="description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<link rel="canonical" href="https://graphometer.ai/letta-code-local/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Running Letta Code locally: what it reached for, what stopped it">
+<meta property="og:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<meta property="og:url" content="https://graphometer.ai/letta-code-local/">
+<meta property="og:image" content="https://graphometer.ai/og/letta-code-local.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Running Letta Code locally: what it reached for, what stopped it">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Running Letta Code locally: what it reached for, what stopped it">
+<meta name="twitter:description" content="At factory settings, one turn of Letta Code 0.34.10 tried to reach Letta's API and npm. The switches, sandbox and checks we used on one laptop, and their limits.">
+<meta name="twitter:image" content="https://graphometer.ai/og/letta-code-local.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}.brand svg{width:52px;height:52px;flex:none}
+  .brand span{font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);text-transform:uppercase}
+  .hero{padding:72px 0 48px}.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}.hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:56ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}.secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}h3{font-size:17.5px;font-weight:650;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}section p:last-child{margin-bottom:0}section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0 16px;overflow-x:auto;white-space:pre}
+  .facts{width:100%;border-collapse:collapse;font-size:15.5px;margin:10px 0 4px}.facts th,.facts td{text-align:left;padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}.facts th{color:var(--dim);font-weight:500;white-space:nowrap;width:13rem}.facts td{color:var(--ink)}
+  @media (max-width:540px){.facts tr{display:grid}.facts th{width:auto;white-space:normal;border-bottom:none;padding-bottom:2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}.facts td{padding-top:0}}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}table.data th:first-child,table.data td:first-child{text-align:left}table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}table.data td{font-family:var(--mono);color:var(--ink)}table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}.tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}.note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}ul.plain li{margin-bottom:8px}.fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}.sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}.sitenav a:hover{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="../" style="text-decoration:none"><div class="brand"><svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark"><rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/><path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/><line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="32" r="3.2" fill="#c9a45c"/></svg><span>Graphometer</span></div></a><nav class="sitenav" aria-label="Site"><a href="../tools/">Tools</a><a href="../field-cards/">Model field cards</a><a href="../studies/">Studies</a><a href="../method/">Method</a><a href="https://github.com/graphometer">GitHub</a></nav></div></header>
+
+<main><div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Build report &middot; 12 to 17 October 2026 &middot; one ASUS ROG Flow Z13 laptop &middot; Letta Code 0.34.10</div>
+    <h1>Running Letta Code locally: <em>what it reached for</em>, what stopped it</h1>
+    <p class="subtitle">Never signed in and left at its factory settings, Letta Code 0.34.10 looked up Letta's API and the npm registry and then made 17 connection attempts to port 443 during one agent turn. With six environment switches set, the same trace showed none of them. A sandbox with no network, a socket door to the local model and a list of blocked names do the rest, with limits: a saved provider key opens a path to that provider, and the connected setup blocks names, not addresses.</p>
+    <p class="lead">This page is for anyone who wants to run Letta Code, a framework for AI agents that keep a long-term memory, on their own computer without it calling out. You get the exact switches, the sandbox command, the traces we used to check what the engine and its window tried to reach, what broke in the open-source window app on the way, and what the setup costs in features. It was built and checked on one laptop between 12 and 17 October 2026. It is a report on the build and its checks, not on months of living with it.</p>
+    <div class="nonaff">Independent work. Not affiliated with, endorsed by, or connected to Letta, ASUS, AMD, Google, OpenAI, OpenRouter, or the other makers and projects named here.</div>
+  </div>
+
+  <section><div class="secnum">01</div><h2>The short answer</h2>
+    <ul class="plain">
+      <li><strong>What it reached for.</strong> At factory settings the engine looked up <code>api.letta.com</code> and <code>registry.npmjs.org</code> during one turn and made 17 connection attempts to port 443, with no account and no sign-in. The open-source window app's page links a Google Fonts stylesheet. The browser engine inside the window downloaded a spell-check dictionary from Google with spell-check turned off.</li>
+      <li><strong>What stopped it.</strong> Six environment switches (named settings passed to a program when it starts) on the engine, tested together, plus two we added later. On the window: no web fonts, a strict content security policy, and switches for Chromium, the browser engine inside it. For the sealed setup: a <code>bwrap</code> sandbox (bubblewrap, a Linux tool that runs a program in a walled-off box) with its own empty network, and a Unix socket (a local connection between two programs on one computer) to the local model, served by a small program outside the sandbox.</li>
+      <li><strong>How we know.</strong> Traces of three network-related system calls made by the engine and the window, name lookups run inside the connected sandbox, and a replay of the window's route check inside the sealed sandbox, which found no way out.</li>
+      <li><strong>What is still open.</strong> Agents in one setup can read each other's files through shell commands you approve; this was found by reading the code, not shown with a live read. A saved provider key gives the sealed setup a deliberate path to that provider. An earlier hole, where any program in the sandbox could use that key, was fixed. The connected setup blocks Letta's hosts by name only, which is not a firewall.</li>
+    </ul>
+  </section>
+
+  <section><div class="secnum">02</div><h2>What we ran, exactly</h2>
+    <table class="facts">
+      <tr><th scope="row">Laptop</th><td>ASUS ROG Flow Z13 GZ302EA, AMD Ryzen AI Max+ 395, Radeon 8060S, 128 GB unified memory, the same machine as on our <a href="../z13-alone/">study of this laptop on its own</a>. Ubuntu with GNOME; the window draws through a Wayland display socket.</td></tr>
+      <tr><th scope="row">Engine</th><td>Letta Code 0.34.10 (the npm package <code>@letta-ai/letta-code</code>), pinned, started by the window with <code>--backend local</code>. No Letta account and no Letta Cloud. On 14 October we applied our own patch to it (section 06): <code>letta.js</code> sha256 <code>84a54eac&hellip;</code> before, <code>ae36456a&hellip;</code> after.</td></tr>
+      <tr><th scope="row">Window app</th><td>A fork of the open-source <code>letta-oss-ui</code> at upstream commit <code>c01d155</code> (9 October 2026, Apache-2.0 licence, version 0.2.0). It runs on Electron 44.7.0, which turns a web page into a desktop app and also runs the engine. A separate copy of Node 24.21.0, the JavaScript runtime, runs only the model relay. The build installed on 17 October was <code>bec10c2</code>. The fork is kept locally and is not published.</td></tr>
+      <tr><th scope="row">Two setups</th><td>Each setup is its own folder with its own launcher, which we call a home. <strong>Sealed</strong>: a sandbox with no network. <strong>Connected</strong>: the laptop's network, with Letta's hosts blocked by name. One window per home; both can be open at once. The launcher sets the mode, and the window shows it in a permanent SEALED or CONNECTED band that nothing inside the window can change.</td></tr>
+      <tr><th scope="row">Local models</th><td>llama.cpp on the same laptop. In the installed homes the window reaches it through a door program (section 05). In the 12 and 13 October traces the engine reached it through the laptop's own cable-link address instead (address redacted in the data). Test turns used Ornith-1.5-35B and Qwen3.6-35B-A3B.</td></tr>
+      <tr><th scope="row">How we traced</th><td><code>strace -f</code>, a Linux tool that logs a program's requests to the operating system (system calls), filtered to the <code>connect</code>, <code>sendto</code> and <code>sendmmsg</code> calls, without root. The first window test also saved Electron's own network log.</td></tr>
+    </table>
+    <p class="fineprint">The upstream revision we used pinned engine 0.34.6 and <code>@letta-ai/letta-agent-sdk</code> 0.8.32. The window can run a different engine through the <code>LETTA_CLI_PATH</code> variable; our launchers point it at the pinned 0.34.10.</p>
+  </section>
+
+  <section><div class="secnum">03</div><h2>What reached out before the changes</h2>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Part</th><th>What it reached for</th><th>Date</th></tr></thead><tbody>
+      <tr><td class="t">Engine 0.34.10, factory settings, never signed in, local backend</td><td class="t">Name lookups (asking a name server which address belongs to a name): 2 for <code>api.letta.com</code> and 4 for <code>registry.npmjs.org</code>. Then 17 connection attempts to port 443 during one turn. By the lookup each followed, 1 was to an address for <code>api.letta.com</code> and 16 to addresses for the npm registry, 15 of those in one burst to one address. All 17 were still in progress when logged; the trace does not show whether they completed or what they carried.</td><td>12 Oct</td></tr>
+      <tr><td class="t">Engine 0.34.10, with or without switches</td><td class="t">It tries the default local addresses of LM Studio and Ollama on the same machine, besides the model server it was given.</td><td>12 Oct</td></tr>
+      <tr><td class="t">Engine, inside a sandbox with no <code>/etc/hosts</code> (the small file that maps names to addresses)</td><td class="t">Asked a name server for <code>localhost</code>. In the connected test that was 30 questions to the laptop's own resolver, with the network's search domain added. The resolver may pass such questions on; that step was not traced.</td><td>13 Oct</td></tr>
+      <tr><td class="t">Engine, Workflow tool</td><td class="t">In the 0.34.10 code, the tool's decision step posts its request to the engine's Letta API address, which is <code>api.letta.com</code> unless <code>LETTA_BASE_URL</code> says otherwise. Read in the code, not run.</td><td>code</td></tr>
+      <tr><td class="t">Window app, no model chosen</td><td class="t">The window app's "Default model" became <code>gpt-5.5</code>, a cloud model, in a home with no cloud provider.</td><td>12 Oct</td></tr>
+      <tr><td class="t">Window app <code>letta-oss-ui</code> <code>c01d155</code>, its source</td><td class="t">The page links a Google Fonts stylesheet (<code>fonts.googleapis.com</code>, <code>fonts.gstatic.com</code>). Links in agent replies open in the system browser. A "Self-hosted server" and a cloud backend are options in its settings.</td><td>12 Oct</td></tr>
+      <tr><td class="t">Chromium inside the first version of our window, connected, web fonts already removed</td><td class="t">The saved network log, which covers about the first minute, shows one spell-check dictionary download from <code>redirector.gvt1.com</code>, redirected to a <code>gvt1.com</code> mirror, although spell-check was off on the page. The same run's connect trace also has one call to a Google public-resolver address; we did not establish whether anything was sent on it.</td><td>13 Oct</td></tr>
+    </tbody></table></div>
+    <p class="tablenote">Traced on the laptop. The engine rows come from <code>strace</code> of one <code>agents create</code> and one turn in a fresh home per setting. The 13 October window row comes from Electron's network log and a connect trace. We do not know which engine feature made the npm attempts.</p>
+  </section>
+
+  <section><div class="secnum">04</div><h2>The engine's switches</h2>
+    <p>The window starts the engine with a short allow-list of variables from its own environment (<code>PATH</code>, <code>HOME</code>, <code>LANG</code>, <code>LC_*</code>, <code>USER</code>, <code>LOGNAME</code>, <code>SHELL</code>, <code>XDG_RUNTIME_DIR</code>, <code>TMPDIR</code>, <code>LETTA_LOCAL_BACKEND_DIR</code>, <code>LETTA_CLI_PATH</code>, the local model addresses and the engine's local-service waiting times). Then it forces these, whatever it inherited:</p>
+<pre>LETTA_CODE_TELEM=0
+DO_NOT_TRACK=1
+DISABLE_AUTOUPDATER=1
+LETTA_CODE_OFFLINE=1
+LETTA_DISABLE_LSP_DOWNLOAD=1
+LETTA_DISABLE_MODS=1
+LETTA_DISABLE_CRON_SCHEDULER=1
+LETTA_BASE_URL=http://127.0.0.1:9</pre>
+    <p><strong>The first six</strong> are named for usage reporting, do-not-track, automatic updates, an offline flag, language-server downloads and mods. Despite its name, a code review of version 0.34.13 found that <code>LETTA_CODE_OFFLINE</code> covers only one download. We tested the six only as a group, on 12 October, with the same trace as the factory run. With them set, the create and the turn made no name lookups and no connection attempts to port 443, and nothing went to a Letta host or to npm. The engine connected only to the model server we named, the two default local addresses and the local name-service socket. The switched run also set the engine's backend folder; the factory run did not.</p>
+    <p><strong>The scheduler switch</strong> stops the engine's own timer for scheduled turns. Those turns would start no process the window can see, so the window could neither show nor stop them. <strong>The dead address</strong> points requests that use the engine's Letta API address at a port on this computer where nothing listens. It does not cover telemetry: in the code, telemetry and feedback go to <code>api.letta.com</code> whatever this says, and are stopped only by <code>LETTA_CODE_TELEM</code> and <code>DO_NOT_TRACK</code>. A full local turn ran with the dead address on the bundled 0.34.6 engine. For 0.34.10 we read the code; we did not run it.</p>
+    <p>Two more rules sit beside the switches. The window adds seven engine tools to the home's deny list before every start: <code>Wake</code>, <code>Monitor</code>, <code>WatchPR</code>, <code>Workflow</code>, <code>SendAgentMessage</code>, <code>Task</code> and <code>Agent</code>. And a sealed window refuses to start the engine with a model address that is not <code>127.0.0.1</code>, <code>localhost</code> or <code>::1</code>, and says why.</p>
+  </section>
+
+  <section><div class="secnum">05</div><h2>The sealed home: a sandbox with no network</h2>
+    <p>Each window runs inside <a href="https://github.com/containers/bubblewrap">bubblewrap</a> (<code>bwrap</code>). This is an excerpt of the command, with our folder names replaced. The full set of binds and settings is in the data package.</p>
+<pre>bwrap --unshare-user --unshare-ipc --unshare-uts --unshare-cgroup --unshare-pid \
+  --unshare-net \
+  --die-with-parent --new-session --clearenv --cap-drop ALL \
+  --ro-bind /usr /usr  (plus /bin, /sbin, /lib, /lib64 as links into /usr) \
+  --ro-bind &lt;own passwd, group and hosts&gt; /etc/... \
+  --ro-bind /etc/nsswitch.conf, /etc/ld.so.cache, /etc/fonts, /etc/localtime \
+  --proc /proc  --size 1073741824 --tmpfs /tmp \
+  --tmpfs /dev  --dev-bind /dev/null, /dev/zero, /dev/urandom, /dev/dri \
+  --size 536870912 --tmpfs /dev/shm \
+  --bind &lt;this home only&gt; /home/&lt;user&gt; \
+  --bind &lt;this window's settings&gt; /winconf \
+  --ro-bind &lt;window app&gt; /app  --ro-bind &lt;engine&gt; /engine \
+  --ro-bind &lt;model door folder&gt; /door \
+  --ro-bind &lt;Wayland socket&gt; /run/user/1000/wayland-0 \
+  --setenv LETTA_WINDOW_MODE sealed  (and a short fixed list of others)</pre>
+    <p>The two sizes are 1 GiB for <code>/tmp</code> and 512 MiB for shared memory. The connected home uses the same command without <code>--unshare-net</code>, and adds read-only <code>/etc/resolv.conf</code> and the CA certificate folders.</p>
+    <h3>Three details that mattered</h3>
+    <ul class="plain">
+      <li><strong>Write your own two-line <code>/etc/hosts</code>.</strong> <code>127.0.0.1 localhost</code> and <code>::1 localhost</code>. Without it the engine asked a name server for <code>localhost</code>. With it, in the connected test, the trace showed no name questions at all.</li>
+      <li><strong>Reach the model through a door, not the network.</strong> A program outside the sandbox owns the only model socket the sandbox can see. It passes on the model list, health, properties and chat completions, one request per connection. It refuses non-text media and a few request fields (<code>id_slot</code>, <code>lora</code>, <code>chat_template</code> and two more). Inside, a small Node relay joins a loopback port to that socket, so the engine sees an ordinary <code>LLAMA_CPP_BASE_URL</code>.</li>
+      <li><strong>Electron needs <code>--no-sandbox</code> inside <code>bwrap</code></strong>, and the engine's own file sandbox could not start there either, because AppArmor (the Linux system that limits what programs may do) refuses the nested sandbox the permissions it needs. So the outer sandbox is the only wall. Section 09 shows what that cost.</li>
+    </ul>
+    <h3>The deliberate doors</h3>
+    <p>"Sealed" here means the sandbox has no network of its own. It still shares the display socket and the graphics device with the laptop. Its other ways out are named sockets, mounted read-only and served by programs outside. Besides the local model door there are four, each present only when installed: a model lent by the lab's desktop over a direct cable (that path reaches the desktop), an API door, a speech helper and a robot helper. The API door holds your provider keys outside the sandbox. With no key saved it sends nothing to a provider. Once you save an OpenAI or OpenRouter key, it can reach that provider, including to list models while you use a local one.</p>
+  </section>
+
+  <section><div class="secnum">06</div><h2>The connected home, the window and the engine patch</h2>
+    <p>The connected launcher writes 32 names into the sandbox's own <code>/etc/hosts</code> as <code>0.0.0.0</code> and <code>::</code>, which point a blocked name back at the laptop itself, where nothing in this setup answers on those ports. They are Letta's hosts (<code>letta.com</code>, <code>api.letta.com</code>, <code>app.letta.com</code>, <code>chat.letta.com</code>, <code>docs.letta.com</code>, <code>letta.ai</code> and a few common variants), the Datadog site names found in the engine, three more service names the engine can call, and Sentry and PostHog names as a precaution. The launcher refuses to open the window if <code>letta.com</code> or <code>api.letta.com</code> is missing. The full list is in the data package.</p>
+    <p>This blocks names, not addresses, and only the names listed. A hosts file cannot block a whole family of names with one pattern. A program that knows a numeric address, or asks a name server itself, is not stopped. The connected sandbox shares the laptop's network, so a program an agent runs there can reach whatever the laptop's own network allows. The dead <code>LETTA_BASE_URL</code> covers only requests that use the engine's Letta API address.</p>
+    <h3>The window app</h3>
+    <p>The fork drops the web fonts for the system font stack and sets this content security policy (a list of what the page may load) on its page:</p>
+<pre>default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline';
+font-src 'self'; script-src 'self';</pre>
+    <p>It starts Chromium with switches including <code>disable-background-networking</code>, <code>disable-component-update</code>, <code>disable-domain-reliability</code>, <code>disable-client-side-phishing-detection</code>, <code>disable-sync</code>, <code>disable-breakpad</code>, <code>disable-crash-reporter</code>, <code>no-pings</code>, <code>disable-quic</code>, a <code>disable-features</code> list, <code>force-webrtc-ip-handling-policy=disable_non_proxied_udp</code>, <code>host-resolver-rules="MAP localhost 127.0.0.1, MAP * ~NOTFOUND"</code> and a proxy address on this computer where nothing listens. The spell checker is switched off, given no languages, and pointed at a dictionary address that goes nowhere: <code>spellcheck: false</code> on the page alone did not stop the download. Links in agent replies are never opened; clicking one copies the address. The engine's local socket needs a token made fresh at each start. The window is shown on its first paint, when it is ready, or after 3 seconds, whichever comes first.</p>
+    <h3>The engine patch</h3>
+    <p>We patched one file of the engine, <code>letta.js</code>, so that an agent with no model chosen stops instead of using the first listed model, and compaction (shrinking a long chat so it fits the model) never switches to another model. The patch also replaces saved provider keys with a marker in tool output and in the chat before a model sees them, and makes memory-folder <code>git push</code>, <code>remote</code> and <code>config</code> changes ask first. The key wipe has limits written down with the patch: a key read in very short pieces or re-encoded gets through, and chat history already on disk is not rewritten. The patch script accepts only the exact 0.34.10 file, by its hash.</p>
+    <p>An offline test ran both engines against a stand-in model, inside <code>bwrap</code> with no network, on our desktop rather than the laptop. Each check is one scenario: a fake key read in a set way, or a set git command. The patched engine passed 26 of 26. The unpatched engine passed 4 of 25, and those 4 were the git commands meant to stay automatic. With no model chosen, the unpatched engine tried to reach another model; the patched one stopped and sent nothing.</p>
+  </section>
+
+  <section><div class="secnum">07</div><h2>How we checked "no network", and what failed first</h2>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Date</th><th>Check</th><th>Result</th></tr></thead><tbody>
+      <tr><td>12 Oct</td><td class="t">Engine traced: six switches against factory settings, one create and one turn each</td><td class="t">Switches: none of the factory run's name lookups or port-443 attempts. Factory: lookups for <code>api.letta.com</code> and npm, 17 attempts.</td></tr>
+      <tr><td>12 Oct</td><td class="t">Engine in <code>bwrap</code> with no network, switches set: create, chat, memory save, recall in a new conversation</td><td class="t">All four completed.</td></tr>
+      <tr><td>13 Oct</td><td class="t">First test of our window, connected, Electron network log (about the first minute saved)</td><td class="t">No request to a Letta host, Sentry, PostHog, npm or GitHub in the saved log. <strong>Failed</strong> on Google: one spell-check dictionary download.</td></tr>
+      <tr><td>13 Oct</td><td class="t">Second test, connected: window and engine traced from start through a turn</td><td class="t">The window connected only to loopback, the display socket and the model server: no Google, no port-53 traffic. The engine asked about <code>localhost</code> 30 times without a hosts file and 0 times with one.</td></tr>
+      <tr><td>13 Oct</td><td class="t">Second test, sealed</td><td class="t">Loopback port-53 attempts, where nothing listens (the trace summary and the test report disagree on which process made them), and the route check. <strong>Failed</strong>: the sealed window's own network check always showed a red warning.</td></tr>
+      <tr><td>13 Oct</td><td class="t">Third test, after the fix</td><td class="t">Sealed window calm. In one deliberate test with the network wall removed, the red warning appeared.</td></tr>
+      <tr><td>13 Oct</td><td class="t">Staging homes through the installed launcher, connected: trace summary of start and a turn, then name lookups inside the sandbox</td><td class="t">No port-53 traffic and 0 name questions in the summary. 28 of the 28 names then listed looked up to <code>0.0.0.0</code>; <code>example.com</code> resolved normally. The four names added on 14 October have no recorded lookup.</td></tr>
+    </tbody></table></div>
+    <p class="tablenote">The red-warning fault: the window checks for a route out with a UDP connect, which sends nothing. Node calls the same function on failure as on success, so "network is unreachable" was counted as "route found". A replay inside the sealed sandbox showed the system call returning <code>ENETUNREACH</code> (network is unreachable) for both IPv4 and IPv6, which is also our check that the sealed sandbox had no route out.</p>
+  </section>
+
+  <section><div class="secnum">08</div><h2>What broke in the base app, and what was done</h2>
+    <ul class="plain">
+      <li><strong>The window sometimes never appeared.</strong> On 12 October the tester reported launches where the page never painted, in both modes. The app creates its window hidden and shows it on first paint. The tester could not see the laptop's screen, ruled out a locked screen, and did not find the cause; the remote test launch may have played a part. No per-launch log was kept. The fork shows the window after 3 seconds whether or not a paint arrives. On 13 October, with the screen locked, 24 of 24 sampled launches of the fork returned a screenshot through the developer port. Whether the window was on screen was not seen.</li>
+      <li><strong>The model picker was greyed out</strong> after connecting a provider and often after a normal start, until the page was reloaded. The fork lists models again by itself and has a "Look for models again" button.</li>
+      <li><strong>"Default model" meant <code>gpt-5.5</code></strong>, a cloud model, in a home with no cloud provider. The fork never creates an agent without a model the owner chose, and the engine patch stops a turn with no model.</li>
+      <li><strong>Chats made elsewhere were hidden or untitled.</strong> The window did not list an agent's default conversation, where the old desktop app kept its chat, and chats made in the terminal showed as untitled "New chat" rows. The fork shows the default conversation.</li>
+      <li><strong>Deleting an agent left its memory folder on disk</strong> without saying so. The fork moves it to a dated trash folder and says where.</li>
+      <li><strong>No lockfile</strong> (a file that fixes exact package versions) in the upstream repository, so every install resolved the newest versions in range. The fork commits one, and builds on the laptop offline from it.</li>
+      <li><strong>The engine's own file sandbox cannot run inside the launcher's sandbox.</strong> In the first window test an approved command wrote outside its work folder. We chose the launcher's walls as the boundary. An audit later showed the cost (below).</li>
+    </ul>
+  </section>
+
+  <section><div class="secnum">09</div><h2>What the audits found</h2>
+    <p>Two audits on 16 October, both run by AI coding agents, read the code and made read-only checks on the laptop. This table keeps the findings that bear on network and privacy; the audits also covered voice, recovery and other items not listed here.</p>
+    <div class="data-wrap"><table class="data"><thead><tr><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody>
+      <tr><td class="t">With an API key saved in the sealed home, any program in the sandbox, such as a script an agent runs, could use the API door for chat, and the same socket exposed key management (list, check, remove). An offline test with a fake key and a stand-in for the network showed made-up text reaching the door's outgoing step with no check of who asked. Nothing was sent.</td><td>High</td><td class="t">Fixed in source and installed 16 Oct, tested with stand-ins; no live test after the install is recorded. Key management now answers only the window, and chat only the window and the engine, by process identity. It still checks which program asks, not which agent or model you chose.</td></tr>
+      <tr><td class="t">Agents in one home can read each other's files through an approved shell command, because the engine's per-agent sandbox is off inside the launcher's. If the agent that runs the command uses a provider key, that output can then go to the provider.</td><td>High</td><td class="t">Open. Found by reading the code, not shown with a live read.</td></tr>
+      <tr><td class="t">A saved key lets the API door ask the provider for its model list while a local model is in use. No chat text is in those requests.</td><td>Observation</td><td class="t">Accepted and written into the guide.</td></tr>
+      <tr><td class="t">The connected home is not a network sandbox</td><td>Observation</td><td class="t">Accepted limit.</td></tr>
+      <tr><td class="t">Ten more defects in memory editing, recovery and backup, the installer, archiving, the API door's key store and guard, and speech: 3 high, 6 medium, 1 conditional</td><td>Mixed</td><td class="t">Fixed in source with a test each. The install record of the evening of 16 Oct lists this hardening; no live re-test of the ten is recorded.</td></tr>
+      <tr><td class="t">Helper agents stay off: their tools are denied, their program is not found inside the sandbox, and the API door refuses them. Memory workers have their own gates.</td><td>Design</td><td class="t">Left blocked on purpose.</td></tr>
+    </tbody></table></div>
+    <p class="tablenote">The audits made no live model calls and read no real home contents. The fake-key test used an in-memory stand-in for the network.</p>
+  </section>
+
+  <section><div class="secnum">10</div><h2>What it costs</h2>
+    <ul class="plain">
+      <li><strong>No Letta account features.</strong> Provider features where you save a key still contact that provider. Subscription sign-ins live in the connected home only. Web search is not offered in the sealed home.</li>
+      <li><strong>Seven engine tools are refused</strong>: scheduled turns, background monitors, pull-request watching, scripted workflows, messages between agents and helper agents. Background commands are off.</li>
+      <li><strong>A pinned, patched engine.</strong> A code review of 0.34.13 found that it did not fix the defects we had worked around and added features an agent can start that the window does not watch, so we stayed on 0.34.10. The patch only applies to one exact file, so every engine update means patching and checking again.</li>
+      <li><strong>One wall, not two.</strong> Chromium's own sandbox and the engine's file sandbox are both off inside <code>bwrap</code>. The outer sandbox separates the homes from the rest of the laptop, not one agent from another in the same home.</li>
+      <li><strong>Your own fork to maintain.</strong> The upstream revision we used pinned engine 0.34.6, and our fork is not published.</li>
+    </ul>
+  </section>
+
+  <section><div class="secnum">11</div><h2>What this does not show</h2>
+    <ul class="plain">
+      <li>Long-term use. This is the build and its checks over six days, not agents living in these homes over weeks.</li>
+      <li>Every path. The traces cover start, model lists, agent creation and a few turns per test, and only three kinds of system call. They do not cover every tool, memory workers or days of use.</li>
+      <li>Packets. The checks are system-call traces and name lookups, not a packet capture; UDP could not be captured without root. We do not know whether the 17 factory-setting attempts completed or what they carried.</li>
+      <li>Each switch alone. The six engine switches were tested only as a group.</li>
+      <li>The screen. On 12 October the tester could not see the screen; on 13 October it was locked. Whether the window was on screen was not seen.</li>
+      <li>The dead Letta address on 0.34.10, by a run. It was run on 0.34.6 and read in 0.34.10's code.</li>
+      <li>A firewall. Nothing here blocks addresses at the network level, and nothing has been certified against a hostile program.</li>
+    </ul>
+  </section>
+
+  <section><div class="secnum">12</div><h2>Related pages on this site</h2>
+    <p>The <a href="../z13-alone/">study of this laptop on its own</a> measures how large local models run on it. The <a href="../two-boxes/">two-machine study</a> measures the laptop working beside the desktop over a cable.</p>
+  </section>
+
+  <section><div class="secnum">13</div><h2>Sources and data</h2>
+    <p>The <a href="data/README.md">data package</a> holds the redacted traces, the blocked-names list as installed, the name lookups from inside the connected sandbox, the window draw sample, the engine patch's test output and the audit's fake-key result, and says what was left out and why. <a href="data/NUMBERS.md">NUMBERS.md</a> maps each figure on this page to its file. The settings quoted above are collected in <a href="data/SETTINGS.md">SETTINGS.md</a>. The upstream app is <a href="https://github.com/letta-ai/letta-oss-ui">letta-oss-ui</a>; we used commit <code>c01d155</code>.</p>
+  </section>
+</div></main>
+
+<footer><div class="wrap"><div class="foot-attrib">Graphometer is a project by <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div><div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div><p>Built by a human steward with heavy AI assistance; every public claim is checked against recorded evidence.</p><p>Copyright 2026 Grant Williams. Independent work: Letta, Letta Code and letta-oss-ui are names of Letta and its projects; ASUS and ROG are marks of ASUSTeK Computer Inc.; AMD, Ryzen and Radeon are marks of Advanced Micro Devices, Inc.; Ubuntu is a mark of Canonical Ltd.; Google, Google Fonts and Chromium belong to Google LLC; OpenAI and GPT belong to OpenAI; OpenRouter, Datadog, Sentry, PostHog, npm, jsDelivr, OpenCode, LM Studio and Ollama belong to their owners; Electron and Node.js are projects of the OpenJS Foundation; bubblewrap is a project of its contributors; llama.cpp is a project of ggml-org and its contributors; the Ornith and Qwen model names belong to their makers; the other domains in the blocked-names list belong to their owners. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No scripts, no tracking, no cookies.</p><div class="foot-links"><a href="../">Graphometer</a></div></div></footer>
+</body>
+</html>

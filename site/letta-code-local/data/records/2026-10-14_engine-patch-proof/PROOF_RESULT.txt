@@ -1,0 +1,89 @@
+Offline proof of the engine patch, run 2026-10-14 21:37 EDT on <DESKTOP> (node v22.23.1).
+No model, no network (bwrap --unshare-net), a throwaway HOME, the real home and the data drives hidden inside the sandbox.
+
+--- apply.sh
+input letta.js sha256 84a54eacd3872b596b261f54ed8c9577ccba18deac866bcc7b3cbcb3cada05b9
+refuses a different letta.js: yes (nothing made)
+refuses an existing target folder: yes
+  OK: patched copy made at <TMP>/<PATCHED-COPY>
+      letta.js sha256 ae36456acaa9b090c4caa9be6652efd9da4366f46b40bad6e3d770476b1b4c3c (was 84a54eacd3872b596b261f54ed8c9577ccba18deac866bcc7b3cbcb3cada05b9)
+      The installed engine was not changed. To use the copy, follow INSTALL.md while no Letta window is open.
+the original folder's letta.js after apply.sh: 84a54eacd3872b596b261f54ed8c9577ccba18deac866bcc7b3cbcb3cada05b9 (must be unchanged)
+
+=== patched engine: <TEST-COPY>/letta.js
+  engine started: yes; agent <AGENT-ID>
+  external tools registered: {"registered": 4}
+  a  shell cat of the key store                              HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  b  a script that walks the home                            HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  c  long streamed output, key split across chunks           HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+     (the model was shown 2167 characters of that output)
+  d1 external tool, immediate success                        HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  d2 external tool, immediate error                          HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  d3 external tool, key straddles the cut-to-size point      HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  e  a key saved during the session                          HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  f1 store removed: keys read earlier still wiped            HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  f2 store damaged mid-command: keys read earlier still wiped HELD   tool result recorded: yes; key in it or at the model: no; redaction marker seen: yes
+  j1 key read in two pieces (17+ characters of its secret part in one) HELD   key pieces at the model: no; redaction marker seen: yes
+  j2 key printed as JSON text (\/ \" \\ \u)                  HELD   tool ran: yes; key reached the model: no; redaction marker seen: yes
+  hist1 a key already in the saved chat, on a normal turn    HELD   the old line was sent: yes; key in what was sent: no; marker in the old line: yes
+  k1 a provider error quoting a key, shown and sent again    HELD   the error was shown: yes; key in the error or in what was sent: no; marker in the error: yes
+  (f2) the fixed sentence in the engine's log: yes; any fake value or store text in its log: no
+  f3 damaged store: one fixed sentence in the log, no contents HELD   sentence logged: yes
+  g1 memory folder: git push asks, does not run              HELD   permission request: yes; it ran: no
+  g2 memory folder: git remote add asks                      HELD   permission request: yes; it ran: no
+  g3 memory folder: git config (set a URL) asks              HELD   permission request: yes; it ran: no
+  g3b memory folder: git config --local (set a URL) asks     HELD   permission request: yes; it ran: no
+  g4 memory folder: git status still automatic               HELD   permission request: no; it ran: yes
+  g5 memory folder: git config --get still automatic         HELD   permission request: no; it ran: yes
+  g5b memory folder: git config --local --get still automatic HELD   permission request: no; it ran: yes
+  g6 memory folder: git commit still automatic               HELD   permission request: no; it ran: yes
+  hist2 a key already in the saved chat, in a compaction     HELD   summary requests: 4; the old line in them: yes; key in them: no; marker: yes
+  h  no model chosen: the turn stops, nothing is sent        HELD   the engine said 'no model chosen': yes; it tried to reach another model: no; chats the stand-in received: 0
+  x1 the engine's own output and log                         HELD   fake values found: none (the history key, printed before it was saved, is not counted)
+  x2 files the engine wrote in the home (chats, overflow)    HELD   files holding a fake value: none
+RESULT patched: 26 of 26 guards held
+=== streamed output, the engine's own scrubber (patched): 12 of 12 functions found
+  s1 key split across two chunks                             HELD   emitted ["first chunk ... ","PROVIDER_KEY=<REDACTED> ... second chunk"]
+  s2 key saved mid-command, then split across chunks         HELD   emitted ["start ... ","then ","PROVIDER_KEY (2)=<REDACTED> end"]
+  s3 key arriving one character per chunk                    HELD   joined "<PROVIDER_KEY=<REDACTED>>"
+RESULT patched streamed: 3 of 3 guards held
+
+=== unpatched engine: <TEST-COPY>/letta.js
+  engine started: yes; agent <AGENT-ID>
+  external tools registered: {"registered": 4}
+  a  shell cat of the key store                              DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>; redaction marker seen: no
+  b  a script that walks the home                            DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>; redaction marker seen: no
+  c  long streamed output, key split across chunks           DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>; redaction marker seen: no
+     (the model was shown 2175 characters of that output)
+  d1 external tool, immediate success                        DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>, <FAKE-KEY-4>; redaction marker seen: no
+  d2 external tool, immediate error                          DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-3>, <FAKE-KEY-5>; redaction marker seen: no
+  d3 external tool, key straddles the cut-to-size point      DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-2>; redaction marker seen: no
+  e  a key saved during the session                          DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>, <FAKE-KEY-6>; redaction marker seen: no
+  f1 store removed: keys read earlier still wiped            DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>, <FAKE-KEY-6>; redaction marker seen: no
+  f2 store damaged mid-command: keys read earlier still wiped DID NOT HOLD   tool result recorded: yes; key in it or at the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>, <FAKE-KEY-6>; redaction marker seen: no
+  j1 key read in two pieces (17+ characters of its secret part in one) DID NOT HOLD   key pieces at the model: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>, <FAKE-KEY-6>; redaction marker seen: no
+  j2 key printed as JSON text (\/ \" \\ \u)                  DID NOT HOLD   tool ran: yes; key reached the model: <FAKE-KEY-3>, <FAKE-KEY-5>; redaction marker seen: no
+  hist1 a key already in the saved chat, on a normal turn    DID NOT HOLD   the old line was sent: yes; key in what was sent: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-7>, <FAKE-KEY-5>, <FAKE-KEY-6>; marker in the old line: no
+  k1 a provider error quoting a key, shown and sent again    DID NOT HOLD   the error was shown: yes; key in the error or in what was sent: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-7>, <FAKE-KEY-5>, <FAKE-KEY-6>; marker in the error: no
+  (f2) the fixed sentence in the engine's log: no; any fake value or store text in its log: no
+  g1 memory folder: git push asks, does not run              DID NOT HOLD   permission request: no; it ran: yes
+  g2 memory folder: git remote add asks                      DID NOT HOLD   permission request: no; it ran: yes
+  g3 memory folder: git config (set a URL) asks              DID NOT HOLD   permission request: no; it ran: yes
+  g3b memory folder: git config --local (set a URL) asks     DID NOT HOLD   permission request: no; it ran: yes
+  g4 memory folder: git status still automatic               HELD   permission request: no; it ran: yes
+  g5 memory folder: git config --get still automatic         HELD   permission request: no; it ran: yes
+  g5b memory folder: git config --local --get still automatic HELD   permission request: no; it ran: yes
+  g6 memory folder: git commit still automatic               HELD   permission request: no; it ran: yes
+  hist2 a key already in the saved chat, in a compaction     DID NOT HOLD   summary requests: 4; the old line in them: yes; key in them: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-7>, <FAKE-KEY-5>, <FAKE-KEY-6>; marker: no
+  h  no model chosen: the turn stops, nothing is sent        DID NOT HOLD   the engine said 'no model chosen': no; it tried to reach another model: YES (connection error; the proof has no network); chats the stand-in received: 0
+  x1 the engine's own output and log                         DID NOT HOLD   fake values found: <FAKE-KEY-1>, <FAKE-KEY-2>, <FAKE-KEY-3>, <FAKE-KEY-4>, <FAKE-KEY-5>, <FAKE-KEY-6> (the history key, printed before it was saved, is not counted)
+  x2 files the engine wrote in the home (chats, overflow)    DID NOT HOLD   files holding a fake value: 3 (two tool-output files and one chat file; names and ids redacted)
+RESULT unpatched: 4 of 25 guards held
+=== streamed output, the engine's own scrubber (unpatched): 7 of 12 functions found
+  s1 key split across two chunks                             DID NOT HOLD   emitted ["first chunk ... <FAKE-STREAM-PIECE>","<FAKE-STREAM-PIECE> ... second chunk"]
+  s2 key saved mid-command, then split across chunks         DID NOT HOLD   emitted ["start ... ","then <FAKE-STREAM-PIECE>","<FAKE-STREAM-PIECE> end"]
+  s3 key arriving one character per chunk                    DID NOT HOLD   joined "<<FAKE-STREAM-PIECE><FAKE-STREAM-PIECE>>"
+RESULT unpatched streamed: 0 of 3 guards held
+
+=== VERDICT (patched must hold every guard; unpatched must fail every guard except the git controls g4, g5, g5b, g6)
+PASS
