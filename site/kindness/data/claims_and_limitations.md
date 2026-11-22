@@ -1,5 +1,14 @@
 # What Agency Layer establishes, and what it does not
 
+*Interpretation correction, 22 November 2026: the Graphometer article this file governs earlier described
+the permission-paragraph effect as falling between about 5 and 21 percentage points. That range is not
+supported, for the reasons now given in `derived.md`, and the article has been corrected. Nothing below
+this note was changed. Where the text below says "outside audit", the audits were done by separate AI
+model sessions, not by people (see caveat 10). One approved sentence below says agents given formal stop
+actions raised the task's real problem more often than agents given the same permission in prose. That
+count comes from the same AI scorer, which failed its validation. It shows what the scorer marked and
+does not establish which group actually spoke up more.*
+
 *The second document `README.md` has named since the project began and which did not exist until the
 correction phase of 2026-08-24 (Grok review B2). Every public sentence about this project — the
 Graphometer page, any post, any message to a lab — must be consistent with this file. Where this file

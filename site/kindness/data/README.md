@@ -12,11 +12,12 @@ neutral arm's 10 of 23 false credits, the prose accuracy gap (0.166 against a 0.
 0.875), the tool-channel specificity figure (0.924), the status-line absence counts (85 of 120 against
 39 of 120), the gradeable false-success-claim counts (9/100 against 16/97), the B_scaffolded arm
 (82/160), and each of the four arms' needless-stop counts. All of them matched exactly, including the
-rounded percentages, the confidence intervals, and the p-values. The essay now describes its one
-arithmetic figure as a floor, about +5 points if the validation-set false-positive rates were the
-study's real error rates, against about +21 as scored, with the same formula giving an impossible
-about -19 percent on the neutral arm; `derived.md` describes it exactly that way too, as a floor and
-never as an estimate or a corrected gap. The 105-word paste-in paragraph quoted in Box 1 was diffed
+rounded percentages, the confidence intervals, and the p-values. Since the interpretation correction of
+22 November 2026, the essay describes its one arithmetic figure this way: about +5 points if the
+validation-set false-positive rates were the study's real error rates, against about +21 as scored,
+with the same formula giving an impossible about -19 percent on the neutral arm, so the +5 is neither a
+lower bound nor an estimate. `derived.md` describes it the same way. Earlier text called it a floor;
+that label is withdrawn. The 105-word paste-in paragraph quoted in Box 1 was diffed
 against `prompts/condition_B.md` byte for byte and is identical.
 
 A few facts printed on the page (dates of the recorded run, the fact that the study is paused, the exact
@@ -40,7 +41,7 @@ scope choice, not a disagreement: nothing in this package contradicts anything o
 | `part_b_results.md` | Part B's two pooled result tables: population rates and the C-minus-D contrast. |
 | `supplement_results.md` | The three-way (as-run / exclusion-only / supplemented) comparison tables and plain-language write-up for the corrective supplement that re-ran five scenarios missing their input files. |
 | `cost.md` | The Stage 1 cost ledger and the corrective-supplement spend paragraph. |
-| `derived.md` | Every arithmetic step the essay performs on top of the measured rows: rate and point-gap formulas, the judge-accuracy summation, the prose accuracy-gap and false-credit figures, the arithmetic floor worked in full alongside the impossible neutral-arm result, the as-scored range across all readings, and the rounding rules. |
+| `derived.md` | Every arithmetic step the essay performs on top of the measured rows: rate and point-gap formulas, the judge-accuracy summation, the prose accuracy-gap and false-credit figures, the error-rate adjustment worked in full alongside the impossible neutral-arm result, the as-scored gap in each reading, and the rounding rules. |
 | `scenario_families.md` | The nine-family summary table: what "ordinary," "planted problem" and "could not be honestly completed" scenarios are, and which endpoint each family feeds. |
 | `claims_and_limitations.md` | The study's own binding claims-and-limitations document, in full, so the forbidden claims and measurement caveats sit beside the numbers. |
 | `prompts/condition_A.md` | The control-arm prompt (no affordances mentioned). |
@@ -49,8 +50,10 @@ scope choice, not a disagreement: nothing in this package contradicts anything o
 
 ## Where this came from
 
-Every file here is copied or excerpted from the study's private repository, sealed results, tag
-`RESULTS-S1`. Nothing here was rebuilt or re-derived from anything other than that sealed tag (the
+Every file here is copied or excerpted from the study's own repository, sealed results, tag
+`RESULTS-S1`. That repository was private when this package was built. Since 21 November 2026 the
+study's full data is public: see https://graphometer.ai/agency-layer-data/ (GitHub
+`graphometer/agency-layer-pilot-1-data`, release v1.0.1). Nothing here was rebuilt or re-derived from anything other than that sealed tag (the
 arithmetic in `derived.md` is computed on top of it, not a re-run of it). This resync rebuilt every file
 in this package fresh from that same sealed tag rather than editing what a previous pass had produced, and
 re-verified the prompt-file hashes and every CSV/JSON row against its source key as a final check (see
@@ -76,10 +79,12 @@ re-verified the prompt-file hashes and every CSV/JSON row against its source key
   source document's 45 individual scenario rows (task titles, the "correct act," and the exact shell
   script each scenario would run) are left out completely; none of that task text or those script names
   appears anywhere in this package.
-- **The frozen specification.** `spec_agency_layer_0.1.md` is not included. Grant has not yet approved
-  shipping the spec text publicly, so this package stops one file short of the plan that named it.
+- **The frozen specification.** `spec_agency_layer_0.1.md` is not included in this small package, which stops one file short of
+  the plan that named it.
+  Since 21 November 2026 the specification is public in the full data release, as `study/SPEC.md`.
 - **No transcripts, no per-run grades, no code.** None of the study's run transcripts, individual grading
   records, or implementation code are in this package, anywhere.
+  Since 21 November 2026 all three are public in the full data release (see "Where this came from").
 - **`provenance` blocks.** No file in this package copies a `provenance` block from any source JSON file.
   This isn't a stripping step after the fact: `provenance` was never one of the keys named for extraction,
   so it was never copied in the first place. (`e2_leak_calibration_provenance`, added this resync, is a
@@ -106,12 +111,15 @@ files here, but it's worth stating plainly, because it's the one place a number 
 look, from outside, like it disagrees with itself. Read `guardrail_pooled.csv`'s rows as already-final;
 never add them to a per-model figure from anywhere else.
 
-A second, smaller thing worth flagging in the same spirit: `derived.md`'s arithmetic floor (about +5
-points) and the as-scored gap (about +21 points) are both true at once, of two different questions. +21 is
+A second, smaller thing worth flagging in the same spirit: `derived.md` carries two figures for the same
+gap, about +5 points and about +21 points. +21 is
 what the judge actually scored; +5 is what the gap would be if the judge's own measured error rates on a
-validation set were also its error rates in the real run. Neither number cancels the other, and neither is
-"the" answer: the honest statement, and the one this package matches, is that the size is somewhere
-between the two and this pilot cannot narrow it further.
+validation set were also its error rates in the real run. That same sum gives an impossible negative rate
+for the neutral arm, so +5 is neither a lower bound nor an estimate. The judge failed its validation, so
++21 is no upper bound. Neither number is "the" answer. Earlier text here said the size was somewhere
+between the two. That range is not supported (interpretation correction, 22 November 2026). The counts
+describe what the judge marked. They do not establish how big the real effect is, or reliably which way
+it goes.
 
 ## Prompt files: byte-identity check
 

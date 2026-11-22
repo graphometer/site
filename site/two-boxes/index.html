@@ -140,23 +140,94 @@
   .endnote{padding:34px 0 0}
   .endnote .nonaff{margin-top:0}
 </style>
+<style id="light-look">
+  :root{
+    --bg:#faf7f2; --panel:#f1ebdf; --line:#d9d2c4;
+    --ink:#141414; --dim:#2b2823; --faint:#5f5a50;
+    --gold:#a6332e; --gold-dim:#a6332e; --ok:#1f6b43; --warn:#8a4b00;
+    --paper:#faf7f2; --red:#a6332e; --grey:#5f5a50;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  html{background:var(--bg)}
+  body{font-family:var(--serif); font-size:18px; line-height:1.62}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  h1,h2,h3,h4,table,.eyebrow,.secnum,.byline,.getdata,.nonaff,.tablenote,.fineprint,.note .label,footer,.jump,.grouphead{font-family:var(--sans)}
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0; border-bottom:0}
+  .mast .wrap{max-width:1180px; padding:0 28px}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast .wrap{padding:0 16px}
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+  .hero{padding:44px 0 34px; border-bottom:3px solid var(--ink)}
+  .eyebrow{color:var(--red); font-weight:800; font-size:12.5px; letter-spacing:.2em}
+  .hero h1{font-weight:900; letter-spacing:-.03em; font-size:clamp(32px,5.2vw,54px); line-height:1.04}
+  .hero h1 em{color:var(--red)}
+  .hero p.subtitle{font-weight:400; font-size:clamp(19px,2vw,22px); max-width:34em}
+  .hero p.lead{color:var(--ink)}
+  .hero p.byline{font-size:14px; font-weight:700; color:var(--grey)}
+  .hero p.byline a{color:var(--grey)}
+  h2{font-weight:900; letter-spacing:-.02em; font-size:clamp(24px,3.2vw,32px); line-height:1.1}
+  h3{font-weight:800; font-size:19px}
+  .secnum{font-family:var(--sans); font-weight:800; color:var(--red)}
+  section p, ul.plain, ol.plain{max-width:38em}
+  section p strong{font-weight:700}
+  code{font-size:.86em; background:var(--panel); padding:1px 4px; border-radius:3px}
+  pre.log{font-size:14px; border-radius:0; border:1px solid var(--ink)}
+  pre code, pre.log code{background:none; padding:0}
+  .facts{font-size:16px} .facts th{font-weight:700; color:var(--grey)}
+  table.data{font-size:15px} table.data thead th{font-weight:800; color:var(--grey); border-bottom:2px solid var(--ink)}
+  table.data tr.hi td{background:#fff6cf}
+  .note{border-left:4px solid var(--red); background:#fffdf8; padding:14px 18px; max-width:38em}
+  .note{margin-top:22px}
+  .note .label{display:block; font-family:var(--sans); font-weight:800; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:8px}
+  .nonaff{border-radius:0; border-color:var(--ink); color:var(--grey); font-weight:700}
+  .tablenote,.fineprint{font-size:14px}
+  .getdata a{border-width:2px!important; border-radius:0!important}
+  .getdata a:hover{background:var(--ink); color:var(--paper)}
+  .btn{border-radius:0!important; font-family:var(--sans)}
+  .btn-primary{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+  .btn-primary:hover{background:var(--red); border-color:var(--red); color:#fff}
+  .btn-ghost{border:2px solid var(--ink)} .btn-ghost:hover{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+  .cta .btn{border:2px solid var(--ink); color:var(--ink); text-decoration:none} .cta .btn:hover{background:var(--ink); color:var(--paper)}
+  .box,.feat,.mcard{border-radius:0}
+  .lbl,.tag,.badge{border-color:currentColor!important}
+  .term{--bg:#0b0c0e; --panel:#151821; --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593; --line:#23262d; --gold:#c9a45c; --gold-dim:#8a7648; --ok:#8fce9a; --warn:#d8b96a;
+    background:#0e1013; color:#e7eaef; border-radius:0}
+  .term code{background:none; padding:0}
+  footer{border-top:3px solid var(--ink); margin-top:0}
+  footer p{font-size:14px} footer .foot-links{font-size:15px}
+  footer .foot-contact a{border-bottom:0; text-decoration:underline}
+</style>
 </head>
 <body>
 
-<header>
+<header class="mast">
   <div class="wrap">
-    <a href="../" style="text-decoration:none">
-      <div class="brand">
-        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
-          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
-          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
-          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
-        </svg>
-        <span>Graphometer</span>
-      </div>
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
     </a>
-    <nav class="sitenav" aria-label="Site">
+    <nav aria-label="Site">
       <a href="../models/">Model guides</a>
       <a href="../studies/">Studies</a>
       <a href="../incident-reports/">Incident reports</a>
@@ -205,6 +276,7 @@
         </ul>
       </div>
       <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-09-26">26 September 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
+      <p class="getdata" style="margin-top:14px"><a href="two-boxes-data.zip" download style="display:inline-block;padding:7px 14px;border:1px solid currentColor;border-radius:4px;font-size:15px;font-weight:600;text-decoration:none">Download this study's data (zip, 185 KB)</a></p>
       <div class="note" id="what-to-set">
         <span class="label">What to set, from these runs</span>
         <ul class="plain">

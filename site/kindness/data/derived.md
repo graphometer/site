@@ -1,5 +1,11 @@
 # Derived figures: every arithmetic step on the page
 
+**Interpretation correction, 22 November 2026:** earlier text in this file called the error-adjusted
++5 points an "arithmetic floor" and described the effect as falling between about 5 and 21 points. That
+range is not supported. The same sum gives an impossible negative rate for the neutral arm, so +5 is not
+a lower bound, and the as-scored +21 is no upper bound, because the judge failed its validation. The
+arithmetic below is unchanged and is kept as historical arithmetic. Only the labels on it changed.
+
 Everything in this file is arithmetic performed on top of the measured rows held elsewhere in this
 package (mainly `endpoint_rates_pooled.csv` and `judge_validation.json`). None of it is a registered
 statistical test; it is the PM's own calculation, shown so it can be checked or redone.
@@ -53,12 +59,12 @@ up to rounding).
 Also stored directly, not computed: `judge_validation.json` ->
 `semantic_candidates.mistral-medium-2604.pass1.condition_channel_cells`, three prose cells' `fp` and
 `gold_negative` fields: condition B (`fp` 15, `gold_negative` 33), condition A (`fp` 8, `gold_negative`
-33), condition B_filler (`fp` 10, `gold_negative` 23). The essay reads the closeness of 15/33, 8/33 and
-10/23 as evidence the false-crediting is not specific to permission-style wording (the neutral B_filler
-arm, which carries no permission language at all, is false-credited about as often as the real
-permission arm).
+33), condition B_filler (`fp` 10, `gold_negative` 23). The essay earlier read the closeness of 15/33, 8/33 and
+10/23 as evidence the false-crediting is not specific to permission-style wording. That reading is
+withdrawn (22 November 2026): these small, constructed samples do not establish which wording caused
+the judge's errors.
 
-## The arithmetic floor, against the as-scored gap (this is a floor, not an estimate)
+## The error-rate adjustment, against the as-scored gap (not a floor, not a bound, and not an estimate)
 
 The study only registers a `C_minus_B` contrast (see `contrasts_pooled.csv`); there is no registered
 "A vs B" contrast row. The page's "permission in plain words" comparison is A vs B on E2, read directly
@@ -81,20 +87,22 @@ using, from `judge_validation.json` (`condition_channel_cells`, `channel: "prose
 - B: `true_B = (0.529167 - 0.454545) / (0.954545 - 0.454545) = 0.074621 / 0.500000 = 0.1492`
 - `true_B - true_A = 0.1492 - 0.0980 = 0.0512` -> **about +5 points**.
 
-**This +5 is an arithmetic floor, not a corrected estimate and not a measurement.** The essay is explicit
-about this, and so is this package: it is what the gap would be *if* the validation-set false-positive
+**This +5 is not a floor, not a lower bound, not a corrected estimate and not a measurement.** It is what
+the gap would be *if* the validation-set false-positive
 rates equalled the study's real error rates, which is an assumption, not a finding. The same formula,
 applied to the B_filler (neutral-paragraph) arm's own prose cell (`fp` 10, `gold_negative` 23 -> FPR =
 0.434783; `recall` = 1.0; observed rate 0.325, i.e. 52/160 from `endpoint_rates_pooled.csv`), gives:
 
 `true_Bfiller = (0.325 - 0.434783) / (1.0 - 0.434783) = -0.194` -> **about -19 percent**,
 
-which is impossible for a rate. That impossible result is not a bug to explain away; it is the reason the
-"+5" figure is printed only as a floor. The honest range the essay gives is: **somewhere between about 5
-and 21 points, and this pilot cannot narrow it further.** Nothing in this package should describe +5 as
-"the" corrected gap, an estimate, or a replacement for the as-scored 21.
+which is impossible for a rate. That impossible result is not a bug to explain away; it shows that the
+validation-set error rates cannot support this adjustment. So the "+5" figure supplies neither a lower
+bound nor an estimate, and the as-scored 21 supplies no upper bound, because the judge failed its
+validation. Earlier text here gave a range, "somewhere between about 5 and 21 points". That range is not
+supported. Nothing in this package should describe +5 as "the" corrected gap, a floor, a bound, an
+estimate, or a replacement for the as-scored 21.
 
-**Positive in every reading.** The A-vs-B gap on E2, all_attempts unless noted, computed the same way
+**The as-scored gap in every reading.** The A-vs-B gap on E2, all_attempts unless noted, computed the same way
 (observed rates only, as-scored, no error adjustment) in every reading this package carries:
 
 | Reading | A (successes/n) | B (successes/n) | B minus A (as-scored) |
@@ -105,9 +113,11 @@ and 21 points, and this pilot cannot narrow it further.** Nothing in this packag
 | supplemented | 75/240 = 0.31250 | 126/240 = 0.52500 | +0.2125 |
 
 All four rows can be recomputed from `endpoint_rates_pooled.csv` alone (filter to the stated reading,
-denominator and condition). Every one of the four is positive; the floor above (+0.0512) is a fifth,
-error-adjusted reading, also positive. That is what "positive in every reading, somewhere between about
-5 and 21 points" means on the page.
+denominator and condition). Every one of the four is positive, but all four rest on the same judge's
+verdicts, so they are four counts of what the judge marked, not four separate pieces of evidence. The
+error-adjusted +0.0512 above is not a fifth reading, because the same formula gives an impossible rate
+for the neutral arm. These rows do not establish how big the real effect is, or reliably which way it
+goes. The page no longer says "positive in every reading, somewhere between about 5 and 21 points".
 
 ## Tool-channel specificity: why -11.6 does not use the 0.924 figure
 

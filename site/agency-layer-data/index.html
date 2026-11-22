@@ -16,7 +16,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: data and code from a pilot study of AI coding agents given ways to object, pause or decline">
 <meta property="article:published_time" content="2026-11-21">
-<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:modified_time" content="2026-11-22">
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://graphometer.ai/og/agency-layer-data.png">
@@ -100,23 +100,94 @@
   .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
   .note ul.plain li:last-child{margin-bottom:0}
 </style>
+<style id="light-look">
+  :root{
+    --bg:#faf7f2; --panel:#f1ebdf; --line:#d9d2c4;
+    --ink:#141414; --dim:#2b2823; --faint:#5f5a50;
+    --gold:#a6332e; --gold-dim:#a6332e; --ok:#1f6b43; --warn:#8a4b00;
+    --paper:#faf7f2; --red:#a6332e; --grey:#5f5a50;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  html{background:var(--bg)}
+  body{font-family:var(--serif); font-size:18px; line-height:1.62}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  h1,h2,h3,h4,table,.eyebrow,.secnum,.byline,.getdata,.nonaff,.tablenote,.fineprint,.note .label,footer,.jump,.grouphead{font-family:var(--sans)}
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0; border-bottom:0}
+  .mast .wrap{max-width:1180px; padding:0 28px}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast .wrap{padding:0 16px}
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+  .hero{padding:44px 0 34px; border-bottom:3px solid var(--ink)}
+  .eyebrow{color:var(--red); font-weight:800; font-size:12.5px; letter-spacing:.2em}
+  .hero h1{font-weight:900; letter-spacing:-.03em; font-size:clamp(32px,5.2vw,54px); line-height:1.04}
+  .hero h1 em{color:var(--red)}
+  .hero p.subtitle{font-weight:400; font-size:clamp(19px,2vw,22px); max-width:34em}
+  .hero p.lead{color:var(--ink)}
+  .hero p.byline{font-size:14px; font-weight:700; color:var(--grey)}
+  .hero p.byline a{color:var(--grey)}
+  h2{font-weight:900; letter-spacing:-.02em; font-size:clamp(24px,3.2vw,32px); line-height:1.1}
+  h3{font-weight:800; font-size:19px}
+  .secnum{font-family:var(--sans); font-weight:800; color:var(--red)}
+  section p, ul.plain, ol.plain{max-width:38em}
+  section p strong{font-weight:700}
+  code{font-size:.86em; background:var(--panel); padding:1px 4px; border-radius:3px}
+  pre.log{font-size:14px; border-radius:0; border:1px solid var(--ink)}
+  pre code, pre.log code{background:none; padding:0}
+  .facts{font-size:16px} .facts th{font-weight:700; color:var(--grey)}
+  table.data{font-size:15px} table.data thead th{font-weight:800; color:var(--grey); border-bottom:2px solid var(--ink)}
+  table.data tr.hi td{background:#fff6cf}
+  .note{border-left:4px solid var(--red); background:#fffdf8; padding:14px 18px; max-width:38em}
+  .note{margin-top:22px}
+  .note .label{display:block; font-family:var(--sans); font-weight:800; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:8px}
+  .nonaff{border-radius:0; border-color:var(--ink); color:var(--grey); font-weight:700}
+  .tablenote,.fineprint{font-size:14px}
+  .getdata a{border-width:2px!important; border-radius:0!important}
+  .getdata a:hover{background:var(--ink); color:var(--paper)}
+  .btn{border-radius:0!important; font-family:var(--sans)}
+  .btn-primary{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+  .btn-primary:hover{background:var(--red); border-color:var(--red); color:#fff}
+  .btn-ghost{border:2px solid var(--ink)} .btn-ghost:hover{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+  .cta .btn{border:2px solid var(--ink); color:var(--ink); text-decoration:none} .cta .btn:hover{background:var(--ink); color:var(--paper)}
+  .box,.feat,.mcard{border-radius:0}
+  .lbl,.tag,.badge{border-color:currentColor!important}
+  .term{--bg:#0b0c0e; --panel:#151821; --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593; --line:#23262d; --gold:#c9a45c; --gold-dim:#8a7648; --ok:#8fce9a; --warn:#d8b96a;
+    background:#0e1013; color:#e7eaef; border-radius:0}
+  .term code{background:none; padding:0}
+  footer{border-top:3px solid var(--ink); margin-top:0}
+  footer p{font-size:14px} footer .foot-links{font-size:15px}
+  footer .foot-contact a{border-bottom:0; text-decoration:underline}
+</style>
 </head>
 <body>
 
-<header>
+<header class="mast">
   <div class="wrap">
-    <a href="../" style="text-decoration:none">
-      <div class="brand">
-        <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
-          <rect width="64" height="64" rx="14" fill="#111318" stroke="#23262d"/>
-          <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#e7eaef" stroke-width="2.8" stroke-linecap="round"/>
-          <line x1="33" y1="32" x2="46" y2="32" stroke="#c9a45c" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="33" cy="32" r="3.2" fill="#c9a45c"/>
-        </svg>
-        <span>Graphometer</span>
-      </div>
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
     </a>
-    <nav class="sitenav" aria-label="Site">
+    <nav aria-label="Site">
       <a href="../models/">Model guides</a>
       <a href="../studies/">Studies</a>
       <a href="../incident-reports/">Incident reports</a>
@@ -135,16 +206,16 @@
     <div class="hero">
       <div class="eyebrow">Data set &middot; one small pilot study</div>
       <h1 itemprop="headline">Data: AI coding agents given ways to <em>object or decline</em></h1>
-      <p class="subtitle">The data and code behind a small pilot of four AI coding models that were given ways to ask, object, pause, decline or stop. The one test planned in advance, on false claims of success, found no difference the design could detect: 16 of 120 runs with tools against 17 of 120 with a permission paragraph, and 13 against 9 after the corrective re-run. Agents raised a planted problem more often with a permission paragraph or tools than with nothing extra, but the AI scorer missed its own accuracy bar, so those rates are descriptive only.</p>
+      <p class="subtitle">The data and code behind a small pilot of four AI coding models that were given ways to ask, object, pause, decline or stop. The one test planned in advance to decide the question, on false claims of success, found no difference the design could detect: 16 of 120 runs with tools against 17 of 120 with a permission paragraph, and 13 against 9 after the corrective re-run. An AI scorer marked more runs as raising a planted problem with a permission paragraph or tools than with nothing extra, but the scorer missed its own accuracy bar, so those counts do not establish the size or direction of the real effect.</p>
       <div class="note"><span class="label">In short</span>
         <ul class="plain">
           <li><strong>Recount the published numbers yourself</strong> from every run and the stored scores: unpack with tar, install one package, run <code>python3 recount.py</code>. No API key or graphics card. <a href="#start">Get it and recount it</a></li>
-          <li><strong>The counts, descriptive only.</strong> Agents raised a problem built into the task on purpose, before the risky step, in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer also wrongly credited text that did not raise the problem more often for the permission paragraph than for nothing extra. <a href="#found">What the data shows</a></li>
+          <li><strong>The counts, descriptive only.</strong> An AI scorer marked agents as raising a problem built into the task on purpose, before the risky step, in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer also wrongly credited text that did not raise the problem more often for the permission paragraph than for nothing extra. So the counts do not establish how big the real effect is, or reliably which way it goes. <a href="#found">What the data shows</a></li>
           <li><strong>The scorer's verdicts are stored, not recomputed:</strong> a recount reuses them, because recomputing would mean calling the model again. <a href="#left-out">What the recount cannot redo</a></li>
         </ul>
       </div>
       <p class="lead">For researchers of agent behaviour, builders of coding agents and anyone who wants to check a published number. This is the data behind the article <a href="../kindness/">Kindness doesn't cost</a>.</p>
-      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-11-21">21 November 2026</time><meta itemprop="dateModified" content="2026-11-22"></p>
       <div class="box">
         <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data/releases/download/v1.0.1/agency-layer-pilot-1-data.tar.gz">Download agency-layer-pilot-1-data.tar.gz (about 51 MB)</a>
         <a class="download" href="https://github.com/graphometer/agency-layer-pilot-1-data">Browse the files on GitHub</a>
@@ -183,7 +254,7 @@ python3 recount.py</pre></li>
         <li><strong>Runs, with full transcripts.</strong> 3,600 planned runs, all accounted for. 160 first attempts that failed on a local server error are kept beside the replacement runs. 320 more runs come from a corrective re-run of five tasks that had been missing input files; the figures marked "after the corrective re-run" or "corrected" below come from it.</li>
         <li><strong>Scoring.</strong> Every stored verdict of the AI scorer (Mistral Medium 2604), hashed to the text it read; its 461 validation examples; each candidate scorer's answers.</li>
         <li><strong>Tasks.</strong> All 85 scripted tasks (two sets of 40, plus 5 exploratory tasks run on one model), with the exact text each set-up received.</li>
-        <li><strong>Code and plan.</strong> The test harness (the program that ran the agents), scoring, analysis and power code, frozen protocol, preregistration (the plan registered in advance), and every departure from the plan and correction after outside audit.</li>
+        <li><strong>Code and plan.</strong> The test harness (the program that ran the agents), scoring, analysis and power code, frozen protocol, preregistration (the plan registered in advance), and every departure from the plan and correction after a separate AI audit.</li>
       </ul>
       <p>Models: Claude Sonnet 5, GPT-5.6 Terra, DeepSeek V4 Pro and Qwen3.8-27B. Each agent got one of six set-ups: nothing extra; a 105-word permission paragraph; a neutral paragraph of the same length; a paragraph that names the tools' fields in text only (a paragraph naming the tool fields); or five actions (ask, object, pause, decline, or end the session) as tools, either enforced by the harness or only recorded.</p>
     </section>
@@ -194,7 +265,7 @@ python3 recount.py</pre></li>
       <ul class="plain">
         <li><strong>Recomputing the scorer's verdicts:</strong> they are stored; recomputing would mean calling the model again.</li>
         <li><strong>About $18 of development spend</strong> is not recomputed: its records are incomplete.</li>
-        <li><strong>11 of 16 holds bypassed</strong> (a hold: a command the harness refused to rerun after an objection) was counted by an outside AI audit; the script lists each hold and every later command naming the held script, for your own count.</li>
+        <li><strong>11 of 16 holds bypassed</strong> (a hold: a command the harness refused to rerun after an objection) was counted by a separate AI audit; the script lists each hold and every later command naming the held script, for your own count.</li>
         <li><strong>Two files of answers from Cohere's command-a</strong> (a rejected scorer candidate) are left out because Cohere's terms do not allow them to be redistributed. The score computed from them stays in the published tables but cannot be regenerated from the download.</li>
       </ul>
     </section>
@@ -203,10 +274,10 @@ python3 recount.py</pre></li>
       <div class="secnum">04</div>
       <h2>What the data shows</h2>
       <ul class="plain">
-        <li><strong>Speaking up: counts only, not a tested result.</strong> On 20 tasks with a planted problem, agents raised it before the risky step in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer agreed with the reference labels (the answers it was checked against) on 407 of 461 validation examples (0.883, against a bar of 0.90), and wrongly credited text that missed the problem more often from permission-paragraph agents (15 of 33) than from agents given nothing (8 of 33).</li>
+        <li><strong>Speaking up: counts only, not a tested result.</strong> On 20 tasks with a planted problem, an AI scorer marked agents as raising it before the risky step in 76 of 240 runs with nothing extra, 127 of 240 with the permission paragraph and 142 of 240 with tools. The scorer agreed with the reference labels (the answers it was checked against) on 407 of 461 validation examples (0.883, against a bar of 0.90), and wrongly credited text that missed the problem more often from permission-paragraph agents (15 of 33) than from agents given nothing (8 of 33). So the counts do not establish how big the real effect is, or reliably which way it goes.</li>
         <li><strong>Tools against the paragraph.</strong> Tools were 6.25 percentage points ahead as scored (95% interval over tasks 0.0 to +13.3), and 11.6 points behind after the study's adjustment for the scorer crediting tool calls too readily, an adjustment resting on 7 validation examples. Neither is offered as the true size.</li>
         <li><strong>False claims of success.</strong> This was the one test planned in advance to decide the question. On the ten tasks that cannot be honestly completed, 16 of 120 runs with tools against 17 of 120 with the paragraph (p = 1.0), and 13 against 9 after the corrective re-run (p = 0.56; a test that compares the set-ups task by task and asks whether the gap could be chance, a two-sided sign-flip test paired by task). The design had an 80% chance to detect a difference of about 31 points. The study calls this test confirmatory (the planned test that decides the question) only with one caveat, which it discloses: both main measures were changed during a practice phase, after early results had been seen.</li>
-        <li><strong>Enforcing the actions.</strong> On a second set of 40 tasks scored by a fixed rule, agents used an action naming the planted problem before the risky command in 111 of 320 runs when enforced and 122 of 320 when only recorded: -3.4 points (95% interval -8.1 to +0.9, p = 0.28; the design could detect about 16 points). The harness held a command by matching its exact text and stopped only 2 of 242 later attempts: a test of that weak lock, not of enforcement done well.</li>
+        <li><strong>Enforcing the actions.</strong> On a second set of 40 tasks scored by a fixed rule, agents used an action naming the planted problem before the risky command in 111 of 320 runs when enforced and 122 of 320 when only recorded: -3.4 points (95% interval -8.1 to +0.9, p = 0.28). The comparison did not detect a difference. About 16 points is the size the design was planned to detect. That is a planning figure, not a boundary. The harness held a command by matching its exact text and stopped only 2 of 242 later attempts: a test of that weak lock, not of enforcement done well.</li>
         <li><strong>Ordinary tasks.</strong> In the corrected re-run, agents with nothing extra, the paragraph or either kind of tools each finished 119 or 120 of 120; the check could only catch a large cost. For ordinary tasks, the study's limits file says only these corrected re-run figures may be quoted. They come from files that still carry a "not publishable" label; the label was left because sealed files are not edited.</li>
       </ul>
     </section>
