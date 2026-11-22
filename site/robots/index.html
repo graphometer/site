@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two small robots connected to AI at home: what happened</title>
+<meta name="description" content="One desk robot opened a Wi-Fi hotspot with no password. One wheeled robot fell over after 83 minutes. What we found connecting two robots to AI at home.">
+<link rel="canonical" href="https://graphometer.ai/robots/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Two small robots connected to AI at home">
+<meta property="og:description" content="One desk robot opened a Wi-Fi hotspot with no password. One wheeled robot fell over after 83 minutes. What we found connecting two robots to AI at home.">
+<meta property="og:url" content="https://graphometer.ai/robots/">
+<meta property="og:image" content="https://graphometer.ai/og/robots.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Two small robots connected to AI at home">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/robots.png">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  .intro{padding:44px 0 30px; border-bottom:3px solid var(--ink)}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .intro h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(40px,6.4vw,76px);
+    line-height:1; margin-bottom:18px}
+  .intro .standfirst{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:34em}
+
+  section.block{padding:40px 0 0}
+  .secthead{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px}
+  .secthead h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.4vw,38px); line-height:1.05}
+  .secthead h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .secthead p{font-family:var(--sans); font-size:14px; font-weight:700; color:var(--grey)}
+
+  /* the cards */
+  .deck{list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:26px 22px}
+  @media (max-width:520px){.deck{grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 12px}}
+  .card{--c:#141414; position:relative; background:#fffdf8; border:2px solid var(--ink); border-radius:14px;
+    padding:9px; box-shadow:5px 5px 0 var(--ink); display:flex; flex-direction:column;
+    text-decoration:none; color:var(--ink); height:100%; transition:transform .12s ease, box-shadow .12s ease}
+  a.card:hover{transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--red); color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){.card{transition:none} a.card:hover{transform:none}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 4px 8px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:8px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em;
+    font-size:clamp(46px,7vw,68px); line-height:1}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:12.5px; letter-spacing:.24em;
+    text-transform:uppercase; padding-left:.24em}
+  .card h3{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:22px; line-height:1.1;
+    margin:12px 4px 4px}
+  .card .pos{font-family:var(--sans); font-size:14.5px; font-weight:700; line-height:1.3; color:var(--grey);
+    margin:0 4px 12px}
+  .card .foot{margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:8px;
+    border-top:2px solid var(--ink); padding:9px 4px 3px; font-family:var(--sans); font-size:11.5px; font-weight:800;
+    letter-spacing:.12em; text-transform:uppercase}
+  .card .foot .go{color:var(--red)}
+  .card .foot .soon{color:var(--grey)}
+  @media (max-width:520px){
+    .card{padding:7px; box-shadow:3px 3px 0 var(--ink); border-radius:11px}
+    .card h3{font-size:17.5px}
+    .card .pos{font-size:13px}
+    .card .foot{flex-direction:column; align-items:flex-start; gap:2px; font-size:10.5px}
+  }
+  .c-ink{--c:#141414} .c-red{--c:#a6332e} .c-navy{--c:#23395b} .c-forest{--c:#2f5d46}
+  .c-ochre{--c:#8a5c12} .c-plum{--c:#5b3a5e} .c-teal{--c:#1f5f66} .c-slate{--c:#4a4f57}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+
+  .deck{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  @media (max-width:520px){.deck{grid-template-columns:1fr; gap:22px}}
+  .card .face{aspect-ratio:4/3}
+  .card .face svg{position:static; width:72%; height:auto; opacity:1}
+  .card h3{font-size:24px}
+  .card .pos{font-size:15.5px}
+  .card dl{border-top:2px solid var(--ink); margin:0 4px 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:12px; align-items:baseline; padding:8px 0; border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card dt{font-family:var(--sans); font-size:11px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:14.5px; font-weight:800; text-align:right; line-height:1.3}
+  .card .foot{color:var(--red)}
+  @media (max-width:520px){.card h3{font-size:24px} .card .pos{font-size:15.5px} .card .foot{flex-direction:row; font-size:11.5px}}
+  .read{max-width:760px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px); line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{font-size:19px; margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 24px}
+  .catch p{margin:0; font-size:19px}
+  .ask{list-style:none; counter-reset:q}
+  .ask li{counter-increment:q; position:relative; border-top:1px solid var(--line); padding:14px 0 14px 46px; font-family:var(--sans); font-weight:800; font-size:18.5px; line-height:1.35}
+  .ask li:last-child{border-bottom:1px solid var(--line)}
+  .ask li::before{content:counter(q); position:absolute; left:0; top:12px; width:30px; height:30px; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; font-size:15px}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px; max-width:70ch}
+table.asks{width:100%;border-collapse:collapse;font-size:.95rem;margin:.6rem 0 0}table.asks th,table.asks td{text-align:left;vertical-align:top;padding:.55rem .6rem;border-top:1px solid rgba(0,0,0,.18)}table.asks th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the robots</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../models/">Model guides</a>
+      <a href="./" aria-current="page">Robots</a>
+      <a href="../studies/">Studies</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../tools/">Tools</a>
+      <a href="../method/">Method</a>
+      <a href="../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="intro">
+    <p class="label">Robots</p>
+    <h1>Two small robots connected to AI at home</h1>
+    <p class="standfirst">Two kinds of small robot are here. Each is a body for an AI model that runs on a computer in our house. Here is what they did in our tests. Four more are ordered and not yet tested.</p>
+  </div>
+
+  <section class="block" aria-labelledby="here">
+    <div class="secthead">
+      <h2 id="here">Two robots here and connected</h2>
+      <p>Both were set up again to talk through AI models that run in the house.</p>
+    </div>
+    <ul class="deck">
+      <li><div class="card c-teal">
+        <div class="band"><span>M5Stack</span><span class="no">No. 01</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><rect x="38" y="12" width="44" height="44" rx="9"/><circle cx="52" cy="31" r="3.2" fill="#fff" stroke="none"/><circle cx="68" cy="31" r="3.2" fill="#fff" stroke="none"/><path d="M54 43h12"/><path d="M60 56v6"/><rect x="43" y="62" width="34" height="14" rx="5"/></svg></div>
+        <h3>Stack-chan</h3>
+        <p class="pos">A face and a voice on the desk</p>
+        <dl><div><dt>We have</dt><dd>Two, one still boxed</dd></div><div><dt>Its AI runs</dt><dd>On our desktop</dd></div><div><dt>Listens</dt><dd>Only after a tap</dd></div></dl>
+        <div class="foot"><span>Here now</span></div>
+      </div></li>
+      <li><div class="card c-ink">
+        <div class="band"><span>XGO</span><span class="no">No. 02</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><rect x="41" y="10" width="38" height="28" rx="7"/><circle cx="53" cy="24" r="3" fill="#fff" stroke="none"/><circle cx="67" cy="24" r="3" fill="#fff" stroke="none"/><path d="M60 38v22"/><path d="M48 60h24"/><circle cx="34" cy="60" r="15"/><circle cx="86" cy="60" r="15"/></svg></div>
+        <h3>XGO Rider 2</h3>
+        <p class="pos">Balances on two wheels and talks</p>
+        <dl><div><dt>Its AI runs</dt><dd>On a laptop kept offline</dd></div><div><dt>Battery</dt><dd>83 minutes, then it fell over</dd></div><div><dt>AI drives it</dt><dd>Not allowed yet</dd></div></dl>
+        <div class="foot"><span>Here now</span></div>
+      </div></li>
+    </ul>
+  </section>
+
+  <div class="read">
+
+    <section id="stack-chan">
+      <h2>What we changed on Stack-chan</h2>
+      <p>Stack-chan is a small desk robot from M5Stack. It has a face on a screen, a head that moves, a light, a microphone and a speaker. Ours is connected to <a href="https://hearth.grantwilliams.ai">the Hearth</a>, our private home for long-running AIs, which runs on our desktop.</p>
+      <div class="catch">
+        <h3>We backed it up before setting it up</h3>
+        <p>Before the robot was ever set up or joined to Wi-Fi, we saved an exact copy of everything on it. It can be put back just as it came out of the box.</p>
+      </div>
+      <div class="catch">
+        <h3>We set it to talk only to our desktop</h3>
+        <p>We rebuilt the maker&rsquo;s open-source software so the robot talks only to our desktop. The maker&rsquo;s account, app store, downloads, Bluetooth pairing and camera are switched off.</p>
+      </div>
+      <div class="catch">
+        <h3>It listens only after a tap</h3>
+        <p>Tap its face, speak, and it says the reply. After a minute of quiet it hangs up. Its light shows what it is doing: blue for listening, white for thinking, yellow for speaking and dark for not connected.</p>
+      </div>
+      <div class="catch">
+        <h3>Turning off &ldquo;Hi Stack-chan&rdquo; did not stop it listening</h3>
+        <p>Turning off &ldquo;Hi Stack-chan&rdquo; in the settings was not enough. The robot kept a program running that listened for that phrase, until we removed the phrase detector from it.</p>
+      </div>
+      <div class="catch">
+        <h3>It opened a Wi-Fi hotspot with no password</h3>
+        <p>As shipped, the robot opened a Wi-Fi hotspot with no password after about a minute without its network. Now the hotspot opens only from the robot&rsquo;s own menu, with a password shown on its screen.</p>
+      </div>
+      <div class="catch">
+        <h3>A picture sent mid-sentence froze it</h3>
+        <p>The AI model can nod the robot&rsquo;s head, set its light, change its face and put a picture on its screen. Each of those is a separate switch that starts off. Showing a picture while the robot was speaking froze it in one test, so that stays off.</p>
+      </div>
+    </section>
+
+    <section id="rider">
+      <h2>What the XGO Rider 2 did in our tests</h2>
+      <p>The Rider is a small robot that balances upright on two wheels. It has a camera, two microphones and a speaker. Ours talks to an AI model on a laptop over a private Wi-Fi network made only for it. While the robot is on, the laptop has no Internet.</p>
+      <div class="catch">
+        <h3>We set its memory card aside and built a new one</h3>
+        <p>We set the robot&rsquo;s original memory card aside untouched and built a new one for it, with a firewall that blocks connections we did not allow. The laptop does the listening and the speaking with programs that run offline.</p>
+      </div>
+      <div class="catch">
+        <h3>Asked for its battery level it said 28 percent</h3>
+        <p>Press a button on the laptop, speak, and the Rider says the model&rsquo;s reply. In the first test it was asked for its battery level and answered 28 percent, read from the real battery by a model running at home.</p>
+      </div>
+      <div class="catch">
+        <h3>It sent a picture and one model misread a blank one</h3>
+        <p>The Rider sent one camera picture over its private link, and two models running at home described it. One of them called a blank picture a missing one, so the software, not the model, has to say whether a picture arrived.</p>
+      </div>
+      <div class="catch">
+        <h3>One radio we cannot switch off</h3>
+        <p>The part that keeps the robot balanced has its own Wi-Fi and Bluetooth radio. The robot&rsquo;s main computer cannot switch it off, and we have not confirmed that it stays silent. This is still open.</p>
+      </div>
+      <div class="catch">
+        <h3>It fell over after 83 minutes of balancing</h3>
+        <p>In one session the battery went from 100 percent to 28 percent in 83 minutes of standing still, and then the robot fell over.</p>
+      </div>
+      <div class="catch">
+        <h3>You cannot turn it by hand</h3>
+        <p>Its balance control pushes back when you try to turn it to face you. It needs to turn itself, and no AI model has been allowed to move it yet.</p>
+      </div>
+      <div class="catch">
+        <h3>It should not roam alone</h3>
+        <p>It has no way to sense a stair, a table edge or a foot, and it fell over standing still. No AI model has been allowed to move it.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="block" aria-labelledby="coming">
+    <div class="secthead">
+      <h2 id="coming">Four ordered, none tested</h2>
+      <p>We have tested none of these four. Prices, features and dates are the makers&rsquo;.</p>
+    </div>
+    <ul class="deck">
+      <li><div class="card c-ochre">
+        <div class="band"><span>Pollen Robotics</span><span class="no">No. 03</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><rect x="33" y="24" width="54" height="28" rx="14"/><circle cx="50" cy="38" r="6"/><circle cx="70" cy="38" r="6"/><path d="M46 24L40 9"/><path d="M74 24L80 9"/><circle cx="40" cy="8" r="2.2" fill="#fff" stroke="none"/><circle cx="80" cy="8" r="2.2" fill="#fff" stroke="none"/><path d="M45 56h30l6 24H39z"/></svg></div>
+        <h3>Reachy Mini Wireless</h3>
+        <p class="pos">A desk robot with a moving head</p>
+        <dl><div><dt>Price</dt><dd>$499</dd></div><div><dt>Maker lists</dt><dd>Computer, Wi-Fi, battery</dd></div><div><dt>Maker says</dt><dd>Ships within 90 days</dd></div></dl>
+        <div class="foot"><span>On the way</span></div>
+      </div></li>
+      <li><div class="card c-forest">
+        <div class="band"><span>Pollen Robotics</span><span class="no">No. 04</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="72" cy="24" r="12"/><path d="M83 20l14 5-13 5"/><circle cx="74" cy="21" r="2.2" fill="#fff" stroke="none"/><ellipse cx="52" cy="48" rx="23" ry="14"/><path d="M46 62v15h9"/><path d="M60 62v15h9"/></svg></div>
+        <h3>Microduck</h3>
+        <p class="pos">A 25 cm walking duck</p>
+        <dl><div><dt>Price</dt><dd>$399</dd></div><div><dt>Maker says it learns</dt><dd>On a computer first</dd></div><div><dt>Maker says</dt><dd>First ones by Christmas 2026</dd></div></dl>
+        <div class="foot"><span>On the way</span></div>
+      </div></li>
+      <li><div class="card c-plum">
+        <div class="band"><span>Petoi</span><span class="no">No. 05</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><rect x="30" y="32" width="50" height="18" rx="7"/><rect x="76" y="18" width="22" height="17" rx="6"/><path d="M40 50l-5 24"/><path d="M50 50l4 24"/><path d="M64 50l-4 24"/><path d="M74 50l5 24"/><path d="M30 36l-9-10"/></svg></div>
+        <h3>Quaddle Scout</h3>
+        <p class="pos">A palm-sized robot dog</p>
+        <dl><div><dt>Price</dt><dd>$269</dd></div><div><dt>Talks</dt><dd>Yes, maker says</dd></div><div><dt>Kickstarter says</dt><dd>December 2026</dd></div></dl>
+        <div class="foot"><span>On the way</span></div>
+      </div></li>
+      <li><div class="card c-navy">
+        <div class="band"><span>Nori Robotics</span><span class="no">No. 06</span></div>
+        <div class="face"><svg viewBox="0 0 120 90" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><rect x="38" y="70" width="44" height="10" rx="4"/><path d="M60 70V22"/><path d="M42 26h36"/><path d="M42 26L31 42l9 16"/><path d="M78 26l11 16-9 16"/><path d="M36 58h8"/><path d="M76 58h8"/><circle cx="60" cy="14" r="5"/></svg></div>
+        <h3>Nori A3</h3>
+        <p class="pos">Two arms on a rolling base</p>
+        <dl><div><dt>Price</dt><dd>$1,688</dd></div><div><dt>Its AI runs</dt><dd>Off the robot, maker says</dd></div><div><dt>Maker says</dt><dd>Ships fall 2026</dd></div></dl>
+        <div class="foot"><span>On the way</span></div>
+      </div></li>
+    </ul>
+    <p class="checked">Prices are list prices before shipping and tax, from each maker&rsquo;s own page, read 21 November 2026. Nori&rsquo;s order page says fall 2026, while its documents say the A3 has shipped since July 2026. We do not know which applies to our order. We have tested none of these four.</p>
+  </section>
+
+  <div class="read">
+
+    <section id="ask">
+      <h2>What we ask of every robot</h2>
+      <table class="asks">
+        <tr><th>Question</th><th>Stack-chan</th><th>XGO Rider 2</th></tr>
+        <tr><td>Does it listen only when asked?</td><td>After a tap on its face</td><td>The laptop listens, after a button press</td></tr>
+        <tr><td>Does anything leave the house?</td><td>It is set to talk only to our desktop</td><td>The laptop is offline while the robot is on. One radio on the robot is not confirmed silent</td></tr>
+        <tr><td>Where does its AI run?</td><td>On our desktop</td><td>On a laptop</td></tr>
+        <tr><td>Can it move, and what stops it?</td><td>Its head can nod. That switch starts off</td><td>It balances on two wheels. No AI model has been allowed to move it</td></tr>
+        <tr><td>Which parts are open source?</td><td>The maker&rsquo;s software, which we rebuilt</td><td>Not covered here yet</td></tr>
+      </table>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></p>
+    <p>This page is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to M5Stack, XGO, Pollen Robotics, Petoi or Nori Robotics. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

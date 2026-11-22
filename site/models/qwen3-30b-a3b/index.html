@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3-30B-A3B: needs a reminder before each message</title>
+<meta name="description" content="Qwen3-30B-A3B-Instruct-2507 at home: fast on one graphics card. In a long chat it mostly ignored an instruction unless reminded before each message.">
+<link rel="canonical" href="https://graphometer.ai/models/qwen3-30b-a3b/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Qwen3-30B-A3B: needs a reminder before each message">
+<meta property="og:description" content="Qwen3-30B-A3B-Instruct-2507 at home: fast on one graphics card. In a long chat it mostly ignored an instruction unless reminded before each message.">
+<meta property="og:url" content="https://graphometer.ai/models/qwen3-30b-a3b/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#4a4f57" aria-label="Qwen3-30B-A3B-Instruct-2507 at a glance">
+      <div class="band"><span>Qwen</span><span class="no">No. 24</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen3 Instruct</span><b>30B</b></div>
+      <p class="name">Qwen3-30B-A3B-Instruct-2507</p>
+      <p class="pos">Needs a reminder before each message</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home</dd></div>
+        <div><dt>Download</dt><dd>Unsloth Q8_0<br>32.5 GB</dd></div>
+        <div><dt>Needs</dt><dd>One 32 GB card<br>plus about 31 GB of RAM</dd></div>
+        <div><dt>License</dt><dd>Apache 2.0</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Qwen · At home</p>
+      <h1 itemprop="headline">Qwen3-30B-A3B needed a reminder before every message</h1>
+      <p class="standfirst">Qwen3-30B-A3B-Instruct-2507 is a small, fast model from the Qwen team that answers without thinking first. In one long chat it mostly ignored an instruction given at the start, and followed the same words sent right before each message.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Reminded right before each message, it asked a question back every time.</strong> We sent the instruction to ask the user a question back as its own short message, right before the user&rsquo;s newest one. It did in 6 of 6 answers.</li>
+          <li><strong>The same instruction given at the start was mostly ignored.</strong> In ten set-ups with the instruction in the system prompt (the standing instructions a model gets at the start) or in its saved memory, it asked a question in 3 of 60 answers. Without a reminder it also described a moment that never happened.</li>
+          <li><strong>Free to download.</strong> The Qwen team publishes it under the Apache 2.0 license. We run Unsloth&rsquo;s compressed copy of 32.5 GB.</li>
+        </ul>
+      </div>
+      <p class="speed"><strong>Writing speed: very fast.</strong> It wrote about 148 tokens a second (short replies on our desktop), so a 300-word answer takes about 3 seconds. The home models on this site run from about 1 to about 224 tokens a second. <a href="../#speeds">Compare them all</a>.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+
+    <section id="good">
+      <h2>What our tests showed</h2>
+      <div class="catch">
+        <h3>Reminded before each message, it asked a question back every time</h3>
+        <p>With one long conversation history, we asked it to ask the user a real question back. Sent as a short system message right before the user&rsquo;s message, the instruction worked in 6 of 6 answers. One of the six was a stock question about how the user was doing. More in <a href="../../note-before-the-message/">our study</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>Changing how it uses memory made short replies about five times faster</h3>
+        <p>With all its expert parts in system memory, the busiest cached on the graphics card and a smaller, 8-bit store for the conversation, a short answer went from 29.67 to 147.98 tokens a second (a token is a word or part of a word). These are settings in llama.cpp, the program that runs it. Measured on our desktop.</p>
+      </div>
+      <div class="catch">
+        <h3>The faster setup scored about the same on our short tests</h3>
+        <p>On a puzzle and a set of short questions marked by a program, it got 106 of 128 right before the change and 107 of 128 after.</p>
+      </div>
+      <div class="catch">
+        <h3>It found three planted codes far into a very long text</h3>
+        <p>At its full window (the most text it can take in at once) it found all three codes we had planted, 229,049 tokens into the text. In a stress test it answered 40 of 40 requests with no crash and no empty reply. It got 15 of 15 tasks right with its memory tools (tools that let a model save and change its own notes).</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>What to watch for</h2>
+      <div class="catch">
+        <h3>It usually ignored an instruction given at the start of the chat</h3>
+        <p>In ten set-ups with the instruction to ask a question back in the system prompt or saved memory, 3 of 60 answers asked the user anything, and only one was a real follow-up. A reminder given once also faded by the third message.</p>
+      </div>
+      <div class="catch">
+        <h3>It made up a memory of a song that was never played</h3>
+        <p>Asked what it said when the user played it a song, it said yes and described the moment in 6 of 6 answers. No song had been played. With a note about honesty right before the message none said yes, but 10 of 12 still assumed the moment happened.</p>
+      </div>
+      <div class="catch">
+        <h3>In a very long chat it wrote about five times slower</h3>
+        <p>After about 226,000 tokens of conversation it wrote 28.9 tokens a second, against 147.98 on a short answer.</p>
+      </div>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What do you need to run it?</summary>
+        <div class="in">
+          <table><tr><th>Item</th><th>What we used</th></tr><tr><td>The file</td><td>Unsloth&rsquo;s Q8_0, a compressed copy, 32.5 GB</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card (32 GB) and system memory</td></tr><tr><td>At a 262,144-token window</td><td>30.3 GB of the card, 31.2 GiB of system memory held at start</td></tr></table>
+        </div>
+      </details>
+      <details>
+        <summary>How do we run it, and how fast?</summary>
+        <div class="in">
+          <p>In llama.cpp at its full 262,144-token window, with all experts (the many small parts it picks from for each word) in system memory, an 11,500 MiB cache of the busiest ones on the card, and a smaller, 8-bit store for the conversation. A short answer came at 147.98 tokens a second in our test. It has no thinking mode.</p>
+        </div>
+      </details>
+      <details>
+        <summary>License and where to get it</summary>
+        <div class="in">
+          <p>The Qwen team publishes it under the Apache 2.0 license on Hugging Face. We downloaded Unsloth&rsquo;s compressed copy.</p>
+        </div>
+      </details>
+      <p class="checked">From the Qwen team&rsquo;s model page and Unsloth&rsquo;s file page on Hugging Face, read 21 November 2026, and our own measurements.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../note-before-the-message/"><div>Where to put an instruction so a chat model follows it<span>The note test, run mostly on this model.</span></div></a></li>
+        <li><a href="../../llamacpp-expert-cache/"><div>Two llama.cpp settings for MoE models<span>How the expert cache sped it up, and its speed deep in a chat.</span></div></a></li>
+        <li><a href="https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507"><div>Qwen3-30B-A3B-Instruct-2507 on Hugging Face<span>The maker&rsquo;s own page and license.</span></div></a></li>
+        <li><a href="https://huggingface.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF"><div>Unsloth&rsquo;s files<span>The community download we run.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This note is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to the Qwen team or Alibaba Group. Qwen and Qwen3 are marks of Alibaba Group Holding Limited. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

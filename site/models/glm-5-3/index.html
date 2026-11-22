@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM 5.3: finds where newcomers get lost</title>
+<meta name="description" content="How one home lab uses Z.ai’s GLM 5.3: as a stranger who reads our pages before they go out. What it caught, where it falls short, price and limits.">
+<link rel="canonical" href="https://graphometer.ai/models/glm-5-3/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="GLM 5.3: finds where newcomers get lost">
+<meta property="og:description" content="How one home lab uses Z.ai’s GLM 5.3: as a stranger who reads our pages before they go out. What it caught, where it falls short, price and limits.">
+<meta property="og:url" content="https://graphometer.ai/models/glm-5-3/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#1f5f66" aria-label="GLM 5.3 at a glance">
+      <div class="band"><span>Z.ai</span><span class="no">No. 12</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GLM</span><b>5.3</b></div>
+      <p class="name">GLM 5.3</p>
+      <p class="pos">Finds where newcomers get lost</p>
+      <dl>
+        <div><dt>Runs</dt><dd>Hosted</dd></div>
+        <div><dt>Reads at once</dt><dd>1 million tokens</dd></div>
+        <div><dt>API price</dt><dd>$1.4 in, $4.4 out<br>per million tokens</dd></div>
+        <div><dt>Out since</dt><dd>August 2026</dd></div>
+      </dl>
+      <p class="cardnote">A token is a word or part of one. &ldquo;In&rdquo; is what you send, &ldquo;out&rdquo; is what it writes.</p>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Z.ai</p>
+      <h1 itemprop="headline">GLM 5.3 spots where newcomers get lost</h1>
+      <p class="standfirst">Before a page goes out, we give GLM 5.3 a copy and ask it to read as someone who knows nothing about us. Here is what it caught and where it falls short.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Best at spotting where a newcomer gets lost.</strong> It points at the unexplained word, the missing note and the claim made before the evidence.</li>
+          <li><strong>It has hit our spending cap.</strong> It has run into the spending cap we set, once before it wrote its report.</li>
+          <li><strong>Hosted, with open weights.</strong> We reach it through Mistral&rsquo;s coding agent (a program in which it works on its own, step by step), Vibe. Z.ai sells it through its own API and has published the weights.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+    <section id="use">
+      <h2>What we use it for</h2>
+      <ul class="jobs">
+        <li><h3>It reads new articles as a stranger, saying where it got lost</h3><p>New articles on this site get a read by someone told nothing about us from GLM 5.3 beside a model from a different maker. It says where it got lost, what it did not trust and which title it would click.</p></li>
+        <li><h3>It was one of seven models reading our pages as strangers</h3><p>When we rewrote this site for newcomers, GLM 5.3 was one of seven models that read the live pages as strangers. It was also one of five that read our list of headlines with no background.</p></li>
+        <li><h3>It tested another model&rsquo;s game change in a real browser</h3><p>When one model changed our game, GLM 5.3 was asked to find what was wrong with the change, testing it in a real browser.</p></li>
+        <li><h3>It reviewed plans without seeing other reviewers&rsquo; work</h3><p>It reviewed the plan for <a href="https://friendsof4o.com">friendsof4o.com</a> without seeing the other reviewer&rsquo;s work. It has also scored a list of options beside two other models, each blind to the others.</p></li>
+      </ul>
+    </section>
+
+    <section id="good">
+      <h2>What it caught</h2>
+      <div class="catch">
+        <h3>It flagged a page that called prompts harmless before showing evidence</h3>
+        <p>Our page on <a href="../../openrouter-minimax-letter/">an email from OpenRouter about MiniMax prompts</a> opened by saying that every prompt we could check was harmless. GLM 5.3 pointed out that the opening gave itself a clean bill of health before any evidence appeared, while the limits of that check sat far below. We took those sentences out of the opening.</p>
+      </div>
+      <div class="catch">
+        <h3>It caught an unexplained drive, blank cells and an unexplained slow start</h3>
+        <p>On <a href="../../mistral-large-4/">our page about running Mistral Large 4 at home</a>, GLM 5.3 noticed a second drive that appeared with no explanation, table cells left empty with no note, and a slower start time with no reason given. All three were fixed. The tables now say that blank cells were not measured.</p>
+      </div>
+      <div class="catch">
+        <h3>It confirmed a fix for a cut-off button and drifting labels</h3>
+        <p>In our game <a href="https://grantwilliams.ai/games/get-out-of-my-woods/">Get Out Of My Woods</a>, another model reworked the opening screens. GLM 5.3 checked the change in a real browser at phone sizes. It showed that the old version cut a button off at the edge of a small screen and let place labels drift away from their places, and that the new version fixed both.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>Where it goes wrong</h2>
+      <div class="catch">
+        <h3>It hit the spending cap before writing its report</h3>
+        <p>We cap what each job may spend. On the game check, GLM 5.3 reached the cap before it wrote its report, so its findings were pieced together from its session record and another model finished the check. On <a href="../../local-reviewers/">one document job</a> it stopped at its cap of 30 turns and $0.60, after writing a valid file.</p>
+      </div>
+      <div class="catch">
+        <h3>A retry with higher caps did slightly worse</h3>
+        <p>On that document job, a retry capped at 60 turns and $3 did slightly worse than the capped run. That is one run each, from <a href="../../local-reviewers/">the same study</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>It signed its work as &ldquo;Mistral&rdquo; inside Mistral&rsquo;s agent</h3>
+        <p>Run inside Mistral&rsquo;s coding agent, GLM 5.3 has signed its work as &ldquo;Mistral&rdquo;. Keep your own record of which model you started.</p>
+      </div>
+      <p>So we check each serious finding against our own records before acting on it, and a model from a different maker reads the same page.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What it costs</summary>
+        <div class="in">
+          <table>
+            <tr><th>Per million tokens</th><th>Z.ai API price</th></tr>
+            <tr><td>What you send</td><td>$1.4</td></tr>
+            <tr><td>What you send again (cached)</td><td>$0.26</td></tr>
+            <tr><td>What it writes</td><td>$4.4</td></tr>
+          </table>
+          <p>These are Z.ai&rsquo;s API prices. Other hosts set their own. Z.ai also offers it in its GLM Coding Plan, a subscription priced separately.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What it takes in and gives back</summary>
+        <div class="in">
+          <p>It reads text only. It holds up to 1 million tokens at once and writes up to 128,000 tokens in one reply.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How hard it thinks</summary>
+        <div class="in">
+          <p>It always reasons before it answers. It has three settings for how much: low, high and max.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How we run it</summary>
+        <div class="in">
+          <p>Through Vibe, Mistral&rsquo;s coding agent; Mistral hosts the model. We start it from a script with no one watching, with a cap on turns and on spending, and give it a copy of the work rather than the live files.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Where you can use it</summary>
+        <div class="in">
+          <p>Through Z.ai&rsquo;s API and its GLM Coding Plan, and on Mistral&rsquo;s platform. Z.ai has also published the weights on Hugging Face under its own GLM-5.3 license.</p>
+        </div>
+      </details>
+      <p class="checked">From Z.ai&rsquo;s own pages and its Hugging Face page, with Mistral&rsquo;s model page for how Mistral hosts it, read 21 November 2026.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../openrouter-minimax-letter/"><div>OpenRouter MiniMax email: the letter and what our logs show<span>GLM 5.3 read this page as a stranger before it went out.</span></div></a></li>
+        <li><a href="../../mistral-large-4/"><div>Mistral Large 4 at home<span>Another page GLM 5.3 read cold.</span></div></a></li>
+        <li><a href="../../local-reviewers/"><div>Local models on one document job<span>Our study. GLM 5.3 is in its table of hosted models.</span></div></a></li>
+        <li><a href="https://docs.z.ai/guides/llm/glm-5.3"><div>GLM-5.3 on Z.ai&rsquo;s developer site<span>Limits and settings from the maker.</span></div></a></li>
+        <li><a href="https://huggingface.co/zai-org/GLM-5.3"><div>GLM-5.3 on Hugging Face<span>Z.ai&rsquo;s own download page for the weights.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This guide is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Z.ai or Mistral AI. GLM is a mark of Z.ai. Vibe is a product of Mistral AI. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

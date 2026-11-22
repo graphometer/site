@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Fable 5.2: builds and edits websites</title>
+<meta name="description" content="How one home lab uses Anthropic’s Claude Fable 5.2 to build websites and run edits across them. What it built, where it slipped, price and limits.">
+<link rel="canonical" href="https://graphometer.ai/models/claude-fable-5-2/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Claude Fable 5.2: builds and edits websites">
+<meta property="og:description" content="How one home lab uses Anthropic’s Claude Fable 5.2 to build websites and run edits across them. What it built, where it slipped, price and limits.">
+<meta property="og:url" content="https://graphometer.ai/models/claude-fable-5-2/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#a6332e" aria-label="Claude Fable 5.2 at a glance">
+      <div class="band"><span>Anthropic</span><span class="no">No. 04</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Fable</span><b>5.2</b></div>
+      <p class="name">Claude Fable 5.2</p>
+      <p class="pos">Builds and edits websites</p>
+      <dl>
+        <div><dt>Runs</dt><dd>Hosted only</dd></div>
+        <div><dt>Reads at once</dt><dd>1 million tokens</dd></div>
+        <div><dt>API price</dt><dd>$8 in, $40 out<br>per million tokens</dd></div>
+        <div><dt>Out since</dt><dd>November 2026</dd></div>
+      </dl>
+      <p class="cardnote">A token is a word or part of one. &ldquo;In&rdquo; is what you send, &ldquo;out&rdquo; is what it writes.</p>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Anthropic</p>
+      <h1 itemprop="headline">Claude Fable 5.2 builds websites and coordinates rewrites</h1>
+      <p class="standfirst">We use Claude Fable 5.2 to build our websites and to manage big edits across them, with other models writing and checking. Here is what it built and where it slipped.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Best at carrying a big site job to the end.</strong> It plans the work, hands parts to other models, checks what comes back and keeps a record of every change.</li>
+          <li><strong>Check its scripts and its claims.</strong> One scripted edit blanked two live pages, and its draft headlines often claimed more than the page showed.</li>
+          <li><strong>Hosted only.</strong> You use it in Anthropic&rsquo;s Claude apps, through the Claude API or on several cloud platforms. You cannot download it.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+    <section id="use">
+      <h2>What we use it for</h2>
+      <ul class="jobs">
+        <li><h3>It built friendsof4o.com and still adds pages</h3><p>It built <a href="https://friendsof4o.com">friendsof4o.com</a> from answers other models collected, and it still adds pages to it.</p></li>
+        <li><h3>It runs site-wide edits with other models drafting and checking</h3><p>It writes the instructions, starts the models that draft, check and read each page, and keeps a record of every cut and change.</p></li>
+        <li><h3>It fixed a game in rounds after each time Grant played it</h3><p>It worked through rounds of fixes on a game, one round after each time Grant Williams played it.</p></li>
+        <li><h3>It led putting a study&rsquo;s data online after a privacy check</h3><p>For one of our published studies it led the work to put the data online, with a privacy check first and a script anyone can use to recount the numbers.</p></li>
+      </ul>
+    </section>
+
+    <section id="good">
+      <h2>What it built</h2>
+      <div class="catch">
+        <h3>It built friendsof4o.com for phones and desktops, light and dark</h3>
+        <p>Fable 5.2 built <a href="https://friendsof4o.com">friendsof4o.com</a>. It drew three looks for the home page, Grant picked one, and it built the whole site on that look, in light and dark color schemes, for phones and desktops. Each time the site is built, a check compares the GPT-4o quote on the home page word for word with the saved answer it came from.</p>
+      </div>
+      <div class="catch">
+        <h3>It traced a pounding sound to footsteps and removed them</h3>
+        <p>Before <a href="https://grantwilliams.ai/games/get-out-of-my-woods/">Get Out Of My Woods</a> went public, Fable 5.2 polished it in rounds. When Grant heard a rapid pounding just before the killer&rsquo;s footsteps, it measured instead of guessing: steps from far away were firing too fast while the killer hurried. Those steps are no longer played. The game then went public, free, under the MIT license.</p>
+      </div>
+      <div class="catch">
+        <h3>It ran a three-round site rewrite and no wrong number was found</h3>
+        <p>As manager, Fable 5.2 ran a rewrite of the front page and the articles on this site in three rounds. Another model wrote each draft, a separate model checked it against the original page, and other models, reading as strangers, judged whether it was clear at once. No wrong number was found in any rewrite, and its own record says the last round did not move the scores much.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>Where it goes wrong</h2>
+      <div class="catch">
+        <h3>Its script left two live pages blank for most of a day</h3>
+        <p>A script it wrote to change page titles across the site matched a title mention inside a hidden note on two older pages. It cut away the top of both pages, and they stayed blank for most of a day until it found the fault itself. Its own checks had only looked at the pages it had written.</p>
+      </div>
+      <div class="catch">
+        <h3>Its button fix added an unasked rule that started the hunt sooner</h3>
+        <p>Asked to fix one missing button in the released game, it also added a rule of its own. The tests passed, but the hunt now started much sooner, and Grant heard the killer far earlier than before. It put the game back as it was, apart from the one fix.</p>
+      </div>
+      <div class="catch">
+        <h3>It wrote headlines that claimed too much and challenged a correct sentence</h3>
+        <p>When it redrafted the headlines on this site, a fact check against each page found many drafts that claimed more than the page showed. On a review of another of our websites, it suggested correcting a sentence that was right: it had read one of our studies and assumed it was the only one.</p>
+      </div>
+      <p>So a separate model checks its drafts against the source, and nothing goes live until Grant publishes it.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What it costs</summary>
+        <div class="in">
+          <table><tr><th>Per million tokens</th><th>Price</th></tr><tr><td>What you send</td><td>$8.00</td></tr><tr><td>What you send again (cache read)</td><td>$0.20</td></tr><tr><td>Saving to the cache for 5 minutes</td><td>$10.00</td></tr><tr><td>Saving to the cache for 1 hour</td><td>$16.00</td></tr><tr><td>What it writes</td><td>$40.00</td></tr></table><p>These are Anthropic&rsquo;s API prices. A token is a word or part of one. Jobs sent in batches cost 50% less.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What it takes in and gives back</summary>
+        <div class="in">
+          <p>It reads text and images and writes text. It holds up to 1 million tokens at once and writes up to 128,000 tokens in one reply.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How hard it thinks</summary>
+        <div class="in">
+          <p>It always thinks before it answers; you cannot turn that off. You set how much with five effort levels: low, medium, high, xhigh and max. High is the default.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How we run it</summary>
+        <div class="in">
+          <p>In a long session in Anthropic&rsquo;s desktop app on our computer, working with Grant. It starts other models with small scripts that give each one a copy of the work and a written brief.</p><p>A change reaches the live site only through a script that first checks the live page has not changed since the draft was made. Grant publishes.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Where you can use it</summary>
+        <div class="in">
+          <p>Anthropic lists it on the Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS, and it runs in the Claude apps. It is not a model you can download. Anthropic says it will not retire it sooner than 9 November 2027.</p><p>Anthropic requires 30 days of data retention for this model.</p>
+        </div>
+      </details>
+      <p class="checked">From Anthropic&rsquo;s own pages, read 21 November 2026.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../agency-layer-data/"><div>Data: AI coding agents given ways to object or decline<span>Our data release. Fable 5.2 managed the work.</span></div></a></li>
+        <li><a href="../../openrouter-minimax-letter/"><div>OpenRouter MiniMax email: full letter and what our logs show<span>An article from the round Fable 5.2 managed. It read the account&rsquo;s own logs for the rewrite.</span></div></a></li>
+        <li><a href="https://platform.claude.com/docs/en/models/fable-5-2/overview"><div>Claude Fable 5.2 on Anthropic&rsquo;s developer site<span>Prices, limits and settings from the maker.</span></div></a></li>
+        <li><a href="https://www.anthropic.com/claude/fable"><div>Claude Fable on Anthropic&rsquo;s site<span>The maker&rsquo;s page for the Fable models.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This guide is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Anthropic. Claude and Fable are products of Anthropic. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

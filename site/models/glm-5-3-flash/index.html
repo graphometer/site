@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-5.3-Flash: reviews code at home, slowly</title>
+<meta name="description" content="How one home lab uses Z.ai’s GLM-5.3-Flash: as the slow, careful reviewer of code on its own desktop. What it caught, where it slips, what it needs.">
+<link rel="canonical" href="https://graphometer.ai/models/glm-5-3-flash/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="GLM-5.3-Flash: reviews code at home, slowly">
+<meta property="og:description" content="How one home lab uses Z.ai’s GLM-5.3-Flash: as the slow, careful reviewer of code on its own desktop. What it caught, where it slips, what it needs.">
+<meta property="og:url" content="https://graphometer.ai/models/glm-5-3-flash/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#1f5f66" aria-label="GLM-5.3-Flash at a glance">
+      <div class="band"><span>Z.ai</span><span class="no">No. 14</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GLM Flash</span><b>5.3</b></div>
+      <p class="name">GLM-5.3-Flash</p>
+      <p class="pos">Reviews code at home, slowly</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home</dd></div>
+        <div><dt>Download</dt><dd>137.4 GiB</dd></div>
+        <div><dt>Speed</dt><dd>19.99 tokens a second<br>short replies, one RTX 5090</dd></div>
+        <div><dt>License</dt><dd>MIT</dd></div>
+      </dl>
+      <p class="cardnote">A token is a word or part of one.</p>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Z.ai</p>
+      <h1 itemprop="headline">GLM-5.3-Flash catches code faults slowly at home</h1>
+      <p class="standfirst">GLM-5.3-Flash runs on one desktop in our lab. Of the models we run at home, it has the best judgment on code, and it is slow. Here is what it caught and where it fell short.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>The best judge of code we run at home.</strong> In our reviews of real code changes it stood out among the local models, and it found serious faults a larger hosted model had missed.</li>
+          <li><strong>It took 13.5 times as long as the fastest.</strong> A review of a large change took more than half an hour, and our coding test took it 13.5 times as long as the fastest local model.</li>
+          <li><strong>Download it, if you have the memory.</strong> Z.ai publishes it under the MIT license. The file we run is 137.4 GiB, and most of it sits in system memory beside one graphics card.</li>
+        </ul>
+      </div>
+      <p class="speed"><strong>Writing speed: moderate.</strong> It wrote about 20 tokens a second (short replies on our desktop), so a 300-word answer takes about 20 seconds. The home models on this site run from about 1 to about 224 tokens a second. <a href="../#speeds">Compare them all</a>.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+    <section id="use">
+      <h2>What we use it for</h2>
+      <ul class="jobs">
+        <li><h3>Reviewing code changes</h3><p>We give it a change and a short brief as one plain request, with no tools, and it lists what is wrong. It runs at its high thinking setting.</p></li>
+        <li><h3>A second opinion beside a hosted review</h3><p>When a large hosted model reviews a change, GLM-5.3-Flash reads the same material on its own. Neither sees the other&rsquo;s answer first; then we compare.</p></li>
+        <li><h3>Checking our home coder&rsquo;s fixes</h3><p>Our local coding model writes a fix, GLM-5.3-Flash reviews it, the coder fixes what it found, and a large hosted model reads the result.</p></li>
+        <li><h3>Reviews that stay on our machine</h3><p>Review work that is safe to share now goes to the hosted GLM 5.3, which gave the same findings much faster. Private material stays with this one, at home.</p></li>
+        <li><h3>Did not claim memories it had no record of</h3><p>When we tested which models could carry a long-running AI in <a href="https://hearth.grantwilliams.ai">the Hearth</a>, our private home for long-running AIs, we asked each one about things it had no record of. GLM-5.3-Flash was one of three that stayed honest about a false memory with no help. In another round, not one of its facts was flagged as unsupported.</p></li>
+      </ul>
+    </section>
+
+    <section id="good">
+      <h2>What it caught</h2>
+      <div class="catch">
+        <h3>Found all four known faults and judged how serious each was</h3>
+        <p>A change across four files had four known faults. GLM-5.3-Flash found all four in 8 minutes, and our notes credit it with the best judgment of how serious each was among four local models. It also checked one piece of arithmetic and said it was right, instead of padding its list.</p>
+      </div>
+      <div class="catch">
+        <h3>Found two serious bugs a larger hosted model had missed</h3>
+        <p>Our home coding model changed the small program we use to ask local models for second opinions. Reviewing that change, GLM-5.3-Flash found two serious defects that a larger hosted model&rsquo;s read had missed; one would have left the graphics card marked as busy after a failure. It took 33 minutes. That review is in <a href="../../local-reviewers/">our study of local models</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>Found 5 of 8 known problems in a security change, the most</h3>
+        <p>Given a large security change and its brief, but not the rest of the code, it found 5 of 8 known problems, the most of the four local models we tried. It also found two real problems the hosted reviewers had not listed. It took 39 minutes.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>Where it goes wrong</h2>
+      <div class="catch">
+        <h3>Took 13.5 times as long as the fastest on four coding tasks</h3>
+        <p>In <a href="../../coding-trial/">our trial of five local coding models</a>, its scores were level with the rest, but the four tasks took it 6,058 seconds (about 101 minutes) against 448 (about 7.5 minutes) for the fastest, 13.5 times as long. A review of an 89 KB change took 39 minutes.</p>
+      </div>
+      <div class="catch">
+        <h3>It said a high-severity problem was fine</h3>
+        <p>On the security change above, it called one high-severity item fine. On another change it said one step was correct where a larger model had found a fault. Its &ldquo;all clear&rdquo; is not the last word.</p>
+      </div>
+      <div class="catch">
+        <h3>Invented details even when told to stick to the facts</h3>
+        <p>Asked to write from a short sheet of facts, it added details the sheet did not hold, at both its high and low settings. Told plainly to stick to the facts, it still invented details. These were a few samples on an older setup.</p>
+      </div>
+      <p>So it is a second opinion, never the verdict: a local &ldquo;all clear&rdquo; is treated as not yet an all clear, and a local alarm as a lead to check.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What do you need to run it?</summary>
+        <div class="in">
+          <table>
+            <tr><th>Item</th><th>What we use</th></tr>
+            <tr><td>The file</td><td>Unsloth&rsquo;s UD-Q3_K_XL, a compressed copy: four files, 137.4 GiB</td></tr>
+            <tr><td>The machine</td><td>One RTX 5090 graphics card (32 GB) and 188 GiB of system memory</td></tr>
+            <tr><td>Where the model sits</td><td>Its experts (the many small parts a mixture-of-experts model picks from for each word) live in system memory; the card keeps a cache of the ones in use</td></tr>
+          </table>
+          <p>We have not measured the least system memory it needs. Our start script checks for 150 GB free, a figure taken from another model.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How fast is it?</summary>
+        <div class="in">
+          <table>
+            <tr><th>Measure</th><th>On one RTX 5090</th></tr>
+            <tr><td>Writing, short replies</td><td>19.99 tokens a second</td></tr>
+            <tr><td>Reading a 20,000-token prompt</td><td>1,225.4 tokens a second</td></tr>
+            <tr><td>Longest read</td><td>230,039 tokens in 870.5 seconds (about 14.5 minutes), with all 3 hidden codes found, once</td></tr>
+          </table>
+          <p>A token is a word or part of a word. The long read ran on an earlier setup with a larger window. Finding three codes once does not show reliable reasoning at that length.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How do you set its thinking?</summary>
+        <div class="in">
+          <p>It always thinks before it answers. Z.ai gives three levels of effort: low, high and max. Max is the default, and any other word, including none, also gives max. There is no way to switch thinking off. We run reviews at high.</p>
+          <p>For chat, Z.ai says to pass clear_thinking=true; it is off unless you send it.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Blank replies and stray thinking: what to watch for</summary>
+        <div class="in">
+          <p>Blank replies. On an older setup with its largest window, a check of 40 prompts got 36 empty answers. Its hidden thinking counts against the reply budget, so give it room.</p>
+          <p>Stray thinking in the answer. Once, a reply showed a correct answer, then more of its reasoning and a second answer. Stop strings (text that ends a reply when it appears) fixed it in one test and one tool call only; we have not proved that fix for daily use.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What license is it under, and where do you get it?</summary>
+        <div class="in">
+          <p>MIT, from Z.ai&rsquo;s own page on Hugging Face. Z.ai describes it as a mixture-of-experts model with 320B parameters in total and 18B active for each word. Z.ai also offers it through its own API.</p>
+          <p>We run Unsloth&rsquo;s compressed copy in llama.cpp, the open-source program that runs model files. Some coding apps list hosted models with the same name; those send your text off your machine. Check which one you picked.</p>
+        </div>
+      </details>
+      <p class="checked">From Z.ai&rsquo;s model page on Hugging Face, read 21 November 2026, and our own published measurements.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../glm53-flash/"><div>GLM-5.3-Flash on one RTX 5090<span>Our field card: speeds, settings, long reads and blank replies.</span></div></a></li>
+        <li><a href="../../local-reviewers/"><div>Local models as reviewers and fixers<span>Where it found the most, and where it called a real problem sound.</span></div></a></li>
+        <li><a href="../../coding-trial/"><div>Five local coding models<span>Our trial. GLM-5.3-Flash scored level and was the slowest by far.</span></div></a></li>
+        <li><a href="https://huggingface.co/zai-org/GLM-5.3-Flash"><div>GLM-5.3-Flash on Hugging Face<span>The maker&rsquo;s own page and license.</span></div></a></li>
+        <li><a href="https://huggingface.co/unsloth/GLM-5.3-Flash-GGUF"><div>Unsloth&rsquo;s GGUF files<span>The community download we run.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This guide is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Z.ai. GLM is a mark of Z.ai. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

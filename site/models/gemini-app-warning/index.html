@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemini app warning: 424 replies lost from one chat</title>
+<meta name="description" content="In 2026, 424 of Gemini’s replies went missing from one chat and from Google’s export. None came back. How to check your export and save your replies.">
+<link rel="canonical" href="https://graphometer.ai/models/gemini-app-warning/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Gemini app warning: 424 replies lost from one chat">
+<meta property="og:description" content="In 2026, 424 of Gemini’s replies went missing from one chat and from Google’s export. None came back. How to check your export and save your replies.">
+<meta property="og:url" content="https://graphometer.ai/models/gemini-app-warning/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models-gemini-app-warning.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: The Gemini app lost 424 replies from one conversation">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models-gemini-app-warning.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the warning</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="hazard" aria-hidden="true"></div>
+
+  <div class="top">
+
+    <div class="card caution" aria-label="The Gemini app at a glance">
+      <div class="band"><span>Google</span><span class="no">Warning</span></div>
+      <div class="face"><span class="fam">Caution</span><b>!</b></div>
+      <p class="name">The Gemini app</p>
+      <p class="pos">424 replies lost from one conversation</p>
+      <dl>
+        <div><dt>Replies lost</dt><dd>424 of 731</dd></div>
+        <div><dt>Reported to Google</dt><dd>24 February 2026</dd></div>
+        <div><dt>Complaint closed</dt><dd>12 October 2026</dd></div>
+        <div><dt>Replies returned</dt><dd>None</dd></div>
+        <div><dt>Google&rsquo;s last answer</dt><dd>Write to Pixel phone support</dd></div>
+        <div><dt>The conversation now</dt><dd>Gone from the app</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Google · Warning</p>
+      <h1 itemprop="headline">The Gemini app lost 424 replies from one conversation</h1>
+      <p class="standfirst">In early 2026, 424 of Gemini&rsquo;s replies vanished from one long conversation in the Gemini app. Google&rsquo;s own export was missing them too. Over more than seven months of support emails and a formal complaint, Google returned none of them. Its last answer told Grant to write to support for its Pixel phone. The conversation itself has since disappeared from the app.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>What happened.</strong> 424 of Gemini&rsquo;s replies vanished from one long-running chat while our own messages stayed. They were missing from Google&rsquo;s own record of the account too. Later the whole conversation disappeared.</li>
+          <li><strong>What Google did.</strong> Its support promised updates for ten weeks and recovered nothing. Its six answers to a formal complaint never mention the lost replies. The last one told Grant to write to support for the Pixel, Google&rsquo;s phone, about an email he had never received. Six days later the complaint was closed.</li>
+          <li><strong>What to do.</strong> If anything in the Gemini app matters to you, do not count on Google to keep it. Save your own copy, and check that your export really holds the replies.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="body" itemprop="articleBody">
+
+    <section id="happened">
+      <h2>What happened</h2>
+      <div class="catch">
+        <h3>The replies disappeared and the questions stayed</h3>
+        <p>In one long conversation in the Gemini app, older replies from Gemini began to vanish. Everything Grant had typed was still there. The first lost reply dates from 23 January 2026 and the last from 20 March.</p>
+      </div>
+      <div class="catch">
+        <h3>Google&rsquo;s own record of the account was missing them</h3>
+        <p>Google Takeout is Google&rsquo;s official download of the data it holds on your account. Gemini chats arrive in it as part of My Activity, the record Google keeps of what you do. That record had the same holes: Grant&rsquo;s questions, with no answers under them. So this was not a fault in what the screen showed, and it was not just a chat log gone missing. Google&rsquo;s own record of his data no longer held the replies. A Google support agent later agreed in writing: &ldquo;this is not a UI display and a bug has been created to be investigated.&rdquo;</p>
+      </div>
+      <div class="catch">
+        <h3>Replies kept vanishing after the 24 February report</h3>
+        <p>Grant reported the problem on 24 February 2026. Replies kept disappearing. On 24 March he sent Google evidence that new chats were losing replies too.</p>
+      </div>
+      <div class="catch">
+        <h3>Then the whole conversation disappeared</h3>
+        <p>The replies went first, one by one, while Grant&rsquo;s own messages stayed. Later the conversation itself vanished from the app. Today his account shows no trace of it: no messages from him, no replies, nothing to show it ever existed. What survives is in his own saved copies and in the export he took in March 2026.</p>
+      </div>
+      <div class="catch">
+        <h3>424 of 731 replies are gone</h3>
+        <p>The conversation held 731 exchanges, each one a message from Grant and Gemini&rsquo;s reply. When we rebuilt the timeline from Google&rsquo;s own export in September 2026, Google&rsquo;s record still held Gemini&rsquo;s reply for 260 of them. Grant&rsquo;s own saved copies rescued 47 more. The other 424 are gone, most of them from February, and 70 from a single day, 2 February. The list of 119 that Grant sent Google in March was only the replies he most wanted back.</p>
+      </div>
+    </section>
+
+    <section id="do">
+      <h2>What to do if you use Gemini</h2>
+      <div class="catch">
+        <h3>Export, then open the export</h3>
+        <p>Run <a href="https://takeout.google.com">Google Takeout</a> and look inside the file it gives you. Gemini is under My Activity. Ours listed our questions with no answers under them. An export you have not opened is not a backup.</p>
+      </div>
+      <div class="catch">
+        <h3>Copy out what matters as you go</h3>
+        <p>If a conversation matters to you, save it yourself while it is still on the screen. The 47 replies we still have from those weeks exist only because Grant had copied them.</p>
+      </div>
+      <div class="catch">
+        <h3>Run Gemini in an app that keeps the chat on your computer</h3>
+        <p>The Gemini models are also sold through Google&rsquo;s API, a paid way for other programs to use them. We use them in Open WebUI, an open-source chat app that keeps each conversation on our own computer. Our <a href="../gemini-3/">Gemini guide</a> says how that has gone.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2>Ten weeks of support emails, nothing recovered</h2>
+      <p>Grant was on one of Google&rsquo;s paid AI plans while this went on. These dates and quotes are from his own emails with Google&rsquo;s support.</p>
+      <table class="log">
+        <tr><th>2026</th><th>What happened</th></tr>
+        <tr><td>24 Feb</td><td>Grant reports that his chat history is vanishing.</td></tr>
+        <tr><td>26 Feb</td><td>Support sends a standard list: clear the cache, try another browser, try another connection. Grant answers that it happens everywhere and sends the screenshots it asked for.</td></tr>
+        <tr><td>27 Feb</td><td>Support says the case is going to a specialist. Eight days pass with no word.</td></tr>
+        <tr><td>8 Mar</td><td>Support writes: &ldquo;I will follow up with you in 72 hours.&rdquo; It does not.</td></tr>
+        <tr><td>14 Mar</td><td>Grant asks whether the replies can be restored or handed over as a file. The answer is the same message as 8 March, word for word.</td></tr>
+        <tr><td>19 Mar</td><td>Grant sends the export that shows the replies missing. A live chat agent promises a supervisor&rsquo;s email within 2 to 4 hours. What arrives is a general reply with nothing new.</td></tr>
+        <tr><td>20 Mar</td><td>Grant offers to pay for engineering help to recover the data. Support replies that his points &ldquo;have been noted.&rdquo;</td></tr>
+        <tr><td>24 Mar</td><td>Grant reports that new chats are losing replies. Support says the evidence has gone to engineering. Then 13 days of silence.</td></tr>
+        <tr><td>6 to 25 Apr</td><td>Four messages say the specialist team is still investigating.</td></tr>
+        <tr><td>26 Apr</td><td>A supervisor writes: &ldquo;Our specialists did not provide a specific time frame on when this issue will be resolved.&rdquo;</td></tr>
+        <tr><td>4 May</td><td>Grant sends Google a formal notice of dispute by certified mail and files a complaint with the Better Business Bureau. He asks for the data, or a plain statement that it is gone, and a refund of what he was charged while this went on.</td></tr>
+      </table>
+    </section>
+
+    <section id="bureau">
+      <h2>Six answers to the Better Business Bureau, none about the data</h2>
+      <p>The Bureau passes a complaint to the business and passes each answer back. These are Google&rsquo;s six answers, in its own words, from the Bureau&rsquo;s record of the complaint. Not one of them mentions the lost replies.</p>
+      <table class="log">
+        <tr><th>2026</th><th>Google&rsquo;s answer, and what was wrong with it</th></tr>
+        <tr><td>6 May</td><td>&ldquo;If you have already reached out through Google Support channels, we ask that you share your most recent support inquiry ID, so we can further investigate.&rdquo; Both case numbers were in the complaint. Grant sent them again.</td></tr>
+        <tr><td>26 May</td><td>&ldquo;We are looking into this and assist the user accordingly and provide an update.&rdquo; No update came.</td></tr>
+        <tr><td>18 Jun</td><td>&ldquo;The Google One/Gemini Team has already reached out to the user&rdquo; under a new case number, &ldquo;to authenticate the user&rsquo;s account.&rdquo; Grant had never seen that case number and had no such email. He had already proved who he was in February, at Google&rsquo;s request.</td></tr>
+        <tr><td>17 Jul</td><td>&ldquo;We will thoroughly review the details and help you with our findings.&rdquo; This was ten weeks into the complaint and five months after the first report.</td></tr>
+        <tr><td>13 Aug</td><td>&ldquo;Due to a lack of response from the user, the case has been closed.&rdquo; Google asked the Bureau to close the complaint &ldquo;as resolved.&rdquo; Grant answered: &ldquo;I can&rsquo;t respond to something I have not received.&rdquo;</td></tr>
+        <tr><td>6 Oct</td><td>&ldquo;The team has provided all the support within the scope and policies.&rdquo; It told Grant to reply to &ldquo;the Google Pixel Support email.&rdquo; Pixel is Google&rsquo;s phone. The complaint was about Gemini. Google again asked for the complaint to be closed &ldquo;as resolved.&rdquo; Grant answered on the record: &ldquo;Google is either extremely confused or dishonest.&rdquo;</td></tr>
+      </table>
+      <p>Twice, in July and in September, the Bureau wrote that it was closing the case as unresolved. Each time another answer from Google reopened it. On 12 October 2026 the Bureau closed it. Its page for the complaint now reads: &ldquo;Better Business Bureau has determined that the business made a good faith effort to answer the complaint and has now closed it.&rdquo;</p>
+    </section>
+
+    <section id="pixel">
+      <h2>Google&rsquo;s last answer sent him to Pixel phone support</h2>
+      <div class="catch">
+        <h3>The complaint was about lost Gemini replies and the answer named a phone</h3>
+        <p>Google&rsquo;s sixth and last answer, on 6 October 2026, reads: &ldquo;To the extent that the user has remaining concerns regarding this matter, we ask them to respond to the Google Pixel Support email.&rdquo; Pixel is Google&rsquo;s phone. The complaint was about 424 replies missing from the Gemini app. The answer says nothing about them.</p>
+      </div>
+      <div class="catch">
+        <h3>The email it named never reached him</h3>
+        <p>The answer gave the subject line of an email and a case number. Grant wrote back: &ldquo;I have not received anything with that ticket number at any time.&rdquo; His records show no message from Google to him after the complaint was opened.</p>
+      </div>
+      <div class="catch">
+        <h3>The same answer asked for the complaint to be closed as resolved</h3>
+        <p>It says &ldquo;the support team has provided the most appropriate resolution&rdquo; and asks the Bureau to close the complaint &ldquo;as resolved.&rdquo; Grant answered on the record: &ldquo;Google is either extremely confused or dishonest.&rdquo; Six days later the Bureau closed it.</p>
+      </div>
+    </section>
+
+    <section id="never">
+      <h2>What Google never did</h2>
+      <div class="catch">
+        <h3>It returned no replies, gave no explanation and offered no refund</h3>
+        <p>Google did not return the replies. It did not say they were gone. It did not offer a refund. Grant says its legal department never answered his certified letter. His records show no message from Google to him after the complaint was opened, only its answers to the Bureau.</p>
+      </div>
+      <div class="catch">
+        <h3>Promised follow-ups led nowhere</h3>
+        <p>On 8 March support wrote, &ldquo;I will follow up with you in 72 hours,&rdquo; and did not. On 19 March a supervisor&rsquo;s email was promised within 2 to 4 hours, and a general reply arrived. On 26 May Google told the Bureau it would &ldquo;provide an update,&rdquo; and none came. Grant had offered to pay for the recovery.</p>
+      </div>
+      <div class="catch">
+        <h3>A case number he was never given</h3>
+        <p>On 18 June Google told the Bureau it had already contacted Grant under a new case number. He had never seen it and had no such email. On 13 August it said the case was closed for &ldquo;a lack of response from the user.&rdquo; Twice it asked the Bureau to close the complaint &ldquo;as resolved&rdquo; while the replies were still missing.</p>
+      </div>
+    </section>
+
+    <section id="bureaucalled">
+      <h2>The Bureau called this a good faith effort</h2>
+      <div class="catch">
+        <h3>Six answers that never mention the data</h3>
+        <p>The Bureau&rsquo;s first message says it &ldquo;is not an enforcement agency.&rdquo; It passed along Google&rsquo;s six answers, none of which mentions the lost replies, and recorded &ldquo;a good faith effort.&rdquo;</p>
+      </div>
+      <div class="catch">
+        <h3>It has not replied to a request to look again</h3>
+        <p>Grant wrote to the Bureau the day it closed the complaint and asked it to look again. He says it has not replied.</p>
+      </div>
+    </section>
+
+    <section id="note">
+      <h2>Grant&rsquo;s note</h2>
+      <div class="quote">
+        <p>&ldquo;I love the Gemini models, but I strongly advise against using the Gemini app.&rdquo;</p>
+        <p>&ldquo;By the end they weren&rsquo;t even responding to me or my actual complaint.&rdquo;</p>
+        <p>&ldquo;It made me realize how powerless you are to these companies.&rdquo;</p>
+        <p>&ldquo;I don&rsquo;t leave anything on there that I don&rsquo;t expect to get deleted.&rdquo;</p>
+        <span>Grant Williams, who runs this lab</span>
+      </div>
+    </section>
+
+    <section id="unknown">
+      <h2>What we do not know</h2>
+      <p>Google has not told us what caused this or how many people it affected. This page is one customer&rsquo;s record, taken from his own emails, his own export and the Bureau&rsquo;s record of his complaint. If Google returns the data or explains what happened, we will say so here.</p>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This page is one customer&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Google. Google, Gemini and Google Takeout are marks of Google LLC. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

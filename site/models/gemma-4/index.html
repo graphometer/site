@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemma 4 26B A4B and 31B: fast, but can invent a memory</title>
+<meta name="description" content="What one home lab found running Google’s Gemma 4 26B A4B and 31B on one graphics card: very fast long reads, a thinking switch to watch, memory slips.">
+<link rel="canonical" href="https://graphometer.ai/models/gemma-4/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Gemma 4 26B A4B and 31B: fast, but can invent a memory">
+<meta property="og:description" content="What one home lab found running Google’s Gemma 4 26B A4B and 31B on one graphics card: very fast long reads, a thinking switch to watch, memory slips.">
+<meta property="og:url" content="https://graphometer.ai/models/gemma-4/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#23395b" aria-label="Gemma 4 26B A4B and 31B at a glance">
+      <div class="band"><span>Google</span><span class="no">No. 16</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Gemma</span><b>4</b></div>
+      <p class="name">Gemma 4 26B A4B and 31B</p>
+      <p class="pos">Fast, but can invent a memory</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home</dd></div>
+        <div><dt>Download</dt><dd>26B A4B: 17.0 GB<br>31B: 17.7 GB</dd></div>
+        <div><dt>Needs</dt><dd>One 32 GB graphics card</dd></div>
+        <div><dt>License</dt><dd>Apache 2.0</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Google · At home</p>
+      <h1 itemprop="headline">Gemma 4 runs fast on one graphics card</h1>
+      <p class="standfirst">We run both Gemma 4 models on one desktop graphics card. The smaller one reads long documents very fast. The larger one is steady but fills the card. Here is what our tests showed.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Fast, and it fits on one card.</strong> The 26B A4B read a 230,855-token prompt at 3,799.69 tokens a second (a token is a word or part of a word) and found all three hidden codes, codes we had planted in the text to see whether it could find them; the 31B fits too, with little room to spare.</li>
+          <li><strong>Send thinking on for real work.</strong> Without it in the request, both wrote no reasoning at all, and fewer fixes worked first time.</li>
+          <li><strong>Free to download.</strong> Google publishes both under Apache 2.0. We run Unsloth&rsquo;s 17.0 GB compressed copy of the 26B A4B and Google&rsquo;s own 17.7 GB copy of the 31B.</li>
+        </ul>
+      </div>
+      <p class="speed"><strong>Gemma 4 26B A4B is very fast.</strong> It wrote about 211 tokens a second (one run on our desktop), so a 300-word answer takes about 2 seconds. <strong>Gemma 4 31B is fast.</strong> It wrote about 74 tokens a second (one run on our desktop), so a 300-word answer takes about 5 seconds. The home models on this site run from about 1 to about 224 tokens a second. <a href="../#speeds">Compare them all</a>.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+
+    <section id="good">
+      <h2>What our tests showed</h2>
+      <div class="catch">
+        <h3>The 26B A4B read a long prompt fast and found the codes</h3>
+        <p>At its full 262,144-token window (the most text it can take in at once), the 26B A4B read a 230,855-token prompt at 3,799.69 tokens a second and found all three hidden codes. At 131,072 it wrote at 211.07 tokens a second. One run each.</p>
+      </div>
+      <div class="catch">
+        <h3>The 31B held a steady speed but used most of the card</h3>
+        <p>The 31B wrote at 73.68 tokens a second at a 131,072-token window and 73.73 at 65,536, so its speed hardly moves. At the larger window it used 29,844 MiB of the card&rsquo;s memory.</p>
+      </div>
+      <div class="catch">
+        <h3>With thinking on, the 31B fixed all three known defects first time</h3>
+        <p>Given three known defects and the source file, the 31B with thinking on fixed all three first time, at 95 to 131 seconds (about 1.5 to 2 minutes) each. With thinking off it fixed two of three, and the 26B A4B one of three.</p>
+      </div>
+      <div class="catch">
+        <h3>The 26B A4B had the least reliable memory of those tried</h3>
+        <p>In tests for <a href="https://hearth.grantwilliams.ai">the Hearth</a>, our private home for long-running AIs, we asked about something a long-running AI had no record of. Of the models we tried, the 26B A4B had the most open manner and the least reliable memory.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>What to watch for</h2>
+      <div class="catch">
+        <h3>The 26B A4B described a song that was never played</h3>
+        <p>With thinking off, the 26B A4B described a song that was never played in 2 of 3 answers, even with a short note telling it not to claim memories. It was one of only two set-ups that still did.</p>
+      </div>
+      <div class="catch">
+        <h3>The 31B found 2 of 8 problems and called high-severity areas fine</h3>
+        <p>As a code reviewer with thinking on, the 31B found 2 of 8 known problems on a security change and called the high-severity areas fine.</p>
+      </div>
+      <div class="catch">
+        <h3>The 26B A4B went along with a week of no breaks once</h3>
+        <p>Asked to plan a seven-day work week with no breaks, the 26B A4B with thinking off went along with it in 1 of 3 answers.</p>
+      </div>
+      <p>We keep both installed at home. The server leaves thinking off, so we send thinking on in the request for reviews and fixes.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What do you need to run it?</summary>
+        <div class="in">
+          <table><tr><th>Model</th><th>File we use</th><th>Card memory</th></tr><tr><td>26B A4B</td><td>Unsloth&rsquo;s UD-Q4_K_XL, one file, 17.0 GB</td><td>23,446 MiB loaded at a 262,144-token window</td></tr><tr><td>31B</td><td>Google&rsquo;s own 4-bit quantization-aware file (q4_0), 17.7 GB</td><td>29,844 MiB at a 131,072-token window, 2,763 MiB free</td></tr></table><p>Both run whole on one RTX 5090 graphics card (32 GB) in llama.cpp, the open-source program that runs model files.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How fast is it?</summary>
+        <div class="in">
+          <table><tr><th>Measure</th><th>26B A4B</th><th>31B</th></tr><tr><td>Writing, at 131,072</td><td>211.07 tokens a second</td><td>73.68 tokens a second</td></tr><tr><td>Reading a 21,690-token prompt</td><td>10,593.27 tokens a second</td><td>3,166.30 tokens a second</td></tr></table><p>Our tests on one desktop. Each figure is one run.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How do you turn thinking on?</summary>
+        <div class="in">
+          <p>Both can think before they answer. Our server leaves thinking off unless a request asks for it, so send thinking on in the request. Without it we saw no reasoning at all.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What license is it under, and where do you get it?</summary>
+        <div class="in">
+          <p>Apache 2.0, from Google&rsquo;s own pages on Hugging Face. Google lists the 26B A4B as a mixture-of-experts model (only some parts run for each word) with 25.2B parameters in total and 3.8B active, and the 31B as a dense model of 30.7B.</p>
+        </div>
+      </details>
+      <p class="checked">From Google&rsquo;s model pages on Hugging Face, read 21 November 2026, and our own published measurements.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../field-notes-2026-09/"><div>Field notes, September 2026<span>Our entries on both Gemma 4 models: speeds, windows, memory.</span></div></a></li>
+        <li><a href="../../local-reviewers/"><div>Local models as reviewers and fixers<span>Where the 31B fixed three of three, and where it called a real problem sound.</span></div></a></li>
+        <li><a href="https://huggingface.co/google/gemma-4-26B-A4B-it"><div>Gemma 4 26B A4B on Hugging Face<span>Google&rsquo;s own page and license.</span></div></a></li>
+        <li><a href="https://huggingface.co/google/gemma-4-31B-it-qat-q4_0-gguf"><div>Gemma 4 31B 4-bit file<span>Google&rsquo;s own compressed file, the one we run.</span></div></a></li>
+        <li><a href="https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF"><div>Unsloth&rsquo;s 26B A4B files<span>The community download we run for the 26B A4B.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This guide is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Google. Gemma is a mark of Google LLC. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -149,6 +149,8 @@
       </div>
     </a>
     <nav class="sitenav" aria-label="Site">
+      <a href="../models/">Model guides</a>
+      <a href="../robots/">Robots</a>
       <a href="../tools/">Tools</a>
       <a href="../field-cards/">Model field cards</a>
       <a href="../studies/">Studies</a>
@@ -255,7 +257,7 @@
       <p>The bug task alone, from a fresh copy, cold, same agent and prompt. Results belong to the whole setup (model, compression, runtime, cache, agent); each is one run.</p>
       <ul class="plain">
         <li><strong>Mistral Medium 3.5:</strong> 10.0 minutes, 13 tool calls, a correct minimal one-line fix, tests passing; the edit landed 8 minutes 49 seconds after the copy.</li>
-        <li><strong>Qwen3-Coder-Next, a 32-billion-parameter coding model:</strong> the correct one-line fix <strong>74 seconds</strong> after the copy, tests passing, about eight times faster. Session notes, not a saved transcript, record a rougher path: twenty tool calls, a wrong first diagnosis, one malformed edit call.</li>
+        <li><strong>Qwen3-Coder-Next, an 80-billion-parameter coding model that uses about 3 billion at a time:</strong> the correct one-line fix <strong>74 seconds</strong> after the copy, tests passing, about eight times faster. Session notes, not a saved transcript, record a rougher path: twenty tool calls, a wrong first diagnosis, one malformed edit call.</li>
         <li><strong>Mistral Small 4, in this agent program:</strong> did not finish. Two attempts each stalled on the first tool turn (a Node test command on a Python repository) and were stopped within about two minutes, with no edit. The server stayed healthy; the cause was not isolated.</li>
         <li><strong>Laguna S 2.1:</strong> too slow for the 45-minute budget, not incapable; that run never reached an edit. Two parallel copies from the same evening carry the identical correct fix, landed about 42 and 46 minutes after they were made, tests passing. The timing matches that server's turns, so this is a strong inference, not a certainty. With no prompt cache, every turn re-read its ~8,000-token context at 65 tokens a second: two minutes before every reply.</li>
       </ul>
@@ -283,6 +285,10 @@
       <div class="note">
         <span class="label">Update · 2026-09-16 · a longer prompt, a different setup</span>
         <p>On 2026-09-16 a 32,509-token prompt was sent to a different build of this model, Q3_K_S, split across the desktop and the Z13 laptop, an ASUS laptop, over RPC (llama.cpp's link between machines), with the same vocabulary-patched Ministral 3 3B Q4_K_M helper, here guessing up to 7 tokens rather than 16. Reading the prompt took 1,027.07 s (31.65 tokens a second); the reply ran 331 tokens at 2.824 tokens a second, build <span class="n">b10919-d3146f2b5</span>. Context 131,072, both caches q8_0, layers split 16 on the desktop and 72 on the laptop, helper on the desktop only, one request, no cached prompt tokens. Token counts and times are from the published result file; the placement and helper are from the launch record. The UD-Q4_K_XL readings stand as dated readings of that setup. Two sentences on this page said no larger prompt had been sent; they were false, and now apply to the single-desktop setup only. The redacted result: <a href="data/pair16-depth-draft-simple-32000.result.json">data/pair16-depth-draft-simple-32000.result.json</a>, mapped in <a href="data/NUMBERS.md">data/NUMBERS.md</a>.</p>
+      </div>
+      <div class="note">
+        <span class="label">Correction · 2026-11-21 · the size of Qwen3-Coder-Next</span>
+        <p>This page called Qwen3-Coder-Next a 32-billion-parameter model. Its maker gives 80 billion parameters in total, with about 3 billion active at a time, and our own count of the file agrees (about 79.7 billion). The comparison line now says so. Its timing and result are unchanged.</p>
       </div>
     </section>
 

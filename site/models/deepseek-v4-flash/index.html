@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek-V4-Flash: spots code bugs, missed the worst</title>
+<meta name="description" content="What one home lab found running DeepSeek-V4-Flash, the July 2026 release: a useful second code reviewer in its time, slow on long prompts until one fix.">
+<link rel="canonical" href="https://graphometer.ai/models/deepseek-v4-flash/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="DeepSeek-V4-Flash: spots code bugs, missed the worst">
+<meta property="og:description" content="What one home lab found running DeepSeek-V4-Flash, the July 2026 release: a useful second code reviewer in its time, slow on long prompts until one fix.">
+<meta property="og:url" content="https://graphometer.ai/models/deepseek-v4-flash/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../field-cards/">Model field cards</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#35618f" aria-label="DeepSeek-V4-Flash at a glance">
+      <div class="band"><span>DeepSeek</span><span class="no">No. 25</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">DeepSeek Flash</span><b>4</b></div>
+      <p class="name">DeepSeek-V4-Flash</p>
+      <p class="pos">Spots code bugs, missed the worst</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home</dd></div>
+        <div><dt>Download</dt><dd>Unsloth&rsquo;s 8-bit copy<br>about 162 GB</dd></div>
+        <div><dt>Needs</dt><dd>One RTX 5090<br>and 188 GiB of memory</dd></div>
+        <div><dt>License</dt><dd>MIT</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · DeepSeek · At home</p>
+      <h1 itemprop="headline">DeepSeek-V4-Flash found code bugs but missed the worst</h1>
+      <p class="standfirst">This is the July 2026 version of DeepSeek&rsquo;s Flash model, run on one desktop. It read code changes as our second local reviewer. It no longer holds that job, and the newer V4.1 has its own guide.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>A useful second opinion on code.</strong> In our reviews of real code changes it was one of two local models that stood out, and it found real problems the hosted reviews had missed.</li>
+          <li><strong>It can miss the worst fault.</strong> On one change it missed the most serious problem, and with thinking on, a small reply budget can leave it with no answer at all.</li>
+          <li><strong>Download it if you have the memory.</strong> DeepSeek publishes it under the MIT license. We run Unsloth&rsquo;s 8-bit copy with most of the model in system memory.</li>
+        </ul>
+      </div>
+      <p class="speed"><strong>Writing speed: moderate.</strong> It wrote about 21 tokens a second (short replies on our desktop), so a 300-word answer takes about 19 seconds. The home models on this site run from about 1 to about 224 tokens a second. <a href="../#speeds">Compare them all</a>.</p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs this home AI lab · Facts checked 21 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+
+    <section id="good">
+      <h2>What our tests showed</h2>
+      <div class="catch">
+        <h3>Found 4 of 8 known problems, one more, and one false alarm</h3>
+        <p>Given a large security change, it found 4 of 8 known problems in 26 minutes, plus one real problem the hosted reviewers had not listed, and one false alarm. One run, in <a href="../../local-reviewers/">our study of local reviewers</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>Caught a missed bug and put the right defect first</h3>
+        <p>On another code change it found one real problem the hosted read had missed, and put the right defect first. One run.</p>
+      </div>
+      <div class="catch">
+        <h3>One setting made reading long prompts far faster</h3>
+        <p>Reading a 48,073-token prompt, the 8-bit copy went from 83.3 tokens a second to 607.1 once we set the prompt chunk size by hand. A token is a word or part of a word. Details are on <a href="../../deepseek-v4-flash/">our field card</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>One desktop answered in 75.2 seconds, two machines took 416.4</h3>
+        <p>On the same 3-bit file, one desktop answered a 48,024-token request in 75.2 seconds. Split across the desktop and an ASUS ROG Flow Z13 laptop (AMD Ryzen AI Max+ 395, 128 GB), the best run took 416.4 seconds (about 7 minutes).</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>What to watch for</h2>
+      <div class="catch">
+        <h3>Missed the most serious fault on one code change</h3>
+        <p>On one code change it found three real problems the hosted read had missed, but it missed the most serious one. On another it rated one item as more serious than it was.</p>
+      </div>
+      <div class="catch">
+        <h3>With thinking on and 64 tokens, the answer came back empty</h3>
+        <p>With thinking on and a reply budget of 64 tokens, the visible answer came back empty every time. 900 tokens was enough. We now run it with thinking off.</p>
+      </div>
+      <div class="catch">
+        <h3>After a restart the saved chat did not come back</h3>
+        <p>A saved copy of a long conversation did not come back after a server restart, so the next request read 102,846 tokens again from the start.</p>
+      </div>
+      <p>It is no longer our second reviewer. When it was, we ran it with thinking off and treated its findings as leads to check, not a verdict.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What do you need to run it?</summary>
+        <div class="in">
+          <table><tr><th>Item</th><th>What we use</th></tr><tr><td>The file</td><td>Unsloth&rsquo;s UD-Q8_K_XL, an 8-bit compressed copy, about 162 GB. We also tested their 3-bit UD-IQ3_XXS, 104.2 GB in 4 files.</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card (32,607 MiB) and 188 GiB of system memory</td></tr><tr><td>Where the model sits</td><td>Its experts (the many small parts a mixture-of-experts model picks from for each word) live in system memory</td></tr></table><p>Keep llama.cpp&rsquo;s --no-repack flag on. Without it, loading the 8-bit file needs far more memory than this machine has.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How fast is it on our desktop?</summary>
+        <div class="in">
+          <table><tr><th>Measure</th><th>Our test, one RTX 5090</th></tr><tr><td>Writing, short replies</td><td>21.49 tokens a second</td></tr><tr><td>Reading a 20,000-token prompt</td><td>961.6 tokens a second</td></tr></table><p>Both with the whole model read into memory at start and a small cache of experts on the card, from <a href="../../llamacpp-expert-cache/">our expert cache study</a>. Before those two settings it wrote at 13.34.</p>
+        </div>
+      </details>
+      <details>
+        <summary>License, and where do you get it?</summary>
+        <div class="in">
+          <p>MIT, from DeepSeek&rsquo;s own page on Hugging Face, which calls this series a preview version of DeepSeek-V4. DeepSeek describes it as a model with 284B parameters, 13B active for each word, and a window of one million tokens. We have served it up to 262,144.</p><p>We run Unsloth&rsquo;s compressed copy in llama.cpp, the open-source program that runs model files. For the newer version, see <a href="../deepseek-v4-1-flash/">our DeepSeek-V4.1-Flash guide</a>.</p>
+        </div>
+      </details>
+      <p class="checked">From DeepSeek&rsquo;s model page on Hugging Face, read 21 November 2026, and our own published measurements.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../deepseek-v4-flash/"><div>DeepSeek V4 Flash: one desktop or two machines?<span>Our field card: chunk sizes, long reads, and the two-machine split.</span></div></a></li>
+        <li><a href="../../local-reviewers/"><div>Local models as reviewers and fixers<span>Where it found real problems, and where it missed one.</span></div></a></li>
+        <li><a href="../deepseek-v4-1-flash/"><div>DeepSeek-V4.1-Flash guide<span>The newer version, which we run as a model on trial.</span></div></a></li>
+        <li><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash"><div>DeepSeek-V4-Flash on Hugging Face<span>The maker&rsquo;s own page and license.</span></div></a></li>
+        <li><a href="https://huggingface.co/unsloth/DeepSeek-V4-Flash-GGUF"><div>Unsloth&rsquo;s GGUF files<span>The compressed copies we run.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This note is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to DeepSeek. DeepSeek is a mark of DeepSeek. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

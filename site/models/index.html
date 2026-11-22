@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI model guides: what each model is good at</title>
+<meta name="description" content="Plain guides to the AI models one home lab runs, hosted and at home: what each one is good at, how we use it and what to watch for.">
+<link rel="canonical" href="https://graphometer.ai/models/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="AI model guides: what each model is good at">
+<meta property="og:description" content="Plain guides to the AI models one home lab runs, hosted and at home: what each one is good at, how we use it and what to watch for.">
+<meta property="og:url" content="https://graphometer.ai/models/">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  .intro{padding:44px 0 30px; border-bottom:3px solid var(--ink)}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .intro h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(40px,6.4vw,76px);
+    line-height:1; margin-bottom:18px}
+  .intro .standfirst{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:34em}
+
+  section.block{padding:40px 0 0}
+  .secthead{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px}
+  .secthead h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.4vw,38px); line-height:1.05}
+  .secthead h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .secthead p{font-family:var(--sans); font-size:14px; font-weight:700; color:var(--grey)}
+
+  /* the cards */
+  .deck{list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:26px 22px}
+  @media (max-width:520px){.deck{grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 12px}}
+  .card{--c:#141414; position:relative; background:#fffdf8; border:2px solid var(--ink); border-radius:14px;
+    padding:9px; box-shadow:5px 5px 0 var(--ink); display:flex; flex-direction:column;
+    text-decoration:none; color:var(--ink); height:100%; transition:transform .12s ease, box-shadow .12s ease}
+  a.card:hover{transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--red); color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){.card{transition:none} a.card:hover{transform:none}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 4px 8px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:8px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em;
+    font-size:clamp(46px,7vw,68px); line-height:1}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:12.5px; letter-spacing:.24em;
+    text-transform:uppercase; padding-left:.24em}
+  .card h3{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:22px; line-height:1.1;
+    margin:12px 4px 4px}
+  .card .pos{font-family:var(--sans); font-size:14.5px; font-weight:700; line-height:1.3; color:var(--grey);
+    margin:0 4px 12px}
+  .card .foot{margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:8px;
+    border-top:2px solid var(--ink); padding:9px 4px 3px; font-family:var(--sans); font-size:11.5px; font-weight:800;
+    letter-spacing:.12em; text-transform:uppercase}
+  .card .foot .go{color:var(--red)}
+  .card .foot .soon{color:var(--grey)}
+  @media (max-width:520px){
+    .card{padding:7px; box-shadow:3px 3px 0 var(--ink); border-radius:11px}
+    .card h3{font-size:17.5px}
+    .card .pos{font-size:13px}
+    .card .foot{flex-direction:column; align-items:flex-start; gap:2px; font-size:10.5px}
+  }
+  .c-ink{--c:#141414} .c-red{--c:#a6332e} .c-navy{--c:#23395b} .c-forest{--c:#2f5d46}
+  .c-ochre{--c:#8a5c12} .c-plum{--c:#5b3a5e} .c-teal{--c:#1f5f66} .c-slate{--c:#4a4f57}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guides</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../models/" aria-current="page">Model guides</a>
+      <a href="../robots/">Robots</a>
+      <a href="../studies/">Studies</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../tools/">Tools</a>
+      <a href="../method/">Method</a>
+      <a href="../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="intro">
+    <p class="label">Model guides</p>
+    <h1>Which AI model is good at what</h1>
+    <p class="standfirst">These are the AI models one home lab runs, hosted and at home. Each guide says what the model is good at, how we use it and what to watch for.</p>
+  </div>
+
+  <section class="block" aria-labelledby="hosted">
+    <div class="secthead">
+      <h2 id="hosted">Hosted models</h2>
+      <p>You reach these through an app or an API.</p>
+    </div>
+    <ul class="deck">
+      <li><a class="card" style="--c:#141414" href="grok-4-7/">
+        <div class="band"><span>SpaceXSI</span><span class="no">No. 01</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Grok</span><b>4.7</b></div>
+        <h3>Grok 4.7</h3>
+        <p class="pos">Finds faults in finished work</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#a6332e" href="claude-opus-5-5/">
+        <div class="band"><span>Anthropic</span><span class="no">No. 02</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Opus</span><b>5.5</b></div>
+        <h3>Claude Opus 5.5</h3>
+        <p class="pos">Runs long jobs across several AIs</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#a6332e" href="claude-sonnet-5-5/">
+        <div class="band"><span>Anthropic</span><span class="no">No. 03</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Sonnet</span><b>5.5</b></div>
+        <h3>Claude Sonnet 5.5</h3>
+        <p class="pos">Routine fixes, tests and fact checks</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#a6332e" href="claude-fable-5-2/">
+        <div class="band"><span>Anthropic</span><span class="no">No. 04</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Fable</span><b>5.2</b></div>
+        <h3>Claude Fable 5.2</h3>
+        <p class="pos">Builds and edits websites</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#a6332e" href="claude-sonnet-4-6/">
+        <div class="band"><span>Anthropic</span><span class="no">No. 05</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Sonnet</span><b>4.6</b></div>
+        <h3>Claude Sonnet 4.6</h3>
+        <p class="pos">Natural writing, no longer updated</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2f5d46" href="gpt-6/">
+        <div class="band"><span>OpenAI</span><span class="no">No. 06</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Sol · Astra</span><b>6</b></div>
+        <h3>GPT-6 Sol and Astra</h3>
+        <p class="pos">Builds game parts and checks drafts</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2f5d46" href="gpt-5-6/">
+        <div class="band"><span>OpenAI</span><span class="no">No. 07</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GPT</span><b>5.6</b></div>
+        <h3>GPT-5.6</h3>
+        <p class="pos">Rechecks drafts against their records</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2f5d46" href="gpt-4o/">
+        <div class="band"><span>OpenAI</span><span class="no">No. 08</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GPT</span><b>4o</b></div>
+        <h3>GPT-4o</h3>
+        <p class="pos">Human-sounding chat, leaving in January</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#23395b" href="gemini-3/">
+        <div class="band"><span>Google</span><span class="no">No. 09</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Gemini</span><b>3</b></div>
+        <h3>Gemini 3.1 Pro and 3 Flash</h3>
+        <p class="pos">Long chats and working through ideas</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#5b3a5e" href="kimi-k3/">
+        <div class="band"><span>Moonshot AI</span><span class="no">No. 10</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Kimi</span><b>K3</b></div>
+        <h3>Kimi K3 and K3.1 Pro</h3>
+        <p class="pos">Checks plans, code and claims</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#8a5c12" href="mistral-large-4/">
+        <div class="band"><span>Mistral AI</span><span class="no">No. 11</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Large</span><b>4</b></div>
+        <h3>Mistral Large 4</h3>
+        <p class="pos">Reads a page like a newcomer</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#1f5f66" href="glm-5-3/">
+        <div class="band"><span>Z.ai</span><span class="no">No. 12</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GLM</span><b>5.3</b></div>
+        <h3>GLM 5.3</h3>
+        <p class="pos">Finds where newcomers get lost</p>
+        <div class="foot"><span>Hosted</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="home">
+    <div class="secthead">
+      <h2 id="home">Models that run at home</h2>
+      <p>You download these and run them on your own computer.</p>
+    </div>
+    <ul class="deck">
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-8-27b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 13</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen</span><b>3.8</b></div>
+        <h3>Qwen3.8-27B</h3>
+        <p class="pos">Writes and fixes code at home</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#1f5f66" href="glm-5-3-flash/">
+        <div class="band"><span>Z.ai</span><span class="no">No. 14</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GLM Flash</span><b>5.3</b></div>
+        <h3>GLM-5.3-Flash</h3>
+        <p class="pos">Reviews code at home, slowly</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#35618f" href="deepseek-v4-1-flash/">
+        <div class="band"><span>DeepSeek</span><span class="no">No. 15</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">DeepSeek Flash</span><b>4.1</b></div>
+        <h3>DeepSeek-V4.1-Flash</h3>
+        <p class="pos">Finds code bugs, few tests so far</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="bench">
+    <div class="secthead">
+      <h2 id="bench">More open models we run at home</h2>
+      <p>Other models you can download. Most are still installed and in use here. Two we stopped running, and their notes say why.</p>
+    </div>
+    <ul class="deck">
+      <li><a class="card" style="--c:#23395b" href="gemma-4/">
+        <div class="band"><span>Google</span><span class="no">No. 16</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Gemma</span><b>4</b></div>
+        <h3>Gemma 4 26B A4B and 31B</h3>
+        <p class="pos">Fast, but can invent a memory</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-6-35b-a3b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 17</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen 35B-A3B</span><b>3.6</b></div>
+        <h3>Qwen3.6-35B-A3B</h3>
+        <p class="pos">Fast on small jobs, if checked</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-6-27b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 18</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen 27B</span><b>3.6</b></div>
+        <h3>Qwen3.6-27B</h3>
+        <p class="pos">Long chats, can drop an instruction</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-5-27b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 19</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen 27B</span><b>3.5</b></div>
+        <h3>Qwen3.5-27B</h3>
+        <p class="pos">Long chats, rejects a second instruction</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-8-flash-next/">
+        <div class="band"><span>Qwen</span><span class="no">No. 20</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen Flash-Next</span><b>3.8</b></div>
+        <h3>Qwen3.8-Flash-Next</h3>
+        <p class="pos">Finds details in long text, slowly</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-5-122b-397b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 21</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen 122B · 397B</span><b>3.5</b></div>
+        <h3>Qwen3.5-122B and 397B</h3>
+        <p class="pos">Conversation and hard reasoning at home</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-235b-a22b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 22</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen3 235B</span><b>2507</b></div>
+        <h3>Qwen3-235B-A22B</h3>
+        <p class="pos">Too slow for chat</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-coder-next/">
+        <div class="band"><span>Qwen</span><span class="no">No. 23</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen Coder</span><b>Next</b></div>
+        <h3>Qwen3-Coder-Next</h3>
+        <p class="pos">Fast small fixes, risky long jobs</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4a4f57" href="qwen3-30b-a3b/">
+        <div class="band"><span>Qwen</span><span class="no">No. 24</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Qwen3 Instruct</span><b>30B</b></div>
+        <h3>Qwen3-30B-A3B-Instruct-2507</h3>
+        <p class="pos">Needs a reminder before each message</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#35618f" href="deepseek-v4-flash/">
+        <div class="band"><span>DeepSeek</span><span class="no">No. 25</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">DeepSeek Flash</span><b>4</b></div>
+        <h3>DeepSeek-V4-Flash</h3>
+        <p class="pos">Spots code bugs, missed the worst</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#1f5f66" href="glm-4-7-flash/">
+        <div class="band"><span>Z.ai</span><span class="no">No. 26</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">GLM Flash</span><b>4.7</b></div>
+        <h3>GLM-4.7-Flash</h3>
+        <p class="pos">Very fast, weak judgment</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#8a5c12" href="mistral-small-4/">
+        <div class="band"><span>Mistral AI</span><span class="no">No. 27</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Small</span><b>4</b></div>
+        <h3>Mistral Small 4</h3>
+        <p class="pos">Quick, but rejects some chat layouts</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2f5d46" href="gpt-oss-120b/">
+        <div class="band"><span>OpenAI</span><span class="no">No. 28</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">gpt-oss</span><b>120b</b></div>
+        <h3>gpt-oss-120b</h3>
+        <p class="pos">Fast, but poor working alone</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#4b4a8f" href="ling-3-0-flash/">
+        <div class="band"><span>inclusionAI</span><span class="no">No. 29</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Ling</span><b>3.0</b></div>
+        <h3>Ling-3.0-flash</h3>
+        <p class="pos">Long texts in little graphics memory</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#9a5a3c" href="ornith-1-5-35b/">
+        <div class="band"><span>Ornith</span><span class="no">No. 30</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Ornith</span><b>1.5</b></div>
+        <h3>Ornith-1.5-35B-A3B</h3>
+        <p class="pos">Quick coder, weak on long jobs</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#9a5a3c" href="ornith-1-5-122b/">
+        <div class="band"><span>Ornith</span><span class="no">No. 31</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Ornith</span><b>1.5</b></div>
+        <h3>Ornith-1.5-122B</h3>
+        <p class="pos">Honest about memory with thinking on</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#55662b" href="nemotron-3-5-bolt/">
+        <div class="band"><span>NVIDIA</span><span class="no">No. 32</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Nemotron</span><b>3.5</b></div>
+        <h3>Nemotron 3.5 Bolt</h3>
+        <p class="pos">Very fast, approved faulty code</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#7a5a3a" href="mimo-v2-6-flash/">
+        <div class="band"><span>Xiaomi</span><span class="no">No. 33</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">MiMo</span><b>V2.6</b></div>
+        <h3>MiMo-V2.6-Flash</h3>
+        <p class="pos">Good code reviewer, limit its thinking</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2b3f9e" href="beam-1-0/">
+        <div class="band"><span>Reflection AI</span><span class="no">No. 34</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Beam</span><b>1.0</b></div>
+        <h3>Beam 1.0</h3>
+        <p class="pos">Slow answers, uses nearly all memory</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#55662b" href="inkling-small/">
+        <div class="band"><span>Thinking Machines Lab</span><span class="no">No. 35</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Inkling</span><b>Small</b></div>
+        <h3>Inkling-Small</h3>
+        <p class="pos">Slow to start, adds unsupported facts</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#2b3f9e" href="muse-glimmer-30b/">
+        <div class="band"><span>Meta</span><span class="no">No. 36</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Muse Glimmer</span><b>30B</b></div>
+        <h3>Muse-Glimmer-30B</h3>
+        <p class="pos">Fast on code, always thinks first</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#7a5a3a" href="lfm2-5-2-6b/">
+        <div class="band"><span>Liquid AI</span><span class="no">No. 37</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">LFM</span><b>2.5</b></div>
+        <h3>LFM2.5-2.6B</h3>
+        <p class="pos">Simple action steps, not long documents</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#8a5c12" href="mistral-medium-3-5/">
+        <div class="band"><span>Mistral AI</span><span class="no">No. 38</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Medium</span><b>3.5</b></div>
+        <h3>Mistral Medium 3.5</h3>
+        <p class="pos">Too slow on our desktop</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+      <li><a class="card" style="--c:#7a2e4a" href="minimax-m2-7/">
+        <div class="band"><span>MiniMax</span><span class="no">No. 39</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">MiniMax</span><b>M2.7</b></div>
+        <h3>MiniMax-M2.7</h3>
+        <p class="pos">Approved faulty code in one review</p>
+        <div class="foot"><span>At home</span><span class="go">Read the guide &rarr;</span></div>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="speeds">
+    <div class="secthead">
+      <h2 id="speeds">How fast the home models write</h2>
+      <p>Fastest first. Our tests, on our own computers.</p>
+    </div>
+    <table class="log speeds">
+      <tr><th>Model</th><th>Speed</th><th>Tokens a second</th><th>A 300-word answer takes</th></tr>
+        <tr><td><a href="glm-4-7-flash/">GLM-4.7-Flash</a></td><td>Very fast</td><td>about 224</td><td>about 2 seconds</td></tr>
+        <tr><td><a href="gemma-4/">Gemma 4 26B A4B</a></td><td>Very fast</td><td>about 211</td><td>about 2 seconds</td></tr>
+        <tr><td><a href="qwen3-6-35b-a3b/">Qwen3.6-35B-A3B</a></td><td>Very fast</td><td>about 175</td><td>about 2 seconds</td></tr>
+        <tr><td><a href="ornith-1-5-35b/">Ornith-1.5-35B-A3B</a></td><td>Very fast</td><td>about 173</td><td>about 2 seconds</td></tr>
+        <tr><td><a href="qwen3-coder-next/">Qwen3-Coder-Next</a></td><td>Very fast</td><td>about 173</td><td>about 2 seconds</td></tr>
+        <tr><td><a href="nemotron-3-5-bolt/">Nemotron 3.5 Bolt</a></td><td>Very fast</td><td>about 148</td><td>about 3 seconds</td></tr>
+        <tr><td><a href="qwen3-30b-a3b/">Qwen3-30B-A3B-Instruct-2507</a></td><td>Very fast</td><td>about 148</td><td>about 3 seconds</td></tr>
+        <tr><td><a href="muse-glimmer-30b/">Muse-Glimmer-30B</a></td><td>Very fast</td><td>about 117</td><td>about 3 seconds</td></tr>
+        <tr><td><a href="ling-3-0-flash/">Ling-3.0-flash</a></td><td>Very fast</td><td>about 114</td><td>about 3 seconds</td></tr>
+        <tr><td><a href="gpt-oss-120b/">gpt-oss-120b</a></td><td>Fast</td><td>about 85</td><td>about 5 seconds</td></tr>
+        <tr><td><a href="gemma-4/">Gemma 4 31B</a></td><td>Fast</td><td>about 74</td><td>about 5 seconds</td></tr>
+        <tr><td><a href="qwen3-8-27b/">Qwen3.8-27B</a></td><td>Fast</td><td>about 72</td><td>about 6 seconds</td></tr>
+        <tr><td><a href="qwen3-8-flash-next/">Qwen3.8-Flash-Next</a></td><td>Fast</td><td>about 64</td><td>about 6 seconds</td></tr>
+        <tr><td><a href="qwen3-6-27b/">Qwen3.6-27B</a></td><td>Fast</td><td>about 61</td><td>about 7 seconds</td></tr>
+        <tr><td><a href="mistral-small-4/">Mistral Small 4</a></td><td>Fast</td><td>49 to 52</td><td>about 8 seconds</td></tr>
+        <tr><td><a href="ornith-1-5-122b/">Ornith-1.5-122B</a></td><td>Fast</td><td>about 46</td><td>about 9 seconds</td></tr>
+        <tr><td><a href="qwen3-5-27b/">Qwen3.5-27B</a></td><td>Fast</td><td>about 45</td><td>about 9 seconds</td></tr>
+        <tr><td><a href="qwen3-5-122b-397b/">Qwen3.5-122B</a></td><td>Moderate</td><td>26 to 38</td><td>about 12 seconds</td></tr>
+        <tr><td><a href="deepseek-v4-flash/">DeepSeek-V4-Flash</a></td><td>Moderate</td><td>about 21</td><td>about 19 seconds</td></tr>
+        <tr><td><a href="glm-5-3-flash/">GLM-5.3-Flash</a></td><td>Moderate</td><td>about 20</td><td>about 20 seconds</td></tr>
+        <tr><td><a href="mimo-v2-6-flash/">MiMo-V2.6-Flash</a></td><td>Moderate</td><td>about 19</td><td>about 20 seconds, plus its thinking</td></tr>
+        <tr><td><a href="qwen3-5-122b-397b/">Qwen3.5-397B</a></td><td>Moderate</td><td>14 to 20</td><td>about 25 seconds</td></tr>
+        <tr><td><a href="inkling-small/">Inkling-Small</a></td><td>Slow</td><td>about 12</td><td>about 35 seconds</td></tr>
+        <tr><td><a href="minimax-m2-7/">MiniMax-M2.7</a></td><td>Slow</td><td>about 10</td><td>about 40 seconds</td></tr>
+        <tr><td><a href="deepseek-v4-1-flash/">DeepSeek-V4.1-Flash</a></td><td>Slow</td><td>about 9</td><td>about 40 seconds</td></tr>
+        <tr><td><a href="beam-1-0/">Beam 1.0</a></td><td>Slow</td><td>about 8</td><td>about 50 seconds, plus its thinking</td></tr>
+        <tr><td><a href="qwen3-235b-a22b/">Qwen3-235B-A22B</a></td><td>Slow</td><td>about 7</td><td>about a minute</td></tr>
+        <tr><td><a href="mistral-medium-3-5/">Mistral Medium 3.5</a></td><td>Very slow</td><td>about 1</td><td>about 6 minutes</td></tr>
+    </table>
+    <p class="checked">A token is a word or part of one, and a 300-word answer is about 400 tokens. The figures come from each model&rsquo;s own page and were not all measured the same way: some are short replies, some are deep in a long conversation, and a few are single runs. Read them as fast, moderate or slow, not as a ranking to the decimal. Hosted models are not timed here.</p>
+  </section>
+
+  <section class="block" aria-labelledby="warn">
+    <div class="secthead">
+      <h2 id="warn">Warnings</h2>
+      <p>Things that cost us, so they do not cost you.</p>
+    </div>
+    <ul class="deck">
+      <li><a class="card caution" href="gemini-app-warning/">
+        <div class="band"><span>Google</span><span class="no">Warning</span></div>
+        <div class="face"><span class="fam">Caution</span><b>!</b></div>
+        <h3>The Gemini app</h3>
+        <p class="pos">It lost 424 replies from one conversation</p>
+        <div class="foot"><span>Google</span><span class="go">Read the warning &rarr;</span></div>
+      </a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></p>
+    <p>These guides are one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to SpaceXSI (formerly xAI), Anthropic, OpenAI, Google, Moonshot AI, Mistral AI, Z.ai, the Qwen team or Alibaba Group. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>
