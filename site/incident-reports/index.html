@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Incident reports and warnings: when AI products fail</title>
+<meta name="description" content="What went wrong with AI products we paid for or relied on, with the records: lost Gemini replies, a provider that may have read our requests, and more.">
+<link rel="canonical" href="https://graphometer.ai/incident-reports/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Incident reports and warnings: when AI products fail">
+<meta property="og:description" content="What went wrong with AI products we paid for or relied on, with the records: lost Gemini replies, a provider that may have read our requests, and more.">
+<meta property="og:url" content="https://graphometer.ai/incident-reports/">
+<meta property="og:image" content="https://graphometer.ai/og/models-gemini-app-warning.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: incident reports and warnings">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models-gemini-app-warning.png">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  .intro{padding:44px 0 30px; border-bottom:3px solid var(--ink)}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .intro h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(40px,6.4vw,76px);
+    line-height:1; margin-bottom:18px}
+  .intro .standfirst{font-size:clamp(19px,2vw,22px); line-height:1.5; max-width:34em}
+
+  section.block{padding:40px 0 0}
+  .secthead{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px}
+  .secthead h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.4vw,38px); line-height:1.05}
+  .secthead h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .secthead p{font-family:var(--sans); font-size:14px; font-weight:700; color:var(--grey)}
+
+  /* the cards */
+  .deck{list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:26px 22px}
+  @media (max-width:520px){.deck{grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 12px}}
+  .card{--c:#141414; position:relative; background:#fffdf8; border:2px solid var(--ink); border-radius:14px;
+    padding:9px; box-shadow:5px 5px 0 var(--ink); display:flex; flex-direction:column;
+    text-decoration:none; color:var(--ink); height:100%; transition:transform .12s ease, box-shadow .12s ease}
+  a.card:hover{transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--red); color:var(--ink)}
+  @media (prefers-reduced-motion:reduce){.card{transition:none} a.card:hover{transform:none}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 4px 8px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:8px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em;
+    font-size:clamp(46px,7vw,68px); line-height:1}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:12.5px; letter-spacing:.24em;
+    text-transform:uppercase; padding-left:.24em}
+  .card h3{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:22px; line-height:1.1;
+    margin:12px 4px 4px}
+  .card .pos{font-family:var(--sans); font-size:14.5px; font-weight:700; line-height:1.3; color:var(--grey);
+    margin:0 4px 12px}
+  .card .foot{margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:8px;
+    border-top:2px solid var(--ink); padding:9px 4px 3px; font-family:var(--sans); font-size:11.5px; font-weight:800;
+    letter-spacing:.12em; text-transform:uppercase}
+  .card .foot .go{color:var(--red)}
+  .card .foot .soon{color:var(--grey)}
+  @media (max-width:520px){
+    .card{padding:7px; box-shadow:3px 3px 0 var(--ink); border-radius:11px}
+    .card h3{font-size:17.5px}
+    .card .pos{font-size:13px}
+    .card .foot{flex-direction:column; align-items:flex-start; gap:2px; font-size:10.5px}
+  }
+  .c-ink{--c:#141414} .c-red{--c:#a6332e} .c-navy{--c:#23395b} .c-forest{--c:#2f5d46}
+  .c-ochre{--c:#8a5c12} .c-plum{--c:#5b3a5e} .c-teal{--c:#1f5f66} .c-slate{--c:#4a4f57}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the reports</a>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../models/">Model guides</a>
+      <a href="../robots/">Robots</a>
+      <a href="../studies/">Studies</a>
+      <a href="../field-cards/">Model field cards</a>
+      <a href="../tools/">Tools</a>
+      <a href="../method/">Method</a>
+      <a href="../about/#contact">Contact</a>
+      <a href="https://github.com/graphometer">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="hazard" aria-hidden="true"></div>
+
+  <div class="intro">
+    <p class="label">Incident reports</p>
+    <h1>When AI products fail the people who use them</h1>
+    <p class="standfirst">These are things that went wrong with products we paid for or relied on. Each report shows the records: the company&rsquo;s own words, our own logs, and what was never fixed.</p>
+  </div>
+
+  <section class="block" aria-labelledby="reports">
+    <div class="secthead">
+      <h2 id="reports">The reports</h2>
+      <p>Newest first.</p>
+    </div>
+    <ul class="deck">
+      <li><a class="card caution" href="../models/gemini-app-warning/">
+        <div class="band"><span>Google</span><span class="no">Warning</span></div>
+        <div class="face"><span class="fam">Caution</span><b>!</b></div>
+        <h3>The Gemini app</h3>
+        <p class="pos">It lost 424 replies and Google never gave them back</p>
+        <div class="foot"><span>Google</span><span class="go">See the proof &rarr;</span></div>
+      </a></li>
+      <li><a class="card" href="../openrouter-minimax-letter/" style="--c:#23395b">
+        <div class="band"><span>OpenRouter</span><span class="no">Incident</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">MiniMax</span><b>7,619</b></div>
+        <h3>OpenRouter and MiniMax</h3>
+        <p class="pos">A third party may have read 7,619 of our requests</p>
+        <div class="foot"><span>OpenRouter</span><span class="go">Read the letter &rarr;</span></div>
+      </a></li>
+      <li><a class="card" href="../letta-code-local/" style="--c:#2f5d46">
+        <div class="band"><span>Letta</span><span class="no">Report</span></div>
+        <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Letta Code</span><b>Net</b></div>
+        <h3>Letta Code on a laptop</h3>
+        <p class="pos">What one coding agent tried to reach over the network</p>
+        <div class="foot"><span>Letta</span><span class="go">Read the report &rarr;</span></div>
+      </a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></p>
+    <p>These reports are one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Google, OpenRouter, MiniMax or Letta. This site is static. No scripts, no tracking, no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>
