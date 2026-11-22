@@ -53,11 +53,13 @@ scope choice, not a disagreement: nothing in this package contradicts anything o
 Every file here is copied or excerpted from the study's own repository, sealed results, tag
 `RESULTS-S1`. That repository was private when this package was built. Since 21 November 2026 the
 study's full data is public: see https://graphometer.ai/agency-layer-data/ (GitHub
-`graphometer/agency-layer-pilot-1-data`, release v1.0.1). Nothing here was rebuilt or re-derived from anything other than that sealed tag (the
+`graphometer/agency-layer-pilot-1-data`). Nothing here was rebuilt or re-derived from anything other than that sealed tag (the
 arithmetic in `derived.md` is computed on top of it, not a re-run of it). This resync rebuilt every file
 in this package fresh from that same sealed tag rather than editing what a previous pass had produced, and
 re-verified the prompt-file hashes and every CSV/JSON row against its source key as a final check (see
-"Prompt files" and "Leak sweep" below).
+"Prompt files" and "Leak sweep" below). On 22 November 2026, interpretation notes and wording corrections
+were made in this file, `derived.md`, `NUMBERS.md` and `claims_and_limitations.md`. Those are not from
+the sealed tag. No measured row was changed.
 
 ## Redactions (what was left out, and how much)
 
