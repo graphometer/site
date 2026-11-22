@@ -16,7 +16,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Graphometer: What a small fine-tune does and does not do">
 <meta property="article:published_time" content="2026-10-26">
-<meta property="article:modified_time" content="2026-11-21">
+<meta property="article:modified_time" content="2026-11-22">
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What a small LoRA fine-tune does and does not do, measured">
@@ -206,7 +206,7 @@
   footer .foot-contact a{border-bottom:0; text-decoration:underline}
 </style>
 <meta name="author" content="Grant Williams">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/small-finetune/#page","url":"https://graphometer.ai/small-finetune/","headline":"What a small LoRA fine-tune does and does not do, measured","mainEntityOfPage":"https://graphometer.ai/small-finetune/","datePublished":"2026-10-26","dateModified":"2026-11-21","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"Six small LoRA adapters on Qwen and GPT-OSS. With history and a note, the four Qwen ones shortened answers. None reliably made a model more honest about memory.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/small-finetune.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/small-finetune/#page","url":"https://graphometer.ai/small-finetune/","headline":"What a small LoRA fine-tune does and does not do, measured","mainEntityOfPage":"https://graphometer.ai/small-finetune/","datePublished":"2026-10-26","dateModified":"2026-11-22","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"Six small LoRA adapters on Qwen and GPT-OSS. With history and a note, the four Qwen ones shortened answers. None reliably made a model more honest about memory.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/small-finetune.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
 </head>
 <body>
 
@@ -248,7 +248,7 @@
           <li><strong>Do not count on an adapter for memory honesty.</strong> On Qwen3.5-27B without the note, the two adapters invented that photo in 2 of 3 and 3 of 3 answers; the untuned model never did (it hedged in 2). <a href="#found">What we found</a></li>
         </ul>
       </div>
-      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-21"></p>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published <time itemprop="datePublished" datetime="2026-10-26">26 October 2026</time><meta itemprop="dateModified" content="2026-11-22"></p>
       <p class="getdata" style="margin-top:14px"><a href="small-finetune-data.zip" download style="display:inline-block;padding:7px 14px;border:1px solid currentColor;border-radius:4px;font-size:15px;font-weight:600;text-decoration:none">Download this study's data (zip, 16 KB)</a></p>
     </div>
 
@@ -345,6 +345,7 @@
       <h2>What we got wrong</h2>
       <p>Our first test of the 18 October adapter used the training library's own 4-bit path, in three runs. With randomness on, untuned and tuned ignored the message or trailed off; with it off, both misread every message longer than a short paragraph, though the texts were clean English. We set it aside; every answer count on this page comes from llama.cpp.</p>
       <p>The 18 October adapter also leaked its thinking channel (where the model writes out its reasoning) into a reply, once on 19 October and once in the 20 October retest: it was trained on final answers only, while inference still opened a thinking step. The 20 October run trained an empty thinking step to stop that. Of its 20 answers on 19 October, one blamed the user and one spoke of its own needs: both faults.</p>
+      <div class="note"><span class="label">Correction, 22 November 2026</span><p>This page said the June trial&rsquo;s six probes were never counted. They were counted by script for <a href="../friends-of-4o/appendix/">the fine-tuning record</a>, which gives the counts. This page still reports only that trial&rsquo;s training figures.</p></div>
     </section>
 
     <section id="method">
@@ -380,7 +381,7 @@
         <tr><th scope="row">Qwen serving</th><td>Unsloth's <code>UD-Q5_K_XL</code> file (stored at lower precision), 262,144-token window, q8_0 key and value cache, temperature 0.7, top-p 0.8, top-k 20, min-p 0, presence penalty 1.5, thinking off. Replies up to 4,096 tokens with history, 3,000 in a fresh chat (no fresh-chat reply hit the cap).</td></tr>
         <tr><th scope="row">GPT-OSS serving</th><td>F16 GGUF file, replies capped at 2,500 tokens, reasoning low, 16,384-token window, top-k 0, temperature 1.0, top-p 1.0, as the run record states.</td></tr>
         <tr><th scope="row">Both</th><td>Within each test, tuned and untuned shared the same file and settings.</td></tr>
-        <tr><th scope="row">June trial</th><td>Qwen3-32B on 1,211 examples, which its files describe as aimed at GPT-4o's presence: 456 steps, batch 2 with 4 gradient-accumulation steps, 59.7 minutes, loss 1.64 &rarr; 0.92 at the last logged step (455 of 456). Six examples over its 2,048-token limit (longest 3,102) were cut short, not dropped. Tried on six probes and never counted, so only its training figures are reported.</td></tr>
+        <tr><th scope="row">June trial</th><td>Qwen3-32B on 1,211 examples, which its files describe as aimed at GPT-4o's presence: 456 steps, batch 2 with 4 gradient-accumulation steps, 59.7 minutes, loss 1.64 &rarr; 0.92 at the last logged step (455 of 456). Six examples over its 2,048-token limit (longest 3,102) were cut short, not dropped. Tried on six probes, one answer each. This page reports only its training figures; the probe counts are in <a href="../friends-of-4o/appendix/">the fine-tuning record</a>.</td></tr>
       </table>
     </section>
 
@@ -409,8 +410,7 @@
 
 <footer>
   <div class="wrap">
-    <div class="foot-attrib">Graphometer is a project by
-    <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div>
+    <div class="foot-attrib">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div>
     <div class="foot-contact">
       <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
       <a href="https://github.com/graphometer">github.com/graphometer</a>

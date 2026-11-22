@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>256K context on a 32 GB graphics card: the cost of reading</title>
-<meta name="description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
+<meta name="description" content="Ten setups on an RTX 5090 desktop, one with a laptop, found all three codes in prompts up to 231,065 tokens; default-batch reads took 60.8 seconds to 109.7 minutes.">
 <link rel="canonical" href="https://graphometer.ai/context-256k/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Graphometer">
 <meta property="og:title" content="256K context on a 32 GB graphics card: the cost of reading">
-<meta property="og:description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
+<meta property="og:description" content="Ten setups on an RTX 5090 desktop, one with a laptop, found all three codes in prompts up to 231,065 tokens; default-batch reads took 60.8 seconds to 109.7 minutes.">
 <meta property="og:url" content="https://graphometer.ai/context-256k/">
 <meta property="og:image" content="https://graphometer.ai/og/context-256k.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="article:author" content="Grant Williams">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="256K context on a 32 GB graphics card: the cost of reading">
-<meta name="twitter:description" content="On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.">
+<meta name="twitter:description" content="Ten setups on an RTX 5090 desktop, one with a laptop, found all three codes in prompts up to 231,065 tokens; default-batch reads took 60.8 seconds to 109.7 minutes.">
 <meta name="twitter:image" content="https://graphometer.ai/og/context-256k.png">
 <link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -212,7 +212,7 @@
   footer .foot-contact a{border-bottom:0; text-decoration:underline}
 </style>
 <meta name="author" content="Grant Williams">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/context-256k/#page","url":"https://graphometer.ai/context-256k/","headline":"256K context on a 32 GB graphics card: the cost of reading","mainEntityOfPage":"https://graphometer.ai/context-256k/","datePublished":"2026-09-26","dateModified":"2026-11-21","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"On one RTX 5090, ten setups found all three codes in prompts of 150,475 to 231,065 tokens; at default batch, reading took 60.8 seconds to 109.7 minutes.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/context-256k.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/context-256k/#page","url":"https://graphometer.ai/context-256k/","headline":"256K context on a 32 GB graphics card: the cost of reading","mainEntityOfPage":"https://graphometer.ai/context-256k/","datePublished":"2026-09-26","dateModified":"2026-11-21","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"Ten setups on an RTX 5090 desktop, one with a laptop, found all three codes in prompts up to 231,065 tokens; default-batch reads took 60.8 seconds to 109.7 minutes.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/context-256k.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
 </head><body>
 <header class="mast">
   <div class="wrap">
@@ -267,7 +267,7 @@
 
 <section id="s3"><div class="secnum">03</div><h2>What we found: the September 15 reads</h2>
 <p>&#8220;Read s&#8221; excludes loading and the answer. Answers were the codes only, 25 to 33 tokens, so the last speed column is <strong>not a prose writing speed</strong>.</p>
-<div class="data-wrap"><table class="data"><caption>September 15, 2026: default batch, one request at a time</caption><thead><tr><th>Model / quantization</th><th>Served window</th><th>Tokens read</th><th>Read s</th><th>Read tokens/s</th><th>Peak card MiB</th><th>Answer tokens</th><th>Short answer tokens/s</th><th>Codes</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B<br><code>UD-Q4_K_XL</code></td><td>262,144</td><td>230,855</td><td>60.8</td><td>3,799.69</td><td>23,513</td><td>33</td><td>121.36</td><td>3/3</td></tr><tr><td class="t">GLM-4.7-Flash<br><code>UD-Q4_K_XL</code></td><td>202,752</td><td>189,931</td><td>231.7</td><td>819.70</td><td>28,765</td><td>29</td><td>70.48</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-122B-A10B<br><code>UD-Q4_K_S</code></td><td>262,144</td><td>230,803</td><td>531.8</td><td>433.99</td><td>30,794</td><td>32</td><td>37.10</td><td>3/3</td></tr><tr><td class="t">Mistral Small 4<br><code>UD-Q4_K_M</code></td><td>262,144</td><td>231,065</td><td>705.0</td><td>327.75</td><td>30,356</td><td>32</td><td>23.76</td><td>3/3</td></tr><tr><td class="t">Ling-3.0-flash<br><code>Q4_K_M</code></td><td>262,144</td><td>230,759</td><td>1,118.8</td><td>206.25</td><td>8,473</td><td>32</td><td>26.11</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-397B-A17B<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,803</td><td>1,186.6</td><td>194.51</td><td>31,068</td><td>32</td><td>17.00</td><td>3/3</td></tr><tr><td class="t">Qwen3.8-Flash-Next<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,803</td><td>1,392.9</td><td>165.70</td><td>15,626</td><td>32</td><td>13.58</td><td>3/3</td></tr><tr><td class="t">Inkling-Small<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,827</td><td>2,005.9</td><td>115.07</td><td>15,814</td><td>27</td><td>8.78</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop<br><code>UD-Q8_K_XL</code></td><td>262,144</td><td>150,475</td><td>2,062.2</td><td>72.97</td><td>18,306</td><td>25</td><td>9.14</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,835</td><td>6,580.7</td><td>35.08</td><td>25,824</td><td>25</td><td>6.49</td><td>3/3</td></tr></tbody></table></div>
+<div class="data-wrap"><table class="data"><caption>15 September 2026: default batch, one request at a time</caption><thead><tr><th>Model / quantization</th><th>Served window</th><th>Tokens read</th><th>Read s</th><th>Read tokens/s</th><th>Peak card MiB</th><th>Answer tokens</th><th>Short answer tokens/s</th><th>Codes</th></tr></thead><tbody><tr><td class="t">Gemma-4-26B-A4B<br><code>UD-Q4_K_XL</code></td><td>262,144</td><td>230,855</td><td>60.8</td><td>3,799.69</td><td>23,513</td><td>33</td><td>121.36</td><td>3/3</td></tr><tr><td class="t">GLM-4.7-Flash<br><code>UD-Q4_K_XL</code></td><td>202,752</td><td>189,931</td><td>231.7</td><td>819.70</td><td>28,765</td><td>29</td><td>70.48</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-122B-A10B<br><code>UD-Q4_K_S</code></td><td>262,144</td><td>230,803</td><td>531.8</td><td>433.99</td><td>30,794</td><td>32</td><td>37.10</td><td>3/3</td></tr><tr><td class="t">Mistral Small 4<br><code>UD-Q4_K_M</code></td><td>262,144</td><td>231,065</td><td>705.0</td><td>327.75</td><td>30,356</td><td>32</td><td>23.76</td><td>3/3</td></tr><tr><td class="t">Ling-3.0-flash<br><code>Q4_K_M</code></td><td>262,144</td><td>230,759</td><td>1,118.8</td><td>206.25</td><td>8,473</td><td>32</td><td>26.11</td><td>3/3</td></tr><tr><td class="t">Qwen3.5-397B-A17B<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,803</td><td>1,186.6</td><td>194.51</td><td>31,068</td><td>32</td><td>17.00</td><td>3/3</td></tr><tr><td class="t">Qwen3.8-Flash-Next<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,803</td><td>1,392.9</td><td>165.70</td><td>15,626</td><td>32</td><td>13.58</td><td>3/3</td></tr><tr><td class="t">Inkling-Small<br><code>UD-Q3_K_XL</code></td><td>262,144</td><td>230,827</td><td>2,005.9</td><td>115.07</td><td>15,814</td><td>27</td><td>8.78</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop<br><code>UD-Q8_K_XL</code></td><td>262,144</td><td>150,475</td><td>2,062.2</td><td>72.97</td><td>18,306</td><td>25</td><td>9.14</td><td>3/3</td></tr><tr><td class="t">DeepSeek V4 Flash, desktop + laptop<br><code>UD-IQ3_XXS</code></td><td>262,144</td><td>230,835</td><td>6,580.7</td><td>35.08</td><td>25,824</td><td>25</td><td>6.49</td><td>3/3</td></tr></tbody></table></div>
 <p class="tablenote">Quantization is the compressed version of the model file. Peak card use is the largest <code>nvidia-smi</code> reading, sampled every 5 seconds, including other card use; it is not the increase caused by context. The split row reports the desktop card, not the laptop&#8217;s unified memory.</p>
 <p>The two-machine DeepSeek read (109.7 minutes) used a different quantization and read more tokens than desktop DeepSeek Q8, so those two rows do not isolate the cost of splitting a model.</p></section>
 
@@ -321,7 +321,7 @@
 
 <section id="s2"><div class="secnum">08</div><h2>How this was measured</h2>
 <table class="facts">
-<tr><th scope="row">Dates</th><td>Main runs September 15, 2026; later runs September 20 and 21 (dates the results were collected) and 26.</td></tr>
+<tr><th scope="row">Dates</th><td>Main runs 15 September 2026; later runs 20 and 21 September (dates the results were collected) and 26.</td></tr>
 <tr><th scope="row">Hardware</th><td>NVIDIA RTX 5090 (32 GB), 188 GiB desktop RAM; the split also used an ASUS ROG Flow Z13 with 128 GB unified memory (descriptions, not measured capacity).</td></tr>
 <tr><th scope="row">Runs</th><td><code>--parallel 1 --threads 24 --threads-batch 24</code>, flash attention, <code>temperature: 0</code>, no streaming, thinking switched off where the launcher allowed it (Inkling: reasoning effort none). &#8220;Default batch&#8221; means no batch flags were set; the saved logs do not print the effective values. Two short prose requests, then the one deep request reported. Load times are upper bounds: large downloads competed for the disk.</td></tr>
 </table>
@@ -337,8 +337,7 @@
 </div></main>
 <footer>
   <div class="wrap">
-    <div class="foot-attrib">Graphometer is a project by
-    <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-attrib">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
     <div class="foot-contact">
       <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
       <a href="https://github.com/graphometer">github.com/graphometer</a>
