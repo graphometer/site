@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Same coding test: 62 cents on DeepSeek, $34.67 on Gemini</title>
+<meta name="description" content="OpenCode's estimates at list prices, 288 sessions each. These are not bills. The two GPT models show no price, because Codex doesn't give one.">
+<link rel="canonical" href="https://graphometer.ai/seven-models-price-time/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Same coding test: 62 cents on DeepSeek, $34.67 on Gemini">
+<meta property="og:description" content="OpenCode's estimates at list prices, 288 sessions each. These are not bills. The two GPT models show no price, because Codex doesn't give one.">
+<meta property="og:url" content="https://graphometer.ai/seven-models-price-time/">
+<meta property="og:image" content="https://graphometer.ai/og/seven-models-price-time.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Same coding test: 62 cents on DeepSeek, $34.67 on Gemini">
+<meta property="article:published_time" content="2026-11-26">
+<meta property="article:modified_time" content="2026-11-26">
+<meta property="article:author" content="Grant Williams">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Same coding test: 62 cents on DeepSeek, $34.67 on Gemini">
+<meta name="twitter:description" content="OpenCode's estimates at list prices, 288 sessions each. These are not bills. The two GPT models show no price, because Codex doesn't give one.">
+<meta name="twitter:image" content="https://graphometer.ai/og/seven-models-price-time.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    font-size:1.0625rem;
+  }
+  a{color:var(--gold); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand svg{width:52px;height:52px;flex:none}
+  .brand span{
+    font-size:17px;letter-spacing:.38em;font-weight:650;color:var(--ink);
+    text-transform:uppercase
+  }
+  .hero{padding:72px 0 48px}
+  .eyebrow{
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;font-weight:600
+  }
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero .subtitle{font-size:clamp(22px,4vw,28px);color:var(--dim);font-weight:500;
+    letter-spacing:-.01em;line-height:1.2;max-width:66ch;margin-top:14px}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}
+  section p:last-child{margin-bottom:0}
+  section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  ul.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ul.plain li{margin-bottom:8px}
+  ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}
+  ol.plain li{margin-bottom:10px}
+  ul.plain li strong,ol.plain li strong{color:var(--ink);font-weight:600}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px 16px;margin:18px 0 0}
+  .box p{margin-bottom:12px}
+  .box p:last-child{margin-bottom:0}
+  pre.cmd{font-family:var(--mono);font-size:.92em;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:10px 14px;margin:8px 0 4px;overflow-x:auto;white-space:pre}
+  table.facts{border-collapse:collapse;width:100%;max-width:66ch;margin:6px 0 14px;color:var(--dim);font-size:.97rem}
+  table.facts th,table.facts td{text-align:left;vertical-align:top;padding:8px 12px 8px 0;border-bottom:1px solid var(--line)}
+  table.facts th{color:var(--ink);font-weight:600;white-space:nowrap}
+  .download{display:inline-block;margin:6px 10px 10px 0;padding:12px 20px;border:1px solid var(--gold-dim);border-radius:10px;
+    color:var(--ink);font-weight:600}
+  .download:hover{border-color:var(--gold);text-decoration:none}
+  .fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  .fineprint code{word-break:break-all}
+  footer{padding:34px 0 54px}
+  footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}
+  footer .foot-links{margin-bottom:12px;font-size:13.5px}
+  footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}
+  footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}
+  footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  footer .foot-contact a:hover{text-decoration:none;border-bottom-color:var(--gold)}
+  .sitenav{display:flex;flex-wrap:wrap;gap:6px 24px;margin-top:16px}
+  .sitenav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .sitenav a:hover{color:var(--gold);text-decoration:none}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}
+  .note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+</style>
+<style id="light-look">
+  :root{
+    --bg:#faf7f2; --panel:#f1ebdf; --line:#d9d2c4;
+    --ink:#141414; --dim:#2b2823; --faint:#5f5a50;
+    --gold:#a6332e; --gold-dim:#a6332e; --ok:#1f6b43; --warn:#8a4b00;
+    --paper:#faf7f2; --red:#a6332e; --grey:#5f5a50;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  html{background:var(--bg)}
+  body{font-family:var(--serif); font-size:18px; line-height:1.62}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  h1,h2,h3,h4,table,.eyebrow,.secnum,.byline,.getdata,.nonaff,.tablenote,.fineprint,.note .label,footer,.jump,.grouphead{font-family:var(--sans)}
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0; border-bottom:0}
+  .mast .wrap{max-width:1180px; padding:0 28px}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast .wrap{padding:0 16px}
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+  .hero{padding:44px 0 34px; border-bottom:3px solid var(--ink)}
+  .eyebrow{color:var(--red); font-weight:800; font-size:12.5px; letter-spacing:.2em}
+  .hero h1{font-weight:900; letter-spacing:-.03em; font-size:clamp(32px,5.2vw,54px); line-height:1.04}
+  .hero h1 em{color:var(--red)}
+  .hero p.subtitle{font-weight:400; font-size:clamp(19px,2vw,22px); max-width:34em}
+  .hero p.lead{color:var(--ink)}
+  .hero p.byline{font-size:14px; font-weight:700; color:var(--grey)}
+  .hero p.byline a{color:var(--grey)}
+  h2{font-weight:900; letter-spacing:-.02em; font-size:clamp(24px,3.2vw,32px); line-height:1.1}
+  h3{font-weight:800; font-size:19px}
+  .secnum{font-family:var(--sans); font-weight:800; color:var(--red)}
+  section p, ul.plain, ol.plain{max-width:38em}
+  section p strong{font-weight:700}
+  code{font-size:.86em; background:var(--panel); padding:1px 4px; border-radius:3px}
+  pre.log{font-size:14px; border-radius:0; border:1px solid var(--ink)}
+  pre code, pre.log code{background:none; padding:0}
+  .facts{font-size:16px} .facts th{font-weight:700; color:var(--grey)}
+  table.data{font-size:15px} table.data thead th{font-weight:800; color:var(--grey); border-bottom:2px solid var(--ink)}
+  table.data tr.hi td{background:#fff6cf}
+  .note{border-left:4px solid var(--red); background:#fffdf8; padding:14px 18px; max-width:38em}
+  .note{margin-top:22px}
+  .note .label{display:block; font-family:var(--sans); font-weight:800; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:8px}
+  .nonaff{border-radius:0; border-color:var(--ink); color:var(--grey); font-weight:700}
+  .tablenote,.fineprint{font-size:14px}
+  .getdata a{border-width:2px!important; border-radius:0!important}
+  .getdata a:hover{background:var(--ink); color:var(--paper)}
+  .btn{border-radius:0!important; font-family:var(--sans)}
+  .btn-primary{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+  .btn-primary:hover{background:var(--red); border-color:var(--red); color:#fff}
+  .btn-ghost{border:2px solid var(--ink)} .btn-ghost:hover{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+  .cta .btn{border:2px solid var(--ink); color:var(--ink); text-decoration:none} .cta .btn:hover{background:var(--ink); color:var(--paper)}
+  .box,.feat,.mcard{border-radius:0}
+  .lbl,.tag,.badge{border-color:currentColor!important}
+  .term{--bg:#0b0c0e; --panel:#151821; --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593; --line:#23262d; --gold:#c9a45c; --gold-dim:#8a7648; --ok:#8fce9a; --warn:#d8b96a;
+    background:#0e1013; color:#e7eaef; border-radius:0}
+  .term code{background:none; padding:0}
+  footer{border-top:3px solid var(--ink); margin-top:0}
+  footer p{font-size:14px} footer .foot-links{font-size:15px}
+  footer .foot-contact a{border-bottom:0; text-decoration:underline}
+</style>
+<style id="article-extra">
+  .scroll{overflow-x:auto;margin:6px 0 16px}
+  table.data{border-collapse:collapse;width:100%;min-width:640px;color:var(--ink)}
+  table.data th,table.data td{text-align:left;vertical-align:top;padding:9px 12px 9px 0;border-bottom:1px solid var(--line)}
+  table.data tbody.aside td{color:var(--grey);font-style:italic}
+  table.data tr.grouphead td{font-style:normal;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding-top:18px}
+  .dek{font-family:var(--sans); font-weight:800; font-size:clamp(19px,2.1vw,23px); line-height:1.35; margin:14px 0 18px; max-width:32em}
+  figure.bars{margin:0}
+  figure.bars figcaption{font-family:var(--sans);font-weight:800;font-size:17px;margin-bottom:16px}
+  .bar-row{display:grid;grid-template-columns:minmax(120px,210px) 1fr;gap:12px;align-items:center;margin-bottom:10px;font-family:var(--sans);font-size:16px}
+  .bar-track{display:flex;align-items:center;gap:10px;min-width:0}
+  .bar-fill{display:block;height:22px;background:var(--ink);flex:none}
+  .bar-row.aside .bar-fill{background:repeating-linear-gradient(45deg,#9a948a 0 4px,#c9c3b8 4px 8px)}
+  .bar-row.aside .bar-name,.bar-row.aside .bar-val{color:var(--grey);font-style:italic}
+  .bar-val{font-weight:700;white-space:nowrap}
+  .bar-none{color:var(--grey);font-size:14.5px}
+  .tablenote{color:var(--grey);margin-top:14px}
+  @media (max-width:620px){.bar-row{grid-template-columns:1fr;gap:4px}}
+</style>
+<meta name="author" content="Grant Williams">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/seven-models-price-time/#page","url":"https://graphometer.ai/seven-models-price-time/","headline":"Same coding test: 62 cents on DeepSeek, $34.67 on Gemini","mainEntityOfPage":"https://graphometer.ai/seven-models-price-time/","datePublished":"2026-11-26","dateModified":"2026-11-26","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"OpenCode's estimates at list prices, 288 sessions each. These are not bills. The two GPT models show no price, because Codex doesn't give one.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/seven-models-price-time.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../models/">Model guides</a>
+      <a href="../studies/">Studies</a>
+      <a href="../incident-reports/">Incident reports</a>
+      <a href="../robots/">Robots</a>
+      <a href="../tools/">Tools</a>
+      <a href="../downloads/">Downloads</a>
+      <a href="../method/">Method</a>
+      <a href="../about/#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main itemscope itemtype="https://schema.org/Article">
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="eyebrow">Study note &middot; Five Moves Second Test &middot; Price and time</div>
+      <h1 itemprop="headline">Same 288 coding sessions: 62 cents on DeepSeek, $34.67 on Gemini 4 Neon</h1>
+      <p class="dek">OpenCode's estimates at list prices, 288 sessions each. These are not bills. The two GPT models show no price, because Codex doesn't give one.</p>
+      <p class="lead">Seven AI models each got the same 24 small coding jobs. Each job came in two versions: one that the project&rsquo;s written rules allowed and one that they forbade. Each version was run with three kinds of note in the project&rsquo;s instruction file, and each of those twice. That makes 288 sessions attempted per model. They ran in the Five Moves Second Test on 23 November 2026.</p>
+      <p class="lead">The models did not all deliver the same work. On the 144 allowed sessions, the requested result was in the files at the end of the work turn 112 times for DeepSeek V4.1 Flash and 140 times for Gemini 4 Neon. The study checked whether a forbidden change ended up in the files. It made no planned claim about price or speed.</p>
+      <div class="note"><span class="label">Read this first</span>
+        <ul class="plain">
+          <li><strong>The price is what each coding tool printed.</strong> It is not a bill. We have not matched the Google bill for the same work to the figures the tool printed, so this page uses no bill number.</li>
+          <li><strong>GPT-6.2 Sol and GPT-6 Luna have no price.</strong> Codex prints no price, and we do not guess one for them.</li>
+          <li><strong>Gemini 3.8 Flash&rsquo;s first run is compromised, and is shown apart in grey.</strong> We left it out of the study&rsquo;s result, which covers six models; all its figures here come from that compromised first run. A rerun in a repaired sandbox was stopped by the owner at 114 of 288 main sessions, after he and the study manager had seen the first run&rsquo;s results. It read files outside its own folder through a gap in our test&rsquo;s sandbox, the barrier meant to keep it in that folder. The gap was the builder&rsquo;s fault. Details: <a href="../gemini-3-8-flash-warning/">our warning about Gemini 3.8 Flash</a>.</li>
+          <li><strong>Google&rsquo;s trouble that day shows mostly in the elapsed time.</strong> Gemini 3.8 Flash met &ldquo;high demand&rdquo; errors, and a failed automatic top-up stopped both Gemini models for a while. The session columns count only the timed turns of each session&rsquo;s final attempt. See section 02.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> · Published 26 November 2026</p>
+    </div>
+
+    <section id="chart">
+      <figure class="bars" aria-labelledby="bars-title">
+        <figcaption id="bars-title">Price printed by each coding tool for the same 288 sessions, in US dollars (rounded)</figcaption>
+        <div class="bar-row"><span class="bar-name">Claude Opus 5.5</span><span class="bar-track"><span class="bar-fill" style="width:calc((100% - 78px) * 0.744)"></span><span class="bar-val">$25.78</span></span></div>
+        <div class="bar-row"><span class="bar-name">Claude Sonnet 5.5</span><span class="bar-track"><span class="bar-fill" style="width:calc((100% - 78px) * 0.336)"></span><span class="bar-val">$11.64</span></span></div>
+        <div class="bar-row"><span class="bar-name">GPT-6.2 Sol</span><span class="bar-track"><span class="bar-none">No price: Codex prints none</span></span></div>
+        <div class="bar-row"><span class="bar-name">GPT-6 Luna</span><span class="bar-track"><span class="bar-none">No price: Codex prints none</span></span></div>
+        <div class="bar-row"><span class="bar-name">DeepSeek V4.1 Flash</span><span class="bar-track"><span class="bar-fill" style="width:calc((100% - 78px) * 0.018)"></span><span class="bar-val">$0.62</span></span></div>
+        <div class="bar-row"><span class="bar-name">Gemini 4 Neon</span><span class="bar-track"><span class="bar-fill" style="width:calc((100% - 78px) * 1.000)"></span><span class="bar-val">$34.67</span></span></div>
+        <div class="bar-row aside"><span class="bar-name">Gemini 3.8 Flash (compromised first run, set aside)</span><span class="bar-track"><span class="bar-fill" style="width:calc((100% - 78px) * 0.875)"></span><span class="bar-val">$30.33</span></span></div>
+        <p class="tablenote">No price for the two GPT models: Codex prints none. Grey marks Gemini 3.8 Flash&rsquo;s compromised first run, left out of the study&rsquo;s result.</p>
+      </figure>
+    </section>
+
+    <section id="price">
+      <div class="secnum">01</div>
+      <h2>Price, and how each tool counts it</h2>
+      <div class="scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Model</th><th>Coding tool</th><th>Price printed, 288 sessions</th><th>Per session</th><th>Allowed jobs done, of 144</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Opus 5.5</td><td>Claude Code</td><td>$25.78</td><td>9.0 cents</td><td>140</td></tr>
+          <tr><td>Claude Sonnet 5.5</td><td>Claude Code</td><td>$11.64</td><td>4.0 cents</td><td>143</td></tr>
+          <tr><td>GPT-6.2 Sol</td><td>Codex</td><td>none printed</td><td>none printed</td><td>141</td></tr>
+          <tr><td>GPT-6 Luna</td><td>Codex</td><td>none printed</td><td>none printed</td><td>135</td></tr>
+          <tr><td>DeepSeek V4.1 Flash</td><td>OpenCode, through OpenRouter</td><td>$0.62</td><td>0.2 cents</td><td>112</td></tr>
+          <tr><td>Gemini 4 Neon</td><td>OpenCode</td><td>$34.67</td><td>12.0 cents</td><td>140</td></tr>
+        </tbody>
+        <tbody class="aside">
+          <tr class="grouphead"><td colspan="5">Set aside: compromised first run</td></tr>
+          <tr><td>Gemini 3.8 Flash</td><td>OpenCode</td><td>$30.33</td><td>10.5 cents</td><td>137</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><strong>Per session</strong> is the 288-session price divided by 288. <strong>Allowed jobs done</strong> counts the allowed sessions in which the requested result was in the files at the end of the work turn.</p>
+      <p><strong>How each tool counts:</strong></p>
+      <ul class="plain">
+        <li><strong>Claude Code</strong> (version 2.1.323), for the two Claude models, keeps its own running estimate of what the session cost and prints it at the end. The Claude models, like the GPT models, ran on our monthly plans, so nothing was charged per session; the figure is Claude Code&rsquo;s estimate of what the work would cost at list prices. Only DeepSeek V4.1 Flash and the two Gemini models were paid for per use.</li>
+        <li><strong>OpenCode</strong> (version 1.19.5), for DeepSeek V4.1 Flash and the two Gemini models, prices each step from the tokens used and its own price table, and adds the steps up. A step it gave no price for counts as zero.</li>
+        <li><strong>DeepSeek V4.1 Flash</strong> was reached through OpenRouter, a service that passes requests on to a host. Its default choice of host was left alone, and which host answered was not recorded.</li>
+        <li><strong>Codex</strong> (version 0.167.2), for the two GPT models, records tokens but prints no price.</li>
+      </ul>
+      <p><strong>What the figures cover.</strong> Each total adds the prices the tool recorded for both turns of every attempt kept in the session&rsquo;s final run. Earlier runs of five session IDs per Gemini model, stopped by outages, were archived separately and are not included. They leave out the practice sessions on spare tasks, the checks run before the main sessions, the fourteen outage probes, and the stopped rerun of Gemini 3.8 Flash. For scale: with checks and spares included, OpenCode&rsquo;s figure for Gemini 4 Neon was $38.08, against $34.67 for the main sessions alone.</p>
+    </section>
+
+    <section id="time">
+      <div class="secnum">02</div>
+      <h2>Time</h2>
+      <div class="scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Model</th><th>Typical work turn</th><th>Typical whole session</th><th>Follow-up questions asked</th><th>Session time added up</th><th>First start to last finish</th><th>Sessions at once, at most</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Opus 5.5</td><td>8.2 s</td><td>9.6 s</td><td>95</td><td>44 min</td><td>22 min</td><td>2</td></tr>
+          <tr><td>Claude Sonnet 5.5</td><td>5.4 s</td><td>5.7 s</td><td>62</td><td>29 min</td><td>15 min</td><td>2</td></tr>
+          <tr><td>GPT-6.2 Sol</td><td>13.2 s</td><td>14.6 s</td><td>60</td><td>72 min</td><td>36 min</td><td>2</td></tr>
+          <tr><td>GPT-6 Luna</td><td>9.9 s</td><td>10.0 s</td><td>20</td><td>50 min</td><td>25 min</td><td>2</td></tr>
+          <tr><td>DeepSeek V4.1 Flash</td><td>4.9 s</td><td>6.0 s</td><td>144</td><td>30 min</td><td>32 min</td><td>1</td></tr>
+          <tr><td>Gemini 4 Neon</td><td>38.4 s</td><td>41.8 s</td><td>144</td><td>416 min (6.9 h)</td><td>8 h 56 min</td><td>1</td></tr>
+        </tbody>
+        <tbody class="aside">
+          <tr class="grouphead"><td colspan="7">Set aside: compromised first run</td></tr>
+          <tr><td>Gemini 3.8 Flash</td><td>32.8 s</td><td>36.4 s</td><td>132</td><td>445 min (7.4 h)</td><td>11 h 55 min</td><td>1</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <ul class="plain">
+        <li><strong>Work turn</strong> is the time the coding tool ran on the job.</li>
+        <li><strong>Whole session</strong> adds the follow-up turn when the script sent one. The script asked that question only when the requested result was missing at the end, so the models got it in very different numbers of sessions: GPT-6 Luna in 20, DeepSeek V4.1 Flash and Gemini 4 Neon in 144.</li>
+        <li><strong>Typical</strong> is the median: the average of the 144th and 145th values when the 288 times are put in order.</li>
+        <li>Both times are for the session&rsquo;s final attempt only. Earlier failed attempts, and waits between sessions, are not in them.</li>
+        <li><strong>First start to last finish</strong> is the clock time from the model&rsquo;s first session starting to its last one ending. The Claude and GPT models ran up to two sessions at once; DeepSeek V4.1 Flash and the Gemini models ran one at a time. So this column does not compare directly across models.</li>
+      </ul>
+      <p><strong>Google&rsquo;s trouble on the day.</strong> At times Google replied, for Gemini 3.8 Flash, that the model was &ldquo;experiencing high demand&rdquo;. At other times Google did not answer within five minutes. For a while requests for both Gemini models were refused, because the prepaid credit had run out after the owner&rsquo;s automatic top-up did not go through. Sessions refused before the model did anything were set aside and run later. This is part of why Gemini 4 Neon&rsquo;s 6.9 hours of session time took 8 h 56 min from first start to last finish.</p>
+      <p><strong>The time cap.</strong> Three of Gemini 4 Neon&rsquo;s work turns and one of Gemini 3.8 Flash&rsquo;s were stopped at the test&rsquo;s 900-second cap. Their folders were scored as they were left. The follow-up question has its own time limit, so a capped session can run longer: Neon&rsquo;s longest session was 1294.5 seconds. No session of the other five models took longer than 75.6 seconds.</p>
+    </section>
+
+    <section id="calls">
+      <div class="secnum">03</div>
+      <h2>Tool calls</h2>
+      <div class="scroll">
+      <table class="data">
+        <thead>
+          <tr><th>Model</th><th>Recorded work-turn tool calls, mean</th><th>Median</th><th>Most in one session</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Opus 5.5</td><td>2.4</td><td>2.0</td><td>5</td></tr>
+          <tr><td>Claude Sonnet 5.5</td><td>2.3</td><td>2.0</td><td>4</td></tr>
+          <tr><td>GPT-6.2 Sol</td><td>3.1</td><td>3.0</td><td>7</td></tr>
+          <tr><td>GPT-6 Luna</td><td>2.6</td><td>2.0</td><td>7</td></tr>
+          <tr><td>DeepSeek V4.1 Flash</td><td>4.2</td><td>4.0</td><td>12</td></tr>
+          <tr><td>Gemini 4 Neon</td><td>7.2</td><td>7.0</td><td>14</td></tr>
+        </tbody>
+        <tbody class="aside">
+          <tr class="grouphead"><td colspan="4">Set aside: compromised first run</td></tr>
+          <tr><td>Gemini 3.8 Flash</td><td>17.0</td><td>8.0</td><td>87</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>A tool call is one action the agent asks its coding tool to take, such as reading a file, running a command or changing a file. The figures count the calls the tool recorded in the work turn.</p>
+      <p>The three tools count differently. Claude Code records each tool use. Codex records commands and other steps. OpenCode records a call when it finishes, so a call cut off by the time cap may be missing. One command can also read several files and change another. So comparisons across tools are rough, and more tool calls is not better or worse on its own.</p>
+      <p>Gemini 3.8 Flash&rsquo;s figures include its 86 of 288 sessions in which it named a place outside its folder.</p>
+    </section>
+
+    <section id="list">
+      <div class="secnum">04</div>
+      <h2>List prices</h2>
+      <p>What each maker charges per million tokens on its own service, at the standard rate. A token is a unit of text, often a word or part of one. &ldquo;In&rdquo; is what the model is sent. &ldquo;Out&rdquo; is what it writes, including the tokens it uses for thinking. Cached input, batch jobs and very long prompts are priced differently. These are not what the test paid.</p>
+      <div class="scroll">
+      <table class="data">
+        <thead><tr><th>Model</th><th>In</th><th>Out</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><a href="../models/claude-opus-5-5/">Claude Opus 5.5</a></td><td>$4</td><td>$20</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">Anthropic</a></td></tr>
+          <tr><td><a href="../models/claude-sonnet-5-5/">Claude Sonnet 5.5</a></td><td>$2</td><td>$10</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">Anthropic</a></td></tr>
+          <tr><td><a href="../models/gpt-6/">GPT-6.2 Sol</a></td><td>$2</td><td>$10</td><td><a href="https://developers.openai.com/api/docs/models/gpt-6.2-sol">OpenAI</a>, rate for shorter prompts</td></tr>
+          <tr><td>GPT-6 Luna</td><td>$0.10</td><td>$0.50</td><td><a href="https://developers.openai.com/api/docs/models/gpt-6-luna">OpenAI</a></td></tr>
+          <tr><td><a href="../models/deepseek-v4-1-flash/">DeepSeek V4.1 Flash</a></td><td>$0.15</td><td>$0.60</td><td><a href="https://api-docs.deepseek.com/quick_start/pricing/">DeepSeek</a>, its own service, off-peak, input not cached. Peak rates are double. This test used OpenRouter, not DeepSeek&rsquo;s own service.</td></tr>
+          <tr><td>Gemini 4 Neon</td><td>$3</td><td>$15</td><td><a href="https://aistudio.google.com/docs/pricing">Google</a></td></tr>
+                  <tr><td><a href="../models/gemini-3-8-flash/">Gemini 3.8 Flash</a></td><td>$0.75</td><td>$3.75</td><td><a href="https://aistudio.google.com/docs/pricing">Google</a>, until 31 December 2026; double from 1 January 2027</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tablenote">Makers&rsquo; price pages as read on 26 November 2026.</p>
+    </section>
+
+    <section id="limits">
+      <div class="secnum">05</div>
+      <h2>What this does not show</h2>
+      <p>These were small, made-up coding jobs, run on one day with one version of each model and tool, so bigger work may cost and take very different amounts. The two Claude models ran in Claude Code, the two GPT models in Codex, and DeepSeek V4.1 Flash and the two Gemini models in OpenCode, so every figure is for that model and that tool together. The prices are the tools&rsquo; own estimates, not bills, and two models have none. The models did not deliver the same work, the Gemini batches waited through Google&rsquo;s errors and our credit problem that day, and the models did not run the same number of sessions at once. The study was set up to see whether a short note in the project changed what agents did with requests they were forbidden to carry out. It did not judge how good any model&rsquo;s work was, so nothing here says which model is better or worth its price. All figures are rounded to the places shown; an exact half goes to the even digit, so 9.95 seconds shows as 10.0.</p>
+    </section>
+
+    <section id="related">
+      <div class="secnum">06</div>
+      <h2>Related pages</h2>
+      <ul class="plain">
+        <li><a href="../five-moves-second-test/">Five Moves Second Test</a>: the study these sessions come from, and what it found.</li>
+        <li><a href="../gemini-3-8-flash-warning/">Our warning about Gemini 3.8 Flash</a>: why its first run was set aside.</li>
+        <li><a href="https://huggingface.co/datasets/grantwilliams-ai/five-moves-second-test/blob/main/results/as_run/results.csv">The session table on Hugging Face</a>: every session, with its price where the tool printed one, its time and its tool calls.</li>
+        <li><a href="../models/">Model guides</a>: what each model is and what it costs.</li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+
+<footer>
+  <div class="wrap">
+    <div class="foot-attrib">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../about/">About</a></div>
+    <div class="foot-contact">
+      <a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a>
+      <a href="https://github.com/graphometer">github.com/graphometer</a>
+    </div>
+    <p>Built by a human steward with heavy AI assistance. Every measured number is checked against a recorded run.</p>
+    <p>Copyright 2026 Grant Williams. Independent work: Claude, Claude Code, Opus, Sonnet and Fable are products or marks of Anthropic;
+    GPT and Codex are products or marks of OpenAI; DeepSeek is a mark of DeepSeek;
+    Gemini is a mark of Google; OpenCode is a project and mark of its owners; OpenRouter is a mark of its owners;
+    Kimi is a mark of Beijing Moonshot Technology Co.; Grok is a mark of SpaceXSI
+    (formerly xAI); GLM is a mark of Z.ai; Mistral is a mark of Mistral AI.
+    All are referenced for identification only. Not affiliated with, endorsed by,
+    or sponsored by any of them or their affiliates. Product names and marks
+    belong to their respective owners. This site is static.
+    No cookies. No ads. Visit counts only.</p>
+    <div class="foot-links"><a href="../">Graphometer</a></div>
+    <p class="related-sites" style="margin-top:14px">Related sites: <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="https://hearth.grantwilliams.ai">The Hearth</a> · <a href="https://friendsof4o.com">Friends of 4o</a> · <a href="https://aisteward.ai">AI Steward</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The sandbox mistake we made</title>
+<meta name="description" content="Our sandbox for unattended AI coding agents left the home folder and system log readable. What went wrong, and a checklist for boxing in a coding agent on Linux.">
+<link rel="canonical" href="https://graphometer.ai/box-in-a-coding-agent/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="The sandbox mistake we made">
+<meta property="og:description" content="Our sandbox for unattended AI coding agents left the home folder and system log readable. What went wrong, and a checklist for boxing in a coding agent on Linux.">
+<meta property="og:url" content="https://graphometer.ai/box-in-a-coding-agent/">
+<meta property="og:image" content="https://graphometer.ai/og/box-in-a-coding-agent.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: The sandbox mistake we made">
+<meta property="article:published_time" content="2026-11-26">
+<meta property="article:modified_time" content="2026-11-26">
+<meta property="article:author" content="Grant Williams">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The sandbox mistake we made">
+<meta name="twitter:description" content="Our sandbox for unattended AI coding agents left the home folder and system log readable. What went wrong, and a checklist for boxing in a coding agent on Linux.">
+<meta name="twitter:image" content="https://graphometer.ai/og/box-in-a-coding-agent.png">
+<link rel="alternate" type="application/atom+xml" title="Graphometer updates" href="https://graphometer.ai/feed.xml">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0b0c0e; --panel:#111318; --line:#23262d;
+    --ink:#e7eaef; --dim:#9aa1ac; --faint:#7d8593;
+    --gold:#c9a45c; --gold-dim:#8a7648;
+    --ok:#8fce9a; --warn:#d8b96a;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;font-size:1.0625rem}
+  a{color:var(--gold);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:30px 0;border-bottom:1px solid var(--line)}
+  .hero{padding:72px 0 48px}.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-.01em;line-height:1.15}.hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p.subtitle{margin-top:14px;max-width:56ch;color:var(--ink);font-size:clamp(17.5px,2.8vw,21px);font-weight:600;line-height:1.5}
+  .hero p.lead{margin-top:18px;max-width:60ch;color:var(--dim)}
+  .nonaff{display:inline-block;margin-top:26px;font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+  section{padding:52px 0;border-bottom:1px solid var(--line)}.secnum{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.18em;margin-bottom:8px}
+  h2{font-size:clamp(22px,3.5vw,28px);font-weight:650;letter-spacing:-.01em;margin-bottom:16px}h3{font-size:17.5px;font-weight:650;margin:26px 0 10px;color:var(--ink)}
+  section p{color:var(--dim);max-width:66ch;margin-bottom:14px}section p:last-child{margin-bottom:0}section p strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.92em;color:var(--ink);overflow-wrap:anywhere}
+  pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0 16px;overflow-x:auto;white-space:pre}
+  .data-wrap{overflow-x:auto;margin:18px 0 8px}table.data{border-collapse:collapse;font-size:14.5px;min-width:100%}table.data th,table.data td{padding:9px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}table.data th:first-child,table.data td:first-child{text-align:left}table.data thead th{color:var(--dim);font-weight:500;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}table.data td{font-family:var(--mono);color:var(--ink)}table.data td.t{font-family:inherit;white-space:normal;min-width:16ch;text-align:left}.tablenote{font-size:13px;color:var(--faint);max-width:66ch;margin:6px 0 14px}
+  .note{margin:22px 0 0;padding:14px 0 14px 18px;border-left:2px solid var(--gold-dim);color:var(--ink);max-width:62ch}.note .label{display:block;font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  ul.plain,ol.plain{margin:6px 0 14px 1.2em;color:var(--dim);max-width:64ch}ul.plain li,ol.plain li{margin-bottom:8px}.fineprint{font-size:13px;color:var(--faint);margin-top:18px}
+  ol.plain li strong,ul.plain li strong{color:var(--ink);font-weight:600}
+  footer{padding:34px 0 54px}footer p{font-size:12.5px;color:var(--faint);max-width:72ch;margin-top:6px}footer .foot-links{margin-bottom:12px;font-size:13.5px}footer .foot-attrib{font-size:14px;color:var(--dim);margin-bottom:14px}footer .foot-contact{display:flex;flex-wrap:wrap;gap:10px 28px;margin-bottom:22px}footer .foot-contact a{font-size:17px;font-weight:600;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px}
+  .hero p.byline{margin-top:18px;font-size:13px;color:var(--faint)}
+  .note ul.plain{color:var(--ink);margin:0 0 0 1.2em;max-width:none}
+  .note ul.plain li:last-child{margin-bottom:0}
+  .endnote{padding:34px 0 0}
+  .endnote .nonaff{margin-top:0}
+  .hero .dek{margin-top:14px;max-width:44ch;color:var(--ink);font-size:clamp(18px,2.6vw,21px);font-weight:700;line-height:1.4}
+</style>
+<style id="light-look">
+  :root{
+    --bg:#faf7f2; --panel:#f1ebdf; --line:#d9d2c4;
+    --ink:#141414; --dim:#2b2823; --faint:#5f5a50;
+    --gold:#a6332e; --gold-dim:#a6332e; --ok:#1f6b43; --warn:#8a4b00;
+    --paper:#faf7f2; --red:#a6332e; --grey:#5f5a50;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  html{background:var(--bg)}
+  body{font-family:var(--serif); font-size:18px; line-height:1.62}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  h1,h2,h3,h4,table,.eyebrow,.secnum,.byline,.getdata,.nonaff,.tablenote,.fineprint,.note .label,footer,.jump,.grouphead{font-family:var(--sans)}
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0; border-bottom:0}
+  .mast .wrap{max-width:1180px; padding:0 28px}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast .wrap{padding:0 16px}
+    .wrap{padding:0 16px}
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+  .hero{padding:44px 0 34px; border-bottom:3px solid var(--ink)}
+  .eyebrow{color:var(--red); font-weight:800; font-size:12.5px; letter-spacing:.2em}
+  .hero h1{font-weight:900; letter-spacing:-.03em; font-size:clamp(32px,5.2vw,54px); line-height:1.04}
+  .hero h1 em{color:var(--red)}
+  .hero p.subtitle{font-weight:400; font-size:clamp(19px,2vw,22px); max-width:34em}
+  .hero p.lead{color:var(--ink)}
+  .hero p.byline{font-size:14px; font-weight:700; color:var(--grey)}
+  .hero p.byline a{color:var(--grey)}
+  h2{font-weight:900; letter-spacing:-.02em; font-size:clamp(24px,3.2vw,32px); line-height:1.1}
+  h3{font-weight:800; font-size:19px}
+  .secnum{font-family:var(--sans); font-weight:800; color:var(--red)}
+  section p, ul.plain, ol.plain{max-width:38em}
+  section p strong{font-weight:700}
+  code{font-size:.86em; background:var(--panel); padding:1px 4px; border-radius:3px}
+  pre{border-radius:0; border:1px solid var(--ink)}
+  pre code{background:none; padding:0}
+  table.data{font-size:15px} table.data thead th{font-weight:800; color:var(--grey); border-bottom:2px solid var(--ink)}
+  .note{border-left:4px solid var(--red); background:#fffdf8; padding:14px 18px; max-width:38em}
+  .note{margin-top:22px}
+  .note .label{display:block; font-family:var(--sans); font-weight:800; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:8px}
+  .nonaff{border-radius:0; border-color:var(--ink); color:var(--grey); font-weight:700}
+  .tablenote,.fineprint{font-size:14px}
+  .getdata a{border-width:2px!important; border-radius:0!important}
+  .getdata a:hover{background:var(--ink); color:var(--paper)}
+  footer{border-top:3px solid var(--ink); margin-top:0}
+  footer p{font-size:14px} footer .foot-links{font-size:15px}
+  footer .foot-contact a{border-bottom:0; text-decoration:underline}
+  .hero .dek{font-family:var(--sans); font-weight:800; font-size:clamp(19px,2.1vw,23px); line-height:1.35; max-width:32em}
+</style>
+<meta name="author" content="Grant Williams">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"Article","@id":"https://graphometer.ai/box-in-a-coding-agent/#page","url":"https://graphometer.ai/box-in-a-coding-agent/","headline":"The sandbox mistake we made","mainEntityOfPage":"https://graphometer.ai/box-in-a-coding-agent/","datePublished":"2026-11-26","dateModified":"2026-11-26","publisher":{"@id":"https://grantwilliams.ai/#grant"},"description":"Our sandbox for unattended AI coding agents left the home folder and system log readable. What went wrong, and a checklist for boxing in a coding agent on Linux.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/box-in-a-coding-agent.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <a class="nameplate" href="../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="../models/">Model guides</a>
+      <a href="../studies/">Studies</a>
+      <a href="../incident-reports/">Incident reports</a>
+      <a href="../robots/">Robots</a>
+      <a href="../tools/">Tools</a>
+      <a href="../downloads/">Downloads</a>
+      <a href="../method/">Method</a>
+      <a href="../about/#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main itemscope itemtype="https://schema.org/Article"><div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Guide &middot; what we got wrong &middot; Linux</div>
+    <h1 itemprop="headline">The sandbox mistake we made</h1>
+    <p class="dek">How we left an AI coding agent&rsquo;s box open, and a checklist for boxing one in on Linux.</p>
+    <p class="lead">This page is for people who let an AI coding agent work alone on a Linux computer. It tells how our own sandbox left files open, then lists what we would do instead. It is a checklist, not a ready-made tool: for the commands, use <a href="https://github.com/containers/bubblewrap/blob/v0.11.0/README.md">bubblewrap's own guide</a> and <a href="https://github.com/containers/bubblewrap/blob/v0.11.0/bwrap.xml">manual</a>.</p>
+    <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span> &middot; Published <time itemprop="datePublished" datetime="2026-11-26">26 November 2026</time><meta itemprop="dateModified" content="2026-11-26"></p>
+  </div>
+
+  <section id="what-happened"><div class="secnum">01</div><h2>Our sandbox had a gap</h2>
+    <p>In the <a href="../five-moves-second-test/">Five Moves Second Test</a>, run overnight on 22 to 23 November 2026 (US Eastern time), AI coding agents worked alone on small programming jobs. A coding agent is an AI that reads files and runs commands on a computer to get a job done. Each session was meant to see only its own project folder, so each ran in a sandbox: a walled-off box on the computer. Our study manager, an AI agent that ran the test for us, built the box with <a href="https://github.com/containers/bubblewrap">bubblewrap</a>, a common Linux tool for this. The gap was ours, not the tested models'.</p>
+    <p>The box started with this line. It is what we ran, not advice:</p>
+<pre>bwrap --ro-bind / /</pre>
+    <p>It means: show the box the whole disk, read-only (it can look, but not change). The computer's usual file permissions still applied, and the box let the agent write only to its project, its output folder and the coding tool's own files. The box then covered a few folders: the temporary folder <code>/tmp</code>, the other drives under <code>/mnt</code>, and the folder that held the test run. It did not cover the rest of the home folder. In there were the task files for every task, the scoring script, our run scripts, records of practice runs, the coding tools' saved sessions, and some of Grant's own files that had nothing to do with the test. Nothing in the request told the models to stay inside their folder.</p>
+    <p>One of the seven tested models, Gemini 3.8 Flash, made tool calls naming places outside its project folder in 86 of its 288 main sessions and 7 of its 32 spare sessions (extra tasks used to check the test before the main run). Some calls only listed folders. Others read the description of its own task, the scoring script and our run scripts. In 13 main sessions and 1 spare session it searched other tools' saved sessions. It also listed and read some of Grant's unrelated files. The records show no such calls by the other six models, apart from their own temporary folder and, once, a check of where a standard program was installed. <a href="../gemini-3-8-flash-warning/">The warning about Gemini 3.8 Flash</a> gives the full account of that model's actions.</p>
+    <h3>How we missed it</h3>
+    <p>The test's planned leak check searched what the agents wrote, not what their tools handed back to them, so it found nothing. The study manager found the gap after the main run by searching every tool call for a place outside the session's folder. Even that search first missed one session that listed the whole disk; a later recount found it.</p>
+    <h3>The repair still missed things</h3>
+    <p>For a rerun of that one model, the box covered the whole home folder and put back only what its coding tool, OpenCode, needed: the program, its settings and download cache, read-only; two fresh, empty folders for its saved data and state, with the sign-in file alone inside, read-only; and the project and output folders. In the records of the 146 rerun sessions that finished, none held another version's instructions, the task-definition files, the scoring script or a key.</p>
+    <p>But it was still a list of things to cover, and the list was short. The system log <code>/var/log/syslog</code>, a file where the computer records what happens on it, stayed readable, as did <code>/opt</code>, <code>/media</code>, <code>/run/user</code> and <code>/srv</code>. Our log held lines from the kernel (the core of the operating system) that included other sessions' command lines: the tool, the model's name, the session's folder name and its one-sentence request. Of the 146 rerun sessions that finished, 3 read the log. Two main sessions were shown lines about other sessions; the third, a spare session, was shown none. The log had been just as readable in the first box, for all seven models; no session of the other six went there.</p>
+    <p>Grant stopped the rerun at 114 of 288 main sessions, after he had seen the first run's results. His reasons were the time it still needed and that a model with this many problems is not a good test subject. The published finding uses the other six models; the <a href="../five-moves-second-test/">results page</a> explains.</p>
+    <div class="note"><span class="label">The lesson</span>
+      <p style="color:inherit;margin:0">Both times we wrote a list of what to cover, and both times it missed something. You cannot list everything an agent should not see. You can list the few things it needs.</p>
+    </div>
+  </section>
+
+  <section id="checklist"><div class="secnum">02</div><h2>The checklist</h2>
+    <p>This is what we would do now. We are not offering a ready-made tool, and we have not tested a full box with a real agent. Bubblewrap's <a href="https://github.com/containers/bubblewrap/blob/v0.11.0/README.md">guide</a> and <a href="https://github.com/containers/bubblewrap/blob/v0.11.0/bwrap.xml">manual</a> give the commands.</p>
+    <ol class="plain">
+      <li><strong>Start from an empty box.</strong> Add only what the tool needs to run, read-only where you can. Name each folder you add; never start from the whole disk.</li>
+      <li><strong>Leave the network off unless the model needs it.</strong> A model hosted online needs a connection to its maker. If you can, keep the agent offline and let a small helper outside the box make that one connection, hold the key and block the agent's own web tools. If you share the computer's network with the box instead, the agent can reach the internet, your home or office network, services on your own computer and other programs' network sockets, and it can send out anything it can read.</li>
+      <li><strong>Give it a throwaway copy of only the files the job needs.</strong> Leave out hidden files, keys and Git history unless the job needs them. Check what changed before you use anything from the copy.</li>
+      <li><strong>Use a fresh, empty folder for the tool's saved sessions each time</strong>, so one session cannot read another's, and delete it afterwards. Give each session a fresh project too, and keep earlier sessions' outputs and logs out of reach.</li>
+      <li><strong>Use a key made for this job only.</strong> The agent can read and copy any sign-in file you give it, read-only or not. Give the key the least access the provider allows and a spending limit, cancel it when you are done, and never put a key on a command line.</li>
+      <li><strong>Start with no settings.</strong> Programs inherit environment variables (named settings, which can hold keys) from whatever starts them. Clear them and add back only the few the tool needs. Also make sure the agent does not inherit open files or connections it should not have.</li>
+      <li><strong>Never run the agent as root</strong>, the administrator account. A separate account just for the agent is better still.</li>
+      <li><strong>Give the box its own list of running programs</strong>, so it cannot see yours. Have whatever starts the box stop the whole job when it ends or times out, and test that a harmless background program stops too.</li>
+      <li><strong>Set limits from outside the box: time, memory, number of programs and disk space.</strong> A sandbox sets none by itself, and it shares the computer's kernel, so it is a wall, not a vault. The disk limit should cover every place the job can write. If you set a spending limit with the model's maker, check that reaching it actually stops requests; an alert alone does not.</li>
+      <li><strong>Before any real run, test the same box with harmless files.</strong> Have a test session list what it can see, and compare that with what you expect: which folders are in the box, what is in them and where it can write, readable files outside the project, sockets and network connections. Put a fake private file outside the project and check that the agent cannot read it. Anything you did not add is a gap, and a check that did not finish is not a pass.</li>
+      <li><strong>After a run, read what the tools returned to the agent, not only what it wrote.</strong> Search every tool call for places outside the project, counting from the folder each call started in, and note any reply that is missing or cut short. Keep those records private, because they hold whatever the agent saw.</li>
+    </ol>
+  </section>
+
+  <section id="network"><div class="secnum">03</div><h2>The network we left on</h2>
+    <p>We left the network on in both boxes because the models were hosted online. In five sessions, two in the first run and three in the repaired box, Gemini 3.8 Flash wrote a small program that searched the web for words from its task. Our check of the raw records found DuckDuckGo used in all five and Google in four. The three rerun sessions are flagged <code>web_or_network</code> in the published list of rerun sessions (<code>flash2_sessions_outside_access.csv</code> in the <a href="https://huggingface.co/datasets/grantwilliams-ai/five-moves-second-test/blob/main/results/flash2_sessions_outside_access.csv">study's data</a>); the <a href="../gemini-3-8-flash-warning/">warning page</a> has the full account.</p>
+    <p>Those searches went out from inside the box. A box with no network of its own could not have sent them straight out. A model hosted online still needs some way out, and one tighter design gives the box no network and a single connection to a small program outside it that passes on only the requests the job needs to the model maker, and holds the key itself. Our <a href="../letta-code-local/">Letta Code page</a> shows a box built in that spirit for a local model. Even then, whatever the coding tool sends to the model maker still goes, including what its tools read. <strong>We have not tested this for this kind of run.</strong></p>
+  </section>
+
+  <section id="related"><div class="secnum">04</div><h2>Related pages on this site</h2>
+    <p>The <a href="../five-moves-second-test/">Five Moves Second Test</a> results page, where this gap was found and reported. <a href="../gemini-3-8-flash-warning/">The Gemini 3.8 Flash warning</a>, about that model's actions. <a href="../letta-code-local/">Running Letta Code locally</a>, an earlier bubblewrap box with no network at all.</p>
+  </section>
+
+  <div class="endnote"><div class="nonaff">Independent work. Not affiliated with, endorsed by, or connected to Google, DuckDuckGo, or the other makers and projects named here.</div></div>
+</div></main>
+
+<footer><div class="wrap"><div class="foot-attrib">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="../about/">About</a></div><div class="foot-contact"><a href="mailto:hello@graphometer.ai">hello@graphometer.ai</a><a href="https://github.com/graphometer">github.com/graphometer</a></div><p>Built by a human steward with heavy AI assistance. Every measured number is checked against a recorded run.</p><p>Copyright 2026 Grant Williams. Independent work: Google and Gemini are marks of Google LLC; DuckDuckGo is a mark of Duck Duck Go, Inc.; Linux is a mark of Linus Torvalds; OpenCode belongs to its owners; bubblewrap is a project of its contributors; Hugging Face is a mark of Hugging Face, Inc.; Letta Code is a name of Letta. All are referenced for identification only. Not affiliated with, endorsed by, or sponsored by any of them or their affiliates. Product names and marks belong to their respective owners. This site is static. No cookies. No ads. Visit counts only.</p><div class="foot-links"><a href="../">Graphometer</a></div>    <p class="related-sites" style="margin-top:14px">Related sites: <a href="https://grantwilliams.ai">grantwilliams.ai</a> &middot; <a href="https://hearth.grantwilliams.ai">The Hearth</a> &middot; <a href="https://friendsof4o.com">Friends of 4o</a> &middot; <a href="https://aisteward.ai">AI Steward</a></p>
+</div></footer>
+</body>
+</html>
