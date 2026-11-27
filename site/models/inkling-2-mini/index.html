@@ -239,7 +239,7 @@ table.speeds td:nth-child(2){font-weight:700}
       </div>
       <div class="catch">
         <h3>It found top-scoring schedules from pictures</h3>
-        <p>On the four-job picture puzzle it earned the top score in all four tries at 2,048 tokens and all four at 6,144. On the six-job picture puzzle it reached the top score in two of four tries at 6,144. Each puzzle came in only one format. The test cannot tell us how the same puzzle would fare as a picture and as typed text. The third picture puzzle, the nine-job one, came back blank in all twelve tries, as every puzzle that size did.</p>
+        <p>On the four-job picture puzzle it earned the top score in all four tries at 2,048 tokens and all four at 6,144. On the six-job picture puzzle it reached the top score in two of four tries at 6,144. Each puzzle came in only one format. The test cannot tell us how the same puzzle would fare as a picture and as typed text. The third picture puzzle, the nine-job one, came back blank in all twelve tries, as every try on the eight-, nine- and ten-job puzzles did.</p>
       </div>
     </section>
 
@@ -261,13 +261,13 @@ table.speeds td:nth-child(2){font-weight:700}
       <details>
         <summary>What did we run?</summary>
         <div class="in">
-          <p>Each of the eight puzzles gave Inkling 2 Mini a list of jobs to schedule for points. Each try began a fresh conversation with one question. We supplied no separate instructions and gave the model no tools. We tried each puzzle four times at each limit. Each of the four tries used a different starting number for the model&rsquo;s random choices.</p><table><tr><th>Item</th><th>What we used</th></tr><tr><td>Model</td><td>Unsloth&rsquo;s compressed copy of Inkling 2 Mini is called UD-Q4_K_XL. The model file was 17.6 GB. The separate file for reading pictures was 639 MB.</td></tr><tr><td>Graphics card</td><td>The whole model ran on one RTX 5090. It used about 19.6 GB of card memory.</td></tr><tr><td>Software</td><td>We used version b12816 of llama.cpp, the program that ran the model. We used the files from the Mainline_Support folder.</td></tr></table><p>Unsloth says those files work with llama.cpp from version b12611 onward. It warns that older versions give much worse answers with those files. We tested only b12816.</p>
+          <p>Each of the eight puzzles gave Inkling 2 Mini a list of jobs to schedule for points. Each try began a fresh conversation with one question. We supplied no separate instructions and gave the model no tools. We tried each puzzle four times at each limit. Each of the four tries used a different starting number for the model&rsquo;s random choices.</p><table><tr><th>Item</th><th>What we used</th></tr><tr><td>Model</td><td>Unsloth&rsquo;s compressed copy of Inkling 2 Mini is called UD-Q4_K_XL. The model file was 17.6 GB. The separate file for reading pictures was 639 MB.</td></tr><tr><td>Graphics card</td><td>The whole model ran on one RTX 5090. It used about 19.6 GB of card memory.</td></tr><tr><td>Software</td><td>We used version b12816 of llama.cpp, the program that ran the model. We used the model file from the Mainline_Support folder.</td></tr></table><p>Unsloth says those files work with mainline llama.cpp from version b12611 onward. It warns that older versions give much worse output with those files. We tested only b12816.</p>
         </div>
       </details>
       <details>
         <summary>How much room did the model have?</summary>
         <div class="in">
-          <p>The question and reply together could fill 8,192 tokens, the small pieces of text the model reads and writes. The longest question used 435 tokens. The reply limit counted both the hidden thinking and the final answer.</p><p>We used the maker&rsquo;s settings for how the model chooses the next piece of text.</p><table><tr><th>Setting for choosing the next piece of text</th><th>Value</th></tr><tr><td>Temperature (how freely the model chooses)</td><td>1.0</td></tr><tr><td>Top-p (how much of the total probability to keep)</td><td>1.0</td></tr><tr><td>Top-k (a cap on the number of choices)</td><td>Off</td></tr><tr><td>Min-p (a cutoff relative to the most likely choice)</td><td>0</td></tr></table>
+          <p>The question and reply together could fill 8,192 tokens, the small pieces of text the model reads and writes. The longest question used 435 tokens. The reply limit counted both the hidden thinking and the final answer.</p><p>We used the settings Unsloth recommends for how the model chooses the next piece of text.</p><table><tr><th>Setting for choosing the next piece of text</th><th>Value</th></tr><tr><td>Temperature (how freely the model chooses)</td><td>1.0</td></tr><tr><td>Top-p (how much of the total probability to keep)</td><td>1.0</td></tr><tr><td>Top-k (a cap on the number of choices)</td><td>Off</td></tr><tr><td>Min-p (a cutoff relative to the most likely choice)</td><td>0</td></tr></table>
         </div>
       </details>
       <details>
@@ -285,7 +285,7 @@ table.speeds td:nth-child(2){font-weight:700}
       <details>
         <summary>How did we score a schedule?</summary>
         <div class="in">
-          <p>We counted a schedule as complete when our program could read the whole final answer as one schedule in the requested format. To find the best possible score for each puzzle, we checked every combination in advance. Our results matched the scores published with all eight puzzles. A complete schedule earned a place in the best column only if it reached that puzzle&rsquo;s highest possible score.</p>
+          <p>We counted a schedule as complete when our program could read the whole final answer as one schedule in the requested format. To find the best possible score for each puzzle, we checked every combination in advance. The best possible scores we worked out matched the published ones for all eight puzzles. A complete schedule earned a place in the best column only if it reached that puzzle&rsquo;s highest possible score.</p>
         </div>
       </details>
       <p class="checked">Graphometer&rsquo;s test records for 27 November 2026. The advice on software versions comes from Unsloth.</p>

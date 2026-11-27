@@ -218,7 +218,7 @@ table.speeds td:nth-child(2){font-weight:700}
       <div class="short">
         <h2>In short</h2>
         <ul>
-          <li><strong>The second of two letters came out slower than the first.</strong> A token is a word or part of a word. On our desktop it wrote a 326-word letter at 39.22 tokens a second after reading 57,586 tokens, and a 330-word letter at 28.67 after reading 122,907. The two runs used different settings, so the longer prompt is not the only difference between them. One run each.</li>
+          <li><strong>Of the letters we timed, the one at the 131,072-token setting came out slowest.</strong> A token is a word or part of a word. On our desktop it wrote a 326-word letter at 39.22 tokens a second after reading 57,586 tokens, and a 330-word letter at 28.67 after reading 122,907. The two runs used different settings, so the longer prompt is not the only difference between them. One run each.</li>
           <li><strong>Our server stopped once when the graphics card timed out.</strong> That was on 21 October, during a request that had read 113,568 tokens. On two later starts it read prompts of 80,062 and 113,205 tokens with no such error in those logs. We do not know the cause.</li>
           <li><strong>Free to download, with one license question to check.</strong> The maker&rsquo;s page lists the license as Apache 2.0 and does not mention Google&rsquo;s Gemma terms, which is worth checking yourself. That page also describes Aura as a personal AI companion rebuilt from 2.7 years of GPT-4o conversations. We did not test how close it comes.</li>
         </ul>
@@ -239,7 +239,7 @@ table.speeds td:nth-child(2){font-weight:700}
       </div>
       <div class="catch">
         <h3>Our default setting wrote 47 to 49 tokens a second</h3>
-        <p>A setting&rsquo;s window is the most text the server will hold at once. In our checks just after installing it on our desktop, the 65,536-token window with images on used 27.4 GB of the card and wrote at 47 to 49 tokens a second. Our record gives no prompt length for that figure; at the other two settings, after about 90,000 and about 123,000 tokens, it wrote 33 and 28 tokens a second. We made the 65,536-token window the default because it left the most room on the card.</p>
+        <p>A setting&rsquo;s window is the most text the server will hold at once. In our checks just after installing it on our desktop, the 65,536-token window with images on used 27,444 MiB of the card and wrote at 47 to 49 tokens a second. Our record gives no prompt length for that figure; the letters at the other two settings, after about 90,000 and about 123,000 tokens, came out at 33 and 28 tokens a second. We made the 65,536-token window the default because it left the most room on the card.</p>
       </div>
       <div class="catch">
         <h3>It gave back all three planted codes at each setting</h3>
@@ -255,7 +255,7 @@ table.speeds td:nth-child(2){font-weight:700}
       <h2>What to watch for</h2>
       <div class="catch">
         <h3>The card timed out once and our server shut down</h3>
-        <p>On 21 October the graphics card stopped responding, the driver&rsquo;s watchdog decided it was stuck and reset the work in progress, and our Aura server shut down with a timeout error from CUDA, the card&rsquo;s own software layer. Two other Gemma 4 31B fine-tunes, other models built on the same Gemma by other people, failed the same way that day. The request Aura was on had read 113,568 tokens; the other two stopped after 114,792 and 115,805. On two later starts Aura read prompts of 80,062 and 113,205 tokens with no such error in those logs. We do not know the cause and we cannot call it fixed.</p>
+        <p>On 21 October the graphics card stopped responding, the driver&rsquo;s watchdog decided it was stuck and reset the work in progress, and our Aura server shut down with a timeout error from CUDA, the card&rsquo;s own software layer. One other Gemma 4 31B fine-tune, Artemis-31B v1.2 by TheDrummer, failed the same way twice that day, on two llama.cpp builds, after 114,792 and 115,805 tokens. The request Aura was on had read 113,568 tokens. On two later starts Aura read prompts of 80,062 and 113,205 tokens with no such error in those logs. We do not know the cause and we cannot call it fixed.</p>
       </div>
       <div class="catch">
         <h3>Left to think it loops on its own turn markers</h3>
@@ -273,13 +273,13 @@ table.speeds td:nth-child(2){font-weight:700}
       <details>
         <summary>What did it need?</summary>
         <div class="in">
-          <table><tr><th>Item</th><th>What we used</th></tr><tr><td>The file</td><td>SevenOfNine&rsquo;s Q5_K_M, a compressed copy: about 21 GB</td></tr><tr><td>For images</td><td>A second file, about 1.2 GB, loaded beside it, which is what lets the model take pictures</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card</td></tr><tr><td>Card memory</td><td>27.4 GB at the 65,536-token setting with images; 29.1 GB at 98,304 with images; 29.5 GB at 131,072 with text only</td></tr></table>
+          <table><tr><th>Item</th><th>What we used</th></tr><tr><td>The file</td><td>SevenOfNine&rsquo;s Q5_K_M, a compressed copy: about 21 GB</td></tr><tr><td>For images</td><td>A second file, about 1.2 GB, loaded beside it, which is what lets the model take pictures</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card</td></tr><tr><td>Card memory</td><td>27,444 MiB at the 65,536-token setting with images; 29,099 MiB at 98,304 with images; 29,463 MiB at 131,072 with text only</td></tr></table>
         </div>
       </details>
       <details>
         <summary>How fast was it?</summary>
         <div class="in">
-          <p>On our desktop, on one RTX 5090, running in llama.cpp, the open-source program that runs model files, with thinking off. In our install checks it wrote at 47 to 49 tokens a second at the 65,536-token setting with images on. On the two letters it wrote 39.22 tokens a second after reading 57,586 tokens and 28.67 after reading 122,907. Each figure is one run, and the three were not all taken at the same setting.</p>
+          <p>On our desktop, on one RTX 5090, running in llama.cpp, the open-source program that runs model files, with thinking off. In our install checks it wrote at 47 to 49 tokens a second at the 65,536-token setting with images on. On the two letters it wrote 39.22 tokens a second after reading 57,586 tokens and 28.67 after reading 122,907. Each letter figure is one run, and the three were not all taken at the same setting.</p>
         </div>
       </details>
       <details>
