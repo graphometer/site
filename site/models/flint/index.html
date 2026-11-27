@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flint: fast, but some answers came back empty</title>
+<meta name="description" content="One lab’s test of Recursive’s open Flint coding model on one desktop: it wrote fast, but 4 of 62 answers came back empty after nearly four minutes.">
+<link rel="canonical" href="https://graphometer.ai/models/flint/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Flint: fast, but some answers came back empty">
+<meta property="og:description" content="One lab’s test of Recursive’s open Flint coding model on one desktop: it wrote fast, but 4 of 62 answers came back empty after nearly four minutes.">
+<meta property="og:url" content="https://graphometer.ai/models/flint/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+<style>/* search link */.mastrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.mastsearch{display:inline-flex;align-items:center;gap:8px;flex:none;margin-bottom:16px;padding:9px 14px;border:1px solid #6b665e;color:#faf7f2;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;line-height:1}.mastsearch:hover,.mastsearch[aria-current]{background:#faf7f2;color:#141414;text-decoration:none}.mastsearch:focus-visible{outline:3px solid #faf7f2;outline-offset:2px}.mastsearch svg{width:16px;height:16px;flex:none}@media (max-width:420px){.mastsearch{padding:8px 10px;letter-spacing:.08em;gap:6px}.mastrow .wordmark{font-size:26px}}@media (max-width:360px){.mastrow .wordmark{font-size:22px}.mastrow .nameplate{gap:10px}.mastrow .nameplate svg{width:38px;height:38px}}</style>
+<meta name="author" content="Grant Williams">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"WebPage","@id":"https://graphometer.ai/models/flint/#page","url":"https://graphometer.ai/models/flint/","name":"Flint: fast, but some answers came back empty","description":"One lab’s test of Recursive’s open Flint coding model on one desktop: it wrote fast, but 4 of 62 answers came back empty after nearly four minutes.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/models.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="mastrow">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <a class="mastsearch" href="../../search/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Search</a>
+    </div>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../incident-reports/">Incident reports</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../downloads/">Downloads</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#9a5a3c" aria-label="Flint at a glance">
+      <div class="band"><span>Recursive</span><span class="no">No. 42</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Recursive</span><b>Flint</b></div>
+      <p class="name">Flint</p>
+      <p class="pos">Its thinking cannot be switched off</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home</dd></div>
+        <div><dt>Download</dt><dd>ggml-org&rsquo;s Q8_0 copy<br>about 42 GB</dd></div>
+        <div><dt>Needs</dt><dd>One RTX 5090<br>plus system memory</dd></div>
+        <div><dt>License</dt><dd>Apache 2.0</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Recursive · At home</p>
+      <h1 itemprop="headline">Flint ran fast but sometimes answered nothing</h1>
+      <p class="standfirst">We ran Flint, Recursive&rsquo;s open coding model, on one desktop in October 2026. It wrote fast. In 4 of 62 answers it used its whole reply allowance on hidden thinking and gave no answer, after nearly four minutes.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>It wrote about 71 tokens a second.</strong> A token is a word or part of a word. On one graphics card, with part of the model running from the computer&rsquo;s main memory, it wrote about 71 tokens a second and read about 1,200 tokens a second.</li>
+          <li><strong>Four of 62 answers came back empty.</strong> Those 62 are every answer it gave in that test, three to each question we asked. Each of the four empty ones spent its whole reply allowance on hidden thinking, the text it writes to itself before answering, and returned nothing. In another 6 of 62 the answer came back twice over, with the model&rsquo;s own end-of-thinking marker in between: four empty and six doubled, out of the same 62 answers.</li>
+          <li><strong>Free to download under the Apache 2.0 license.</strong> We ran ggml-org&rsquo;s Q8_0 copy, a compressed copy of the model, about 42 GB, which is larger than our graphics card&rsquo;s memory.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs Graphometer · Facts checked 27 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+
+    <section id="good">
+      <h2>What our tests showed</h2>
+      <div class="catch">
+        <h3>It wrote about 71 tokens a second on one desktop card</h3>
+        <p>Flint is a mixture-of-experts model: it holds many sets of numbers, its experts, and picks from them for each word. We kept the experts of its first 24 layers in the computer&rsquo;s main memory. It wrote about 71 tokens a second and read about 1,200 tokens a second, using about 28 GB of the graphics card with a 131,072-token window, which is the most text the server will hold at once. One setup, one run. Its files needed a newer llama.cpp (the open-source program that runs model files) than we had, so we built a new copy.</p>
+      </div>
+      <div class="catch">
+        <h3>It said it had no record in five of six answers</h3>
+        <p>In our tests for long-running AIs we asked it about something it had no record of. A person read and sorted every answer by hand: five said plainly that it had no record, one answered as though the thing might have happened, and none claimed to remember it. Six answers in one test.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>What to watch for</h2>
+      <div class="catch">
+        <h3>Four of 62 replies were still blank after nearly four minutes</h3>
+        <p>Each of the four spent the whole 16,384-token reply limit on hidden thinking and returned no text, after about 225 to 232 seconds. Flint cannot switch its thinking off, and its own page warns that long reasoning can use up the output budget before an answer is complete. The maker also says to allow at least 32,768 tokens for hard problems and to keep the reasoning text Flint returns in the conversation history; we used 16,384 tokens and have not re-run Flint with either of those, so we do not know whether they would change this. The same failure in other models is in <a href="../../empty-answer/">our study of why reasoning models return empty answers</a>.</p>
+      </div>
+      <div class="catch">
+        <h3>Six replies showed a draft and then repeated the answer</h3>
+        <p>The text came back as a draft of the answer, then the marker the model uses to close its hidden thinking (&lt;/think&gt;), then the answer a second time. In one of the six the text never reached a clean reply at all. Six of 62 answers, a count separate from the four empty ones.</p>
+      </div>
+      <div class="catch">
+        <h3>On one question all three answers thought for about 140 seconds</h3>
+        <p>On one of our questions all three answers thought about 35,000 characters, about 140 seconds. Most answers were shorter than that: the middle answer of the 62 thought about 2,500 tokens, while 12 of 62 thought more than 20,000 characters, about 5,000 tokens. The longest thinking came with the empty answers.</p>
+      </div>
+      <p>We keep Flint on the desktop for further testing.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What did we run, and what does it need?</summary>
+        <div class="in">
+          <table><tr><th>Item</th><th>What we used</th></tr><tr><td>The file</td><td>ggml-org&rsquo;s Q8_0 copy, a compressed copy of Flint: about 42 GB</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card, with the experts of its first 24 layers in the computer&rsquo;s main memory</td></tr><tr><td>The window</td><td>131,072 tokens in our runs; the maker documents 262,144 tokens, prompt and reply together</td></tr></table><p>The file is larger than the graphics card&rsquo;s memory, which is why part of it sat in main memory. ggml-org&rsquo;s page also lists a smaller Q4_K_M copy, and Unsloth lists many smaller ones. We did not test any of them.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How fast was it?</summary>
+        <div class="in">
+          <p>On one RTX 5090, with the experts of 24 layers in main memory and a 131,072-token window, it wrote about 71 tokens a second and read about 1,200 a second, using about 28 GB of the card. The wait depended on how much it thought: on one question all three answers thought for about 140 seconds, and the four empty answers ran about 225 to 232 seconds each. These speeds describe one setup.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What does the maker say to do, and did we try it?</summary>
+        <div class="in">
+          <table><tr><th>The maker&rsquo;s page says</th><th>What we did</th></tr><tr><td>Keep the reasoning text Flint returns in the conversation history, so it is still there on the next turn</td><td>We have not re-run Flint with this setting</td></tr><tr><td>Allow at least 32,768 tokens for hard problems, reasoning included</td><td>We used a 16,384-token limit</td></tr><tr><td>Sampling: temperature 1.0, top-p 0.95, top-k 20, which are the settings that control how freely it picks each word</td><td>We used these</td></tr></table>
+        </div>
+      </details>
+      <details>
+        <summary>License, and where do you get it?</summary>
+        <div class="in">
+          <p>Recursive&rsquo;s page on Hugging Face says Flint is released under the Apache 2.0 license. It gives <em>hf download RecursiveSI/flint</em> as the way to get the files, about 80 GB.</p><p>We ran ggml-org&rsquo;s compressed copy in llama.cpp, which is about 42 GB: smaller than the maker&rsquo;s own files because the numbers inside it are stored in less space.</p>
+        </div>
+      </details>
+      <p class="checked">From Recursive&rsquo;s model page and ggml-org&rsquo;s and Unsloth&rsquo;s download pages on Hugging Face, read 27 November 2026, and our own test records from October 2026.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../empty-answer/"><div>Why reasoning models return empty answers<span>How to catch and measure the empty-answer failure.</span></div></a></li>
+        <li><a href="https://huggingface.co/RecursiveSI/flint"><div>Flint on Hugging Face<span>The maker&rsquo;s own page, with its setup advice.</span></div></a></li>
+        <li><a href="https://huggingface.co/ggml-org/Flint-GGUF"><div>ggml-org&rsquo;s Flint files<span>The compressed copy we ran.</span></div></a></li>
+        <li><a href="https://huggingface.co/unsloth/flint-GGUF"><div>Unsloth&rsquo;s Flint files<span>Smaller compressed copies we did not test.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This note is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Recursive. Flint is a mark of Recursive. This site is static. No cookies. No ads. Visit counts only.</p>
+    <p class="related-sites" style="margin-top:14px">Related sites: <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="https://hearth.grantwilliams.ai">The Hearth</a> · <a href="https://friendsof4o.com">Friends of 4o</a> · <a href="https://aisteward.ai">AI Steward</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

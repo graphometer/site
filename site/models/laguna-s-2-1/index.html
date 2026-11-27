@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laguna S 2.1: one setting sped reading 19.9 times</title>
+<meta name="description" content="One lab’s measurements of Poolside’s Laguna S 2.1 on one desktop: a batch setting of ours made reading 19.9 times slower, and coding stayed slow.">
+<link rel="canonical" href="https://graphometer.ai/models/laguna-s-2-1/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Graphometer">
+<meta property="og:title" content="Laguna S 2.1: one setting sped reading 19.9 times">
+<meta property="og:description" content="One lab’s measurements of Poolside’s Laguna S 2.1 on one desktop: a batch setting of ours made reading 19.9 times slower, and coding stayed slow.">
+<meta property="og:url" content="https://graphometer.ai/models/laguna-s-2-1/">
+<meta property="article:author" content="Grant Williams">
+<meta property="og:image" content="https://graphometer.ai/og/models.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Graphometer: Model guides">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://graphometer.ai/og/models.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --paper:#faf7f2; --ink:#141414; --red:#a6332e; --grey:#5f5a50; --pale:#efe9de; --line:#d9d2c4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--paper)}
+  body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:19px; line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  a:focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:2px}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+  @media (max-width:520px){.wrap{padding:0 16px}}
+  .skip{position:absolute; left:-9999px; top:0; font-family:var(--sans); font-weight:800; font-size:14px;
+    background:var(--ink); color:var(--paper); padding:10px 18px; z-index:10}
+  .skip:focus{left:8px; top:8px}
+
+  /* masthead, slim */
+  .mast{background:var(--ink); color:var(--paper); padding:18px 0 0}
+  .mast .nameplate{display:flex; align-items:center; gap:14px; padding-bottom:16px; text-decoration:none; color:var(--paper)}
+  .mast .nameplate svg{width:44px; height:44px; flex:none}
+  .mast .wordmark{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:30px; line-height:1}
+  .mast nav{border-top:2px solid var(--paper); display:flex; flex-wrap:wrap}
+  .mast nav a{flex:1 1 auto; text-align:center; font-family:var(--sans); font-weight:800; font-size:13px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--paper); text-decoration:none;
+    padding:13px 14px; border-left:1px solid #3a3a3a}
+  .mast nav a:first-child{border-left:0}
+  .mast nav a:hover, .mast nav a[aria-current]{background:var(--paper); color:var(--ink)}
+  .mast nav a:focus-visible{outline-color:var(--paper); outline-offset:-3px}
+  @media (max-width:620px){
+    .mast nav a{flex:1 1 40%; border-top:1px solid #3a3a3a}
+    .mast nav a:nth-child(-n+2){border-top:0}
+    .mast nav a:nth-child(odd){border-left:0}
+  }
+
+  /* top of the page: the card beside the headline */
+  .top{display:grid; grid-template-columns:330px minmax(0,1fr); gap:52px; align-items:start;
+    padding:44px 0 44px; border-bottom:3px solid var(--ink)}
+  @media (max-width:860px){.top{grid-template-columns:1fr; gap:30px; padding-top:30px}}
+  .label{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--red); margin-bottom:14px}
+  .label a{color:inherit; text-decoration:none}
+  .label a:hover{text-decoration:underline}
+  .top h1{font-family:var(--sans); font-weight:900; letter-spacing:-.03em; font-size:clamp(36px,5vw,62px);
+    line-height:1.02; margin-bottom:18px}
+  .top .standfirst{font-size:clamp(20px,2vw,23px); line-height:1.5; max-width:30em; margin-bottom:26px}
+  .short{border:2px solid var(--ink); background:#fffdf8; padding:20px 24px 12px; max-width:40em}
+  .short h2{font-family:var(--sans); font-size:13px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+    margin-bottom:10px}
+  .short ul{list-style:none}
+  .short li{position:relative; padding:0 0 12px 24px; font-size:18px; line-height:1.5}
+  .short li::before{content:""; position:absolute; left:0; top:.55em; width:10px; height:10px; background:var(--red)}
+  .byline{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:18px}
+
+  /* the card */
+  .card{--c:#141414; background:#fffdf8; border:2px solid var(--ink); border-radius:18px; padding:12px;
+    box-shadow:8px 8px 0 var(--ink); max-width:360px}
+  @media (max-width:860px){.card{margin:0 auto; width:100%}}
+  .card .band{display:flex; justify-content:space-between; align-items:center; font-family:var(--sans);
+    font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; padding:2px 6px 10px}
+  .card .band .no{color:var(--grey)}
+  .card .face{position:relative; background:var(--c); color:#fff; border-radius:10px; aspect-ratio:5/4;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; overflow:hidden}
+  .card .face svg{position:absolute; inset:0; width:100%; height:100%; opacity:.16}
+  .card .face .fam{position:relative; font-family:var(--sans); font-weight:800; font-size:16px; letter-spacing:.26em;
+    text-transform:uppercase; padding-left:.26em}
+  .card .face b{position:relative; font-family:var(--sans); font-weight:900; letter-spacing:-.05em; font-size:104px; line-height:.95}
+  .card .name{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:30px; line-height:1.1; margin:14px 6px 2px}
+  .card .pos{font-family:var(--sans); font-size:16px; font-weight:700; color:var(--grey); margin:0 6px 12px}
+  .card dl{border-top:2px solid var(--ink); margin:0 6px}
+  .card dl div{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0;
+    border-bottom:1px solid var(--line)}
+  .card dl div:last-child{border-bottom:0}
+  .card .cardnote{font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--grey); margin:10px 8px 4px; padding-top:9px; border-top:1px solid var(--line)}
+  .card dt{font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); flex:none}
+  .card dd{font-family:var(--sans); font-size:15.5px; font-weight:800; text-align:right; line-height:1.3}
+
+  /* reading column */
+  .read{max-width:760px; padding-bottom:10px}
+  .read section{padding-top:46px}
+  .read h2{font-family:var(--sans); font-weight:900; letter-spacing:-.02em; font-size:clamp(26px,3.2vw,36px);
+    line-height:1.08; margin-bottom:16px}
+  .read h2::before{content:""; display:inline-block; width:14px; height:14px; background:var(--red); margin-right:12px}
+  .read p{margin-bottom:16px}
+  .read h3{font-family:var(--sans); font-weight:800; font-size:20px; line-height:1.3; margin:0 0 6px}
+  .jobs{list-style:none}
+  .jobs li{border-top:1px solid var(--line); padding:16px 0}
+  .jobs li:last-child{border-bottom:1px solid var(--line)}
+  .jobs p{margin:0}
+  .catch{border-left:5px solid var(--ink); padding:2px 0 2px 20px; margin:0 0 26px}
+  .catch p{margin:0}
+  .quote{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:26px 28px 22px}
+  .quote p{font-size:21px; line-height:1.5; font-style:italic; margin-bottom:12px}
+  .quote span{font-family:var(--sans); font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:#c9c2b4}
+  details{border-top:1px solid var(--line)}
+  details:last-of-type{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer; list-style:none; display:flex; align-items:center; min-height:54px; padding:8px 0;
+    font-family:var(--sans); font-weight:800; font-size:18px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+"; margin-left:auto; padding-left:14px; color:var(--red); font-size:26px; font-weight:700; line-height:1}
+  details[open] summary::after{content:"\2212"}
+  summary:hover{color:var(--red)}
+  details .in{padding:2px 0 16px}
+  details .in p{font-size:17.5px; margin-bottom:10px}
+  details table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:16px; margin:4px 0 12px}
+  details th, details td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  details th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+  .links{list-style:none}
+  .links li{border-top:1px solid var(--line)}
+  .links li:last-child{border-bottom:1px solid var(--line)}
+  .links a{display:flex; align-items:center; min-height:54px; padding:8px 0; font-family:var(--sans); font-weight:800;
+    font-size:17.5px; line-height:1.3; text-decoration:none}
+  .links a::after{content:"\2192"; margin-left:auto; padding-left:12px; color:var(--red)}
+  .links span{display:block; font-family:var(--serif); font-weight:400; font-size:16px; color:var(--grey)}
+  .checked{font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--grey); margin-top:14px}
+
+  footer{margin-top:64px; border-top:6px solid var(--ink); padding:36px 0 60px}
+  footer .fa{font-family:var(--sans); font-weight:800; font-size:16px; margin-bottom:16px}
+  footer p{font-size:14px; line-height:1.55; color:var(--grey); max-width:70ch; margin:0 0 10px}
+  .hazard{height:18px; margin:26px 0 0; background:repeating-linear-gradient(-45deg,#141414 0 16px,#f2c200 16px 32px)}
+  .card.caution{--c:#f2c200}
+  .card.caution .face{background:repeating-linear-gradient(-45deg,#141414 0 18px,#f2c200 18px 36px); color:#141414}
+  .card.caution .face .fam, .card.caution .face b{background:#f2c200; color:#141414; padding:0 .35em}
+  .card.caution .face b{line-height:1.05}
+  .card.caution .band .no{color:var(--red)}
+  .cautionstrip{display:flex; gap:14px; align-items:stretch; border:2px solid var(--ink); background:#fff6cf; margin:0 0 22px; max-width:40em; font-family:var(--sans); font-size:15px; font-weight:700; line-height:1.4}
+  .cautionstrip::before{content:""; flex:none; width:26px; background:repeating-linear-gradient(-45deg,#141414 0 8px,#f2c200 8px 16px)}
+  .cautionstrip p{margin:0; padding:11px 14px 11px 0}
+  .cautionstrip a{color:var(--ink)}
+  table.log{border-collapse:collapse; width:100%; max-width:46em; margin:6px 0 22px; font-size:17px}
+  table.log th{font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-align:left; color:var(--grey); padding:8px 12px 8px 0; border-bottom:2px solid var(--ink)}
+  table.log td{vertical-align:top; padding:10px 12px 10px 0; border-bottom:1px solid var(--line)}
+  table.log td:first-child{font-family:var(--sans); font-weight:800; font-size:14px; white-space:nowrap; width:7.5em}
+
+.speed{margin:14px 0 0;padding:10px 14px;border-left:4px solid var(--ink,#141414);background:rgba(0,0,0,.04);font-size:15.5px;line-height:1.5}
+table.speeds td:nth-child(2){font-weight:700}
+@media(max-width:560px){table.speeds{font-size:13.5px}table.speeds th,table.speeds td{padding:8px 6px}table.speeds th:nth-child(3),table.speeds td:nth-child(3){display:none}table.speeds a{overflow-wrap:anywhere}table.speeds{table-layout:fixed;width:100%}table.speeds th:nth-child(1){width:44%}table.speeds th:nth-child(2){width:22%}table.speeds td{overflow-wrap:anywhere}}
+</style>
+<style>/* search link */.mastrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.mastsearch{display:inline-flex;align-items:center;gap:8px;flex:none;margin-bottom:16px;padding:9px 14px;border:1px solid #6b665e;color:#faf7f2;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;line-height:1}.mastsearch:hover,.mastsearch[aria-current]{background:#faf7f2;color:#141414;text-decoration:none}.mastsearch:focus-visible{outline:3px solid #faf7f2;outline-offset:2px}.mastsearch svg{width:16px;height:16px;flex:none}@media (max-width:420px){.mastsearch{padding:8px 10px;letter-spacing:.08em;gap:6px}.mastrow .wordmark{font-size:26px}}@media (max-width:360px){.mastrow .wordmark{font-size:22px}.mastrow .nameplate{gap:10px}.mastrow .nameplate svg{width:38px;height:38px}}</style>
+<meta name="author" content="Grant Williams">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://graphometer.ai/#site","url":"https://graphometer.ai/","name":"Graphometer","inLanguage":"en","creator":{"@id":"https://grantwilliams.ai/#grant"},"publisher":{"@id":"https://grantwilliams.ai/#grant"}},{"@type":"WebPage","@id":"https://graphometer.ai/models/laguna-s-2-1/#page","url":"https://graphometer.ai/models/laguna-s-2-1/","name":"Laguna S 2.1: one setting sped reading 19.9 times","description":"One lab’s measurements of Poolside’s Laguna S 2.1 on one desktop: a batch setting of ours made reading 19.9 times slower, and coding stayed slow.","inLanguage":"en","isPartOf":{"@id":"https://graphometer.ai/#site"},"author":{"@id":"https://grantwilliams.ai/#grant"},"image":"https://graphometer.ai/og/models.png"},{"@type":"Person","@id":"https://grantwilliams.ai/#grant","name":"Grant Williams","url":"https://grantwilliams.ai/"}]}</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="mastrow">
+    <a class="nameplate" href="../../">
+      <svg viewBox="0 0 64 64" role="img" aria-label="Graphometer mark">
+        <rect width="64" height="64" rx="14" fill="#faf7f2"/>
+        <path d="M 44.9 16.7 A 20 20 0 1 0 44.9 47.3" fill="none" stroke="#141414" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="33" y1="32" x2="46" y2="32" stroke="#a6332e" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="33" cy="32" r="3.2" fill="#a6332e"/>
+      </svg>
+      <span class="wordmark">Graphometer</span>
+    </a>
+    <a class="mastsearch" href="../../search/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Search</a>
+    </div>
+    <nav aria-label="Site">
+      <a href="../../models/" aria-current="true">Model guides</a>
+      <a href="../../studies/">Studies</a>
+      <a href="../../incident-reports/">Incident reports</a>
+      <a href="../../robots/">Robots</a>
+      <a href="../../tools/">Tools</a>
+      <a href="../../downloads/">Downloads</a>
+      <a href="../../method/">Method</a>
+      <a href="../../about/#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main" itemscope itemtype="https://schema.org/Article">
+
+  <div class="top">
+
+    <div class="card" style="--c:#7a5a3a" aria-label="Laguna S 2.1 at a glance">
+      <div class="band"><span>Poolside</span><span class="no">No. 44</span></div>
+      <div class="face"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M 78 14 A 34 34 0 1 0 78 66" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><span class="fam">Poolside</span><b>S 2.1</b></div>
+      <p class="name">Laguna S 2.1</p>
+      <p class="pos">Check its batch size first</p>
+      <dl>
+        <div><dt>Runs</dt><dd>At home, until 30 October 2026</dd></div>
+        <div><dt>Download</dt><dd>Poolside&rsquo;s own compressed copy<br>about 68 GB</dd></div>
+        <div><dt>Needs</dt><dd>One RTX 5090<br>plus system memory</dd></div>
+        <div><dt>License</dt><dd>OpenMDW-1.1<br>permissive, commercial use allowed</dd></div>
+      </dl>
+    </div>
+
+    <div>
+      <p class="label"><a href="../">Model guides</a> · Poolside · At home</p>
+      <h1 itemprop="headline">Laguna S 2.1 reads fast but codes slowly</h1>
+      <p class="standfirst">We ran Laguna S 2.1 on one desktop until 30 October 2026. Our start script made its reading of a 24,071-token prompt take 333.2 seconds; with a larger batch setting the same prompt read in 16.8 seconds. Coding stayed slow.</p>
+      <div class="short">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Our own batch setting made its reading 19.9 times slower.</strong> A token is a word or part of a word, and batch size is how much text the program reads in one go. The small batch left in our start script made a 24,071-token prompt take 333.2 seconds to read. At the largest batch we tried the same prompt read in 16.8 seconds.</li>
+          <li><strong>As a coder it stayed slow after that fix.</strong> A coding job it answered correctly took it 245 seconds, where two other local models took 52 and 25. Working on its own through a coding program, step by step, it finished neither of its two attempts at sorting a status table.</li>
+          <li><strong>The license is open and Poolside&rsquo;s files are still public.</strong> It needs Poolside&rsquo;s own build of llama.cpp, the open-source program that runs model files. We deleted our copy when we stopped running it on 30 October 2026.</li>
+        </ul>
+      </div>
+      <p class="byline">By <span itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="../../about/" rel="author" itemprop="url"><span itemprop="name">Grant Williams</span></a></span>, who runs Graphometer · Facts checked 27 November 2026</p>
+    </div>
+
+  </div>
+
+  <div class="read">
+
+
+    <section id="good">
+      <h2>What our tests showed</h2>
+      <div class="catch">
+        <h3>An old setting in our start script slowed its reading</h3>
+        <p>Our start script, the script that starts the model on our desktop, was written in July and set a batch size a quarter of llama.cpp&rsquo;s default. We have no note of why. At that setting a 24,071-token prompt took 333.2 seconds to read, about 5.5 minutes, at 72.2 tokens a second. At the largest batch we tried the same prompt read in 16.8 seconds, at 1,434.0 tokens a second, and it gave back the code we had planted in the text at both settings. That was at its old 32,768-token window. Across those two settings our old value made reading 19.9 times slower. If this model reads slowly for you, check its batch size first.</p>
+      </div>
+      <div class="catch">
+        <h3>At its 262,144-token window it read 898.8 tokens a second</h3>
+        <p>After we raised its window, the most text it can take in at once, to 262,144 tokens, it read a 24,013-token prompt, a different one of nearly the same length, at 898.8 tokens a second, and 150,158 tokens at 911.6. Short answers came out at 15.74 and 14.69 tokens a second after those two prompts. One run each.</p>
+      </div>
+      <div class="catch">
+        <h3>Keeping it on the fast processor cores raised its writing speed</h3>
+        <p>With about 96,000 tokens already in the conversation, we ran it twice. The second run kept llama.cpp on the eight fast cores of our desktop processor, with three settings. A 430-token reply came out at 16.02 tokens a second without them and 22.03 with them. One run each.</p>
+      </div>
+    </section>
+
+    <section id="wrong">
+      <h2>What to watch for</h2>
+      <div class="catch">
+        <h3>It finished neither of its two attempts at working alone</h3>
+        <p>We gave it a written job as an agent, working on its own through a coding program, step by step: sorting a 45-row status table. On this job no local model we tried was reliable. Its first attempt ran 408 seconds, about 7 minutes, and stopped because a step could only produce 8,192 tokens. We raised that limit. The second ran 1,461 seconds, about 24 minutes, and hit the program&rsquo;s own maximum of 32,000 tokens unfinished. The limit was a setting, so a different setup might do better.</p>
+      </div>
+      <div class="catch">
+        <h3>It found three of seven faults and added two false ones</h3>
+        <p>Given a review packet of about 25,000 tokens with 7 known faults, it found 3 of them in 88 seconds and reported 2 findings that were not real. One run, scored by the author of the test.</p>
+      </div>
+      <div class="catch">
+        <h3>A coding ticket took 245 seconds against 52 and 25 seconds</h3>
+        <p>Our coding ticket is six bugs plus one new method in a small Python package, with ten hidden checks the model never sees. It passed all ten, and took 245 seconds, about 4 minutes. Qwen3-Coder-Next passed all ten in 52 seconds and Qwen3.8-27B in 25.</p>
+      </div>
+      <p>We stopped running it on 30 October 2026. The reading fix held, but on that coding ticket it was the slowest of the three local models we tried, and it finished neither attempt at working on its own. We deleted our copy; Poolside&rsquo;s files are still public.</p>
+    </section>
+
+    <section id="facts">
+      <h2>The facts</h2>
+      <details>
+        <summary>What did it need?</summary>
+        <div class="in">
+          <table><tr><th>Item</th><th>What we used</th></tr><tr><td>The file</td><td>Poolside&rsquo;s own Q4_K_M, a compressed copy: one file, about 68 GB</td></tr><tr><td>The machine</td><td>One RTX 5090 graphics card, with part of the model kept in system memory</td></tr><tr><td>The program</td><td>Poolside&rsquo;s own build of llama.cpp, the open-source program that runs model files. Our start script used a build made for this model alone.</td></tr></table>
+        </div>
+      </details>
+      <details>
+        <summary>How fast was it?</summary>
+        <div class="in">
+          <p>On our desktop, at a 262,144-token window with the batch set to 8192 tokens and the smaller inner batch to 4096, a short answer came out at 15.74 tokens a second after a 24,013-token prompt. The same setup read that prompt at 898.8 tokens a second. If your own reading speed is far lower, check the batch size first: ours was left too small from July.</p>
+        </div>
+      </details>
+      <details>
+        <summary>License, and where do you get it?</summary>
+        <div class="in">
+          <p>Poolside&rsquo;s model page on Hugging Face lists the license as OpenMDW-1.1 and says it allows commercial products with no permission needed. Poolside publishes GGUF files, the format llama.cpp reads, in sizes from about 68 GB up to about 235 GB.</p><p>We ran the Q4_K_M file from Poolside&rsquo;s own GGUF page.</p>
+        </div>
+      </details>
+      <p class="checked">From Poolside&rsquo;s model and GGUF pages on Hugging Face, read 27 November 2026, and our own published measurements.</p>
+    </section>
+
+    <section id="more">
+      <h2>Read more</h2>
+      <ul class="links">
+        <li><a href="../../batch-size/"><div>The batch-size study<span>The setting that made its reading 19.9 times slower.</span></div></a></li>
+        <li><a href="../../local-reviewers/"><div>Local models as reviewers and fixers<span>Its two attempts working on its own, and its code review.</span></div></a></li>
+        <li><a href="https://huggingface.co/poolside/Laguna-S-2.1"><div>Laguna S 2.1 on Hugging Face<span>Poolside&rsquo;s own page and license.</span></div></a></li>
+        <li><a href="https://huggingface.co/poolside/Laguna-S-2.1-GGUF"><div>Poolside&rsquo;s GGUF files<span>The compressed copy we ran.</span></div></a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fa">Graphometer is Grant Williams&rsquo;s project, at <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="../../about/">About</a></p>
+    <p>This note is one lab&rsquo;s experience. Independent work: not affiliated with, endorsed by, or connected to Poolside. Poolside and Laguna are marks of Poolside. This site is static. No cookies. No ads. Visit counts only.</p>
+    <p class="related-sites" style="margin-top:14px">Related sites: <a href="https://grantwilliams.ai">grantwilliams.ai</a> · <a href="https://hearth.grantwilliams.ai">The Hearth</a> · <a href="https://friendsof4o.com">Friends of 4o</a> · <a href="https://aisteward.ai">AI Steward</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
